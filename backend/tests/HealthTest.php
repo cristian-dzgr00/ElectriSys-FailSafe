@@ -68,4 +68,21 @@ class HealthTest extends TestCase
         $this->assertStringContainsString('CREATE TABLE IF NOT EXISTS consultas_asistente', $migracion);
         $this->assertStringContainsString('FOREIGN KEY (repuesto_id) REFERENCES repuestos(id)', $migracion);
     }
+
+    /** Valida que la ruta del asistente maneja el timeout y la caída del microservicio */
+    public function testRutaAsistenteManejaFalloDelMicroservicio(): void
+    {
+        $ruta = file_get_contents(__DIR__ . '/../src/routes/asistente.php');
+        $this->assertStringContainsString('/asistente/consultar', $ruta);
+        $this->assertStringContainsString('withStatus(503)', $ruta);
+        $this->assertStringContainsString('AsistenteLogObserver', $ruta);
+    }
+
+    /** Valida que el .env define las variables del microservicio NLP */
+    public function testEnvDefineVariablesNlp(): void
+    {
+        $env = file_get_contents(__DIR__ . '/../.env');
+        $this->assertStringContainsString('NLP_SERVICE_URL', $env);
+        $this->assertStringContainsString('NLP_INTERNAL_KEY', $env);
+    }
 }

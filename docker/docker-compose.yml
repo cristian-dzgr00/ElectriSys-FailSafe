@@ -134,6 +134,31 @@ services:
       timeout: 5s
       retries: 3
 
+  # ── Microservicio NLP (asistente de recomendación de repuestos) ──
+  nlp-service:
+    build:
+      context: ../nlp-service
+      dockerfile: Dockerfile
+    container_name: es_nlp_service
+    restart: unless-stopped
+    environment:
+      # El backend PHP no habla HTTP directo (php-fpm detrás de stunnel) —
+      # se llega a él vía el contenedor "frontend" (nginx), igual que un
+      # navegador externo. Ver nginx/nginx.conf: proxya /api/ a php_backend.
+      BACKEND_URL:      "http://frontend"
+      JWT_SECRET:       "${JWT_SECRET:-electrisys_jwt_secret_2024_super_seguro}"
+      NLP_INTERNAL_KEY: nlp_internal_key_2024
+    networks:
+      - electrisys_net
+    depends_on:
+      - frontend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
   # ── Frontend + NGINX ──────────────────────────────────────
   frontend:
     build:

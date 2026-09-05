@@ -81,6 +81,7 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     require __DIR__ . '/../src/routes/ventas.php';
     require __DIR__ . '/../src/routes/vehiculos.php';
     require __DIR__ . '/../src/routes/repuestos.php';
+    require __DIR__ . '/../src/routes/asistente.php';
     require __DIR__ . '/../src/routes/clientes.php';
     require __DIR__ . '/../src/routes/proveedores.php';
     require __DIR__ . '/../src/routes/cotizaciones.php';
