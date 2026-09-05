@@ -1,0 +1,81 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: electrisys
+    environment: production
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - 'alert_rules.yml'
+
+scrape_configs:
+  # ── Prometheus en sí mismo ────────────────────────────────────
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ── Nginx (nginx-prometheus-exporter) ─────────────────────────
+  - job_name: nginx
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'electrisys-nginx'
+
+  # ── PHP-FPM (php-fpm-exporter) ────────────────────────────────
+  - job_name: php-fpm-a
+    static_configs:
+      - targets: ['backend-a:9253']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'backend-a'
+
+  - job_name: php-fpm-b
+    static_configs:
+      - targets: ['backend-b:9253']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'backend-b'
+
+  # ── MySQL Primary (mysqld_exporter) ───────────────────────────
+  - job_name: mysql-primary
+    static_configs:
+      - targets: ['mysql-primary-exporter:9104']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'mysql-primary'
+
+  # ── MySQL Replica ──────────────────────────────────────────────
+  - job_name: mysql-replica
+    static_configs:
+      - targets: ['mysql-replica-exporter:9104']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'mysql-replica'
+
+  # ── Backend health endpoint (/api/health) ─────────────────────
+  - job_name: electrisys-health
+    metrics_path: /api/health/metrics
+    static_configs:
+      - targets: ['backend-a:80', 'backend-b:80']
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(backend-[ab]):.*'
+        target_label: instance
+        replacement: '$1'
+
+  # ── Node exporter (métricas de host) ──────────────────────────
+  - job_name: node
+    static_configs:
+      - targets: ['node-exporter:9100']

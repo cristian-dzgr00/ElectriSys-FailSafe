@@ -1,0 +1,87 @@
+groups:
+  # ── Red y disponibilidad ──────────────────────────────────────
+  - name: network_availability
+    rules:
+      - alert: NginxDown
+        expr: nginx_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx caído"
+          description: "El servidor Nginx de ElectriSys lleva {{ $value }}s sin responder."
+
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.95, rate(nginx_http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latencia HTTP alta (p95 > 2s)"
+          description: "El percentil 95 de latencia es {{ $value }}s en los últimos 5 minutos."
+
+      - alert: HighErrorRate
+        expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Tasa de errores 5xx mayor al 5%"
+          description: "{{ $value | humanizePercentage }} de las peticiones responden con error."
+
+  # ── Base de datos ─────────────────────────────────────────────
+  - name: database
+    rules:
+      - alert: MySQLDown
+        expr: mysql_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "MySQL no disponible ({{ $labels.instance }})"
+
+      - alert: MySQLReplicationLag
+        expr: mysql_slave_status_seconds_behind_master > 30
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Replicación MySQL con lag de {{ $value }}s"
+
+      - alert: MySQLTooManyConnections
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MySQL al {{ $value | humanizePercentage }} de conexiones máximas"
+
+  # ── PHP-FPM ───────────────────────────────────────────────────
+  - name: php_fpm
+    rules:
+      - alert: PhpFpmDown
+        expr: phpfpm_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PHP-FPM caído ({{ $labels.instance }})"
+
+      - alert: PhpFpmQueueFull
+        expr: phpfpm_listen_queue > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Cola de PHP-FPM con {{ $value }} peticiones pendientes"
+
+  # ── Rate limiting ─────────────────────────────────────────────
+  - name: rate_limiting
+    rules:
+      - alert: LoginRateLimitTriggered
+        expr: rate(nginx_http_requests_total{location="login", status="429"}[5m]) > 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rate limit de login activado — posible ataque de fuerza bruta"

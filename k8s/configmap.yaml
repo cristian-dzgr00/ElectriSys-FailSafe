@@ -1,0 +1,35 @@
+# ============================================================
+# ConfigMap — Configuración no sensible de ElectriSys
+# Estos valores SÍ pueden subirse a git.
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: electrisys-config
+  namespace: electrisys
+data:
+  # Aplicación
+  APP_NAME:    "ElectriSys POS"
+  APP_VERSION: "2.0.0"
+  APP_ENV:     "production"
+
+  # Paginación
+  DEFAULT_PAGE_SIZE: "15"
+  MAX_PAGE_SIZE:     "100"
+
+  # JWT (no el secret, solo la expiración)
+  JWT_EXPIRATION: "28800"     # 8 horas en segundos
+
+  # DB (hosts — no credenciales)
+  DB_PRIMARY_HOST: "mysql-primary"
+  DB_PRIMARY_PORT: "3306"
+  DB_REPLICA_HOST: "mysql-replica"
+  DB_REPLICA_PORT: "3306"
+  DB_NAME:         "electrisys"
+
+  # Rate limiting
+  LOGIN_MAX_ATTEMPTS:  "5"
+  LOGIN_WINDOW_SECS:   "900"
+
+  # Nginx
+  NGINX_WORKER_PROCESSES: "auto"

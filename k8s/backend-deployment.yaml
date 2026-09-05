@@ -1,0 +1,143 @@
+# ============================================================
+# ElectriSys - Backend PHP Deployments (A y B)
+# Cambios vs v1:
+#   + volumeMounts para certificados TLS (/etc/tls)
+#   + anotaciones prometheus.io/scrape para métricas PHP-FPM
+#   + WS_NOTIFY_KEY env var para WebSocketObserver
+# ============================================================
+
+# ════════ Instancia A (Principal) ════════════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-a
+  namespace: electrisys
+  labels:
+    app: backend
+    instance: "a"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+      instance: "a"
+  template:
+    metadata:
+      labels:
+        app: backend
+        instance: "a"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "9253"
+        prometheus.io/path:   "/metrics"
+    spec:
+      containers:
+        - name: php-fpm
+          image: electrisys/backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000   # PHP-FPM local
+            - containerPort: 9443   # stunnel mTLS listener
+            - containerPort: 9253   # php-fpm exporter (Prometheus)
+          envFrom:
+            - secretRef:
+                name: electrisys-secrets
+          env:
+            - name: APP_ENV
+              value: production
+            - name: APP_DEBUG
+              value: "false"
+            - name: CORS_ORIGIN
+              value: "http://localhost"
+          volumeMounts:
+            - name: tls-certs
+              mountPath: /etc/tls
+              readOnly: true
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: electrisys-tls
+---
+# ════════ Instancia B (Failover / Canary) ════════════════════
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-b
+  namespace: electrisys
+  labels:
+    app: backend
+    instance: "b"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+      instance: "b"
+  template:
+    metadata:
+      labels:
+        app: backend
+        instance: "b"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "9253"
+        prometheus.io/path:   "/metrics"
+    spec:
+      containers:
+        - name: php-fpm
+          image: electrisys/backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+            - containerPort: 9443
+            - containerPort: 9253
+          envFrom:
+            - secretRef:
+                name: electrisys-secrets
+          env:
+            - name: APP_ENV
+              value: production
+            - name: APP_DEBUG
+              value: "false"
+          volumeMounts:
+            - name: tls-certs
+              mountPath: /etc/tls
+              readOnly: true
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: electrisys-tls

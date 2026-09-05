@@ -1,0 +1,13 @@
+# ============================================================
+# ElectriSys - Namespace
+# Cambios vs v1:
+#   + istio-injection: enabled  → sidecar Envoy en cada pod
+# ============================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: electrisys
+  labels:
+    app: electrisys
+    environment: production
+    istio-injection: enabled     # activa sidecar Envoy automáticamente

@@ -1,0 +1,66 @@
+texto,intencion
+"No hay filtro de aceite original de Toyota para una Hilux 2.7 gasolina 2024, ¿qué me recomienda?",recomendar_sustituto
+"Se me acabaron las balatas Brembo para un Mazda 3 2020, ¿hay algo parecido?",recomendar_sustituto
+"El cliente pide una batería Mac original para un Chevrolet Spark 2019 pero no tenemos, ¿qué le ofrezco?",recomendar_sustituto
+"No tengo en stock la correa de distribución Gates para Sentra 2018, deme una alternativa",recomendar_sustituto
+"¿Qué otro filtro de aire le sirve a un Renault Logan 1.6 2021 si no hay el original?",recomendar_sustituto
+"Se agotó el disco de freno delantero para Hyundai Tucson 2022, sugiérame un reemplazo",recomendar_sustituto
+"No hay bujías NGK para Kia Rio 2017, ¿cuál puedo ofrecer en su lugar?",recomendar_sustituto
+"Necesito una opción distinta al amortiguador Monroe para Ford Escape 2015 porque no hay stock",recomendar_sustituto
+"¿Con qué puedo sustituir el kit de embrague original de Chevrolet Aveo 2016?",recomendar_sustituto
+"No queda filtro de combustible Bosch para Volkswagen Gol 2019, deme otro",recomendar_sustituto
+"El repuesto 90915-YZZD4 está agotado, ¿qué otro filtro sirve para esa Hilux?",recomendar_sustituto
+"Dame una alternativa de banda de accesorios para Suzuki Swift 2020",recomendar_sustituto
+"No hay stock de la batería para el Aveo, qué le puedo vender al cliente",recomendar_sustituto
+"Se nos acabó el filtro de aceite K&N para la Fortuner, hay algo similar",recomendar_sustituto
+"¿Tienen filtro de aceite para Toyota Hilux 2.7 2024?",buscar_repuesto
+"Busco pastillas de freno para un Chevrolet Onix 2021",buscar_repuesto
+"¿Hay disponible una bomba de agua para Nissan Frontier 2018?",buscar_repuesto
+"Necesito un radiador para Mazda CX-5 2019",buscar_repuesto
+"¿Manejan el repuesto con código HP-1002?",buscar_repuesto
+"Estoy buscando un alternador para Hyundai Accent 2016",buscar_repuesto
+"¿Tienen la correa poly-v para un Kia Sportage 2020?",buscar_repuesto
+"Quiero comprar un filtro de cabina para Renault Duster 2022",buscar_repuesto
+"¿Hay amortiguadores traseros para Ford Fiesta 2015?",buscar_repuesto
+"Busco bujías para un Chevrolet Spark GT 2018",buscar_repuesto
+"¿Manejan bomba de gasolina para Nissan Sentra?",buscar_repuesto
+"Necesito un kit de embrague para Aveo 2016",buscar_repuesto
+"¿Cuántas unidades hay del filtro 90915-YZZD4?",consultar_stock
+"¿Qué stock queda de las pastillas de freno Brembo?",consultar_stock
+"¿Hay suficiente inventario de baterías Mac para esta semana?",consultar_stock
+"¿Cuántos filtros de aceite K&N tienen disponibles?",consultar_stock
+"Verifica el stock del repuesto M1-102",consultar_stock
+"¿Se está agotando el filtro de aire para Sentra?",consultar_stock
+"¿Cuántas correas de distribución quedan en bodega?",consultar_stock
+"¿Cuánto stock queda de bujías NGK?",consultar_stock
+"¿Cuánto cuesta el filtro de aceite original de Toyota?",consultar_precio
+"¿Qué precio tiene el disco de freno para Tucson 2022?",consultar_precio
+"Dime el valor de las bujías NGK",consultar_precio
+"¿A cómo está el kit de embrague de Aveo?",consultar_precio
+"¿Cuál es el precio de venta del repuesto HP-1002?",consultar_precio
+"¿Cuánto vale la batería Mac para Spark?",consultar_precio
+"¿Qué precio tiene la correa de distribución Gates?",consultar_precio
+"¿Este filtro le sirve a una Hilux 2.7 gasolina 2024?",consultar_compatibilidad
+"¿La pastilla de freno Brembo es compatible con Mazda 3 2020?",consultar_compatibilidad
+"¿El repuesto 90915-YZZD4 aplica para otros modelos de Toyota?",consultar_compatibilidad
+"¿A qué vehículos le sirve la correa de distribución Gates?",consultar_compatibilidad
+"¿Esta batería es compatible con Chevrolet Spark 2019?",consultar_compatibilidad
+"¿El filtro K&N HP-1002 sirve para más motores?",consultar_compatibilidad
+"¿Estas bujías NGK aplican para un Hyundai Accent 2015?",consultar_compatibilidad
+"Hola",saludo_despedida
+"Buenos días",saludo_despedida
+"Buenas tardes, necesito ayuda",saludo_despedida
+"Qué más, ¿me puede colaborar?",saludo_despedida
+"Hola, ¿está disponible el asistente?",saludo_despedida
+"Gracias, eso era todo",saludo_despedida
+"Listo, hasta luego",saludo_despedida
+"Muchas gracias por la ayuda",saludo_despedida
+"Nos vemos",saludo_despedida
+"Buenas, quisiera hacer una consulta",saludo_despedida
+"¿Cuál es el clima hoy?",fuera_de_dominio
+"¿A qué hora cierra el negocio?",fuera_de_dominio
+"¿Aceptan pago con tarjeta?",fuera_de_dominio
+"¿Hacen domicilios?",fuera_de_dominio
+"Cuéntame un chiste",fuera_de_dominio
+"¿Qué opinas del nuevo modelo de carro eléctrico?",fuera_de_dominio
+"¿Cómo llego a la estación del metro más cercana?",fuera_de_dominio

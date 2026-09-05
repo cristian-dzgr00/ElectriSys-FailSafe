@@ -1,0 +1,60 @@
+# Dependencias
+node_modules/
+vendor/
+
+# Entornos
+.env
+*.env.local
+
+# Certificados TLS — NUNCA al repositorio
+tls/ca/
+tls/nginx/
+tls/php-fpm/
+tls/mysql/*.key
+tls/mysql/*.crt
+tls/mysql/*.csr
+
+# Capturas de red — archivos grandes binarios
+network-analysis/captures/*.pcap
+network-analysis/captures/*.pcapng
+network-analysis/captures/*.cap
+
+# Build
+frontend/dist/
+frontend/.vite/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Docker volumes
+mysql_primary_data/
+mysql_replica_data/
+
+# Logs
+*.log
+
+# Python (nlp-service)
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Cache de graphify (generado, no es código fuente)
+graphify-out/
+
+# PHPUnit cache
+.phpunit.result.cache
+
+# Archivos y carpetas sueltas ajenas al proyecto (artefactos accidentales
+# del entorno local, no del código — ver aviso al usuario)
+/electrisys/
+/.sixth/
+/3
+/7
+/electrisys_backup.sql
+/VpnMiddleware.php
+/nginx.conf
+docker/execute(\[33\])
+docker/getMessage()

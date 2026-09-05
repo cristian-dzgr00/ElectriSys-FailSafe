@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wireguard
+  namespace: electrisys
+  labels:
+    app: wireguard
+spec:
+  selector:
+    app: wireguard
+  ports:
+    - port: 51820
+      protocol: UDP
+      targetPort: 51820
+  type: LoadBalancer   # expone UDP al exterior
+  externalTrafficPolicy: Local

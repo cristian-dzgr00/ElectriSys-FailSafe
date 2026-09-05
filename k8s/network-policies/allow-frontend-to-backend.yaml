@@ -1,0 +1,24 @@
+# ============================================================
+# NetworkPolicy: allow-frontend-to-backend
+# Solo el pod frontend (Nginx) puede alcanzar los pods backend
+# en el puerto PHP-FPM 9000.
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: backend       # aplica a backend-a y backend-b
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - protocol: TCP
+          port: 9000    # PHP-FPM

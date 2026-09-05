@@ -1,0 +1,20 @@
+# ============================================================
+# mysql-ssl.cnf — agrega a my.cnf de mysql-primary
+# Fuerza TLS en todas las conexiones de clientes.
+# ============================================================
+[mysqld]
+ssl-ca   = /etc/mysql/tls/ca.crt
+ssl-cert = /etc/mysql/tls/mysql.crt
+ssl-key  = /etc/mysql/tls/mysql.key
+
+# Requerir TLS para el usuario electrisys_user
+# (ejecutar en MySQL tras aplicar esta config):
+# ALTER USER 'electrisys_user'@'%' REQUIRE X509;
+# FLUSH PRIVILEGES;
+
+require_secure_transport = ON
+
+[client]
+ssl-ca   = /etc/mysql/tls/ca.crt
+ssl-cert = /etc/mysql/tls/mysql.crt
+ssl-key  = /etc/mysql/tls/mysql.key

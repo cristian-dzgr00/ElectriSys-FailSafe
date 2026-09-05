@@ -1,0 +1,39 @@
+# ============================================================
+# RequestAuthentication — valida JWT a nivel de Istio
+# Complementa (no reemplaza) el JwtMiddleware.php existente.
+# ============================================================
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: electrisys-jwt
+  namespace: electrisys
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  jwtRules:
+    - issuer: "electrisys-backend"
+      jwksUri: "http://backend-a/api/auth/jwks"
+      audiences:
+        - "electrisys-frontend"
+      forwardOriginalToken: true   # el PHP también recibe el token
+---
+# AuthorizationPolicy: bloquea /api (excepto /auth) sin JWT válido
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: require-jwt-for-api
+  namespace: electrisys
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  action: DENY
+  rules:
+    - to:
+        - operation:
+            paths: ["/api/*"]
+            notPaths: ["/api/auth/*", "/api/health/*"]
+      when:
+        - key: request.auth.claims[iss]
+          notValues: ["electrisys-backend"]

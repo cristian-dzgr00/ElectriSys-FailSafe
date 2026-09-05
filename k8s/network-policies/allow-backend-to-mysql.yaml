@@ -1,0 +1,47 @@
+# ============================================================
+# NetworkPolicy: allow-backend-to-mysql
+# Solo los pods backend pueden alcanzar mysql-primary y
+# mysql-replica en el puerto 3306.
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-to-mysql
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql-primary   # aplica a mysql-primary
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: backend
+      ports:
+        - protocol: TCP
+          port: 3306
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-to-mysql-replica
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql-replica   # aplica a mysql-replica
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: backend
+        - podSelector:
+            matchLabels:
+              app: mysql-primary   # replicación entre nodos
+      ports:
+        - protocol: TCP
+          port: 3306

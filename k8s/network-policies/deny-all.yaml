@@ -1,0 +1,15 @@
+# ============================================================
+# NetworkPolicy: deny-all
+# Bloquea TODO el tráfico por defecto en el namespace electrisys.
+# Las políticas siguientes abren solo lo necesario.
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+  namespace: electrisys
+spec:
+  podSelector: {}     # aplica a todos los pods del namespace
+  policyTypes:
+    - Ingress
+    - Egress

@@ -1,0 +1,46 @@
+# ============================================================
+# Istio Operator — Perfil minimal para ElectriSys
+# Aplicar ANTES que el resto de manifiestos de Istio.
+#
+# Instalación previa:
+#   curl -L https://istio.io/downloadIstio | sh -
+#   istioctl install -f k8s/istio/istio-operator.yaml
+# ============================================================
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: electrisys-istio
+  namespace: istio-system
+spec:
+  profile: default
+  components:
+    pilot:
+      k8s:
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          service:
+            ports:
+              - port: 80
+                targetPort: 8080
+                name: http2
+              - port: 443
+                targetPort: 8443
+                name: https
+  values:
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
+    telemetry:
+      enabled: true

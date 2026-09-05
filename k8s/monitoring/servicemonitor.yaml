@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: electrisys-backend
+  namespace: electrisys
+  labels:
+    app: electrisys
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  endpoints:
+    - port: php-fpm
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: electrisys-mysql
+  namespace: electrisys
+  labels:
+    app: electrisys
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: mysql-primary
+  endpoints:
+    - port: metrics
+      interval: 15s

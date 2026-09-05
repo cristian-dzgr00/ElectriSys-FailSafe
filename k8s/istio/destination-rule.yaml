@@ -1,0 +1,53 @@
+# ============================================================
+# DestinationRule — circuit breaker + subsets para canary
+# ============================================================
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: electrisys-backend
+  namespace: electrisys
+spec:
+  host: backend-a
+  trafficPolicy:
+    # ── Circuit Breaker ──────────────────────────────────────
+    outlierDetection:
+      consecutive5xxErrors: 5       # 5 errores 5xx consecutivos
+      interval: 30s                 # evaluado cada 30s
+      baseEjectionTime: 30s         # tiempo de eyección inicial
+      maxEjectionPercent: 50        # máximo 50% de pods eyectados
+      minHealthPercent: 30          # mantener al menos 30% sano
+    # ── Pool de conexiones ───────────────────────────────────
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        h2UpgradePolicy: UPGRADE
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+    # ── Load balancing ───────────────────────────────────────
+    loadBalancer:
+      simple: LEAST_CONN
+  subsets:
+    - name: stable
+      labels:
+        instance: "a"
+    - name: canary
+      labels:
+        instance: "b"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: electrisys-mysql
+  namespace: electrisys
+spec:
+  host: mysql-primary
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50
+        connectTimeout: 5s
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 10s
+      baseEjectionTime: 60s

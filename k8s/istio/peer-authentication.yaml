@@ -1,0 +1,12 @@
+# ============================================================
+# PeerAuthentication — fuerza mTLS STRICT en todo el namespace
+# Con Istio, todos los sidecars se autentican mutuamente.
+# ============================================================
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: electrisys-mtls
+  namespace: electrisys
+spec:
+  mtls:
+    mode: STRICT     # rechaza cualquier conexión sin mTLS

@@ -1,0 +1,38 @@
+# ============================================================
+# ElectriSys - Services del Backend
+# NGINX usa estos servicios para enrutar entre backend-a y b
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-a
+  namespace: electrisys
+  labels:
+    app: backend
+    instance: "a"
+spec:
+  selector:
+    app: backend
+    instance: "a"
+  ports:
+    - name: php-fpm
+      port: 9000
+      targetPort: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-b
+  namespace: electrisys
+  labels:
+    app: backend
+    instance: "b"
+spec:
+  selector:
+    app: backend
+    instance: "b"
+  ports:
+    - name: php-fpm
+      port: 9000
+      targetPort: 9000

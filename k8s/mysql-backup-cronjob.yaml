@@ -1,0 +1,81 @@
+# ============================================================
+# CronJob — Backup automático MySQL con mysqldump
+# Se ejecuta todos los días a las 2:00 AM UTC
+# ============================================================
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mysql-backup
+  namespace: electrisys
+spec:
+  schedule: "0 2 * * *"      # 2:00 AM UTC diario
+  concurrencyPolicy: Forbid   # No ejecutar si ya hay uno corriendo
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: mysqldump
+              image: mysql:8.0
+              env:
+                - name: MYSQL_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: electrisys-secrets
+                      key: DB_PRIMARY_HOST
+                - name: MYSQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: electrisys-secrets
+                      key: DB_USER
+                - name: MYSQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: electrisys-secrets
+                      key: DB_PASS
+                - name: MYSQL_DATABASE
+                  value: electrisys
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  FILENAME="backup_${TIMESTAMP}.sql.gz"
+                  echo "Iniciando backup: $FILENAME"
+                  mysqldump \
+                    --host=$MYSQL_HOST \
+                    --user=$MYSQL_USER \
+                    --password=$MYSQL_PASSWORD \
+                    --single-transaction \
+                    --routines \
+                    --triggers \
+                    --set-gtid-purged=OFF \
+                    $MYSQL_DATABASE | gzip > /backups/$FILENAME
+                  echo "Backup completado: $(du -sh /backups/$FILENAME)"
+                  # Eliminar backups de más de 30 días
+                  find /backups -name "*.sql.gz" -mtime +30 -delete
+                  echo "Limpieza de backups antiguos completada"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: mysql-backup-pvc
+---
+# PVC para almacenar backups
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-backup-pvc
+  namespace: electrisys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard

@@ -1,0 +1,22 @@
+# ============================================================
+# Telemetry — habilita métricas y trazas distribuidas (Jaeger)
+# ============================================================
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: electrisys-telemetry
+  namespace: electrisys
+spec:
+  tracing:
+    - providers:
+        - name: jaeger
+      randomSamplingPercentage: 10.0   # muestra 10% del tráfico
+  metrics:
+    - providers:
+        - name: prometheus
+      overrides:
+        - match:
+            metric: ALL_METRICS
+          tagOverrides:
+            app_version:
+              value: "2.0.0"

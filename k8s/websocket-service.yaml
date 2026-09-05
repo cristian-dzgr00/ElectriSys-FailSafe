@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: websocket-server
+  namespace: electrisys
+  labels:
+    app: websocket-server
+spec:
+  selector:
+    app: websocket-server
+  ports:
+    - name: ws
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

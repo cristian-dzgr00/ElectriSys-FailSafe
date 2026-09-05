@@ -1,0 +1,114 @@
+# ============================================================
+# ElectriSys - MySQL Primary
+# ============================================================
+
+# ── PersistentVolumeClaim ─────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-primary-pvc
+  namespace: electrisys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# ── ConfigMap: my.cnf para Primary ───────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-primary-config
+  namespace: electrisys
+data:
+  my.cnf: |
+    [mysqld]
+    server-id           = 1
+    log-bin             = mysql-bin
+    binlog-format       = ROW
+    binlog-do-db        = electrisys
+    max_connections     = 200
+    innodb_buffer_pool_size = 256M
+---
+# ── Deployment ────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-primary
+  namespace: electrisys
+  labels:
+    app: mysql-primary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-primary
+  template:
+    metadata:
+      labels:
+        app: mysql-primary
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: electrisys
+            - name: MYSQL_USER
+              value: electrisys_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: mysql-primary-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-primary-config
+              mountPath: /etc/mysql/conf.d
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          livenessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass2024"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass2024"]
+            initialDelaySeconds: 15
+            periodSeconds: 5
+      volumes:
+        - name: mysql-primary-storage
+          persistentVolumeClaim:
+            claimName: mysql-primary-pvc
+        - name: mysql-primary-config
+          configMap:
+            name: mysql-primary-config
+---
+# ── Service ───────────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-primary
+  namespace: electrisys
+spec:
+  selector:
+    app: mysql-primary
+  ports:
+    - port: 3306
+      targetPort: 3306
+  clusterIP: None   # Headless para conexión directa

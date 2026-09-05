@@ -1,0 +1,28 @@
+# ============================================================
+# NetworkPolicy: allow-prometheus-scrape
+# Permite que Prometheus acceda a los endpoints de métricas
+# de todos los pods del namespace.
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-scrape
+  namespace: electrisys
+spec:
+  podSelector: {}    # todos los pods
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 9253   # php-fpm exporter
+        - protocol: TCP
+          port: 9104   # mysqld exporter
+        - protocol: TCP
+          port: 9113   # nginx exporter
+        - protocol: TCP
+          port: 9090   # prometheus self-scrape

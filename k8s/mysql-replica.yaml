@@ -1,0 +1,103 @@
+# ============================================================
+# ElectriSys - MySQL Replica (fallback de escritura)
+# ============================================================
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-replica-pvc
+  namespace: electrisys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-replica-config
+  namespace: electrisys
+data:
+  my.cnf: |
+    [mysqld]
+    server-id       = 2
+    relay-log       = relay-bin
+    read-only       = 1
+    max_connections = 200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-replica
+  namespace: electrisys
+  labels:
+    app: mysql-replica
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-replica
+  template:
+    metadata:
+      labels:
+        app: mysql-replica
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: electrisys
+            - name: MYSQL_USER
+              value: electrisys_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: mysql-replica-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-replica-config
+              mountPath: /etc/mysql/conf.d
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          livenessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass2024"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: mysql-replica-storage
+          persistentVolumeClaim:
+            claimName: mysql-replica-pvc
+        - name: mysql-replica-config
+          configMap:
+            name: mysql-replica-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-replica
+  namespace: electrisys
+spec:
+  selector:
+    app: mysql-replica
+  ports:
+    - port: 3306
+      targetPort: 3306
+  clusterIP: None
