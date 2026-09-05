@@ -15,3 +15,18 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8080")
 
 # Clave interna backend -> microservicio (se usa desde la Sprint 5)
 NLP_INTERNAL_KEY = os.getenv("NLP_INTERNAL_KEY", "")
+
+# Token JWT para que el microservicio llame a rutas protegidas del backend
+# (buscar-compatibles, etc.) mientras la Sprint 5 no defina el mecanismo
+# definitivo de autenticación servicio-a-servicio. Se deja opcional: sin
+# esto, esas llamadas devuelven 401 y el pipeline se degrada igual de
+# controlado (ver client_backend.py y ner/dictionary.py, que la usan).
+BACKEND_SERVICE_TOKEN = os.getenv("BACKEND_SERVICE_TOKEN", "")
+
+
+def backend_auth_headers() -> dict:
+    """Headers HTTP para llamar al backend. Centralizado acá para que
+    client_backend.py y ner/dictionary.py no dupliquen esta lógica."""
+    if BACKEND_SERVICE_TOKEN:
+        return {"Authorization": f"Bearer {BACKEND_SERVICE_TOKEN}"}
+    return {}

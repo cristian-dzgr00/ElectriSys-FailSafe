@@ -29,6 +29,7 @@ COMBUSTIBLES_SINONIMOS = {
 
 _RE_ANIO = re.compile(r"\b(19[5-9]\d|20[0-4]\d)\b")
 _RE_MOTOR = re.compile(r"\b(\d\.\d)\b|\b(\d{3,4})\s?cc\b", re.IGNORECASE)
+_RE_CODIGO = re.compile(r"\b[A-Za-z0-9]{1,10}-[A-Za-z0-9]{2,10}\b")
 
 
 UMBRAL_FUZZY_TYPO = 88  # para comparación palabra-por-palabra (ver abajo)
@@ -111,13 +112,19 @@ def extraer_combustible(texto_normalizado: str) -> str | None:
     return None
 
 
+def extraer_codigo(texto_original: str) -> str | None:
+    """Códigos de repuesto tipo '90915-YZZD4', 'HP-1002', 'M1-102'."""
+    match = _RE_CODIGO.search(texto_original)
+    return match.group(0).upper() if match else None
+
+
 def extraer_entidades(
     texto: str,
     marcas_conocidas: list[str] | None = None,
     modelos_conocidos: list[str] | None = None,
     categorias_conocidas: list[str] | None = None,
 ) -> dict:
-    """Extrae marca, modelo, año, motor, combustible y categoría de un texto."""
+    """Extrae marca, modelo, año, motor, combustible, código y categoría de un texto."""
     texto_normalizado = normalizar(texto)
     return {
         "marca": extraer_marca(texto_normalizado, marcas_conocidas or []),
@@ -125,5 +132,6 @@ def extraer_entidades(
         "anio": extraer_anio(texto),
         "motor": extraer_motor(texto),
         "combustible": extraer_combustible(texto_normalizado),
+        "codigo": extraer_codigo(texto),
         "categoria": extraer_categoria(texto_normalizado, categorias_conocidas or []),
     }

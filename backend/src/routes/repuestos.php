@@ -18,19 +18,21 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     $total = (int) $db->prepare("
         SELECT COUNT(*) FROM repuestos r
         LEFT JOIN categorias c ON r.categoria_id = c.id
-        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ?)
-    ")->execute([$q,$q]) ? $db->query("SELECT FOUND_ROWS()")->fetchColumn() : 0;
+        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ?)
+    ")->execute([$q,$q,$q]) ? $db->query("SELECT FOUND_ROWS()")->fetchColumn() : 0;
 
     // Re-query con SQL_CALC_FOUND_ROWS
+    // Busca también por categoría (c.nombre LIKE) — lo usa el microservicio
+    // NLP para el fallback de "sin compatibilidad exacta, buscar por categoría".
     $stmt = $db->prepare("
         SELECT SQL_CALC_FOUND_ROWS r.*, c.nombre AS categoria
         FROM repuestos r
         LEFT JOIN categorias c ON r.categoria_id = c.id
-        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ?)
+        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ?)
         ORDER BY r.nombre
         LIMIT ? OFFSET ?
     ");
-    $stmt->execute([$q, $q, $limit, $off]);
+    $stmt->execute([$q, $q, $q, $limit, $off]);
     $rows  = $stmt->fetchAll();
     $total = (int) $db->query("SELECT FOUND_ROWS()")->fetchColumn();
 

@@ -16,7 +16,7 @@ import time
 
 import httpx
 
-from app.config import BACKEND_URL
+from app.config import BACKEND_URL, backend_auth_headers
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ _cache: dict[str, tuple[float, list[str]]] = {}
 
 def _get_json(path: str) -> dict:
     with httpx.Client(timeout=_TIMEOUT_SEGUNDOS) as client:
-        resp = client.get(f"{BACKEND_URL}{path}")
+        resp = client.get(f"{BACKEND_URL}{path}", headers=backend_auth_headers())
         resp.raise_for_status()
         return resp.json()
 
