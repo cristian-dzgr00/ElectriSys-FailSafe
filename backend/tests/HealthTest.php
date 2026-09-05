@@ -85,4 +85,13 @@ class HealthTest extends TestCase
         $this->assertStringContainsString('NLP_SERVICE_URL', $env);
         $this->assertStringContainsString('NLP_INTERNAL_KEY', $env);
     }
+
+    /** Valida que la ruta del asistente tiene rate limiting por usuario */
+    public function testRutaAsistenteTieneRateLimiting(): void
+    {
+        $ruta = file_get_contents(__DIR__ . '/../src/routes/asistente.php');
+        $this->assertStringContainsString('RATE_LIMITED', $ruta);
+        $this->assertStringContainsString('withStatus(429)', $ruta);
+        $this->assertStringContainsString('ASISTENTE_MAX_CONSULTAS_POR_MINUTO', $ruta);
+    }
 }
