@@ -1,0 +1,50 @@
+[
+  {
+    "texto": "no hay filtro de aceite original de toyota para hilux 2.7 gasolina 2024",
+    "esperado": {"marca": "Toyota", "modelo": "Hilux", "anio": 2024, "motor": "2.7", "combustible": "gasolina", "categoria": "Filtros"}
+  },
+  {
+    "texto": "necesito pastillas de freno para mazda 3 2020",
+    "esperado": {"marca": "Mazda", "modelo": "3", "anio": 2020, "categoria": "Frenos"}
+  },
+  {
+    "texto": "bateria para chevrolet spark 2019",
+    "esperado": {"marca": "Chevrolet", "modelo": "Spark", "anio": 2019, "categoria": "Baterías"}
+  },
+  {
+    "texto": "correa de distribucion gates para nissan sentra",
+    "esperado": {"marca": "Nissan", "modelo": "Sentra", "categoria": "Correas y Bandas"}
+  },
+  {
+    "texto": "bujias ngk para un hyundai accent 2016",
+    "esperado": {"marca": "Hyundai", "modelo": "Accent", "anio": 2016, "categoria": "Encendido"}
+  },
+  {
+    "texto": "cuanto cuesta el HP-1002",
+    "esperado": {"codigo": "HP-1002"}
+  },
+  {
+    "texto": "el repuesto 90915-YZZD4 sirve para toyta fortuner",
+    "esperado": {"marca": "Toyota", "modelo": "Fortuner", "codigo": "90915-YZZD4"}
+  },
+  {
+    "texto": "motor de 1600cc para renault logan",
+    "esperado": {"marca": "Renault", "modelo": "Logan", "motor": "1600cc"}
+  },
+  {
+    "texto": "filtro para kia sportage diesel",
+    "esperado": {"marca": "Kia", "modelo": "Sportage", "combustible": "diesel", "categoria": "Filtros"}
+  },
+  {
+    "texto": "sin ninguna marca ni modelo mencionado aqui",
+    "esperado": {"marca": null, "modelo": null}
+  },
+  {
+    "texto": "suzuki swift 2018 2023",
+    "esperado": {"marca": "Suzuki", "modelo": "Swift", "anio": 2018}
+  },
+  {
+    "texto": "ford fiesta gasolina",
+    "esperado": {"marca": "Ford", "modelo": "Fiesta", "combustible": "gasolina"}
+  }
+]

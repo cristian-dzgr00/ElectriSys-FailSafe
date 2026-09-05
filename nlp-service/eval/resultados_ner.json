@@ -1,0 +1,36 @@
+{
+  "n_casos": 12,
+  "precision_global": 0.95,
+  "precision_por_campo": {
+    "marca": 1.0,
+    "modelo": 1.0,
+    "anio": 1.0,
+    "motor": 1.0,
+    "combustible": 1.0,
+    "categoria": 0.6666666666666666,
+    "codigo": 1.0
+  },
+  "total_por_campo": {
+    "marca": 11,
+    "modelo": 11,
+    "anio": 5,
+    "motor": 2,
+    "combustible": 3,
+    "categoria": 6,
+    "codigo": 2
+  },
+  "errores": [
+    {
+      "texto": "correa de distribucion gates para nissan sentra",
+      "campo": "categoria",
+      "esperado": "Correas y Bandas",
+      "obtenido": null
+    },
+    {
+      "texto": "bujias ngk para un hyundai accent 2016",
+      "campo": "categoria",
+      "esperado": "Encendido",
+      "obtenido": null
+    }
+  ]
+}

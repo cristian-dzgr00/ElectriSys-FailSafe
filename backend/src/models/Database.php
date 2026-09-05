@@ -83,10 +83,20 @@ class Database
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
         ];
 
-        // mTLS: agregar opciones SSL si los certificados existen
+        // mTLS: agregar opciones SSL si los certificados existen.
+        // IMPORTANTE: usar el operador de unión (+), NUNCA array_merge().
+        // Las claves de este array son las constantes PDO::* (enteros), y
+        // array_merge() reindexa claves enteras secuencialmente (0,1,2...)
+        // en vez de preservarlas — corrompe el array de opciones por
+        // completo. Esto causó un bug real: por coincidencia posicional,
+        // el valor de SSL_VERIFY_SERVER_CERT (true) terminaba en la
+        // posición 8, que es el valor de la constante PDO::ATTR_CASE, y
+        // PDO interpretaba true como PDO::CASE_UPPER — todas las columnas
+        // volvían en MAYÚSCULAS con mTLS activo, rompiendo cualquier
+        // acceso a $row['columna'] en minúscula (login, ventas, etc.).
         $tlsOptions = TlsConfig::getMysqlPdoOptions();
         if (!empty($tlsOptions)) {
-            $options = array_merge($options, $tlsOptions);
+            $options = $options + $tlsOptions;
             error_log("[ElectriSys][mTLS] Conectando a {$host} con mTLS");
         }
 

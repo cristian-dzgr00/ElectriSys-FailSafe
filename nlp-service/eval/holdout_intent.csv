@@ -1,0 +1,29 @@
+texto,intencion
+"Ya no me queda el disco de embrague Sachs para un Renault Duster, deme otra opción",recomendar_sustituto
+"El cliente necesita una correa de accesorios pero la que pide está agotada, sugiérame algo",recomendar_sustituto
+"Se me acabaron las bujías Bosch para un Kia Sportage, cuál le doy en cambio",recomendar_sustituto
+"No hay stock del radiador original, qué alternativa tiene para ofrecerle",recomendar_sustituto
+"¿Manejan bandas de frenos para una Renault Duster 2022?",buscar_repuesto
+"Necesito cotizar un alternador para Kia Sportage",buscar_repuesto
+"¿Está disponible el kit de distribución para Nissan Frontier?",buscar_repuesto
+"Quisiera saber si tienen amortiguadores para Ford Escape",buscar_repuesto
+"¿Cuántas correas de accesorios les quedan?",consultar_stock
+"Dime si hay suficientes bujías Bosch en bodega",consultar_stock
+"¿Está por agotarse el disco de embrague Sachs?",consultar_stock
+"¿Cuántas piezas del kit de distribución tienen disponibles?",consultar_stock
+"¿Cuál es el valor del kit de distribución?",consultar_precio
+"Dime cuánto sale el alternador para Kia Sportage",consultar_precio
+"¿En cuánto está el disco de embrague Sachs?",consultar_precio
+"¿Qué precio tiene la banda de accesorios?",consultar_precio
+"¿El disco de embrague Sachs sirve para otros modelos de Renault?",consultar_compatibilidad
+"¿Estas bujías Bosch aplican también para un Hyundai Accent?",consultar_compatibilidad
+"¿A qué otros carros le sirve el kit de distribución?",consultar_compatibilidad
+"¿Esta correa es compatible con motores diésel?",consultar_compatibilidad
+"Buenas, ¿me puede ayudar?",saludo_despedida
+"Qué tal, necesito una mano con un cliente",saludo_despedida
+"Listo, muchas gracias, eso es todo",saludo_despedida
+"Chao, que estés bien",saludo_despedida
+"¿Qué hora es?",fuera_de_dominio
+"¿Tienen wifi para clientes?",fuera_de_dominio
+"Recomiéndame una película",fuera_de_dominio
+"¿Cuál es tu color favorito?",fuera_de_dominio

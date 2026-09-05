@@ -1,0 +1,27 @@
+[
+  {
+    "texto": "No hay filtro de aceite original de Toyota para Hilux 2.7 gasolina 2024, que recomiendo",
+    "codigos_correctos": ["HP-1002", "M1-102"],
+    "nota": "único caso del catálogo semilla con más de un sustituto real (el original 90915-YZZD4 está sin stock)"
+  },
+  {
+    "texto": "tienen pastillas de freno para mazda 3 2020",
+    "codigos_correctos": ["BRM-FD204", "BSH-0281"]
+  },
+  {
+    "texto": "necesito bujias para kia rio 2017",
+    "codigos_correctos": ["NGK-BKR6E"]
+  },
+  {
+    "texto": "hay bateria para chevrolet spark 2019",
+    "codigos_correctos": ["MAC-48D"]
+  },
+  {
+    "texto": "correa de distribucion para nissan sentra",
+    "codigos_correctos": ["GAT-T295"]
+  },
+  {
+    "texto": "tienen filtro de aceite para toyota fortuner",
+    "codigos_correctos": ["HP-1002", "M1-102", "90915-YZZD4"]
+  }
+]

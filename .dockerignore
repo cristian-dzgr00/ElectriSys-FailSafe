@@ -1,0 +1,25 @@
+# backend-a, backend-b y frontend usan `context: ..` (la raíz del repo) en
+# docker-compose.yml, así que sin este archivo cada build de esos 3
+# servicios transfiere TODO el repositorio como contexto — incluyendo
+# frontend/node_modules y nlp-service/venv (cientos de MB cada uno), que
+# ninguno de esos Dockerfiles necesita.
+
+# Dependencias que cada Dockerfile instala por su cuenta
+node_modules
+frontend/dist
+nlp-service/venv
+nlp-service/__pycache__
+nlp-service/**/__pycache__
+nlp-service/.pytest_cache
+nlp-service/models/*.pkl
+backend/vendor
+
+# Control de versiones y artefactos de herramientas locales
+.git
+graphify-out
+.sixth
+
+# Certificados privados — no deben viajar dentro de una imagen
+tls/ca
+tls/nginx
+tls/php-fpm

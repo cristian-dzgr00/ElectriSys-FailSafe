@@ -1,0 +1,134 @@
+{
+  "n_casos": 6,
+  "precision_top1": 1.0,
+  "precision_top3": 1.0,
+  "detalle": [
+    {
+      "texto": "No hay filtro de aceite original de Toyota para Hilux 2.7 gasolina 2024, que recomiendo",
+      "entidades_extraidas": {
+        "marca": "Toyota",
+        "modelo": "Hilux",
+        "anio": 2024,
+        "motor": "2.7",
+        "combustible": "gasolina",
+        "codigo": null,
+        "categoria": "Filtros"
+      },
+      "codigos_correctos": [
+        "HP-1002",
+        "M1-102"
+      ],
+      "codigos_rankeados": [
+        "HP-1002",
+        "M1-102"
+      ],
+      "top1_ok": true,
+      "top3_ok": true
+    },
+    {
+      "texto": "tienen pastillas de freno para mazda 3 2020",
+      "entidades_extraidas": {
+        "marca": "Mazda",
+        "modelo": "3",
+        "anio": 2020,
+        "motor": null,
+        "combustible": null,
+        "codigo": null,
+        "categoria": "Frenos"
+      },
+      "codigos_correctos": [
+        "BRM-FD204",
+        "BSH-0281"
+      ],
+      "codigos_rankeados": [
+        "BRM-FD204",
+        "BSH-0281"
+      ],
+      "top1_ok": true,
+      "top3_ok": true
+    },
+    {
+      "texto": "necesito bujias para kia rio 2017",
+      "entidades_extraidas": {
+        "marca": "Kia",
+        "modelo": "Rio",
+        "anio": 2017,
+        "motor": null,
+        "combustible": null,
+        "codigo": null,
+        "categoria": null
+      },
+      "codigos_correctos": [
+        "NGK-BKR6E"
+      ],
+      "codigos_rankeados": [
+        "NGK-BKR6E"
+      ],
+      "top1_ok": true,
+      "top3_ok": true
+    },
+    {
+      "texto": "hay bateria para chevrolet spark 2019",
+      "entidades_extraidas": {
+        "marca": "Chevrolet",
+        "modelo": "Spark",
+        "anio": 2019,
+        "motor": null,
+        "combustible": null,
+        "codigo": null,
+        "categoria": "Baterías"
+      },
+      "codigos_correctos": [
+        "MAC-48D"
+      ],
+      "codigos_rankeados": [
+        "MAC-48D"
+      ],
+      "top1_ok": true,
+      "top3_ok": true
+    },
+    {
+      "texto": "correa de distribucion para nissan sentra",
+      "entidades_extraidas": {
+        "marca": "Nissan",
+        "modelo": "Sentra",
+        "anio": null,
+        "motor": null,
+        "combustible": null,
+        "codigo": null,
+        "categoria": null
+      },
+      "codigos_correctos": [
+        "GAT-T295"
+      ],
+      "codigos_rankeados": [
+        "GAT-T295"
+      ],
+      "top1_ok": true,
+      "top3_ok": true
+    },
+    {
+      "texto": "tienen filtro de aceite para toyota fortuner",
+      "entidades_extraidas": {
+        "marca": "Toyota",
+        "modelo": "Fortuner",
+        "anio": null,
+        "motor": null,
+        "combustible": null,
+        "codigo": null,
+        "categoria": "Filtros"
+      },
+      "codigos_correctos": [
+        "90915-YZZD4",
+        "HP-1002",
+        "M1-102"
+      ],
+      "codigos_rankeados": [
+        "HP-1002",
+        "M1-102"
+      ],
+      "top1_ok": true,
+      "top3_ok": true
+    }
+  ]
+}
