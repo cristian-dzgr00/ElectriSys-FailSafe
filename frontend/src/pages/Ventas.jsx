@@ -3,6 +3,7 @@ import { Plus, Search, X, Trash2, Eye } from 'lucide-react';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import { StatusBadge } from '../components/Tooltip';
+import AsistenteFlotante from '../components/AsistenteFlotante';
 import { useToastContext } from '../context/ToastContext';
 import { ventasService, repuestosService, clientesService } from '../services/ventasService';
 
@@ -379,6 +380,8 @@ export default function Ventas() {
           </div>
         </div>
       )}
+
+      <AsistenteFlotante />
     </>
   );
 }

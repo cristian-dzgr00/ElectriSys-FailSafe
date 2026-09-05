@@ -1,14 +1,17 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Search, Edit2, Trash2, X, Tag, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, Tag, AlertTriangle, Car } from 'lucide-react';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import { useToastContext } from '../context/ToastContext';
 import { repuestosService } from '../services/ventasService';
+import { vehiculosService } from '../services/vehiculosService';
 import api from '../services/api';
 
 const fmt = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
 const EMPTY = { nombre:'', codigo:'', descripcion:'', categoria_id:'', proveedor_id:'', precio_compra:0, precio_venta:0, stock:0, stock_minimo:5 };
 const EMPTY_CAT = { nombre:'' };
+const EMPTY_VEH = { marca:'', modelo:'', anio_desde:'', anio_hasta:'', motor:'', combustible:'gasolina' };
+const COMBUSTIBLES = ['gasolina','diesel','hibrido','electrico','gas'];
 const PAGE_SIZE = 15;
 const soloPositivo = v => { const l=String(v).replace(/[^\d]/g,''); return l===''?'':String(parseInt(l,10)); };
 
@@ -34,6 +37,14 @@ export default function Repuestos() {
   const [errorCat,    setErrorCat]    = useState('');
   const [confirmDlg,  setConfirmDlg]  = useState(null);
 
+  // ── Compatibilidad de vehículos (asistente NLP) ──
+  const [compatibilidades, setCompatibilidades] = useState([]);
+  const [marcas,           setMarcas]           = useState([]);
+  const [modelos,          setModelos]          = useState([]);
+  const [nuevoVeh,         setNuevoVeh]         = useState(EMPTY_VEH);
+  const [savingCompat,     setSavingCompat]     = useState(false);
+  const [errorCompat,      setErrorCompat]      = useState('');
+
   const loadCats = async () => {
     const r = await api.get('/categorias');
     setCategorias(r.data.data || []);
@@ -49,13 +60,75 @@ export default function Repuestos() {
     finally { setLoading(false); }
   }, [page, q]);
 
-  useEffect(() => { load(); loadCats(); api.get('/proveedores').then(r=>setProveedores(r.data.data||[])).catch(()=>{}); }, []);
+  useEffect(() => {
+    load(); loadCats();
+    api.get('/proveedores').then(r=>setProveedores(r.data.data||[])).catch(()=>{});
+    vehiculosService.marcas().then(r=>setMarcas(r.data.data||[])).catch(()=>{});
+  }, []);
   useEffect(() => { load(1, q); setPage(1); }, [q]);
   useEffect(() => { load(page, q); }, [page]);
 
-  const openNew  = () => { setForm(EMPTY); setEditing(null); setError(''); setModal(true); };
-  const openEdit = row => { setForm({...row}); setEditing(row.id); setError(''); setModal(true); };
+  const loadCompatibilidad = async (repuestoId) => {
+    try {
+      const r = await repuestosService.listarCompatibilidad(repuestoId);
+      setCompatibilidades(r.data.data ?? []);
+    } catch { setCompatibilidades([]); }
+  };
+
+  const cargarModelos = async (marca) => {
+    if (!marca.trim()) { setModelos([]); return; }
+    try {
+      const r = await vehiculosService.modelos(marca.trim());
+      setModelos(r.data.data ?? []);
+    } catch { setModelos([]); }
+  };
+
+  const openNew  = () => {
+    setForm(EMPTY); setEditing(null); setError(''); setModal(true);
+    setCompatibilidades([]); setNuevoVeh(EMPTY_VEH); setErrorCompat('');
+  };
+  const openEdit = row => {
+    setForm({...row}); setEditing(row.id); setError(''); setModal(true);
+    setNuevoVeh(EMPTY_VEH); setErrorCompat('');
+    loadCompatibilidad(row.id);
+  };
   const closeModal = () => { setModal(false); setError(''); };
+
+  const agregarCompat = async () => {
+    const v = nuevoVeh;
+    if (!v.marca.trim() || !v.modelo.trim()) { setErrorCompat('Marca y modelo son obligatorios'); return; }
+    if (!v.anio_desde || !v.anio_hasta) { setErrorCompat('Año desde y año hasta son obligatorios'); return; }
+    if (Number(v.anio_hasta) < Number(v.anio_desde)) { setErrorCompat('El año hasta no puede ser menor al año desde'); return; }
+    setSavingCompat(true); setErrorCompat('');
+    try {
+      await repuestosService.agregarCompatibilidad(editing, {
+        marca: v.marca.trim(),
+        modelo: v.modelo.trim(),
+        anio_desde: Number(v.anio_desde),
+        anio_hasta: Number(v.anio_hasta),
+        motor: v.motor.trim() || undefined,
+        combustible: v.combustible,
+      });
+      toast('Compatibilidad agregada', { type: 'success' });
+      setNuevoVeh(EMPTY_VEH);
+      loadCompatibilidad(editing);
+      vehiculosService.marcas().then(r=>setMarcas(r.data.data||[])).catch(()=>{}); // por si se creó marca nueva
+    } catch(e) {
+      setErrorCompat(e.response?.data?.error || 'Error al agregar la compatibilidad');
+    } finally {
+      setSavingCompat(false);
+    }
+  };
+
+  const quitarCompat = async (vehiculoId) => {
+    try {
+      await repuestosService.quitarCompatibilidad(editing, vehiculoId);
+      setCompatibilidades(prev => prev.filter(v => v.id !== vehiculoId));
+      toast('Compatibilidad quitada', { type: 'warning' });
+    } catch {
+      toast('No se pudo quitar la compatibilidad', { type: 'error' });
+    }
+  };
 
   const handleSave = async () => {
     if (!form.nombre) { setError('El nombre es obligatorio'); return; }
@@ -218,6 +291,96 @@ export default function Repuestos() {
               <div className="form-group">
                 <label className="form-label">Stock mínimo <span style={{color:'var(--text-muted)',fontSize:11}}>(alerta de reposición)</span></label>
                 <input {...numInput('stock_minimo')} placeholder="5" style={{maxWidth:140}}/>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  <Car size={13} style={{verticalAlign:-2,marginRight:4}}/>
+                  Compatibilidad de vehículos
+                  <span style={{color:'var(--text-muted)',fontSize:11,fontWeight:400}}> (para el asistente de recomendación)</span>
+                </label>
+
+                {!editing ? (
+                  <div style={{fontSize:12,color:'var(--text-muted)',fontStyle:'italic',padding:'8px 0'}}>
+                    Guarda el repuesto primero para poder agregar los vehículos a los que le sirve.
+                  </div>
+                ) : (
+                  <>
+                    {compatibilidades.length > 0 && (
+                      <div style={{display:'flex',flexDirection:'column',gap:6,marginBottom:10}}>
+                        {compatibilidades.map(v => (
+                          <div key={v.id} style={{
+                            display:'flex',alignItems:'center',justifyContent:'space-between',
+                            padding:'8px 12px',background:'var(--bg-hover)',borderRadius:'var(--radius)',
+                          }}>
+                            <span style={{fontSize:13}}>
+                              {v.marca} {v.modelo} · {v.anio_desde}-{v.anio_hasta}
+                              {v.motor ? ` · ${v.motor}` : ''}
+                              {v.combustible ? ` · ${v.combustible}` : ''}
+                            </span>
+                            <button className="btn-icon" style={{color:'var(--danger)'}} title="Quitar compatibilidad"
+                              onClick={()=>quitarCompat(v.id)}>
+                              <Trash2 size={13}/>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div style={{display:'flex',flexDirection:'column',gap:8,padding:12,background:'var(--bg-hover)',borderRadius:'var(--radius)'}}>
+                      {errorCompat && <div className="alert alert-error" style={{fontSize:12,padding:'6px 10px',margin:0}}>{errorCompat}</div>}
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">Marca</label>
+                          <input className="form-control" list="rep-marcas-list" placeholder="Ej: Toyota"
+                            value={nuevoVeh.marca}
+                            onChange={e=>{
+                              const marca = e.target.value;
+                              setNuevoVeh(v=>({...v, marca, modelo:''}));
+                              cargarModelos(marca);
+                            }}
+                          />
+                          <datalist id="rep-marcas-list">{marcas.map(m=><option key={m} value={m}/>)}</datalist>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Modelo</label>
+                          <input className="form-control" list="rep-modelos-list" placeholder="Ej: Hilux"
+                            value={nuevoVeh.modelo}
+                            onChange={e=>setNuevoVeh(v=>({...v, modelo:e.target.value}))}
+                          />
+                          <datalist id="rep-modelos-list">{modelos.map(m=><option key={m} value={m}/>)}</datalist>
+                        </div>
+                      </div>
+                      <div className="form-row-3">
+                        <div className="form-group">
+                          <label className="form-label">Año desde</label>
+                          <input className="form-control" type="number" placeholder="2020"
+                            value={nuevoVeh.anio_desde} onChange={e=>setNuevoVeh(v=>({...v, anio_desde:e.target.value}))}/>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Año hasta</label>
+                          <input className="form-control" type="number" placeholder="2025"
+                            value={nuevoVeh.anio_hasta} onChange={e=>setNuevoVeh(v=>({...v, anio_hasta:e.target.value}))}/>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Combustible</label>
+                          <select className="form-control" value={nuevoVeh.combustible}
+                            onChange={e=>setNuevoVeh(v=>({...v, combustible:e.target.value}))}>
+                            {COMBUSTIBLES.map(c=><option key={c} value={c} style={{textTransform:'capitalize'}}>{c}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-group" style={{marginBottom:0}}>
+                        <label className="form-label">Motor <span style={{color:'var(--text-muted)',fontSize:11}}>(opcional, ej. 2.7)</span></label>
+                        <input className="form-control" placeholder="2.7" style={{maxWidth:140}}
+                          value={nuevoVeh.motor} onChange={e=>setNuevoVeh(v=>({...v, motor:e.target.value}))}/>
+                      </div>
+                      <button className="btn btn-ghost" onClick={agregarCompat} disabled={savingCompat} style={{alignSelf:'flex-start'}}>
+                        <Plus size={14}/> {savingCompat ? 'Agregando…' : 'Agregar compatibilidad'}
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="modal-footer">

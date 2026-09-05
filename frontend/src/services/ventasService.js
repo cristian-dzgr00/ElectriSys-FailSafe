@@ -14,6 +14,9 @@ export const repuestosService = {
   crear:      (data)        => api.post('/repuestos',         data),
   actualizar: (id, data)    => api.put(`/repuestos/${id}`,   data),
   eliminar:   (id)          => api.delete(`/repuestos/${id}`),
+  listarCompatibilidad:  (id)        => api.get(`/repuestos/${id}/compatibilidad`),
+  agregarCompatibilidad: (id, data)  => api.post(`/repuestos/${id}/compatibilidad`, data),
+  quitarCompatibilidad:  (id, vehId) => api.delete(`/repuestos/${id}/compatibilidad/${vehId}`),
 };
 
 export const clientesService = {
