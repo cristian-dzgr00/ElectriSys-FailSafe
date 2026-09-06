@@ -1,0 +1,117 @@
+
+TITULO
+-----------------------------------------------------
+CONSULTA 1: SELECT * FROM ventas WHERE cliente_id = 5
+
+
+ESTADO
+------------------
+ANTES (sin indice)
+
+
+Explicado.
+
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1286778760
+
+---------------------------------------------------------
+| Id  | Operation	  | Name   | Rows  | Cost (%CPU)|
+---------------------------------------------------------
+|   0 | SELECT STATEMENT  |	   |	87 |	29   (7)|
+|   1 |  TABLE ACCESS FULL| VENTAS |	87 |	29   (7)|
+---------------------------------------------------------
+
+8 filas seleccionadas.
+
+
+Índice creado.
+
+
+Procedimiento PL/SQL terminado correctamente.
+
+
+ESTADO
+--------------------------------
+DESPUES (con idx_ventas_cliente)
+
+
+Explicado.
+
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2286334625
+
+---------------------------------------------------------------------------------------
+| Id  | Operation			    | Name		 | Rows  | Cost (%CPU)|
+---------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT		    |			 |    87 |    14   (0)|
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| VENTAS		 |    87 |    14   (0)|
+|   2 |   INDEX RANGE SCAN		    | IDX_VENTAS_CLIENTE |    87 |     1   (0)|
+---------------------------------------------------------------------------------------
+
+9 filas seleccionadas.
+
+
+TITULO
+---------------------------------------------------------------
+CONSULTA 2: detalle_ventas agrupado por repuesto para una venta
+
+
+Índice borrado.
+
+
+ESTADO
+----------------------------
+ANTES (sin indice compuesto)
+
+
+Explicado.
+
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 279039437
+
+------------------------------------------------------------------
+| Id  | Operation	   | Name	    | Rows  | Cost (%CPU)|
+------------------------------------------------------------------
+|   0 | SELECT STATEMENT   |		    |	  2 |	 26  (16)|
+|   1 |  HASH GROUP BY	   |		    |	  2 |	 26  (16)|
+|   2 |   TABLE ACCESS FULL| DETALLE_VENTAS |	  2 |	 25  (12)|
+------------------------------------------------------------------
+
+9 filas seleccionadas.
+
+
+Índice creado.
+
+
+Procedimiento PL/SQL terminado correctamente.
+
+
+ESTADO
+---------------------------------------
+DESPUES (con idx_detven_venta_repuesto)
+
+
+Explicado.
+
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1151448632
+
+---------------------------------------------------------------------------------------
+| Id  | Operation		     | Name			 | Rows  | Cost (%CPU)|
+---------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT	     |				 |     2 |     3   (0)|
+|   1 |  SORT GROUP BY NOSORT	     |				 |     2 |     3   (0)|
+|   2 |   TABLE ACCESS BY INDEX ROWID| DETALLE_VENTAS		 |     2 |     3   (0)|
+|   3 |    INDEX RANGE SCAN	     | IDX_DETVEN_VENTA_REPUESTO |     2 |     2   (0)|
+---------------------------------------------------------------------------------------
+
+10 filas seleccionadas.
+

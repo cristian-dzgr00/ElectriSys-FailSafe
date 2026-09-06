@@ -1,0 +1,51 @@
+-- ============================================================
+-- ElectriSys — Oracle 23ai — Backup FÍSICO con RMAN (referencia)
+--
+-- Este script es documentación / referencia: NO se ejecutó en este
+-- entorno a propósito. RMAN hace backup físico a nivel de base de
+-- datos completa (CDB), y requiere poner la instancia en modo
+-- ARCHIVELOG — un cambio de configuración global de TODA la instancia
+-- Oracle local (afecta a cualquier otro proyecto/PDB que corra ahí),
+-- no algo aislado al esquema ELECTRISYS. Por eso no se activó sin
+-- confirmarlo primero con el dueño de la máquina.
+--
+-- El backup real y probado de este proyecto es el LÓGICO con Data
+-- Pump (expdp/impdp, ver backup_logico.sh) — schema-scoped, no toca
+-- la configuración de la instancia, y es el mecanismo correcto para
+-- backup/restore de una aplicación sobre un esquema propio.
+--
+-- Para usar esto de verdad en un examen/sustentación con RMAN:
+--
+-- 1. Habilitar modo ARCHIVELOG (una sola vez, afecta toda la instancia):
+--      sqlplus / as sysdba
+--      SHUTDOWN IMMEDIATE;
+--      STARTUP MOUNT;
+--      ALTER DATABASE ARCHIVELOG;
+--      ALTER DATABASE OPEN;
+--
+-- 2. Backup completo + archivelogs:
+-- ============================================================
+
+RUN {
+    ALLOCATE CHANNEL c1 DEVICE TYPE DISK FORMAT 'C:\oracle_backups\electrisys\rman\%U.bkp';
+    BACKUP DATABASE PLUS ARCHIVELOG;
+    BACKUP CURRENT CONTROLFILE;
+    RELEASE CHANNEL c1;
+}
+
+-- 3. Recuperación completa ante pérdida del datafile (ejemplo):
+--      RMAN> STARTUP MOUNT;
+--      RMAN> RESTORE DATABASE;
+--      RMAN> RECOVER DATABASE;
+--      RMAN> ALTER DATABASE OPEN;
+--
+-- 4. Recuperación punto-en-el-tiempo (ej. antes de un DELETE erróneo):
+--      RMAN> RUN {
+--        SET UNTIL TIME "TO_DATE('2026-09-06 17:00:00','YYYY-MM-DD HH24:MI:SS')";
+--        RESTORE DATABASE;
+--        RECOVER DATABASE;
+--      }
+--      SQL> ALTER DATABASE OPEN RESETLOGS;
+--
+-- Política de retención sugerida (se configuraría con):
+--   CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;

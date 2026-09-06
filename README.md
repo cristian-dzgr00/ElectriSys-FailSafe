@@ -117,6 +117,7 @@ Evaluación cuantitativa del asistente (accuracy de intención, precisión de NE
 | [`docs/asistente-casos-limite.md`](docs/asistente-casos-limite.md) | Checklist de resiliencia (rate limiting, fallos del microservicio/backend, validaciones) |
 | [`nlp-service/docs/evaluacion.md`](nlp-service/docs/evaluacion.md) | Métricas del modelo de intención, NER y recomendador sobre un set de prueba independiente |
 | [`ESTRUCTURA.md`](ESTRUCTURA.md) | Historial de cambios de la infraestructura distribuida (mTLS, VPN, Istio, monitoreo, análisis de red) |
+| [`oracle/docs/migracion-oracle.md`](oracle/docs/migracion-oracle.md) | Migración del modelo relacional a Oracle 23ai: PL/SQL, triggers, vistas, roles/privilegios, evidencia real de `EXPLAIN PLAN` y backup/recovery con Data Pump (materia Gestión de Base de Datos) |
 
 ## Estado conocido / limitaciones
 
