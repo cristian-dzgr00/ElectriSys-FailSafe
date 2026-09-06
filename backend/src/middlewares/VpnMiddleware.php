@@ -28,7 +28,7 @@ class VpnMiddleware implements MiddlewareInterface
     private const VPN_CIDR   = 24;
 
     /** IPs siempre permitidas (útil en tests/dev) */
-    private const ALWAYS_ALLOWED = ['127.0.0.1', '::1', '172.20.0.1'];
+    private const ALWAYS_ALLOWED = ['127.0.0.1', '::1', '172.20.0.1', '172.29.0.1'];
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
