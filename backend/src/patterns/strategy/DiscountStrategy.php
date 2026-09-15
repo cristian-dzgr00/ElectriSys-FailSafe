@@ -28,6 +28,18 @@ interface DiscountStrategy
     public function calcular(float $subtotal): float;
 
     /**
+     * Desglosa el subtotal en las partes que GestorVentas persiste en la
+     * venta (descuento, impuesto, total). Cada Strategy conoce su propia
+     * tasa de impuesto/descuento — GestorVentas no debe asumir un 19% fijo
+     * ni recalcularlo a partir de calcular(), porque eso solo es correcto
+     * para estrategias que sí cobran IVA (ver ExentoIvaStrategy).
+     *
+     * @param  float $subtotal Monto bruto antes de descuentos e impuestos
+     * @return array{subtotal: float, descuento: float, impuesto: float, total: float}
+     */
+    public function desglosar(float $subtotal): array;
+
+    /**
      * Retorna el nombre descriptivo de la estrategia.
      * Útil para logs y auditoría.
      *

@@ -49,6 +49,15 @@ spec:
               value: "false"
             - name: CORS_ORIGIN
               value: "http://localhost"
+            # Sin esto, GestorAsistente.php no sabe a dónde llamar y
+            # /api/asistente/consultar falla aunque nlp-service esté corriendo.
+            - name: NLP_SERVICE_URL
+              value: "http://nlp-service:8000"
+            - name: NLP_INTERNAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: NLP_INTERNAL_KEY
           volumeMounts:
             - name: tls-certs
               mountPath: /etc/tls
@@ -70,6 +79,27 @@ spec:
               port: 9000
             initialDelaySeconds: 5
             periodSeconds: 10
+        # Sidecar que publica las métricas de PHP-FPM en :9253, el puerto
+        # que ya declaraban las anotaciones prometheus.io de este pod pero
+        # donde no escuchaba ningún proceso. Lee la página de estado por
+        # FastCGI en localhost (ver docker/php-fpm-status.conf).
+        - name: php-fpm-exporter
+          image: hipages/php-fpm_exporter:2.2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9253
+          env:
+            - name: PHP_FPM_SCRAPE_URI
+              value: "tcp://127.0.0.1:9000/status"
+            - name: PHP_FPM_WEB_LISTEN_ADDRESS
+              value: ":9253"
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
       volumes:
         - name: tls-certs
           secret:
@@ -116,6 +146,13 @@ spec:
               value: production
             - name: APP_DEBUG
               value: "false"
+            - name: NLP_SERVICE_URL
+              value: "http://nlp-service:8000"
+            - name: NLP_INTERNAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: NLP_INTERNAL_KEY
           volumeMounts:
             - name: tls-certs
               mountPath: /etc/tls
@@ -137,6 +174,27 @@ spec:
               port: 9000
             initialDelaySeconds: 5
             periodSeconds: 10
+        # Sidecar que publica las métricas de PHP-FPM en :9253, el puerto
+        # que ya declaraban las anotaciones prometheus.io de este pod pero
+        # donde no escuchaba ningún proceso. Lee la página de estado por
+        # FastCGI en localhost (ver docker/php-fpm-status.conf).
+        - name: php-fpm-exporter
+          image: hipages/php-fpm_exporter:2.2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9253
+          env:
+            - name: PHP_FPM_SCRAPE_URI
+              value: "tcp://127.0.0.1:9000/status"
+            - name: PHP_FPM_WEB_LISTEN_ADDRESS
+              value: ":9253"
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
       volumes:
         - name: tls-certs
           secret:

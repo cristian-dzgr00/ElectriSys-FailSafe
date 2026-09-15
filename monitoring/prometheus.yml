@@ -29,10 +29,12 @@ scrape_configs:
         target_label: instance
         replacement: 'electrisys-nginx'
 
-  # ── PHP-FPM (php-fpm-exporter) ────────────────────────────────
+  # ── PHP-FPM (php-fpm_exporter) ────────────────────────────────
+  # Apuntan al contenedor exporter, no al backend: en backend-a/b solo
+  # escuchan 9000 (FastCGI) y 9443 (stunnel), nunca hubo nada en 9253.
   - job_name: php-fpm-a
     static_configs:
-      - targets: ['backend-a:9253']
+      - targets: ['php-fpm-exporter-a:9253']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
@@ -40,7 +42,7 @@ scrape_configs:
 
   - job_name: php-fpm-b
     static_configs:
-      - targets: ['backend-b:9253']
+      - targets: ['php-fpm-exporter-b:9253']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
@@ -64,16 +66,18 @@ scrape_configs:
         target_label: instance
         replacement: 'mysql-replica'
 
-  # ── Backend health endpoint (/api/health) ─────────────────────
-  - job_name: electrisys-health
-    metrics_path: /api/health/metrics
-    static_configs:
-      - targets: ['backend-a:80', 'backend-b:80']
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: '(backend-[ab]):.*'
-        target_label: instance
-        replacement: '$1'
+  # ── Backend health ────────────────────────────────────────────
+  # Se eliminó el job que apuntaba a backend-a:80 y backend-b:80 con
+  # metrics_path /api/health/metrics. No podía funcionar: en esos
+  # contenedores no escucha nada en el puerto 80 (PHP-FPM usa 9000 por
+  # FastCGI), esa ruta no existe en la aplicación, y /api/health responde
+  # JSON, que Prometheus no sabe parsear.
+  #
+  # La disponibilidad del backend queda cubierta por los jobs php-fpm-a y
+  # php-fpm-b de arriba (el propio "up" del exporter indica si PHP-FPM
+  # responde). Para sondear el endpoint HTTP /api/health como tal haría
+  # falta agregar blackbox_exporter y apuntarlo al contenedor frontend,
+  # que es quien lo sirve vía nginx.
 
   # ── Node exporter (métricas de host) ──────────────────────────
   - job_name: node

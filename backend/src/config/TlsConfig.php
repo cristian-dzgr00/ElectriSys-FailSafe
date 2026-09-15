@@ -4,50 +4,20 @@ declare(strict_types=1);
 namespace App\config;
 
 /**
- * TlsConfig — centraliza la configuración TLS/mTLS para PDO.
+ * TlsConfig — diferido para Oracle (ver oracle/docs/migracion-oracle.md).
  *
- * Lee los certificados del volumen montado en /etc/tls/
- * y construye las opciones PDO necesarias para SSL mutuo.
+ * Con MySQL esto armaba las opciones mTLS de PDO a partir de certificados
+ * PEM sueltos (ca.crt/php-fpm.crt/php-fpm.key). Oracle usa un mecanismo
+ * distinto (Wallets, vía sqlnet.ora/TNS_ADMIN), y esta migración no lo
+ * aborda — mismo criterio que ya se documentó para el mTLS de MySQL, que
+ * tampoco llegó a validarse de punta a punta en producción real (ver
+ * docs/asistente-nlp.md). Queda como no-op explícito en vez de borrar el
+ * archivo, para que quien retome TLS en Oracle sepa dónde engancharlo.
  */
 class TlsConfig
 {
-    private const TLS_DIR = '/etc/tls';
-
-    /**
-     * Retorna las opciones PDO para conexión con mTLS a MySQL.
-     * Si los certificados no existen (entorno dev sin certs),
-     * retorna un array vacío para no romper el desarrollo local.
-     */
-    public static function getMysqlPdoOptions(): array
-    {
-        $ca   = self::TLS_DIR . '/ca/ca.crt';
-        $cert = self::TLS_DIR . '/php-fpm/php-fpm.crt';
-        $key  = self::TLS_DIR . '/php-fpm/php-fpm.key';
-
-        if (!file_exists($ca) || !file_exists($cert) || !file_exists($key)) {
-            error_log('[ElectriSys][TLS] Certificados no encontrados — conexión sin TLS (solo en dev)');
-            return [];
-        }
-
-        return [
-            \PDO::MYSQL_ATTR_SSL_CA   => $ca,
-            \PDO::MYSQL_ATTR_SSL_CERT => $cert,
-            \PDO::MYSQL_ATTR_SSL_KEY  => $key,
-            // Verificar CN del servidor MySQL (mTLS estricto)
-            \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
-        ];
-    }
-
-    /**
-     * Verifica que todos los archivos TLS necesarios estén presentes.
-     */
     public static function isTlsAvailable(): bool
     {
-        foreach (['ca/ca.crt', 'php-fpm/php-fpm.crt', 'php-fpm/php-fpm.key'] as $file) {
-            if (!file_exists(self::TLS_DIR . '/' . $file)) {
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
 }

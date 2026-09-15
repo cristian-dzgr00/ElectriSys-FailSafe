@@ -10,11 +10,12 @@ function validarCliente(array $b, bool $isNew = true): ?string {
     if (!$nombre)                              return 'El nombre del cliente es obligatorio';
     if (strlen($nombre) < 2)                   return 'El nombre debe tener al menos 2 caracteres';
     if (strlen($nombre) > 150)                 return 'El nombre no puede superar 150 caracteres';
-    if (preg_match('/\d/', $nombre))           return 'El nombre no puede contener números';
-    if (isset($b['identificacion']) && $b['identificacion'] !== '' && !ctype_digit($b['identificacion']))
-                                               return 'La identificación solo puede contener números';
-    if (isset($b['telefono']) && $b['telefono'] !== '' && !ctype_digit($b['telefono']))
-                                               return 'El teléfono solo puede contener números';
+    // Sin restricción de dígitos: tipo_doc admite NIT, y una razón social
+    // como "Repuestos 4x4 S.A.S." o "Distribuidora 2000" es un nombre válido.
+    if (isset($b['identificacion']) && $b['identificacion'] !== '' && !preg_match('/^\d{5,15}(-\d)?$/', $b['identificacion']))
+                                               return 'La identificación debe tener entre 5 y 15 dígitos (NIT puede incluir dígito de verificación, ej: 900123456-7)';
+    if (isset($b['telefono']) && $b['telefono'] !== '' && !preg_match('/^[0-9+\-\s()]{7,20}$/', $b['telefono']))
+                                               return 'El formato del teléfono no es válido';
     if (!empty($b['email']) && !filter_var($b['email'], FILTER_VALIDATE_EMAIL))
                                                return 'El formato del email no es válido';
     $tiposValidos = ['CC','NIT','CE','Pasaporte'];
@@ -32,13 +33,15 @@ $group->get('/clientes', function (Request $req, Response $res) {
 
     $db   = clientesDB();
     $stmt = $db->prepare("
-        SELECT SQL_CALC_FOUND_ROWS * FROM clientes
+        SELECT c.*, COUNT(*) OVER() AS total_filas FROM clientes c
         WHERE activo=1 AND (nombre LIKE ? OR identificacion LIKE ? OR email LIKE ?)
-        ORDER BY nombre LIMIT ? OFFSET ?
+        ORDER BY nombre OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
-    $stmt->execute([$q, $q, $q, $limit, $off]);
+    $stmt->execute([$q, $q, $q, $off, $limit]);
     $rows  = $stmt->fetchAll();
-    $total = (int) $db->query("SELECT FOUND_ROWS()")->fetchColumn();
+    $total = (int) ($rows[0]['total_filas'] ?? 0);
+    foreach ($rows as &$fila) { unset($fila['total_filas']); }
+    unset($fila);
 
     $res->getBody()->write(json_encode(['data' => $rows, 'total' => $total, 'page' => $page]));
     return $res->withHeader('Content-Type', 'application/json');
@@ -68,10 +71,14 @@ $group->post('/clientes', function (Request $req, Response $res) {
     }
     try {
         $db = clientesDB();
-        $db->prepare("
+        $stmt = $db->prepare("
             INSERT INTO clientes (nombre, identificacion, tipo_doc, telefono, email, direccion)
             VALUES (:nombre,:identificacion,:tipo_doc,:telefono,:email,:direccion)
-        ")->execute([
+            RETURNING id INTO :out_id
+        ");
+        $nuevoId = 0;
+        $stmt->bindOut(':out_id', $nuevoId);
+        $stmt->execute([
             ':nombre'        => trim($b['nombre']),
             ':identificacion'=> trim($b['identificacion'] ?? ''),
             ':tipo_doc'      => $b['tipo_doc'] ?? 'CC',
@@ -79,10 +86,10 @@ $group->post('/clientes', function (Request $req, Response $res) {
             ':email'         => strtolower(trim($b['email'] ?? '')),
             ':direccion'     => trim($b['direccion'] ?? ''),
         ]);
-        $res->getBody()->write(json_encode(['success' => true, 'id' => $db->lastInsertId()]));
+        $res->getBody()->write(json_encode(['success' => true, 'id' => (int) $nuevoId]));
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     } catch (\PDOException $e) {
-        $msg = str_contains($e->getMessage(), 'Duplicate')
+        $msg = \App\models\OciConnection::esViolacionDeUnicidad($e)
             ? 'Ya existe un cliente con esa identificación' : 'Error al guardar el cliente';
         $res->getBody()->write(json_encode(['error' => $msg]));
         return $res->withStatus(409)->withHeader('Content-Type', 'application/json');
@@ -121,8 +128,7 @@ $group->delete('/clientes/{id}', function (Request $req, Response $res, array $a
         $res->getBody()->write(json_encode(['error' => 'ID inválido']));
         return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
-    // Soft delete consistente con deleted_at
-    clientesDB()->prepare("UPDATE clientes SET activo=0 WHERE id=?")->execute([(int)$args['id']]);
+    clientesDB()->prepare("UPDATE clientes SET activo=0, deleted_at=SYSTIMESTAMP WHERE id=?")->execute([(int)$args['id']]);
     $res->getBody()->write(json_encode(['success' => true]));
     return $res->withHeader('Content-Type', 'application/json');
 });

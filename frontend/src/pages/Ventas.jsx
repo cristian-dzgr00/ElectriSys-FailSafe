@@ -4,8 +4,9 @@ import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import { StatusBadge } from '../components/Tooltip';
 import AsistenteFlotante from '../components/AsistenteFlotante';
+import BuscadorRepuesto from '../components/BuscadorRepuesto';
 import { useToastContext } from '../context/ToastContext';
-import { ventasService, repuestosService, clientesService } from '../services/ventasService';
+import { ventasService, clientesService } from '../services/ventasService';
 
 const fmt = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
 const estadoBadge = e => ({ completada:'badge-success', anulada:'badge-danger', pendiente:'badge-warning' }[e]||'badge-neutral');
@@ -25,7 +26,6 @@ export default function Ventas() {
 
   const [modal,     setModal]     = useState(false);
   const [detalle,   setDetalle]   = useState(null);
-  const [repuestos, setRepuestos] = useState([]);
   const [clientes,  setClientes]  = useState([]);
   const [items,     setItems]     = useState([]);
   const [clienteId, setClienteId] = useState('');
@@ -79,10 +79,16 @@ export default function Ventas() {
 
   const openNew = async () => {
     setItems([]); setClienteId(''); setMetodo('efectivo'); setNotas(''); setError('');
-    const [r, c] = await Promise.all([repuestosService.listar(), clientesService.listar()]);
-    setRepuestos(r.data.data ?? []);
+    const c = await clientesService.listar();
     setClientes(c.data.data ?? []);
     setModal('new');
+  };
+
+  // Abre "Nueva venta" ya con un producto cargado — lo usa el botón
+  // "Agregar producto" de las sugerencias del asistente de repuestos.
+  const abrirNuevaVentaConProducto = async (producto) => {
+    await openNew();
+    addItem(producto);
   };
 
   const openDetalle = async (id) => {
@@ -91,11 +97,9 @@ export default function Ventas() {
     setModal('detail');
   };
 
-  const addItem = (repuesto_id) => {
-    const rep = repuestos.find(r => r.id == repuesto_id);
-    if (!rep) return;
+  const addItem = (rep) => {
     setItems(prev => {
-      const idx = prev.findIndex(i => i.repuesto_id == repuesto_id);
+      const idx = prev.findIndex(i => i.repuesto_id === rep.id);
       if (idx >= 0) {
         const copy = [...prev];
         copy[idx] = { ...copy[idx], cantidad: copy[idx].cantidad + 1 };
@@ -233,10 +237,7 @@ export default function Ventas() {
               </div>
               <div className="form-group">
                 <label className="form-label">Agregar producto</label>
-                <select className="form-control" value="" onChange={e=>addItem(e.target.value)}>
-                  <option value="">-- Selecciona un repuesto --</option>
-                  {repuestos.map(r=><option key={r.id} value={r.id}>{r.nombre} — {fmt(r.precio_venta)} (stock: {r.stock})</option>)}
-                </select>
+                <BuscadorRepuesto onSeleccionar={addItem} />
               </div>
               {items.length > 0 && (
                 <div className="card" style={{padding:0,overflow:'hidden',marginBottom:16}}>
@@ -325,6 +326,12 @@ export default function Ventas() {
                 <div style={{color:'var(--text-secondary)',fontSize:13}}>IVA: {fmt(detalle.impuesto)}</div>
                 <div style={{fontSize:18,fontWeight:700,color:'var(--accent)'}}>Total: {fmt(detalle.total)}</div>
               </div>
+              {detalle.notas && (
+                <div className="form-group" style={{marginTop:12}}>
+                  <label className="form-label">Notas</label>
+                  <div style={{fontSize:13,color:'var(--text-secondary)'}}>{detalle.notas}</div>
+                </div>
+              )}
             </div>
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={()=>setModal(false)}>Cerrar</button>
@@ -381,7 +388,7 @@ export default function Ventas() {
         </div>
       )}
 
-      <AsistenteFlotante />
+      <AsistenteFlotante onAgregarProducto={abrirNuevaVentaConProducto} />
     </>
   );
 }

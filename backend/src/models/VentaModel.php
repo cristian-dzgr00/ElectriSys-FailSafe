@@ -1,17 +1,29 @@
 <?php
 namespace App\models;
 
-use PDO;
-
+/**
+ * Delega en pkg_ventas/pkg_reportes (oracle/06_packages_plsql.sql) en vez
+ * de armar el SQL acá. El descuento/restauración de stock lo hacen los
+ * triggers de Oracle (trg_detven_descuenta_stock,
+ * trg_ventas_anulada_restaura_stock) — este modelo NUNCA toca
+ * repuestos.stock directamente, para no descontarlo/restaurarlo dos veces.
+ *
+ * subtotal/descuento/impuesto/total llegan ya calculados por GestorVentas
+ * (aplica la Strategy de descuento antes de llamar acá) — Oracle solo los
+ * persiste, no reimplementa esa regla de negocio.
+ *
+ * Usa la conexión oci8 cruda (Database::getConnection()->raw()) para las
+ * llamadas a pkg_ventas/pkg_reportes: necesitan REF CURSOR y parámetros de
+ * salida, que el wrapper OciConnection/OciStatement (pensado para SQL
+ * directo estilo PDO) no cubre.
+ */
 class VentaModel
 {
-    private PDO $db;
-    private bool $enReplica;
+    private OciConnection $db;
 
     public function __construct()
     {
         $this->db = Database::getConnection();
-        $this->enReplica = Database::$usingReplica;
     }
 
     /**
@@ -20,91 +32,85 @@ class VentaModel
      */
     public function listar(array $filtros = []): array
     {
-        $params  = [];
-        $where   = ['1=1'];
+        $conn = $this->db->raw();
+        $limit  = min(100, max(1, (int)($filtros['limit']  ?? 15)));
+        $offset = max(0, (int)($filtros['offset'] ?? 0));
+        $estado = $filtros['estado'] ?? null;
+        $desde  = $filtros['desde']  ?? null;
+        $hasta  = $filtros['hasta']  ?? null;
+        $q      = !empty($filtros['q']) ? $filtros['q'] : null;
 
-        if (!empty($filtros['estado'])) {
-            $where[]  = 'v.estado = ?';
-            $params[] = $filtros['estado'];
-        }
-        if (!empty($filtros['desde'])) {
-            $where[]  = 'DATE(v.creado_en) >= ?';
-            $params[] = $filtros['desde'];
-        }
-        if (!empty($filtros['hasta'])) {
-            $where[]  = 'DATE(v.creado_en) <= ?';
-            $params[] = $filtros['hasta'];
-        }
-        if (!empty($filtros['q'])) {
-            $where[]  = '(v.numero LIKE ? OR c.nombre LIKE ?)';
-            $q = '%' . $filtros['q'] . '%';
-            $params[] = $q;
-            $params[] = $q;
-        }
-
-        $whereStr = implode(' AND ', $where);
-        $limit    = min(100, max(1, (int)($filtros['limit']  ?? 15)));
-        $offset   = max(0, (int)($filtros['offset'] ?? 0));
-
-        // Total sin paginación
-        $countStmt = $this->db->prepare("
-            SELECT COUNT(*) FROM ventas v
-            LEFT JOIN clientes c ON v.cliente_id = c.id
-            WHERE $whereStr
+        $stmt = oci_parse($conn, "
+            BEGIN
+                :c := pkg_ventas.listar_ventas(
+                    p_estado => :estado, p_desde => :desde, p_hasta => :hasta,
+                    p_q => :q, p_limit => :limit, p_offset => :offset
+                );
+            END;
         ");
-        $countStmt->execute($params);
-        $total = (int) $countStmt->fetchColumn();
+        $cursor = oci_new_cursor($conn);
+        oci_bind_by_name($stmt, ':c', $cursor, -1, OCI_B_CURSOR);
+        oci_bind_by_name($stmt, ':estado', $estado, 20);
+        oci_bind_by_name($stmt, ':desde', $desde, 10);
+        oci_bind_by_name($stmt, ':hasta', $hasta, 10);
+        oci_bind_by_name($stmt, ':q', $q, 100);
+        oci_bind_by_name($stmt, ':limit', $limit);
+        oci_bind_by_name($stmt, ':offset', $offset);
+        oci_execute($stmt);
+        oci_execute($cursor);
 
-        // Filas paginadas
-        $dataStmt = $this->db->prepare("
-            SELECT v.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre
-            FROM ventas v
-            LEFT JOIN clientes c ON v.cliente_id = c.id
-            LEFT JOIN usuarios u ON v.usuario_id = u.id
-            WHERE $whereStr
-            ORDER BY v.creado_en DESC
-            LIMIT ? OFFSET ?
-        ");
-        $dataStmt->execute([...$params, $limit, $offset]);
-
-        return ['rows' => $dataStmt->fetchAll(), 'total' => $total];
+        $rows  = [];
+        $total = 0;
+        while (($f = oci_fetch_assoc($cursor)) !== false) {
+            $f = array_change_key_case($f, CASE_LOWER);
+            $total = (int) ($f['total_filas'] ?? 0);
+            unset($f['total_filas']);
+            $rows[] = $f;
+        }
+        return ['rows' => $rows, 'total' => $total];
     }
 
     public function buscarPorId(int $id): ?array
     {
-        $stmt = $this->db->prepare("
-            SELECT v.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre
-            FROM ventas v
-            LEFT JOIN clientes c ON v.cliente_id = c.id
-            LEFT JOIN usuarios u ON v.usuario_id = u.id
-            WHERE v.id = ?
-        ");
-        $stmt->execute([$id]);
-        $venta = $stmt->fetch() ?: null;
+        $conn = $this->db->raw();
+        $stmt = oci_parse($conn, "BEGIN pkg_ventas.buscar_venta_por_id(:id, :cab, :det); END;");
+        $cab  = oci_new_cursor($conn);
+        $det  = oci_new_cursor($conn);
+        oci_bind_by_name($stmt, ':id', $id);
+        oci_bind_by_name($stmt, ':cab', $cab, -1, OCI_B_CURSOR);
+        oci_bind_by_name($stmt, ':det', $det, -1, OCI_B_CURSOR);
+        oci_execute($stmt);
+        oci_execute($cab);
+        oci_execute($det);
 
-        if ($venta) {
-            $det = $this->db->prepare("
-                SELECT dv.*, r.nombre AS producto_nombre, r.codigo
-                FROM detalle_ventas dv
-                JOIN repuestos r ON dv.repuesto_id = r.id
-                WHERE dv.venta_id = ?
-            ");
-            $det->execute([$id]);
-            $venta['detalle'] = $det->fetchAll();
+        $venta = oci_fetch_assoc($cab);
+        if ($venta === false) {
+            return null;
         }
+        $venta = array_change_key_case($venta, CASE_LOWER);
+
+        $detalle = [];
+        while (($f = oci_fetch_assoc($det)) !== false) {
+            $detalle[] = array_change_key_case($f, CASE_LOWER);
+        }
+        $venta['detalle'] = $detalle;
         return $venta;
     }
 
     public function crear(array $data, int $usuarioId): array
     {
-        $numero   = 'VTA-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
-        $pendiente = $this->enReplica ? 1 : 0;
-
+        $conn = $this->db->raw();
         $this->db->beginTransaction();
+
         try {
-            // Verificar stock antes de insertar
+            // Verificar stock antes de insertar. FOR UPDATE bloquea la fila
+            // dentro de esta transacción para que dos ventas simultáneas del
+            // mismo repuesto no pasen ambas esta validación con el mismo stock.
+            // El trigger trg_detven_descuenta_stock vuelve a validar al
+            // insertar cada línea (ck_repuestos_stock) — esto es una
+            // verificación temprana con mensaje claro, no la única barrera.
             foreach ($data['items'] as $item) {
-                $stockStmt = $this->db->prepare("SELECT stock, nombre FROM repuestos WHERE id = ? AND activo = 1");
+                $stockStmt = $this->db->prepare("SELECT stock, nombre FROM repuestos WHERE id = ? AND activo = 1 FOR UPDATE");
                 $stockStmt->execute([$item['repuesto_id']]);
                 $rep = $stockStmt->fetch();
                 if (!$rep) {
@@ -115,70 +121,114 @@ class VentaModel
                 }
             }
 
-            $stmt = $this->db->prepare("
-                INSERT INTO ventas (numero, cliente_id, usuario_id, subtotal, descuento, impuesto,
-                    total, metodo_pago, estado, notas, pendiente_sync)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'completada', ?, ?)
+            $ventaId = 0;
+            $clienteId  = $data['cliente_id'] ?? null;
+            $subtotal   = (float) $data['subtotal'];
+            $descuento  = (float) ($data['descuento'] ?? 0);
+            $impuesto   = (float) ($data['impuesto']  ?? 0);
+            $total      = (float) $data['total'];
+            $metodoPago = $data['metodo_pago'] ?? 'efectivo';
+            $notas      = $data['notas'] ?? null;
+
+            $stmt = oci_parse($conn, "
+                BEGIN
+                    :id := pkg_ventas.registrar_venta(
+                        p_cliente_id => :cliente_id, p_usuario_id => :usuario_id,
+                        p_subtotal => :subtotal, p_descuento => :descuento,
+                        p_impuesto => :impuesto, p_total => :total,
+                        p_metodo_pago => :metodo_pago, p_notas => :notas
+                    );
+                END;
             ");
-            $stmt->execute([
-                $numero,
-                $data['cliente_id'] ?? null,
-                $usuarioId,
-                $data['subtotal'],
-                $data['descuento'] ?? 0,
-                $data['impuesto']  ?? 0,
-                $data['total'],
-                $data['metodo_pago'] ?? 'efectivo',
-                $data['notas']    ?? null,
-                $pendiente,
-            ]);
-            $ventaId = (int) $this->db->lastInsertId();
+            oci_bind_by_name($stmt, ':id', $ventaId, 20);
+            oci_bind_by_name($stmt, ':cliente_id', $clienteId);
+            oci_bind_by_name($stmt, ':usuario_id', $usuarioId);
+            oci_bind_by_name($stmt, ':subtotal', $subtotal);
+            oci_bind_by_name($stmt, ':descuento', $descuento);
+            oci_bind_by_name($stmt, ':impuesto', $impuesto);
+            oci_bind_by_name($stmt, ':total', $total);
+            oci_bind_by_name($stmt, ':metodo_pago', $metodoPago, 20);
+            oci_bind_by_name($stmt, ':notas', $notas, 4000);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                throw $this->errorDesdeOci($stmt);
+            }
+            $ventaId = (int) $ventaId;
 
             foreach ($data['items'] as $item) {
-                $subtotalItem = $item['cantidad'] * $item['precio_unit'] - ($item['descuento'] ?? 0);
-                $this->db->prepare("
-                    INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit, descuento, subtotal)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ")->execute([
-                    $ventaId,
-                    $item['repuesto_id'],
-                    $item['cantidad'],
-                    $item['precio_unit'],
-                    $item['descuento'] ?? 0,
-                    $subtotalItem,
-                ]);
+                $repuestoId = (int) $item['repuesto_id'];
+                $cantidad   = (int) $item['cantidad'];
+                $precioUnit = (float) $item['precio_unit'];
+                $descItem   = (float) ($item['descuento'] ?? 0);
 
-                // Descontar stock (atómico)
-                $this->db->prepare("
-                    UPDATE repuestos SET stock = stock - ? WHERE id = ? AND stock >= ?
-                ")->execute([$item['cantidad'], $item['repuesto_id'], $item['cantidad']]);
+                $stmtItem = oci_parse($conn, "
+                    BEGIN
+                        pkg_ventas.agregar_item_venta(:venta_id, :repuesto_id, :cantidad, :precio_unit, :descuento);
+                    END;
+                ");
+                oci_bind_by_name($stmtItem, ':venta_id', $ventaId);
+                oci_bind_by_name($stmtItem, ':repuesto_id', $repuestoId);
+                oci_bind_by_name($stmtItem, ':cantidad', $cantidad);
+                oci_bind_by_name($stmtItem, ':precio_unit', $precioUnit);
+                oci_bind_by_name($stmtItem, ':descuento', $descItem);
+                // Si el stock no alcanza, ck_repuestos_stock revierte esta
+                // sentencia (ORA-02290) — se relanza como excepción PHP y
+                // el catch de abajo hace rollback de toda la venta.
+                if (!oci_execute($stmtItem, OCI_NO_AUTO_COMMIT)) {
+                    throw $this->errorDesdeOci($stmtItem);
+                }
             }
 
             $this->db->commit();
-            return ['id' => $ventaId, 'numero' => $numero, 'en_replica' => (bool)$pendiente];
+
+            $numStmt = $this->db->prepare("SELECT numero FROM ventas WHERE id = ?");
+            $numStmt->execute([$ventaId]);
+            $numero = $numStmt->fetchColumn();
+
+            return ['id' => $ventaId, 'numero' => $numero];
         } catch (\Throwable $e) {
             $this->db->rollBack();
             throw $e;
         }
     }
 
+    /**
+     * Anula una venta. trg_ventas_anulada_restaura_stock repone el stock
+     * automáticamente al detectar el cambio de estado.
+     */
     public function anular(int $id): bool
     {
-        $stmt = $this->db->prepare("UPDATE ventas SET estado = 'anulada' WHERE id = ? AND estado = 'completada'");
-        $stmt->execute([$id]);
-        return $stmt->rowCount() > 0;
+        $conn = $this->db->raw();
+        $stmt = oci_parse($conn, "BEGIN pkg_ventas.anular_venta(:id); END;");
+        oci_bind_by_name($stmt, ':id', $id);
+        // anular_venta lanza ORA-20002 (ya anulada) / ORA-20003 (no existe)
+        // vía RAISE_APPLICATION_ERROR — ambos casos se traducen a "false",
+        // igual que el contrato anterior (la ruta ya da un mensaje genérico).
+        if (!@oci_execute($stmt, OCI_COMMIT_ON_SUCCESS)) {
+            $e = oci_error($stmt);
+            error_log('[ElectriSys] anular_venta: ' . ($e['message'] ?? 'error desconocido'));
+            return false;
+        }
+        return true;
     }
 
     public function resumenHoy(): array
     {
-        $stmt = $this->db->query("
-            SELECT
-                COUNT(*) AS total_ventas,
-                COALESCE(SUM(total), 0) AS ingresos,
-                COALESCE(AVG(total), 0) AS ticket_promedio
-            FROM ventas
-            WHERE DATE(creado_en) = CURDATE() AND estado = 'completada'
-        ");
-        return $stmt->fetch() ?: ['total_ventas' => 0, 'ingresos' => 0, 'ticket_promedio' => 0];
+        $conn = $this->db->raw();
+        $stmt = oci_parse($conn, "BEGIN pkg_reportes.resumen_hoy(:c); END;");
+        $cursor = oci_new_cursor($conn);
+        oci_bind_by_name($stmt, ':c', $cursor, -1, OCI_B_CURSOR);
+        oci_execute($stmt);
+        oci_execute($cursor);
+        $fila = oci_fetch_assoc($cursor);
+        if ($fila === false) {
+            return ['total_ventas' => 0, 'ingresos' => 0, 'ticket_promedio' => 0];
+        }
+        return array_change_key_case($fila, CASE_LOWER);
+    }
+
+    private function errorDesdeOci($stmt): \RuntimeException
+    {
+        $e = oci_error($stmt);
+        return new \RuntimeException($e['message'] ?? 'Error de base de datos desconocido');
     }
 }

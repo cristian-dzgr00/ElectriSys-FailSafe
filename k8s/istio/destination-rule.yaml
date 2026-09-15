@@ -1,6 +1,42 @@
 # ============================================================
-# DestinationRule — circuit breaker + subsets para canary
+# DestinationRule — circuit breaker y pool de conexiones
+#
+# Los "subsets" (stable/canary) que había aquí se eliminaron: estaban
+# declarados sobre host backend-a pero filtraban por instance: "b", que
+# ese Service nunca selecciona, así que el subset canary resolvía a cero
+# endpoints. El reparto 90/10 se hace ahora con pesos en el upstream de
+# nginx (ver nginx/nginx.conf), que es la capa que habla FastCGI.
 # ============================================================
+
+# ── Frontend (nginx): aquí SÍ aplica L7, el puerto es HTTP ──
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: electrisys-frontend
+  namespace: electrisys
+spec:
+  host: frontend
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+    # Expulsa instancias que devuelvan 5xx de forma sostenida.
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 30
+    loadBalancer:
+      simple: LEAST_CONN
+---
+# ── Backend PHP-FPM: solo políticas TCP ──
+# El puerto 9000 es FastCGI: consecutive5xxErrors no tiene sentido porque
+# no hay códigos de estado HTTP que inspeccionar. Se usa detección por
+# fallos de conexión, que sí opera a nivel TCP.
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -9,31 +45,15 @@ metadata:
 spec:
   host: backend-a
   trafficPolicy:
-    # ── Circuit Breaker ──────────────────────────────────────
-    outlierDetection:
-      consecutive5xxErrors: 5       # 5 errores 5xx consecutivos
-      interval: 30s                 # evaluado cada 30s
-      baseEjectionTime: 30s         # tiempo de eyección inicial
-      maxEjectionPercent: 50        # máximo 50% de pods eyectados
-      minHealthPercent: 30          # mantener al menos 30% sano
-    # ── Pool de conexiones ───────────────────────────────────
     connectionPool:
       tcp:
         maxConnections: 100
-      http:
-        h2UpgradePolicy: UPGRADE
-        http1MaxPendingRequests: 50
-        http2MaxRequests: 100
-    # ── Load balancing ───────────────────────────────────────
-    loadBalancer:
-      simple: LEAST_CONN
-  subsets:
-    - name: stable
-      labels:
-        instance: "a"
-    - name: canary
-      labels:
-        instance: "b"
+        connectTimeout: 5s
+    outlierDetection:
+      consecutiveLocalOriginFailures: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -48,6 +68,6 @@ spec:
         maxConnections: 50
         connectTimeout: 5s
     outlierDetection:
-      consecutive5xxErrors: 3
+      consecutiveLocalOriginFailures: 3
       interval: 10s
       baseEjectionTime: 60s

@@ -8,24 +8,29 @@ CREATE USER IF NOT EXISTS 'replicator'@'%' IDENTIFIED WITH mysql_native_password
 GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%';
 FLUSH PRIVILEGES;
 
--- 2. Ver status del Primary (guardar File y Position para configurar Replica)
+-- 2. Ver status del Primary (File y Position actuales del binlog)
 SHOW MASTER STATUS;
 
 -- ============================================================
--- Ejecutar en el servidor REPLICA
+-- Lado REPLICA: automatizado
 -- ============================================================
-
--- 3. Configurar conexión al Primary (reemplazar File y Position con los valores de arriba)
--- CHANGE MASTER TO
---   MASTER_HOST='mysql-primary',
---   MASTER_USER='replicator',
---   MASTER_PASSWORD='ReplicaPass2024!',
---   MASTER_LOG_FILE='binlog.000001',
---   MASTER_LOG_POS=0;
-
--- 4. Iniciar replicación
--- START SLAVE;
--- SHOW SLAVE STATUS\G
+-- Ya NO hay que ejecutar CHANGE REPLICATION SOURCE / START REPLICA a mano.
+-- El contenedor mysql-replica corre database/setup-replica.sh desde su
+-- /docker-entrypoint-initdb.d/ la primera vez que se crea su volumen:
+-- toma un snapshot consistente del primary (mysqldump --master-data=2),
+-- lo importa y arranca la replicación exactamente en esa posición.
+--
+-- Verificar que está replicando:
+--   docker exec es_mysql_replica \
+--     mysql -uroot -prootpass2024 -e "SHOW REPLICA STATUS\G" \
+--     | grep -E "Replica_(IO|SQL)_Running|Seconds_Behind_Source"
+--
+-- Se espera: Replica_IO_Running: Yes / Replica_SQL_Running: Yes
+-- El healthcheck de docker-compose.yml comprueba justamente esto, así que
+-- `docker compose ps` marca la réplica como unhealthy si deja de replicar.
+--
+-- Para rehacer la replicación desde cero (borra los datos de la réplica):
+--   docker compose down && docker volume rm docker_mysql_replica_data
 
 -- ============================================================
 -- Job de sincronización: replicar registros con pendiente_sync=1

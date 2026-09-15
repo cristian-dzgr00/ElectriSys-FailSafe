@@ -64,17 +64,18 @@ class VpnMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Obtiene la IP real del cliente considerando proxies de confianza.
+     * Obtiene la IP real del cliente.
+     *
+     * IMPORTANTE: usar unicamente REMOTE_ADDR, nunca un header como
+     * X-Real-IP o X-Forwarded-For. REMOTE_ADDR llega a PHP-FPM como
+     * fastcgi_param seteado por Nginx desde el socket TCP real
+     * (variable remote_addr de Nginx) - el cliente HTTP no puede falsificarlo. Un
+     * header SI lo puede mandar cualquiera; confiar en el permitia que
+     * un atacante externo enviara "X-Real-IP: 10.100.0.5" y pasara por
+     * VPN sin estarlo (bypass confirmado: HTTP 200 en vez de 403).
      */
     private function getClientIp(ServerRequestInterface $request): string
     {
-        // En producción detrás de Nginx, usar X-Real-IP
-        $realIp = $request->getHeaderLine('X-Real-IP');
-        if (!empty($realIp) && filter_var($realIp, FILTER_VALIDATE_IP)) {
-            return $realIp;
-        }
-
-        // Fallback a REMOTE_ADDR
         $serverParams = $request->getServerParams();
         return $serverParams['REMOTE_ADDR'] ?? '0.0.0.0';
     }

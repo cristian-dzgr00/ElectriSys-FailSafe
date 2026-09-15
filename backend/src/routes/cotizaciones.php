@@ -14,15 +14,17 @@ $group->get('/cotizaciones', function (Request $req, Response $res) {
 
     $db   = cotDB();
     $stmt = $db->prepare("
-        SELECT SQL_CALC_FOUND_ROWS q.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre
+        SELECT q.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre, COUNT(*) OVER() AS total_filas
         FROM cotizaciones q
         LEFT JOIN clientes c ON q.cliente_id = c.id
         LEFT JOIN usuarios u ON q.usuario_id = u.id
-        ORDER BY q.creado_en DESC LIMIT ? OFFSET ?
+        ORDER BY q.creado_en DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
-    $stmt->execute([$limit, $off]);
+    $stmt->execute([$off, $limit]);
     $rows  = $stmt->fetchAll();
-    $total = (int) $db->query("SELECT FOUND_ROWS()")->fetchColumn();
+    $total = (int) ($rows[0]['total_filas'] ?? 0);
+    foreach ($rows as &$fila) { unset($fila['total_filas']); }
+    unset($fila);
 
     $res->getBody()->write(json_encode(['data' => $rows, 'total' => $total, 'page' => $page]));
     return $res->withHeader('Content-Type', 'application/json');
@@ -83,10 +85,14 @@ $group->post('/cotizaciones', function (Request $req, Response $res) {
 
     $db->beginTransaction();
     try {
-        $db->prepare("
+        $stmt = $db->prepare("
             INSERT INTO cotizaciones (numero, cliente_id, usuario_id, subtotal, descuento, impuesto, total, estado, vence_en, notas)
             VALUES (?,?,?,?,?,?,?,'borrador',?,?)
-        ")->execute([
+            RETURNING id INTO :out_id
+        ");
+        $cotIdOut = 0;
+        $stmt->bindOut(':out_id', $cotIdOut);
+        $stmt->execute([
             $numero,
             $b['cliente_id'] ?? null,
             (int)$user['sub'],
@@ -97,7 +103,7 @@ $group->post('/cotizaciones', function (Request $req, Response $res) {
             $b['vence_en'] ?: null,
             $b['notas'] ?? null,
         ]);
-        $cotId = (int) $db->lastInsertId();
+        $cotId = (int) $cotIdOut;
 
         foreach ($b['items'] as $item) {
             $sub = $item['cantidad'] * $item['precio_unit'];

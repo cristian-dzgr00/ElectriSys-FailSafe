@@ -10,64 +10,36 @@
 
 services:
 
-  # ── MySQL Primary ─────────────────────────────────────────
-  mysql-primary:
-    image: mysql:8.0
-    container_name: es_mysql_primary
+  # ── Oracle Database 23ai Free — motor único del proyecto ──
+  # Reemplazó a MySQL primary+réplica: Oracle 23ai Free no soporta Data
+  # Guard/RAC (features Enterprise), así que la topología es de una sola
+  # instancia. Ver oracle/docs/migracion-oracle.md.
+  # Los scripts de oracle/ se cargan solos en el primer arranque desde
+  # /container-entrypoint-initdb.d (mismo mecanismo que tenía MySQL).
+  oracle-db:
+    image: gvenzl/oracle-free:23-slim
+    container_name: es_oracle_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass2024
-      MYSQL_DATABASE:      electrisys
-      MYSQL_USER:          electrisys_user
-      MYSQL_PASSWORD:      ElectriPass2024!
-    command: >
-      --server-id=1
-      --log-bin=mysql-bin
-      --binlog-format=ROW
-      --binlog-do-db=electrisys
-    volumes:
-      - mysql_primary_data:/var/lib/mysql
-      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ../database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
-      - ../database/replication.sql:/docker-entrypoint-initdb.d/03-replication.sql
-      - ../database/schema_v3_migration_nlp.sql:/docker-entrypoint-initdb.d/04-schema-v3-nlp.sql
-      - ../database/seed_vehiculos.sql:/docker-entrypoint-initdb.d/05-seed-vehiculos.sql
-      - ../tls/mysql/mysql-ssl.cnf:/etc/mysql/conf.d/ssl.cnf:ro
-      - ../tls/ca:/etc/mysql/tls:ro
+      ORACLE_PASSWORD: "${ORACLE_PASSWORD:?falta en docker/.env}"
+      APP_USER:          electrisys
+      APP_USER_PASSWORD: "${DB_PASS:?falta en docker/.env}"
     ports:
-      - "3306:3306"
+      # 1522 en el host: el 1521 ya lo usa una instancia Oracle nativa
+      # existente en esta máquina (la del ejercicio académico oracle/).
+      # Los demás contenedores igual se conectan por el puerto interno
+      # 1521 vía el nombre de servicio "oracle-db".
+      - "1522:1521"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
     networks:
       - electrisys_net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass2024"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ── MySQL Replica ─────────────────────────────────────────
-  mysql-replica:
-    image: mysql:8.0
-    container_name: es_mysql_replica
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass2024
-      MYSQL_DATABASE:      electrisys
-      MYSQL_USER:          electrisys_user
-      MYSQL_PASSWORD:      ElectriPass2024!
-    command: >
-      --server-id=2
-      --relay-log=relay-bin
-      --read-only=1
-    volumes:
-      - mysql_replica_data:/var/lib/mysql
-      - ../tls/ca:/etc/mysql/tls:ro
-    ports:
-      - "3307:3306"
-    depends_on:
-      mysql-primary:
-        condition: service_healthy
-    networks:
-      - electrisys_net
+      test: ["CMD", "healthcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
   # ── Backend PHP - Instancia A ─────────────────────────────
   backend-a:
@@ -78,15 +50,21 @@ services:
     restart: unless-stopped
     env_file: ../backend/.env
     environment:
-      DB_PRIMARY_HOST: mysql-primary
-      DB_REPLICA_HOST: mysql-replica
-      WS_NOTIFY_KEY:   ws_internal_notify_key
+      DB_HOST: oracle-db
+      DB_PORT: "1521"
+      DB_SERVICE_NAME: FREEPDB1
+      DB_USER: electrisys
+      DB_PASS: "${DB_PASS:?falta en docker/.env}"
+      # Estas tres pisan lo que traiga backend/.env: docker/.env es el
+      # único origen de verdad, para que backend, websocket y nlp compartan
+      # exactamente el mismo valor (si divergen, los JWT no validan).
+      JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
+      WS_NOTIFY_KEY:    "${WS_NOTIFY_KEY:?falta en docker/.env — copiá docker/.env.example}"
+      NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
     volumes:
       - ../backend:/var/www/html
-      - ../tls:/etc/tls:ro
-      - ../tls/stunnel/fpm-listener.conf:/etc/stunnel/stunnel.conf:ro
     depends_on:
-      mysql-primary:
+      oracle-db:
         condition: service_healthy
     networks:
       - electrisys_net
@@ -100,15 +78,21 @@ services:
     restart: unless-stopped
     env_file: ../backend/.env
     environment:
-      DB_PRIMARY_HOST: mysql-primary
-      DB_REPLICA_HOST: mysql-replica
-      WS_NOTIFY_KEY:   ws_internal_notify_key
+      DB_HOST: oracle-db
+      DB_PORT: "1521"
+      DB_SERVICE_NAME: FREEPDB1
+      DB_USER: electrisys
+      DB_PASS: "${DB_PASS:?falta en docker/.env}"
+      # Estas tres pisan lo que traiga backend/.env: docker/.env es el
+      # único origen de verdad, para que backend, websocket y nlp compartan
+      # exactamente el mismo valor (si divergen, los JWT no validan).
+      JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
+      WS_NOTIFY_KEY:    "${WS_NOTIFY_KEY:?falta en docker/.env — copiá docker/.env.example}"
+      NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
     volumes:
       - ../backend:/var/www/html
-      - ../tls:/etc/tls:ro
-      - ../tls/stunnel/fpm-listener.conf:/etc/stunnel/stunnel.conf:ro
     depends_on:
-      mysql-primary:
+      oracle-db:
         condition: service_healthy
     networks:
       - electrisys_net
@@ -122,8 +106,8 @@ services:
     restart: unless-stopped
     environment:
       WS_PORT:       "8080"
-      JWT_SECRET:    "${JWT_SECRET:-electrisys_jwt_secret_2024_super_seguro}"
-      WS_NOTIFY_KEY: ws_internal_notify_key
+      JWT_SECRET:    "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
+      WS_NOTIFY_KEY: "${WS_NOTIFY_KEY:?falta en docker/.env — copiá docker/.env.example}"
     ports:
       - "8080:8080"
     networks:
@@ -146,8 +130,8 @@ services:
       # se llega a él vía el contenedor "frontend" (nginx), igual que un
       # navegador externo. Ver nginx/nginx.conf: proxya /api/ a php_backend.
       BACKEND_URL:      "http://frontend"
-      JWT_SECRET:       "${JWT_SECRET:-electrisys_jwt_secret_2024_super_seguro}"
-      NLP_INTERNAL_KEY: nlp_internal_key_2024
+      JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
+      NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
     networks:
       - electrisys_net
     depends_on:
@@ -180,8 +164,7 @@ services:
       - electrisys_net
 
 volumes:
-  mysql_primary_data:
-  mysql_replica_data:
+  oracle_data:
 
 networks:
   electrisys_net:

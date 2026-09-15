@@ -5,7 +5,7 @@
 // del inventario (ver nlp-service/, backend /api/asistente/consultar).
 
 import { useEffect, useRef, useState } from 'react';
-import { Loader2, MessageCircle, Send, X } from 'lucide-react';
+import { Loader2, MessageCircle, Plus, Send, X } from 'lucide-react';
 import { useToastContext } from '../context/ToastContext';
 import { asistenteService } from '../services/asistenteService';
 
@@ -23,12 +23,13 @@ const INTENCION_LABEL = {
 
 const fmt = n => n == null ? null : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
 
-export default function AsistenteFlotante() {
+export default function AsistenteFlotante({ onAgregarProducto }) {
   const toast = useToastContext();
   const [open, setOpen]         = useState(false);
   const [mensajes, setMensajes] = useState([]);
   const [texto, setTexto]       = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [contextoPendiente, setContextoPendiente] = useState(null); // { entidades } — solo mientras esperando_datos siga siendo true (ver docs/asistente-nlp.md)
   const scrollRef = useRef(null);
   const inputRef  = useRef(null);
 
@@ -52,13 +53,16 @@ export default function AsistenteFlotante() {
     setTexto('');
     setEnviando(true);
     try {
-      const { data } = await asistenteService.consultar(consulta);
+      const { data } = await asistenteService.consultar(consulta, contextoPendiente?.entidades);
       setMensajes(prev => [...prev, {
         rol: 'asistente',
         texto: data.respuesta_texto,
         intencion: data.intencion,
         sugerencias: data.sugerencias || [],
+        consultaId: data.consulta_id ?? null,
+        feedback: null,
       }]);
+      setContextoPendiente(data.esperando_datos ? { entidades: data.entidades } : null);
     } catch (e) {
       const msg = e.response?.data?.error || 'El asistente no está disponible en este momento';
       setMensajes(prev => [...prev, { rol: 'asistente', texto: msg, error: true }]);
@@ -66,6 +70,23 @@ export default function AsistenteFlotante() {
     } finally {
       setEnviando(false);
     }
+  };
+
+  const enviarFeedback = async (index, util) => {
+    const m = mensajes[index];
+    if (m.consultaId == null || m.feedback != null) return;
+    setMensajes(prev => prev.map((msg, i) => (i === index ? { ...msg, feedback: util } : msg)));
+    try {
+      await asistenteService.enviarFeedback(m.consultaId, util);
+    } catch {
+      setMensajes(prev => prev.map((msg, i) => (i === index ? { ...msg, feedback: null } : msg)));
+      toast('No se pudo registrar el feedback', { type: 'error' });
+    }
+  };
+
+  const agregarProducto = producto => {
+    onAgregarProducto?.(producto);
+    setOpen(false);
   };
 
   const onKeyDown = e => {
@@ -134,7 +155,14 @@ export default function AsistenteFlotante() {
                 </span>
               </div>
             )}
-            {mensajes.map((m, i) => <MensajeBurbuja key={i} mensaje={m} />)}
+            {mensajes.map((m, i) => (
+              <MensajeBurbuja
+                key={i}
+                mensaje={m}
+                onFeedback={util => enviarFeedback(i, util)}
+                onAgregarProducto={onAgregarProducto ? agregarProducto : undefined}
+              />
+            ))}
             {enviando && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-muted)', fontSize: 12 }}>
                 <Loader2 size={13} style={{ animation: 'asistenteSpin 0.8s linear infinite' }} /> Pensando…
@@ -172,7 +200,7 @@ export default function AsistenteFlotante() {
   );
 }
 
-function MensajeBurbuja({ mensaje }) {
+function MensajeBurbuja({ mensaje, onFeedback, onAgregarProducto }) {
   const esUsuario = mensaje.rol === 'usuario';
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: esUsuario ? 'flex-end' : 'flex-start', gap: 5 }}>
@@ -211,8 +239,43 @@ function MensajeBurbuja({ mensaje }) {
                 <span>{s.proveedor || s.categoria || ''}</span>
                 {s.stock != null && <span>Stock: {s.stock}</span>}
               </div>
+              {onAgregarProducto && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => onAgregarProducto(s)}
+                  style={{ width: '100%', justifyContent: 'center', marginTop: 6, padding: '4px 8px', fontSize: 11 }}
+                >
+                  <Plus size={12} /> Agregar producto
+                </button>
+              )}
             </div>
           ))}
+        </div>
+      )}
+      {!esUsuario && !mensaje.error && mensaje.consultaId != null && (
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button
+            onClick={() => onFeedback(1)}
+            disabled={mensaje.feedback != null}
+            aria-label="Respuesta útil"
+            style={{
+              border: 'none', background: 'none', padding: 2, fontSize: 13, lineHeight: 1,
+              cursor: mensaje.feedback != null ? 'default' : 'pointer',
+              opacity: mensaje.feedback === 0 ? 0.35 : 1,
+              filter: mensaje.feedback === 1 ? 'none' : 'grayscale(1)',
+            }}
+          >👍</button>
+          <button
+            onClick={() => onFeedback(0)}
+            disabled={mensaje.feedback != null}
+            aria-label="Respuesta no útil"
+            style={{
+              border: 'none', background: 'none', padding: 2, fontSize: 13, lineHeight: 1,
+              cursor: mensaje.feedback != null ? 'default' : 'pointer',
+              opacity: mensaje.feedback === 1 ? 0.35 : 1,
+              filter: mensaje.feedback === 0 ? 'none' : 'grayscale(1)',
+            }}
+          >👎</button>
         </div>
       )}
     </div>

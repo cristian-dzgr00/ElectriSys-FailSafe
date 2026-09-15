@@ -34,6 +34,19 @@ class ExentoIvaStrategy implements DiscountStrategy
     /**
      * {@inheritDoc}
      */
+    public function desglosar(float $subtotal): array
+    {
+        return [
+            'subtotal'  => round($subtotal, 2),
+            'descuento' => 0.0,
+            'impuesto'  => 0.0,
+            'total'     => round($subtotal, 2),
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getNombre(): string
     {
         return 'Exento de IVA (régimen especial)';

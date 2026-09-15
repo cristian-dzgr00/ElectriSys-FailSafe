@@ -94,14 +94,18 @@ class GestorVentas implements VentaSubject
     public function crearVenta(array $data, int $usuarioId, string $ip = ''): array
     {
         // ── Aplicar Strategy de descuento si está configurada ────
+        // desglosar() le pide a la Strategy misma el detalle (descuento,
+        // impuesto, total) en vez de que GestorVentas adivine la tasa de
+        // IVA a partir del total — eso asumía 19% fijo y calculaba un
+        // impuesto/descuento incorrecto (pero no nulo) para estrategias
+        // como ExentoIvaStrategy, que no cobran IVA.
         if ($this->strategy !== null && isset($data['subtotal'])) {
-            $subtotal         = (float) $data['subtotal'];
-            $totalConDescuento = $this->strategy->calcular($subtotal);
+            $subtotal  = (float) $data['subtotal'];
+            $desglose  = $this->strategy->desglosar($subtotal);
 
-            // Recalcular descuento e impuesto en base a la strategy aplicada
-            $data['descuento'] = round($subtotal - ($totalConDescuento / 1.19), 2);
-            $data['impuesto']  = round($totalConDescuento - ($totalConDescuento / 1.19), 2);
-            $data['total']     = round($totalConDescuento, 2);
+            $data['descuento'] = $desglose['descuento'];
+            $data['impuesto']  = $desglose['impuesto'];
+            $data['total']     = $desglose['total'];
 
             error_log(
                 "[ElectriSys][Strategy] " . get_class($this->strategy) .

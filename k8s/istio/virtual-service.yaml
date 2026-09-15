@@ -1,53 +1,45 @@
 # ============================================================
-# VirtualService — enrutamiento y canary deployment
-# Distribuye tráfico: 90% backend-a / 10% backend-b (canary).
-# Cambia los pesos para promover la versión nueva.
+# VirtualService — enrutamiento del tráfico de entrada
+#
+# POR QUÉ ESTO YA NO HACE EL CANARY
+# ---------------------------------
+# La versión anterior enrutaba directamente a backend-a/backend-b en el
+# puerto 9000 con reglas L7 (match por uri.prefix, retries por código 5xx,
+# timeouts HTTP). No podía funcionar:
+#
+#   1. El puerto 9000 habla FastCGI, no HTTP. Istio no puede leer URIs ni
+#      códigos de estado de un flujo FastCGI.
+#   2. El puerto del Service se llama "php-fpm"; al no llevar prefijo
+#      "http-", Istio lo trata como TCP plano y NINGUNA regla L7 aplica.
+#   3. Enrutaba a "host: backend-b, subset: canary", pero el único
+#      DestinationRule con subsets tenía "host: backend-a" — un subset sin
+#      DestinationRule para ese host hace que Istio descarte la ruta (503).
+#   4. Declaraba hosts: ["backend"], un Service que no existe (son
+#      backend-a y backend-b).
+#
+# El punto de entrada HTTP real es nginx (Service "frontend", puerto 80
+# llamado "http"), así que ahí sí se pueden aplicar reglas L7 de verdad.
+# El reparto 90/10 entre backend-a y backend-b se hace ahora con pesos en
+# el upstream de nginx, que es quien habla FastCGI (ver nginx/nginx.conf).
 # ============================================================
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: electrisys-backend
+  name: electrisys-frontend
   namespace: electrisys
 spec:
   hosts:
-    - backend
+    - "*"
   gateways:
     - electrisys-gateway
-    - mesh              # tráfico interno entre pods
   http:
-    # ── Rutas de autenticación (sin canary, siempre al primario) ──
-    - match:
-        - uri:
-            prefix: /api/auth
-      route:
+    - route:
         - destination:
-            host: backend-a
+            host: frontend
             port:
-              number: 9000
-      timeout: 10s
-      retries:
-        attempts: 3
-        perTryTimeout: 3s
-
-    # ── Resto de la API (canary 90/10) ────────────────────────────
-    - match:
-        - uri:
-            prefix: /api
-      route:
-        - destination:
-            host: backend-a
-            port:
-              number: 9000
-            subset: stable
-          weight: 90
-        - destination:
-            host: backend-b
-            port:
-              number: 9000
-            subset: canary
-          weight: 10
+              number: 80
       timeout: 30s
       retries:
         attempts: 3
         perTryTimeout: 5s
-        retryOn: "5xx,reset,connect-failure,retriable-4xx"
+        retryOn: "5xx,reset,connect-failure"

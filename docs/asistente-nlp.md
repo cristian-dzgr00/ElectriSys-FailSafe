@@ -62,7 +62,7 @@ del negocio, corriendo localmente.
                                              JOIN vehiculos
                                                                ▼
                                                      ┌──────────────────┐
-                                                     │  MySQL             │
+                                                     │  Oracle 23ai       │
                                                      └──────────────────┘
 ```
 
@@ -162,6 +162,67 @@ el umbral de confianza descartaba predicciones correctas.
 9. El frontend muestra el texto y una tarjeta por sustituto (código,
    nombre, proveedor, stock, precio).
 
+## Diálogo multi-turno: memoria de una sola ranura de contexto
+
+Cuando `recomendar_sustituto` o `buscar_repuesto` no logran identificar
+marca+modelo, la respuesta incluye `esperando_datos: true`. El frontend
+(`AsistenteFlotante.jsx`) guarda las `entidades` de esa respuesta y, si el
+usuario responde a continuación, las reenvía como `contexto_previo` en la
+siguiente consulta. `procesar_consulta()` fusiona ese contexto con las
+entidades que sí extrae del texto nuevo (el texto nuevo gana campo por
+campo si dice algo; si no, se conserva lo del turno anterior).
+
+**Por qué "una sola ranura" y no un gestor de diálogo:** no hay máquina de
+estados de conversación, no se rastrea la intención entre turnos, ni hay
+expiración de contexto por tiempo — solo se recuerda el último `entidades`
+mientras `esperando_datos` siga siendo `true`. En cuanto llega una
+respuesta completa (`esperando_datos: false`), el frontend descarta el
+contexto: la siguiente consulta arranca de cero. Si el usuario cambia de
+tema a mitad de un intercambio pendiente, esa entidad nueva igual se
+fusiona con el contexto viejo — no hay forma de detectar "esto es un tema
+nuevo" sin una clasificación más sofisticada. Es una limitación conocida,
+documentada aquí para no sobre-prometer capacidad de diálogo que el
+sistema no tiene.
+
+**Backend:** `asistente.php` reenvía `contexto_previo` al microservicio
+sin interpretarlo (mismo principio que ya aplica a `texto`).
+
+## Retroalimentación: active learning con curación manual
+
+Cada respuesta del asistente tiene botones 👍/👎. Al hacer clic, el
+frontend llama a `PATCH /api/asistente/consultar/{id}/feedback`, que solo
+actualiza la columna `util` de la fila que `AsistenteLogObserver` ya había
+insertado en `consultas_asistente` — no se crea una tabla nueva
+(`database/schema_v4_migration_feedback.sql` solo agrega la columna).
+
+Para que ese `id` llegue al frontend, `GestorAsistente::consultar()` lo
+agrega a la respuesta después de notificar a los Observers. Esto es una
+pequeña tensión con el desacople típico del patrón Observer (el Subject
+normalmente no le importa qué hacen los Observers ni su valor de retorno):
+se resolvió preguntándole puntualmente al `AsistenteLogObserver` por el
+último ID insertado, en vez de cambiar la interfaz compartida
+`VentaObserver::actualizar(): void` (que también usa `GestorVentas`).
+
+**`nlp-service/eval/exportar_feedback.py`**: script de revisión, no de
+entrenamiento. Lee (vía `GET /api/asistente/consultas`, solo `dueno`) las
+consultas marcadas 👎 con confianza de intención alta, y las exporta a un
+CSV con el mismo formato que `data/intents_dataset.csv` para que una
+persona decida a mano cuáles realmente sirven. **No reentrena nada
+automáticamente.**
+
+**Limitaciones honestas:**
+- El token de servicio que el microservicio autofirma es intencionalmente
+  de rol `vendedor` (mínimo privilegio). El script necesita un
+  `BACKEND_SERVICE_TOKEN` real de un `dueno`; sin eso,
+  `/api/asistente/consultas` responde 403 por diseño.
+- "Confianza alta" es un umbral fijo (`--umbral-confianza`, default 0.6),
+  no una validación de que la intención predicha esté mal — sigue
+  haciendo falta el ojo humano que pide el enunciado.
+- El feedback califica la respuesta completa (intención + entidades +
+  ranking), no la intención sola; exportarlo como candidato de
+  reentrenamiento de intención es una aproximación, no una garantía de que
+  ese sea el componente que falló.
+
 ## Cómo levantar todo
 
 ### Con Docker (`docker compose up`)
@@ -171,10 +232,11 @@ el umbral de confianza descartaba predicciones correctas.
 docker compose -f docker/docker-compose.yml up -d --build
 ```
 
-Levanta: `mysql-primary`/`mysql-replica`, `backend-a`/`backend-b`,
-`websocket-server`, `nlp-service`, `frontend` (nginx). El seed de
-vehículos/repuestos automotrices (`database/seed_vehiculos.sql`) se carga
-automáticamente en un volumen nuevo.
+Levanta: `oracle-db` (Oracle 23ai Free), `backend-a`/`backend-b`,
+`websocket-server`, `nlp-service`, `frontend` (nginx). El esquema y el seed
+de vehículos/repuestos automotrices viven ahora en `oracle/` (antes
+`database/seed_vehiculos.sql` con MySQL) — ver
+[`oracle/docs/migracion-oracle.md`](../oracle/docs/migracion-oracle.md).
 
 ### Desarrollo local sin Docker (lo que se usó para validar cada sprint)
 
@@ -192,6 +254,17 @@ cd frontend && npm run dev
 ```
 
 ## Validación real con `docker compose up`
+
+**Nota histórica:** esta sección documenta la validación original, cuando
+el motor real todavía era MySQL. Desde la migración a Oracle 23ai Free
+(ver [`oracle/docs/migracion-oracle.md`](../oracle/docs/migracion-oracle.md)),
+el asistente se revalidó de punta a punta contra Oracle — mismo caso del
+enunciado, misma recomendación (HP-1002/M1-102) — más el diálogo
+multi-turno y el feedback 👍/👎, ambos probados con Playwright contra el
+backend ya corriendo sobre Oracle. Se deja esta sección tal cual quedó
+porque el bug de mTLS que documenta es real y específico de MySQL/PDO — ya
+no aplica (Oracle usa Wallets, no certificados PEM sueltos; ver el propio
+`oracle/docs/migracion-oracle.md` para el estado de TLS con Oracle).
 
 Validado de punta a punta el 2026-09-05 contra un volumen de MySQL
 genuinamente nuevo (no reutilizando datos viejos): todas las imágenes

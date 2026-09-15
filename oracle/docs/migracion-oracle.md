@@ -1,6 +1,8 @@
 # Migración de ElectriSys a Oracle 23ai
 
-Proyecto de la materia **Gestión de Base de Datos**. Migra el modelo relacional de ElectriSys (originalmente MySQL, ver [`database/`](../../database/)) a Oracle Database 23ai Free, y añade PL/SQL, triggers, vistas, roles/privilegios, índices con evidencia real de planes de ejecución, y backup/recovery.
+Empezó como proyecto de la materia **Gestión de Base de Datos**: migrar el modelo relacional de ElectriSys (originalmente MySQL, ver [`database/`](../../database/), que queda como referencia histórica) a Oracle Database 23ai Free, con PL/SQL, triggers, vistas, roles/privilegios, índices con evidencia real de planes de ejecución, y backup/recovery.
+
+**Actualización: esto ya es el motor real de la aplicación, no un ejercicio aparte.** El backend PHP completo (`backend/`) fue reescrito para conectarse a Oracle en vez de MySQL — `docker-compose.yml` ya no tiene ningún servicio MySQL. Ver la sección ["De ejercicio a motor real"](#de-ejercicio-a-motor-real-cambios-de-esta-fase) más abajo para el detalle de qué se ajustó del diseño original al conectarlo con la app viva.
 
 Todo lo descrito en este documento fue **ejecutado y validado en vivo** contra una instancia real de Oracle 23ai Free (no es SQL sin probar) — evidencia y salidas reales más abajo.
 
@@ -168,6 +170,112 @@ Job "ELECTRISYS"."SYS_EXPORT_SCHEMA_01" terminado correctamente (2 min 13 seg)
 | `electrisys_admin_demo` | `AdminOra_2026!` | `rol_electrisys_admin` |
 | `electrisys_vendedor_demo` | `VendedorOra_2026!` | `rol_electrisys_vendedor` |
 | `electrisys_dueno_demo` | `DuenoOra_2026!` | `rol_electrisys_dueno` |
+
+## De ejercicio a motor real: cambios de esta fase
+
+Conectar este esquema (ya validado como ejercicio aislado) a la app PHP
+que corre de verdad obligó a varios ajustes sobre el diseño original —
+documentados acá para que quede claro qué y por qué se desvió:
+
+- **`activo` (y columnas similares) pasaron de `BOOLEAN` nativo a
+  `NUMBER(1)`.** El mapeo original usaba el `BOOLEAN` de Oracle 23ai (tipo
+  nuevo, elegante), pero **todo** el backend PHP compara `activo = 1` /
+  `WHERE activo=1` — comparar eso contra un `BOOLEAN` real da
+  `ORA-00932`. Se priorizó no reescribir esa comparación en cada uno de los
+  ~10 archivos que la usan.
+- **`PKG_VENTAS.registrar_venta` se partió en dos.** La versión original
+  recibía la venta completa (cabecera + todas las líneas) en un solo
+  llamado, vía un parámetro de tipo colección Oracle (`t_items_venta`,
+  `TABLE OF OBJECT`). Bindear tipos objeto/colección desde PHP (`oci8`) es
+  la parte más frágil de la integración PHP↔Oracle — se cambió a
+  `registrar_venta()` (solo cabecera, devuelve el id) +
+  `agregar_item_venta()` (una línea por llamado, parámetros escalares
+  simples). El backend hace el loop; los triggers de stock siguen
+  funcionando igual sin importar si el INSERT vino de un loop o de una
+  sola sentencia.
+- **`registrar_venta` NO calcula impuesto/descuento.** Los recibe ya
+  calculados desde PHP. `GestorVentas` (patrón Strategy —
+  `PrecioEstandarStrategy`/`DescuentoVolumenStrategy`/`ExentoIvaStrategy`)
+  ya decide esa regla de negocio antes de llamar a Oracle; el 19% fijo que
+  se había puesto en un primer borrador de `agregar_item_venta` se sacó
+  porque pisaba `ExentoIvaStrategy` (que cobra 0% IVA).
+- **Se agregaron `PKG_VENTAS.listar_ventas`, `buscar_venta_por_id` y
+  `PKG_REPORTES.resumen_hoy`** (vía `SYS_REFCURSOR`) — el diseño original
+  no cubría el listado paginado+filtrado, el detalle con líneas, ni el
+  resumen diario global que ya usaba el backend PHP.
+- **`p_desde`/`p_hasta` de `listar_ventas` son `VARCHAR2`, no `DATE`.**
+  Bindear un `DATE` desde PHP vía `oci8` depende del `NLS_DATE_FORMAT` de
+  sesión (no necesariamente `'YYYY-MM-DD'`) — más predecible convertir con
+  `TO_DATE(p_desde, 'YYYY-MM-DD')` adentro del package.
+- **`consultas_asistente.util`** (columna de feedback 👍/👎, agregada del
+  lado MySQL en `database/schema_v4_migration_feedback.sql`) y el índice
+  `idx_consultas_fecha` faltaban en el DDL original — se agregaron acá.
+  `texto_consulta` también se amplió a `VARCHAR2(4000)` (estaba en 1000,
+  contradiciendo la propia regla de mapeo del documento).
+- **`vw_repuestos_compatibles`** se amplió con `descripcion`,
+  `precio_venta`, `categoria` y `proveedor` — el backend
+  (`GET /api/repuestos/buscar-compatibles`, que usa el asistente NLP)
+  necesitaba esas columnas y la vista original no las traía.
+- **Capa de conexión PHP:** se escribió un envoltorio delgado
+  (`backend/src/models/OciConnection.php` + `OciStatement.php`) que imita
+  la superficie de `PDOStatement` (`prepare`/`execute`/`fetch`/`fetchAll`)
+  sobre la extensión `oci8` — así las ~40 queries del backend solo
+  necesitaron cambiar texto SQL (paginación `OFFSET/FETCH`, `RETURNING id
+  INTO` en vez de `lastInsertId()`, `ORA-00001` en vez de detectar
+  "Duplicate" en el mensaje de error de MySQL), no su forma de invocación.
+  También resuelve algo que rompía silenciosamente al principio: `oci8`
+  devuelve **todas** las columnas `NUMBER` como string — se castean a
+  int/float por metadata real de columna (`oci_field_type`), no por
+  heurística, para que el JSON de cada endpoint siga siendo numérico como
+  antes (el microservicio NLP en Python, por ejemplo, comparaba
+  `stock > 0` y explotaba con `stock` como string).
+- **Se retiró el failover primary/réplica de `Database.php`**
+  (`$usingReplica`/`isWritable()`) — Oracle 23ai Free no soporta Data
+  Guard/RAC (son features Enterprise), así que la topología quedó de una
+  sola instancia. Se retiró también `ventas.pendiente_sync` (existía solo
+  para reconciliar escrituras con la réplica MySQL).
+- **`docker/Dockerfile.backend`** pasó de `php:8.2-fpm-alpine` a
+  `php:8.2-fpm-bookworm` (Debian): el Oracle Instant Client no tiene
+  binarios oficiales para musl-libc (Alpine), solo glibc. Se fijó a
+  `bookworm` explícitamente (no el tag genérico `php:8.2-fpm`, que ya
+  apunta a Debian 13 "trixie" y renombró `libaio1`→`libaio1t64` con un
+  SONAME distinto al que espera el Instant Client).
+- **Imagen del contenedor: `gvenzl/oracle-free:23-slim`** (comunitaria,
+  no la oficial de Oracle) — soporta `ORACLE_PASSWORD`/`APP_USER`/
+  `APP_USER_PASSWORD` como variables de entorno, igual de simple que la
+  imagen oficial de MySQL, y trae healthcheck propio.
+
+**Validado en vivo tras estos cambios:** login, CRUD completo de
+repuestos/clientes/proveedores/categorías/usuarios/cotizaciones, y el
+flujo de ventas de punta a punta —
+
+```
+Stock HP-1002 antes:                12
+pkg_ventas.registrar_venta + agregar_item_venta (cant=2):  10
+  numero=VT-2026-000001 subtotal=70000 impuesto=13300 total=83300
+pkg_ventas.anular_venta:            12   <- restaurado por el trigger
+```
+
+— y el asistente NLP completo (mismo caso del enunciado: recomienda
+HP-1002/M1-102 para Toyota Hilux 2.7 gasolina 2020), incluido el diálogo
+multi-turno y el feedback 👍/👎, probados con Playwright contra el backend
+ya corriendo sobre Oracle. PHPUnit: 13/13.
+
+**Pendiente de esta fase** (no bloquea el uso de la app, ver también el
+README):
+- Automatizar la carga del esquema al crear el contenedor Oracle desde
+  cero (hoy se hizo a mano contra el contenedor ya corriendo).
+- Migrar `k8s/mysql-*.yaml` y el exporter de Prometheus (`mysqld-exporter`)
+  al equivalente Oracle.
+- `08_roles_privilegios.sql`/`09_usuarios_demo_sysdba.sql` (roles y
+  usuarios demo) dependen de que se haya corrido `01_usuario_y_esquema.sql`
+  tal cual (tablespace `electrisys_data` + `GRANT CREATE ROLE`) — con el
+  usuario que crea automáticamente `gvenzl/oracle-free` (más simple, sin
+  tablespace dedicado), esos dos scripts fallan tal cual están. No afecta
+  a la app (esos roles son para los usuarios demo, no para la conexión
+  real, que sigue siendo `electrisys` el dueño del esquema) pero falta
+  adaptarlos para el entorno Docker si se quiere reproducir esa parte del
+  ejercicio ahí también.
 
 ## Limitaciones conocidas
 

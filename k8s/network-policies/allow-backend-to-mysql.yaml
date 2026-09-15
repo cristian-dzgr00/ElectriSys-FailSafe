@@ -19,6 +19,11 @@ spec:
         - podSelector:
             matchLabels:
               app: backend
+        # La réplica es quien abre la conexión hacia la primaria para leer
+        # el binlog; sin esta entrada la replicación queda bloqueada.
+        - podSelector:
+            matchLabels:
+              app: mysql-replica
       ports:
         - protocol: TCP
           port: 3306

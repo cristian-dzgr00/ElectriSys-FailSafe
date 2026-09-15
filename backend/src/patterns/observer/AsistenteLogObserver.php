@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\patterns\observer;
 
 use App\models\Database;
-use PDO;
+use App\models\OciConnection;
 
 /**
  * AsistenteLogObserver — Observer Concreto
@@ -20,7 +20,8 @@ use PDO;
  */
 class AsistenteLogObserver implements VentaObserver
 {
-    private PDO $db;
+    private OciConnection $db;
+    private ?int $ultimoIdInsertado = null;
 
     public function __construct()
     {
@@ -39,7 +40,10 @@ class AsistenteLogObserver implements VentaObserver
                 INSERT INTO consultas_asistente
                     (usuario_id, texto_consulta, intencion_detectada, entidades_json, respuesta_json)
                 VALUES (:usuario_id, :texto_consulta, :intencion, :entidades, :respuesta)
+                RETURNING id INTO :out_id
             ");
+            $nuevoId = 0;
+            $stmt->bindOut(':out_id', $nuevoId);
             $stmt->execute([
                 ':usuario_id'     => $contexto['usuario_id'] ?? null,
                 ':texto_consulta' => $contexto['texto_consulta'] ?? '',
@@ -47,11 +51,18 @@ class AsistenteLogObserver implements VentaObserver
                 ':entidades'      => json_encode($respuesta['entidades'] ?? null),
                 ':respuesta'      => json_encode($respuesta),
             ]);
+            $this->ultimoIdInsertado = (int) $nuevoId;
         } catch (\Throwable $e) {
             error_log(
                 "[ElectriSys][AsistenteLog] ERROR al registrar consulta '{$accion}': " .
                 $e->getMessage()
             );
         }
+    }
+
+    /** ID de la última fila insertada, o null si el último intento falló. */
+    public function ultimoIdInsertado(): ?int
+    {
+        return $this->ultimoIdInsertado;
     }
 }

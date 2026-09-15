@@ -3,9 +3,11 @@ import { Plus, X, Trash2, Eye } from 'lucide-react';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import { StatusBadge } from '../components/Tooltip';
+import AsistenteFlotante from '../components/AsistenteFlotante';
+import BuscadorRepuesto from '../components/BuscadorRepuesto';
 import { useToastContext } from '../context/ToastContext';
 import api from '../services/api';
-import { repuestosService, clientesService } from '../services/ventasService';
+import { clientesService } from '../services/ventasService';
 
 const fmt = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
 const estadoBadge = e => ({ borrador:'badge-neutral', enviada:'badge-warning', aceptada:'badge-success', rechazada:'badge-danger', vencida:'badge-danger' }[e]||'badge-neutral');
@@ -20,7 +22,6 @@ export default function Cotizaciones() {
   const [loading,   setLoading]   = useState(true);
   const [modal,     setModal]     = useState(false);
   const [detalle,   setDetalle]   = useState(null);
-  const [repuestos, setRepuestos] = useState([]);
   const [clientes,  setClientes]  = useState([]);
   const [items,     setItems]     = useState([]);
   const [clienteId, setClienteId] = useState('');
@@ -43,10 +44,16 @@ export default function Cotizaciones() {
 
   const openNew = async () => {
     setItems([]); setClienteId(''); setVence(''); setNotas(''); setError('');
-    const [r, c] = await Promise.all([repuestosService.listar(), clientesService.listar()]);
-    setRepuestos(r.data.data ?? []);
+    const c = await clientesService.listar();
     setClientes(c.data.data ?? []);
     setModal('new');
+  };
+
+  // Abre "Nueva cotización" ya con un producto cargado — lo usa el botón
+  // "Agregar producto" de las sugerencias del asistente de repuestos.
+  const abrirNuevaCotizacionConProducto = async (producto) => {
+    await openNew();
+    addItem(producto);
   };
 
   const openDetalle = async (id) => {
@@ -57,11 +64,9 @@ export default function Cotizaciones() {
     } catch { toast('Error al cargar el detalle de la cotización', { type:'error' }); }
   };
 
-  const addItem = (repuesto_id) => {
-    const rep = repuestos.find(r => r.id == repuesto_id);
-    if (!rep) return;
+  const addItem = (rep) => {
     setItems(prev => {
-      const idx = prev.findIndex(i => i.repuesto_id == repuesto_id);
+      const idx = prev.findIndex(i => i.repuesto_id === rep.id);
       if (idx >= 0) {
         const c = [...prev]; c[idx] = {...c[idx], cantidad: c[idx].cantidad + 1}; return c;
       }
@@ -174,10 +179,7 @@ export default function Cotizaciones() {
               </div>
               <div className="form-group">
                 <label className="form-label">Agregar producto</label>
-                <select className="form-control" value="" onChange={e=>addItem(e.target.value)}>
-                  <option value="">-- Selecciona un repuesto --</option>
-                  {repuestos.map(r=><option key={r.id} value={r.id}>{r.nombre} — {fmt(r.precio_venta)}</option>)}
-                </select>
+                <BuscadorRepuesto onSeleccionar={addItem} />
               </div>
               {items.length > 0 && (
                 <div className="card" style={{padding:0,overflow:'hidden',marginBottom:16}}>
@@ -288,6 +290,8 @@ export default function Cotizaciones() {
           </div>
         </div>
       )}
+
+      <AsistenteFlotante onAgregarProducto={abrirNuevaCotizacionConProducto} />
     </>
   );
 }

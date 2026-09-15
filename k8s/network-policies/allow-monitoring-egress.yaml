@@ -1,0 +1,95 @@
+# ============================================================
+# NetworkPolicy: egress del stack de monitoreo
+#
+# allow-prometheus-scrape.yaml solo declaraba Ingress (abría los puertos
+# de métricas en los pods destino). Pero deny-all.yaml también bloquea el
+# Egress de TODOS los pods, incluido el propio Prometheus: sin una regla
+# de salida no podía scrapear ningún target ni resolver DNS, así que el
+# monitoreo quedaba completamente muerto en el clúster.
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-egress
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: prometheus
+  policyTypes:
+    - Egress
+  egress:
+    # Scrape de los exporters dentro del namespace. Los puertos coinciden
+    # con los declarados en allow-prometheus-scrape.yaml.
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9253   # php-fpm exporter (sidecar del backend)
+        - protocol: TCP
+          port: 9104   # mysqld exporter
+        - protocol: TCP
+          port: 9113   # nginx exporter
+        - protocol: TCP
+          port: 9090   # self-scrape
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Prometheus debe aceptar consultas de Grafana (y del navegador) en 9090.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-ingress
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: prometheus
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 9090
+---
+# Grafana consulta a Prometheus como datasource.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-grafana
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: grafana
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

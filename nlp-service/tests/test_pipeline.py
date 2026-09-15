@@ -59,6 +59,31 @@ def test_recomendar_sustituto_sin_vehiculo_identificado(monkeypatch):
     resultado = pipeline.procesar_consulta("no hay filtro de aceite, que recomiendo")
     assert resultado["sugerencias"] == []
     assert "identificar" in resultado["respuesta_texto"].lower()
+    assert resultado["esperando_datos"] is True
+
+
+def test_recomendar_sustituto_usa_contexto_previo_del_turno_anterior(monkeypatch):
+    candidatos_fake = [
+        {"id": 9, "codigo": "HP-1002", "nombre": "Filtro de aceite K&N", "descripcion": "filtro de aceite",
+         "categoria": "Filtros", "proveedor": "K&N Filtros", "stock": 12, "precio_venta": 35000},
+    ]
+    monkeypatch.setattr(pipeline, "predecir_intencion", lambda texto: ("recomendar_sustituto", 0.9))
+    monkeypatch.setattr(pipeline, "buscar_compatibles", lambda **kw: candidatos_fake)
+    _sin_diccionarios(monkeypatch, marcas=["Toyota"], modelos=["Hilux"], categorias=["Filtros"])
+
+    # Turno 1: sin vehículo -> pide datos (esperando_datos=True).
+    turno1 = pipeline.procesar_consulta("no hay filtro de aceite, que recomiendo")
+    assert turno1["esperando_datos"] is True
+
+    # Turno 2: el usuario solo aporta el vehículo; el contexto del turno 1
+    # (categoria="Filtros") se fusiona con lo nuevo (marca/modelo) y ahora
+    # sí devuelve recomendación.
+    turno2 = pipeline.procesar_consulta("toyota hilux", contexto_previo=turno1["entidades"])
+    assert turno2["esperando_datos"] is False
+    assert turno2["entidades"]["marca"] == "Toyota"
+    assert turno2["entidades"]["modelo"] == "Hilux"
+    assert turno2["entidades"]["categoria"] == "Filtros"
+    assert "HP-1002" in [s["codigo"] for s in turno2["sugerencias"]]
 
 
 def test_recomendar_sustituto_backend_caido_responde_controlado(monkeypatch):

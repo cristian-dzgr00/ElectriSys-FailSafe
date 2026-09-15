@@ -1,105 +1,46 @@
 <?php
 namespace App\models;
 
-use PDO;
-use PDOException;
-use App\config\TlsConfig;
+use RuntimeException;
 
+/**
+ * Conexión a Oracle Database 23ai Free (motor único del proyecto — ver
+ * oracle/docs/migracion-oracle.md). Antes había primary+réplica MySQL con
+ * failover automático; Oracle 23ai Free no soporta Data Guard/RAC (son
+ * features Enterprise), así que esto quedó como una sola instancia. Se
+ * retiró $usingReplica/isWritable() — ya no aplica sin réplica.
+ */
 class Database
 {
-    private static ?PDO $primaryConn   = null;
-    private static ?PDO $replicaConn   = null;
-    public  static bool $usingReplica  = false;
-    private static bool $primaryFailed = false; // evita reintentos costosos en la misma petición
+    private static ?OciConnection $conn = null;
 
-    public static function getConnection(): PDO
+    public static function getConnection(): OciConnection
     {
-        // Si ya tenemos conexión primaria activa, devolverla directamente
-        if (self::$primaryConn !== null) {
-            return self::$primaryConn;
+        if (self::$conn !== null) {
+            return self::$conn;
         }
 
-        // Solo intentar la primaria si no sabemos que ya falló en esta petición
-        if (!self::$primaryFailed) {
-            $intentos = 3;
-            while ($intentos-- > 0) {
-                try {
-                    self::$primaryConn   = self::connect(
-                        $_ENV['DB_PRIMARY_HOST'] ?? 'mysql-primary',
-                        $_ENV['DB_PRIMARY_PORT'] ?? '3306',
-                        $_ENV['DB_PRIMARY_NAME'] ?? 'electrisys',
-                        $_ENV['DB_PRIMARY_USER'] ?? 'electrisys_user',
-                        $_ENV['DB_PRIMARY_PASS'] ?? ''
-                    );
-                    self::$usingReplica  = false;
-                    self::$primaryFailed = false;
-                    return self::$primaryConn;
-                } catch (PDOException $e) {
-                    error_log('[ElectriSys] Primary no disponible, reintentando... ' . $e->getMessage());
-                    usleep(300000);
-                }
-            }
-            // Marcar que la primaria falló para no reintentar en esta misma petición
-            self::$primaryFailed = true;
+        $host    = $_ENV['DB_HOST']         ?? 'oracle-db';
+        $port    = $_ENV['DB_PORT']         ?? '1521';
+        $service = $_ENV['DB_SERVICE_NAME'] ?? 'FREEPDB1';
+        $user    = $_ENV['DB_USER']         ?? 'electrisys';
+        $pass    = $_ENV['DB_PASS']         ?? '';
+
+        $tns = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={$host})(PORT={$port}))" .
+               "(CONNECT_DATA=(SERVICE_NAME={$service})))";
+
+        // TLS: diferido (ver oracle/docs/migracion-oracle.md) — Oracle usa
+        // Wallets, un mecanismo distinto a los certificados PEM sueltos que
+        // usaba MySQL; no se aborda en esta migración, igual que el mTLS de
+        // MySQL tampoco llegó a validarse de punta a punta en producción
+        // real (ver docs/asistente-nlp.md).
+        $raw = @oci_connect($user, $pass, $tns, 'AL32UTF8');
+        if ($raw === false) {
+            $e = oci_error();
+            throw new RuntimeException('[ElectriSys] No se pudo conectar a Oracle: ' . ($e['message'] ?? 'desconocido'));
         }
 
-        // Fallback: réplica (solo lectura)
-        if (self::$replicaConn === null) {
-            try {
-                self::$replicaConn = self::connect(
-                    $_ENV['DB_REPLICA_HOST'] ?? 'mysql-replica',
-                    $_ENV['DB_REPLICA_PORT'] ?? '3306',
-                    $_ENV['DB_REPLICA_NAME'] ?? 'electrisys',
-                    $_ENV['DB_REPLICA_USER'] ?? 'electrisys_user',
-                    $_ENV['DB_REPLICA_PASS'] ?? ''
-                );
-                error_log('[ElectriSys] Usando Réplica como fallback.');
-            } catch (PDOException $e) {
-                throw new PDOException('[ElectriSys] Ambas bases de datos no disponibles: ' . $e->getMessage());
-            }
-        }
-
-        self::$usingReplica = true;
-        return self::$replicaConn;
-    }
-
-    /**
-     * Indica si hay conexión de escritura disponible (solo la primaria permite escritura).
-     */
-    public static function isWritable(): bool
-    {
-        return !self::$usingReplica;
-    }
-
-    private static function connect(string $host, string $port, string $dbname, string $user, string $pass): PDO
-    {
-        $dsn = "mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4";
-
-        $options = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::ATTR_PERSISTENT         => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-        ];
-
-        // mTLS: agregar opciones SSL si los certificados existen.
-        // IMPORTANTE: usar el operador de unión (+), NUNCA array_merge().
-        // Las claves de este array son las constantes PDO::* (enteros), y
-        // array_merge() reindexa claves enteras secuencialmente (0,1,2...)
-        // en vez de preservarlas — corrompe el array de opciones por
-        // completo. Esto causó un bug real: por coincidencia posicional,
-        // el valor de SSL_VERIFY_SERVER_CERT (true) terminaba en la
-        // posición 8, que es el valor de la constante PDO::ATTR_CASE, y
-        // PDO interpretaba true como PDO::CASE_UPPER — todas las columnas
-        // volvían en MAYÚSCULAS con mTLS activo, rompiendo cualquier
-        // acceso a $row['columna'] en minúscula (login, ventas, etc.).
-        $tlsOptions = TlsConfig::getMysqlPdoOptions();
-        if (!empty($tlsOptions)) {
-            $options = $options + $tlsOptions;
-            error_log("[ElectriSys][mTLS] Conectando a {$host} con mTLS");
-        }
-
-        return new PDO($dsn, $user, $pass, $options);
+        self::$conn = new OciConnection($raw);
+        return self::$conn;
     }
 }

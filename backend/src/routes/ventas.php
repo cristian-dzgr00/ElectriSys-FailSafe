@@ -17,16 +17,6 @@ function makeGestorVentas(): GestorVentas
     return $gestor;
 }
 
-// ── Helper: respuesta 503 modo réplica ────────────────────────
-function replicaReadOnlyResponse(Response $res, string $accion = 'esta acción'): Response
-{
-    $res->getBody()->write(json_encode([
-        'error'      => "Sistema en modo lectura: la base de datos primaria no está disponible. No se puede completar $accion.",
-        'en_replica' => true,
-    ]));
-    return $res->withStatus(503)->withHeader('Content-Type', 'application/json');
-}
-
 // GET /api/ventas
 $group->get('/ventas', function (Request $req, Response $res) {
     $params  = $req->getQueryParams();
@@ -47,11 +37,10 @@ $group->get('/ventas', function (Request $req, Response $res) {
     $result = $model->listar($filtros);
 
     $res->getBody()->write(json_encode([
-        'data'       => $result['rows'],
-        'total'      => $result['total'],
-        'page'       => $page,
-        'limit'      => $limit,
-        'en_replica' => Database::$usingReplica, // el frontend puede mostrar banner informativo
+        'data'  => $result['rows'],
+        'total' => $result['total'],
+        'page'  => $page,
+        'limit' => $limit,
     ]));
     return $res->withHeader('Content-Type', 'application/json');
 });
@@ -61,14 +50,14 @@ $group->get('/ventas/resumen/semana', function (Request $req, Response $res) {
     $conn = Database::getConnection();
     $stmt = $conn->query("
         SELECT
-            DATE(creado_en)            AS fecha,
-            COALESCE(SUM(total), 0)    AS ingresos,
-            COUNT(*)                   AS ventas
+            TRUNC(creado_en)        AS fecha,
+            NVL(SUM(total), 0)      AS ingresos,
+            COUNT(*)                AS ventas
         FROM ventas
         WHERE
-            creado_en >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+            creado_en >= TRUNC(SYSDATE) - 6
             AND estado = 'completada'
-        GROUP BY DATE(creado_en)
+        GROUP BY TRUNC(creado_en)
         ORDER BY fecha ASC
     ");
     $res->getBody()->write(json_encode(['data' => $stmt->fetchAll()]));
@@ -102,13 +91,6 @@ $group->get('/ventas/{id}', function (Request $req, Response $res, array $args) 
 
 // POST /api/ventas — usa GestorVentas con Observer + Strategy
 $group->post('/ventas', function (Request $req, Response $res) {
-
-    // Verificar disponibilidad de escritura antes de procesar
-    Database::getConnection();
-    if (Database::$usingReplica) {
-        return replicaReadOnlyResponse($res, 'el registro de ventas');
-    }
-
     $user = $req->getAttribute('user');
     $body = (array) $req->getParsedBody();
     $ip   = $req->getServerParams()['REMOTE_ADDR'] ?? '';
@@ -165,12 +147,6 @@ $group->put('/ventas/{id}/anular', function (Request $req, Response $res, array 
         return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
 
-    // Verificar disponibilidad de escritura antes de procesar
-    Database::getConnection();
-    if (Database::$usingReplica) {
-        return replicaReadOnlyResponse($res, 'la anulación de ventas');
-    }
-
     $user   = $req->getAttribute('user');
     $ip     = $req->getServerParams()['REMOTE_ADDR'] ?? '';
     $gestor = makeGestorVentas();
@@ -185,9 +161,6 @@ $group->put('/ventas/{id}/anular', function (Request $req, Response $res, array 
         return $res->withStatus(409)->withHeader('Content-Type', 'application/json');
     }
 
-    $res->getBody()->write(json_encode([
-        'success'    => true,
-        'en_replica' => Database::$usingReplica,
-    ]));
+    $res->getBody()->write(json_encode(['success' => true]));
     return $res->withHeader('Content-Type', 'application/json');
 });

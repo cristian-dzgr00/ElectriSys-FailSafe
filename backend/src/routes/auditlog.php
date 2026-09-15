@@ -42,11 +42,11 @@ $group->get('/audit-log', function (Request $req, Response $res) {
         $bind[]  = $usuario_id;
     }
     if ($desde !== '') {
-        $where[] = 'DATE(a.created_at) >= ?';
+        $where[] = "TRUNC(a.created_at) >= TO_DATE(?, 'YYYY-MM-DD')";
         $bind[]  = $desde;
     }
     if ($hasta !== '') {
-        $where[] = 'DATE(a.created_at) <= ?';
+        $where[] = "TRUNC(a.created_at) <= TO_DATE(?, 'YYYY-MM-DD')";
         $bind[]  = $hasta;
     }
 
@@ -78,14 +78,14 @@ $group->get('/audit-log', function (Request $req, Response $res) {
             LEFT JOIN roles r    ON u.rol_id = r.id
             WHERE $whereStr
             ORDER BY a.created_at $orden
-            LIMIT ? OFFSET ?
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         ");
-        $stmt->execute([...$bind, $limit, $offset]);
+        $stmt->execute([...$bind, $offset, $limit]);
         $rows = $stmt->fetchAll();
 
         // Acciones distintas para el filtro
         $accionesStmt = $db->query("SELECT DISTINCT accion FROM audit_log ORDER BY accion");
-        $acciones = $accionesStmt->fetchAll(\PDO::FETCH_COLUMN);
+        $acciones = $accionesStmt->fetchColumnAll();
 
         // Usuarios que tienen registros
         $usuariosStmt = $db->query("

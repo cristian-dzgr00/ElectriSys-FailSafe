@@ -74,6 +74,11 @@ spec:
               mountPath: /var/lib/mysql
             - name: mysql-primary-config
               mountPath: /etc/mysql/conf.d
+            # Sin esto la base arrancaba vacía: ningún .sql se cargaba en
+            # Kubernetes (docker-compose sí los monta). Generar antes con
+            # ./k8s/crear-configmaps-sql.sh
+            - name: mysql-init-sql
+              mountPath: /docker-entrypoint-initdb.d
           resources:
             requests:
               cpu: "250m"
@@ -83,12 +88,18 @@ spec:
               memory: "1Gi"
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass2024"]
+              # Lee la contraseña del Secret en vez de llevarla incrustada:
+              # el literal "rootpass2024" no coincidía con MYSQL_ROOT_PASSWORD,
+              # así que el probe se autenticaba con una clave inexistente.
+              command: ["sh", "-c", "mysqladmin ping -h localhost -u root -p\"$MYSQL_ROOT_PASSWORD\""]
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass2024"]
+              # Lee la contraseña del Secret en vez de llevarla incrustada:
+              # el literal "rootpass2024" no coincidía con MYSQL_ROOT_PASSWORD,
+              # así que el probe se autenticaba con una clave inexistente.
+              command: ["sh", "-c", "mysqladmin ping -h localhost -u root -p\"$MYSQL_ROOT_PASSWORD\""]
             initialDelaySeconds: 15
             periodSeconds: 5
       volumes:
@@ -98,6 +109,9 @@ spec:
         - name: mysql-primary-config
           configMap:
             name: mysql-primary-config
+        - name: mysql-init-sql
+          configMap:
+            name: mysql-init-sql
 ---
 # ── Service ───────────────────────────────────────────────
 apiVersion: v1

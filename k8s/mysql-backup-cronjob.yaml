@@ -30,21 +30,29 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: electrisys-secrets
-                      key: DB_USER
+                      key: DB_PRIMARY_USER
                 - name: MYSQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: electrisys-secrets
-                      key: DB_PASS
+                      key: DB_PRIMARY_PASS
                 - name: MYSQL_DATABASE
                   value: electrisys
               command:
-                - /bin/sh
+                - /bin/bash
                 - -c
                 - |
+                  # pipefail es imprescindible: sin él, si mysqldump falla el
+                  # estado de salida es el de gzip (0), se deja un .gz vacío o
+                  # truncado y el Job se reporta como EXITOSO. Un backup roto
+                  # que parece bueno es peor que no tener backup.
+                  set -euo pipefail
+
                   TIMESTAMP=$(date +%Y%m%d_%H%M%S)
                   FILENAME="backup_${TIMESTAMP}.sql.gz"
+                  DESTINO="/backups/$FILENAME"
                   echo "Iniciando backup: $FILENAME"
+
                   mysqldump \
                     --host=$MYSQL_HOST \
                     --user=$MYSQL_USER \
@@ -53,8 +61,18 @@ spec:
                     --routines \
                     --triggers \
                     --set-gtid-purged=OFF \
-                    $MYSQL_DATABASE | gzip > /backups/$FILENAME
-                  echo "Backup completado: $(du -sh /backups/$FILENAME)"
+                    $MYSQL_DATABASE | gzip > "$DESTINO"
+
+                  # Verificar que el gzip está íntegro y que no quedó vacío
+                  gzip -t "$DESTINO"
+                  TAMANO=$(stat -c %s "$DESTINO")
+                  if [ "$TAMANO" -lt 1024 ]; then
+                    echo "ERROR: el backup pesa ${TAMANO} bytes, es sospechosamente chico."
+                    rm -f "$DESTINO"
+                    exit 1
+                  fi
+
+                  echo "Backup completado y verificado: $(du -sh "$DESTINO")"
                   # Eliminar backups de más de 30 días
                   find /backups -name "*.sql.gz" -mtime +30 -delete
                   echo "Limpieza de backups antiguos completada"

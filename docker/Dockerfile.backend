@@ -1,12 +1,45 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2-fpm-bookworm
 
 # ── Dependencias del sistema ──────────────────────────────────
-RUN apk add --no-cache \
-    stunnel \
-    openssl \
+# Cambiado de php:8.2-fpm-alpine a esta imagen (Debian): el Oracle Instant
+# Client solo tiene binarios oficiales para glibc, no para musl-libc de
+# Alpine (ver oracle/docs/migracion-oracle.md — migración de MySQL a
+# Oracle). Fijado a "bookworm" (Debian 12) explícitamente en vez del tag
+# genérico "php:8.2-fpm": ese tag ya apunta a Debian 13 "trixie", que
+# renombró el paquete libaio1 -> libaio1t64 con un SONAME distinto
+# (libaio.so.1t64), y el Instant Client de Oracle busca libaio.so.1 a
+# secas — se rompe el link en tiempo de ejecución. bookworm todavía tiene
+# el libaio1 clásico.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libaio1 \
+    unzip \
+    wget \
+    netcat-openbsd \
     libzip-dev \
-    oniguruma-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip
+    libonig-dev \
+    zlib1g-dev \
+    && docker-php-ext-install pdo mbstring zip \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Oracle Instant Client + extensión oci8 ─────────────────────
+# Basic Light (runtime) + SDK (headers, necesarios para compilar oci8).
+# Descarga directa de Oracle, sin autenticación (Instant Client es de
+# distribución libre bajo la licencia OTN).
+ENV ORACLE_HOME=/opt/oracle/instantclient_23_4
+RUN mkdir -p /opt/oracle && cd /opt/oracle \
+    && wget -nv https://download.oracle.com/otn_software/linux/instantclient/2340000/instantclient-basiclite-linux.x64-23.4.0.24.05.zip \
+    && wget -nv https://download.oracle.com/otn_software/linux/instantclient/2340000/instantclient-sdk-linux.x64-23.4.0.24.05.zip \
+    && unzip -oq instantclient-basiclite-linux.x64-23.4.0.24.05.zip \
+    && unzip -oq instantclient-sdk-linux.x64-23.4.0.24.05.zip \
+    && rm -f *.zip \
+    && cd instantclient_23_4 \
+    && ln -sf libclntsh.so.23.1 libclntsh.so \
+    && ln -sf libocci.so.23.1 libocci.so \
+    && echo "$ORACLE_HOME" > /etc/ld.so.conf.d/oracle-instantclient.conf \
+    && ldconfig
+
+RUN echo "instantclient,$ORACLE_HOME" | pecl install oci8 \
+    && docker-php-ext-enable oci8
 
 # ── Composer ──────────────────────────────────────────────────
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
@@ -20,7 +53,10 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # ── Código fuente ─────────────────────────────────────────────
 COPY backend/ .
 
-# ── Script de inicio: lanza stunnel (mTLS server) + PHP-FPM ───
+# ── Página de estado de PHP-FPM (la lee php-fpm_exporter) ─────
+COPY docker/php-fpm-status.conf /usr/local/etc/php-fpm.d/zz-status.conf
+
+# ── Script de inicio: lanza stunnel (mTLS server, si hay certs) + PHP-FPM ──
 COPY docker/entrypoint-backend.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

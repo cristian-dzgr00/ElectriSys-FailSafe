@@ -3,9 +3,25 @@ import api from '../services/api';
 
 const AuthContext = createContext(null);
 
+/**
+ * Decodifica un segmento JWT (base64url) respetando UTF-8.
+ *
+ * atob() por sí solo devuelve una cadena de bytes interpretada como
+ * Latin-1: "José Muñoz" se leía "JosÃ© MuÃ±oz" al restaurar la sesión.
+ * Además el JWT usa base64url ('-' y '_' en vez de '+' y '/', sin
+ * relleno), que atob() no acepta tal cual.
+ */
+function decodificarSegmento(segmento) {
+  const base64 = segmento.replace(/-/g, '+').replace(/_/g, '/');
+  const relleno = base64.length % 4 ? '='.repeat(4 - (base64.length % 4)) : '';
+  const binaria = atob(base64 + relleno);
+  const bytes = Uint8Array.from(binaria, caracter => caracter.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
 function decodeToken(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(decodificarSegmento(token.split('.')[1]));
     if (payload.exp > Date.now() / 1000) {
       return {
         id:     payload.sub,

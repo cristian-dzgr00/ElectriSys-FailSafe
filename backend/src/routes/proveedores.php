@@ -26,13 +26,15 @@ $group->get('/proveedores', function (Request $req, Response $res) {
 
     $db   = proveedoresDB();
     $stmt = $db->prepare("
-        SELECT SQL_CALC_FOUND_ROWS * FROM proveedores
+        SELECT p.*, COUNT(*) OVER() AS total_filas FROM proveedores p
         WHERE activo=1 AND (nombre LIKE ? OR contacto LIKE ? OR email LIKE ?)
-        ORDER BY nombre LIMIT ? OFFSET ?
+        ORDER BY nombre OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
-    $stmt->execute([$q, $q, $q, $limit, $off]);
+    $stmt->execute([$q, $q, $q, $off, $limit]);
     $rows  = $stmt->fetchAll();
-    $total = (int) $db->query("SELECT FOUND_ROWS()")->fetchColumn();
+    $total = (int) ($rows[0]['total_filas'] ?? 0);
+    foreach ($rows as &$fila) { unset($fila['total_filas']); }
+    unset($fila);
 
     $res->getBody()->write(json_encode(['data' => $rows, 'total' => $total, 'page' => $page]));
     return $res->withHeader('Content-Type', 'application/json');
@@ -47,15 +49,17 @@ $group->post('/proveedores', function (Request $req, Response $res) {
     }
     try {
         $db = proveedoresDB();
-        $db->prepare("INSERT INTO proveedores (nombre,contacto,telefono,email,direccion) VALUES (?,?,?,?,?)")
-           ->execute([
+        $stmt = $db->prepare("INSERT INTO proveedores (nombre,contacto,telefono,email,direccion) VALUES (?,?,?,?,?) RETURNING id INTO :out_id");
+        $nuevoId = 0;
+        $stmt->bindOut(':out_id', $nuevoId);
+        $stmt->execute([
                trim($b['nombre']),
                trim($b['contacto'] ?? '') ?: null,
                trim($b['telefono'] ?? '') ?: null,
                strtolower(trim($b['email'] ?? '')) ?: null,
                trim($b['direccion'] ?? '') ?: null,
            ]);
-        $res->getBody()->write(json_encode(['success' => true, 'id' => $db->lastInsertId()]));
+        $res->getBody()->write(json_encode(['success' => true, 'id' => (int) $nuevoId]));
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     } catch (\Throwable $e) {
         error_log('[ElectriSys] Error creando proveedor: ' . $e->getMessage());
@@ -95,7 +99,7 @@ $group->delete('/proveedores/{id}', function (Request $req, Response $res, array
         $res->getBody()->write(json_encode(['error' => 'ID inválido']));
         return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
-    proveedoresDB()->prepare("UPDATE proveedores SET activo=0, deleted_at=NOW() WHERE id=?")
+    proveedoresDB()->prepare("UPDATE proveedores SET activo=0, deleted_at=SYSTIMESTAMP WHERE id=?")
                   ->execute([(int)$args['id']]);
     $res->getBody()->write(json_encode(['success' => true]));
     return $res->withHeader('Content-Type', 'application/json');

@@ -21,7 +21,7 @@ SELECT r.id, r.codigo, r.nombre, r.stock, r.stock_minimo,
   FROM repuestos r
   LEFT JOIN categorias c  ON c.id = r.categoria_id
   LEFT JOIN proveedores p ON p.id = r.proveedor_id
- WHERE r.activo = TRUE
+ WHERE r.activo = 1
    AND r.stock <= r.stock_minimo;
 
 -- ── Total vendido por vendedor y mes (reporte gerencial) ─────────
@@ -36,11 +36,19 @@ SELECT u.id AS usuario_id, u.nombre AS vendedor,
  GROUP BY u.id, u.nombre, TRUNC(v.creado_en, 'MM');
 
 -- ── Repuestos con su compatibilidad de vehículo (soporte al asistente NLP) ──
+-- Ampliada con descripcion/precio_venta/categoria/proveedor: son las
+-- columnas que ya devuelve GET /api/repuestos/buscar-compatibles
+-- (backend/src/routes/repuestos.php) y que la versión original de esta
+-- vista no traía.
 CREATE OR REPLACE VIEW vw_repuestos_compatibles AS
-SELECT r.id AS repuesto_id, r.codigo, r.nombre AS repuesto, r.stock,
+SELECT r.id AS repuesto_id, r.codigo, r.nombre AS repuesto, r.descripcion,
+       r.stock, r.precio_venta, cat.nombre AS categoria, p.nombre AS proveedor,
        v.marca, v.modelo, v.anio_desde, v.anio_hasta, v.motor, v.combustible
   FROM repuesto_compatibilidad rc
-  JOIN repuestos r ON r.id = rc.repuesto_id
-  JOIN vehiculos v ON v.id = rc.vehiculo_id;
+  JOIN repuestos r          ON r.id = rc.repuesto_id
+  JOIN vehiculos v          ON v.id = rc.vehiculo_id
+  LEFT JOIN categorias cat  ON cat.id = r.categoria_id
+  LEFT JOIN proveedores p   ON p.id = r.proveedor_id
+ WHERE r.activo = 1;
 
 PROMPT Vistas creadas correctamente.

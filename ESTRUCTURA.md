@@ -52,7 +52,7 @@ electrisys/
 │                                                  + useWebSocket para live updates
 │
 ├── k8s/
-│   ├── ambassador-mapping.yaml        [ELIMINAR] reemplazado por Istio Gateway
+│   ├── (ambassador-mapping.yaml)      [ELIMINADO] reemplazado por k8s/istio/gateway.yaml
 │   ├── backend-deployment.yaml        [EDITADO]  + volumeMount TLS + annotations Prometheus
 │   ├── backend-service.yaml           (sin cambios)
 │   ├── configmap.yaml                 (sin cambios)
@@ -157,8 +157,15 @@ electrisys/
 1. `./tls/generate-certs.sh` — generar PKI primero
 2. `kubectl apply -f k8s/namespace.yaml` — habilitar Istio injection
 3. `istioctl install -f k8s/istio/istio-operator.yaml`
-4. `kubectl apply -f k8s/network-policies/` — segmentar red
-5. `kubectl apply -f k8s/istio/` — service mesh
-6. `kubectl apply -f k8s/monitoring/` — observabilidad
-7. `kubectl apply -f k8s/tls/` + `k8s/vpn/` + `k8s/websocket-*.yaml`
-8. `docker compose -f docker/docker-compose.yml -f monitoring/docker-compose.monitoring.yml up`
+4. **`./k8s/crear-configmaps-sql.sh`** — esquema, seeds y script de
+   replicación como ConfigMaps. **Antes de aplicar los Deployments de
+   MySQL**: sin esto la base arranca sin tablas y la réplica no replica.
+5. `kubectl apply -f k8s/network-policies/` — segmentar red
+6. `kubectl apply -f k8s/istio/` — service mesh
+7. `kubectl apply -f k8s/monitoring/` — observabilidad
+8. `kubectl apply -f k8s/tls/` + `k8s/vpn/` + `k8s/websocket-*.yaml`
+9. `docker compose -f docker/docker-compose.yml -f monitoring/docker-compose.monitoring.yml up`
+
+> El canary 90/10 ya no está en Istio: vive en el `upstream php_backend`
+> de `nginx/nginx.conf` (pesos 9 y 1). Istio no puede dividir tráfico
+> sobre el puerto 9000 porque habla FastCGI, no HTTP.

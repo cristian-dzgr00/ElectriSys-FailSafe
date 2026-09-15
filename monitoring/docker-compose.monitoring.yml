@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: electrisys_grafana_2024
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_PASSWORD:?falta en docker/.env}"
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_ROOT_URL: http://localhost:3000
     volumes:
@@ -57,13 +57,42 @@ services:
     depends_on:
       - frontend
 
+  # ── PHP-FPM Exporter — Backend A ──────────────────────────────
+  # Lee la página de estado de PHP-FPM por FastCGI (docker/php-fpm-status.conf)
+  # y la publica en :9253, que es lo que scrapea Prometheus. Antes Prometheus
+  # apuntaba directo a backend-a:9253, donde no escuchaba nada.
+  php-fpm-exporter-a:
+    image: hipages/php-fpm_exporter:2.2.0
+    container_name: es_php_fpm_exporter_a
+    restart: unless-stopped
+    environment:
+      PHP_FPM_SCRAPE_URI: "tcp://backend-a:9000/status"
+      PHP_FPM_WEB_LISTEN_ADDRESS: ":9253"
+    networks:
+      - electrisys_net
+    depends_on:
+      - backend-a
+
+  # ── PHP-FPM Exporter — Backend B ──────────────────────────────
+  php-fpm-exporter-b:
+    image: hipages/php-fpm_exporter:2.2.0
+    container_name: es_php_fpm_exporter_b
+    restart: unless-stopped
+    environment:
+      PHP_FPM_SCRAPE_URI: "tcp://backend-b:9000/status"
+      PHP_FPM_WEB_LISTEN_ADDRESS: ":9253"
+    networks:
+      - electrisys_net
+    depends_on:
+      - backend-b
+
   # ── MySQL Exporter — Primary ──────────────────────────────────
   mysql-primary-exporter:
     image: prom/mysqld-exporter:v0.15.1
     container_name: es_mysql_primary_exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "root:rootpass2024@(mysql-primary:3306)/"
+      DATA_SOURCE_NAME: "root:${MYSQL_ROOT_PASSWORD:?falta en docker/.env}@(mysql-primary:3306)/"
     networks:
       - electrisys_net
     depends_on:
@@ -75,7 +104,7 @@ services:
     container_name: es_mysql_replica_exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "root:rootpass2024@(mysql-replica:3306)/"
+      DATA_SOURCE_NAME: "root:${MYSQL_ROOT_PASSWORD:?falta en docker/.env}@(mysql-replica:3306)/"
     networks:
       - electrisys_net
     depends_on:

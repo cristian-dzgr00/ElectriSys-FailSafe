@@ -1,6 +1,18 @@
 # ============================================================
 # HorizontalPodAutoscaler — ElectriSys Backend
-# Escala automáticamente según CPU y memoria
+# Escala automáticamente según CPU y memoria.
+#
+# scaleTargetRef apuntaba a un Deployment "electrisys-backend" que no
+# existe: los Deployments reales son "backend-a" y "backend-b"
+# (backend-deployment.yaml). Con un target inexistente el HPA queda en
+# estado <unknown> y nunca escala.
+#
+# Se escala backend-a, la instancia principal. backend-b queda fijo en 1
+# réplica porque es el failover/canary al que nginx solo manda tráfico
+# como backup (ver upstream php_backend en nginx.conf).
+#
+# minReplicas: 2 pisa el "replicas: 1" del Deployment — eso es esperado:
+# cuando hay un HPA, el número de réplicas lo gobierna el HPA.
 # ============================================================
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -11,7 +23,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: electrisys-backend
+    name: backend-a
   minReplicas: 2
   maxReplicas: 10
   metrics:

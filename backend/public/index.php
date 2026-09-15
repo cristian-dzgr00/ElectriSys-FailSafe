@@ -27,7 +27,7 @@ $app->add(function ($request, $handler) {
     return $response
         ->withHeader('Access-Control-Allow-Origin', $_ENV['FRONTEND_URL'] ?? '*')
         ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
         ->withHeader('X-Content-Type-Options', 'nosniff')
         ->withHeader('X-Frame-Options', 'DENY')
         ->withHeader('X-XSS-Protection', '1; mode=block')

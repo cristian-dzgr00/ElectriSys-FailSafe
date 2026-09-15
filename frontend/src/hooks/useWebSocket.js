@@ -4,9 +4,23 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 
-const WS_URL = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8080';
 const MAX_RETRIES     = 5;
 const BASE_RETRY_MS   = 1_000;
+
+/**
+ * URL del WebSocket derivada del host que sirve la página.
+ *
+ * Antes era un literal 'ws://localhost:8080': el navegador de cada usuario
+ * intentaba conectarse a SU PROPIA máquina, así que las notificaciones solo
+ * funcionaban en la PC de desarrollo. Usando location.host se conecta al
+ * mismo servidor que sirvió la app, a través del proxy /ws de nginx
+ * (ver nginx.conf) — y wss:// automáticamente si la página va por HTTPS.
+ */
+function resolverWsUrl() {
+  if (import.meta.env.VITE_WS_URL) return import.meta.env.VITE_WS_URL;
+  const protocolo = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${protocolo}//${window.location.host}/ws`;
+}
 
 /**
  * @param {(event: object) => void} onMessage  callback cuando llega un evento
@@ -19,14 +33,16 @@ export function useWebSocket(onMessage) {
   const [connected, setConnected] = useState(false);
   const [error, setError]         = useState(null);
 
-  const getToken = () => localStorage.getItem('token');
+  const getToken = () => localStorage.getItem('es_token');
 
   const connect = useCallback(() => {
     const token = getToken();
     if (!token) return;
 
-    const url = `${WS_URL}?token=${encodeURIComponent(token)}`;
-    const ws  = new WebSocket(url);
+    // El token viaja como subprotocolo, NO en la query string: nginx
+    // registra la URL completa en su access log ($request), y un JWT ahí
+    // queda como credencial en texto plano en disco.
+    const ws = new WebSocket(resolverWsUrl(), ['bearer', token]);
     wsRef.current = ws;
 
     ws.onopen = () => {

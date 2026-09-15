@@ -28,6 +28,14 @@ spec:
       ports:
         - protocol: TCP
           port: 9000
+    # Proxy /ws -> websocket-server (ver location /ws en nginx.conf)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: websocket-server
+      ports:
+        - protocol: TCP
+          port: 8080
     # Permitir DNS (kube-dns)
     - to:
         - namespaceSelector:

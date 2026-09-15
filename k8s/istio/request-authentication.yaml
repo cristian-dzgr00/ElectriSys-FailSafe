@@ -1,39 +1,47 @@
 # ============================================================
-# RequestAuthentication — valida JWT a nivel de Istio
-# Complementa (no reemplaza) el JwtMiddleware.php existente.
+# Autorización a nivel de Istio para el backend.
+#
+# POR QUÉ AQUÍ NO HAY UN RequestAuthentication
+# --------------------------------------------
+# Antes este archivo declaraba un RequestAuthentication que validaba los
+# JWT en el sidecar. No podía funcionar, por cuatro motivos:
+#
+#   1. Esperaba issuer "electrisys-backend"; el backend emite
+#      iss: "electrisys"  (backend/src/routes/auth.php).
+#   2. Apuntaba a jwksUri http://backend-a/api/auth/jwks, ruta que no
+#      existe en la aplicación.
+#   3. Los tokens se firman con HS256, un algoritmo SIMÉTRICO. Un JWKS
+#      publica claves públicas; exponer un secreto HS256 por HTTP sería
+#      entregarle a cualquiera la capacidad de firmar tokens válidos.
+#      Istio solo valida JWT vía JWKS, así que HS256 es incompatible.
+#   4. Exigía audience "electrisys-frontend"; el backend no emite claim aud.
+#
+# El AuthorizationPolicy asociado hacía DENY de /api/* cuando el claim iss
+# no era "electrisys-backend" — es decir, habría bloqueado el 100% de las
+# peticiones reales.
+#
+# La validación de JWT la hace JwtMiddleware.php, que sí conoce el secreto.
+# Istio aporta aquí lo que PHP no puede: identidad criptográfica de carga
+# de trabajo (mTLS) para que solo los pods del namespace hablen con el
+# backend.
+#
+# Para validar JWT en Istio habría que migrar la firma a RS256 (par de
+# claves) y exponer un endpoint JWKS con la clave pública.
 # ============================================================
-apiVersion: security.istio.io/v1beta1
-kind: RequestAuthentication
-metadata:
-  name: electrisys-jwt
-  namespace: electrisys
-spec:
-  selector:
-    matchLabels:
-      app: backend
-  jwtRules:
-    - issuer: "electrisys-backend"
-      jwksUri: "http://backend-a/api/auth/jwks"
-      audiences:
-        - "electrisys-frontend"
-      forwardOriginalToken: true   # el PHP también recibe el token
----
-# AuthorizationPolicy: bloquea /api (excepto /auth) sin JWT válido
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: require-jwt-for-api
+  name: backend-solo-desde-el-namespace
   namespace: electrisys
 spec:
   selector:
     matchLabels:
       app: backend
-  action: DENY
+  action: ALLOW
   rules:
-    - to:
-        - operation:
-            paths: ["/api/*"]
-            notPaths: ["/api/auth/*", "/api/health/*"]
-      when:
-        - key: request.auth.claims[iss]
-          notValues: ["electrisys-backend"]
+    # Con PeerAuthentication STRICT (peer-authentication.yaml) el origen
+    # se prueba con el certificado mTLS del sidecar, no con una cabecera
+    # que el cliente pueda inventarse.
+    - from:
+        - source:
+            namespaces: ["electrisys"]

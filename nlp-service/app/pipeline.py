@@ -117,9 +117,34 @@ def _procesar_consulta_producto(intencion: str, texto: str, entidades: dict) -> 
     return [producto], templates.consultar_compatibilidad(vehiculos, producto.get("nombre", termino))
 
 
-def procesar_consulta(texto: str) -> dict:
+def _fusionar_entidades(entidades_nuevas: dict, contexto_previo: dict | None) -> dict:
+    """Completa los campos que el texto actual no mencionó con los del turno
+    anterior — memoria de una sola ranura de contexto (ver docs/asistente-nlp.md),
+    no un gestor de diálogo con estado conversacional completo.
+
+    Las entidades del texto actual ganan siempre que estén presentes: si el
+    usuario corrige algo ("no, el Corolla es del 2019"), el turno nuevo debe
+    prevalecer sobre el contexto viejo.
+    """
+    contexto_previo = contexto_previo or {}
+    return {
+        campo: entidades_nuevas.get(campo) or contexto_previo.get(campo)
+        for campo in entidades_nuevas
+    }
+
+
+def _falta_vehiculo(intencion: str, entidades: dict) -> bool:
+    """True si la intención necesita marca+modelo para resolver y todavía
+    faltan después de fusionar con el contexto previo — dispara el diálogo
+    multi-turno (ver procesar_consulta)."""
+    return intencion in ("recomendar_sustituto", "buscar_repuesto") and not (
+        entidades.get("marca") and entidades.get("modelo")
+    )
+
+
+def procesar_consulta(texto: str, contexto_previo: dict | None = None) -> dict:
     intencion, confianza = predecir_intencion(texto)
-    entidades = _entidades_del_texto(texto)
+    entidades = _fusionar_entidades(_entidades_del_texto(texto), contexto_previo)
 
     if intencion in ("saludo_despedida", "fuera_de_dominio"):
         sugerencias, respuesta = [], templates.responder_fijo(intencion)
@@ -138,4 +163,5 @@ def procesar_consulta(texto: str) -> dict:
         "entidades": entidades,
         "sugerencias": sugerencias,
         "respuesta_texto": respuesta,
+        "esperando_datos": _falta_vehiculo(intencion, entidades),
     }

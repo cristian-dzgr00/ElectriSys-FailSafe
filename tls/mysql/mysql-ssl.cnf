@@ -2,10 +2,14 @@
 # mysql-ssl.cnf — agrega a my.cnf de mysql-primary
 # Fuerza TLS en todas las conexiones de clientes.
 # ============================================================
+# Rutas relativas al montaje de todo tls/ en /etc/mysql/tls (docker-compose.yml).
+# Antes apuntaban a /etc/mysql/tls/{ca,mysql}.crt asumiendo que ahí estaban
+# los tres archivos, pero solo se montaba tls/ca: el certificado y la clave
+# del servidor (tls/mysql/) nunca llegaban y el handshake fallaba siempre.
 [mysqld]
-ssl-ca   = /etc/mysql/tls/ca.crt
-ssl-cert = /etc/mysql/tls/mysql.crt
-ssl-key  = /etc/mysql/tls/mysql.key
+ssl-ca   = /etc/mysql/tls/ca/ca.crt
+ssl-cert = /etc/mysql/tls/mysql/mysql.crt
+ssl-key  = /etc/mysql/tls/mysql/mysql.key
 
 # Requerir TLS para el usuario electrisys_user
 # (ejecutar en MySQL tras aplicar esta config):
@@ -15,6 +19,6 @@ ssl-key  = /etc/mysql/tls/mysql.key
 require_secure_transport = ON
 
 [client]
-ssl-ca   = /etc/mysql/tls/ca.crt
-ssl-cert = /etc/mysql/tls/mysql.crt
-ssl-key  = /etc/mysql/tls/mysql.key
+ssl-ca   = /etc/mysql/tls/ca/ca.crt
+ssl-cert = /etc/mysql/tls/mysql/mysql.crt
+ssl-key  = /etc/mysql/tls/mysql/mysql.key

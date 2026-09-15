@@ -24,11 +24,14 @@ $group->post('/categorias', function (Request $req, Response $res) {
     }
     try {
         $db = catDB();
-        $db->prepare("INSERT INTO categorias (nombre) VALUES (?)")->execute([$nombre]);
-        $res->getBody()->write(json_encode(['success' => true, 'id' => $db->lastInsertId()]));
+        $stmt = $db->prepare("INSERT INTO categorias (nombre) VALUES (?) RETURNING id INTO :out_id");
+        $nuevoId = 0;
+        $stmt->bindOut(':out_id', $nuevoId);
+        $stmt->execute([$nombre]);
+        $res->getBody()->write(json_encode(['success' => true, 'id' => (int) $nuevoId]));
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     } catch (\PDOException $e) {
-        $msg = str_contains($e->getMessage(), 'Duplicate')
+        $msg = \App\models\OciConnection::esViolacionDeUnicidad($e)
             ? "Ya existe una categoría con el nombre \"$nombre\""
             : 'Error al crear la categoría';
         $res->getBody()->write(json_encode(['error' => $msg]));
@@ -52,7 +55,7 @@ $group->put('/categorias/{id}', function (Request $req, Response $res, array $ar
         $res->getBody()->write(json_encode(['success' => true]));
         return $res->withHeader('Content-Type', 'application/json');
     } catch (\PDOException $e) {
-        $msg = str_contains($e->getMessage(), 'Duplicate')
+        $msg = \App\models\OciConnection::esViolacionDeUnicidad($e)
             ? "Ya existe una categoría con el nombre \"$nombre\""
             : 'Error al actualizar la categoría';
         $res->getBody()->write(json_encode(['error' => $msg]));

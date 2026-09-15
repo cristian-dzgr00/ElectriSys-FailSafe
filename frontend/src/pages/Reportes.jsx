@@ -8,8 +8,6 @@ import { useToastContext } from '../context/ToastContext';
 import { SkeletonCard, SkeletonText } from '../components/Skeleton';
 import { Tooltip as TT } from '../components/Tooltip';
 import { Filter, FileText, Calendar, TrendingUp, DollarSign, ShoppingCart, Package, HelpCircle, Download } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const fmt = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
 const COLORS = ['#f5a623','#e07b39','#4caf7d','#3b8bd4','#e05252','#9c6bae','#f0c040'];
@@ -73,6 +71,13 @@ export default function Reportes() {
     setExportando(true);
     toast('Generando PDF, espera un momento…', { type: 'info' });
     try {
+      // jspdf y html2canvas pesan ~590 kB juntos y solo hacen falta al exportar:
+      // se cargan bajo demanda para no inflar la carga inicial de Reportes.
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas'),
+      ]);
+
       const pdf    = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pageW  = pdf.internal.pageSize.getWidth();
       const pageH  = pdf.internal.pageSize.getHeight();

@@ -6,7 +6,7 @@ use App\middlewares\RoleMiddleware;
 
 function usuariosDB() { return Database::getConnection(); }
 
-function getRolId(PDO $db, string $rol): int
+function getRolId(AppmodelsOciConnection $db, string $rol): int
 {
     $rolesValidos = ['admin', 'vendedor', 'dueno'];
     $rol = in_array($rol, $rolesValidos, true) ? $rol : 'vendedor';
@@ -14,8 +14,11 @@ function getRolId(PDO $db, string $rol): int
     $stmt->execute([$rol]);
     $row = $stmt->fetch();
     if (!$row) {
-        $db->prepare("INSERT INTO roles (nombre) VALUES (?)")->execute([$rol]);
-        return (int) $db->lastInsertId();
+        $stmt = $db->prepare("INSERT INTO roles (nombre) VALUES (?) RETURNING id INTO :out_id");
+        $nuevoId = 0;
+        $stmt->bindOut(':out_id', $nuevoId);
+        $stmt->execute([$rol]);
+        return (int) $nuevoId;
     }
     return (int) $row['id'];
 }
@@ -58,13 +61,15 @@ $group->post('/usuarios', function (Request $req, Response $res) {
         $hash  = password_hash($b['password'], PASSWORD_BCRYPT, ['cost' => 12]);
         $rolId = getRolId($db, $b['rol'] ?? 'vendedor');
 
-        $db->prepare("INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?,?,?,?)")
-           ->execute([trim($b['nombre']), strtolower(trim($b['email'])), $hash, $rolId]);
+        $stmt = $db->prepare("INSERT INTO usuarios (nombre, email, password, rol_id) VALUES (?,?,?,?) RETURNING id INTO :out_id");
+        $nuevoId = 0;
+        $stmt->bindOut(':out_id', $nuevoId);
+        $stmt->execute([trim($b['nombre']), strtolower(trim($b['email'])), $hash, $rolId]);
 
-        $res->getBody()->write(json_encode(['success' => true, 'id' => $db->lastInsertId()]));
+        $res->getBody()->write(json_encode(['success' => true, 'id' => (int) $nuevoId]));
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     } catch (\PDOException $e) {
-        $msg = str_contains($e->getMessage(), 'Duplicate')
+        $msg = \App\models\OciConnection::esViolacionDeUnicidad($e)
             ? 'El email ya está registrado por otro usuario'
             : 'Error al crear el usuario';
         $res->getBody()->write(json_encode(['error' => $msg]));
@@ -102,7 +107,7 @@ $group->put('/usuarios/{id}', function (Request $req, Response $res, array $args
         $res->getBody()->write(json_encode(['success' => true]));
         return $res->withHeader('Content-Type', 'application/json');
     } catch (\PDOException $e) {
-        $msg = str_contains($e->getMessage(), 'Duplicate')
+        $msg = \App\models\OciConnection::esViolacionDeUnicidad($e)
             ? 'El email ya está registrado por otro usuario'
             : 'Error al actualizar el usuario';
         $res->getBody()->write(json_encode(['error' => $msg]));

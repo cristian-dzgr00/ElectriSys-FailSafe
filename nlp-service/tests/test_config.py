@@ -27,7 +27,9 @@ def test_backend_auth_headers_autogenera_token_con_jwt_secret(monkeypatch):
     token = headers["Authorization"].removeprefix("Bearer ")
     payload = pyjwt.decode(token, "mi-secreto-compartido", algorithms=["HS256"])
     assert payload["iss"] == "electrisys"
-    assert payload["rol"] == "admin"
+    # Rol minimo: ninguna ruta que este servicio consume exige admin
+    # (ver comentario en config.py sobre por que no debe autofirmarse admin).
+    assert payload["rol"] == "vendedor"
     assert payload["exp"] > payload["iat"]
 
 

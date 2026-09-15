@@ -11,23 +11,32 @@ groups:
           summary: "Nginx caído"
           description: "El servidor Nginx de ElectriSys lleva {{ $value }}s sin responder."
 
-      - alert: HighRequestLatency
-        expr: histogram_quantile(0.95, rate(nginx_http_request_duration_seconds_bucket[5m])) > 2
+      # NOTA: aquí había dos alertas basadas en
+      # nginx_http_request_duration_seconds_bucket y en
+      # nginx_http_requests_total{status=~"5.."}. Ninguna podía dispararse:
+      # el nginx-prometheus-exporter leyendo /stub_status NO expone
+      # histogramas de latencia ni etiquetas de código de estado (eso
+      # requiere NGINX Plus). Parecían cubrir latencia y errores 5xx, pero
+      # nunca se evaluaban a nada. Se reemplazan por métricas que
+      # stub_status sí publica.
+
+      - alert: NginxConexionesSaturadas
+        expr: nginx_connections_active > 500
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "Latencia HTTP alta (p95 > 2s)"
-          description: "El percentil 95 de latencia es {{ $value }}s en los últimos 5 minutos."
+          summary: "Nginx con {{ $value }} conexiones activas"
+          description: "Saturación sostenida de conexiones; revisar worker_connections (1024 configurados)."
 
-      - alert: HighErrorRate
-        expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.05
+      - alert: NginxConexionesDescartadas
+        expr: rate(nginx_connections_accepted[5m]) - rate(nginx_connections_handled[5m]) > 0
         for: 2m
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "Tasa de errores 5xx mayor al 5%"
-          description: "{{ $value | humanizePercentage }} de las peticiones responden con error."
+          summary: "Nginx está descartando conexiones"
+          description: "Se aceptaron más conexiones de las que se pudieron atender: se alcanzó un límite de recursos."
 
   # ── Base de datos ─────────────────────────────────────────────
   - name: database
@@ -75,13 +84,20 @@ groups:
         annotations:
           summary: "Cola de PHP-FPM con {{ $value }} peticiones pendientes"
 
-  # ── Rate limiting ─────────────────────────────────────────────
-  - name: rate_limiting
+  # ── Saturación de la aplicación ───────────────────────────────
+  - name: saturacion_app
     rules:
-      - alert: LoginRateLimitTriggered
-        expr: rate(nginx_http_requests_total{location="login", status="429"}[5m]) > 1
-        for: 1m
+      # La alerta anterior (LoginRateLimitTriggered) filtraba por
+      # {location="login", status="429"}, etiquetas que stub_status no
+      # produce: nunca podía dispararse. Detectar fuerza bruta por
+      # métricas exige exportar los 429 desde los logs de nginx
+      # (p. ej. con grok_exporter); mientras tanto, esos intentos quedan
+      # registrados en la tabla login_attempts y en audit_log.
+      - alert: PhpFpmSinProcesosLibres
+        expr: phpfpm_max_children_reached > 0
+        for: 2m
         labels:
           severity: warning
         annotations:
-          summary: "Rate limit de login activado — posible ataque de fuerza bruta"
+          summary: "PHP-FPM agotó su pool de procesos ({{ $labels.instance }})"
+          description: "Se alcanzó pm.max_children: las peticiones se encolan y la latencia sube."

@@ -47,14 +47,16 @@ class GestorAsistente implements VentaSubject
      * resultado. Lanza RuntimeException si el microservicio no responde
      * o responde con error — la ruta HTTP decide qué código devolver.
      *
-     * @param string $texto     Consulta del vendedor
-     * @param int    $usuarioId ID del usuario autenticado (del JWT)
-     * @param string $ip        IP del cliente, para el log
-     * @return array            Respuesta decodificada del microservicio
+     * @param string     $texto          Consulta del vendedor
+     * @param int        $usuarioId      ID del usuario autenticado (del JWT)
+     * @param string     $ip             IP del cliente, para el log
+     * @param array|null $contextoPrevio Entidades del turno anterior (diálogo
+     *                                   multi-turno); se reenvía sin interpretar.
+     * @return array                     Respuesta decodificada del microservicio
      */
-    public function consultar(string $texto, int $usuarioId, string $ip = ''): array
+    public function consultar(string $texto, int $usuarioId, string $ip = '', ?array $contextoPrevio = null): array
     {
-        $respuesta = $this->llamarMicroservicio($texto);
+        $respuesta = $this->llamarMicroservicio($texto, $contextoPrevio);
 
         $this->notificarObservers('consulta_asistente', [
             'usuario_id'     => $usuarioId,
@@ -63,18 +65,35 @@ class GestorAsistente implements VentaSubject
             'ip'             => $ip,
         ]);
 
+        // AsistenteLogObserver es el único Observer que persiste la
+        // consulta; se le pregunta directamente el id insertado en vez de
+        // que notificarObservers() devuelva algo, para no romper el
+        // contrato genérico VentaObserver::actualizar(): void (compartido
+        // con GestorVentas).
+        foreach ($this->observers as $observer) {
+            if ($observer instanceof AsistenteLogObserver) {
+                $respuesta['consulta_id'] = $observer->ultimoIdInsertado();
+                break;
+            }
+        }
+
         return $respuesta;
     }
 
-    private function llamarMicroservicio(string $texto): array
+    private function llamarMicroservicio(string $texto, ?array $contextoPrevio = null): array
     {
         $url = rtrim($_ENV['NLP_SERVICE_URL'] ?? '', '/') . '/nlp/consultar';
+
+        $body = ['texto' => $texto];
+        if ($contextoPrevio !== null) {
+            $body['contexto_previo'] = $contextoPrevio;
+        }
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode(['texto' => $texto]),
+            CURLOPT_POSTFIELDS     => json_encode($body),
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
                 'X-Internal-Key: ' . ($_ENV['NLP_INTERNAL_KEY'] ?? ''),

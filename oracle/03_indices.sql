@@ -30,5 +30,7 @@ CREATE INDEX idx_audit_fecha       ON audit_log(created_at);
 CREATE INDEX idx_attempts_ip_fecha ON login_attempts(ip, created_at);
 CREATE INDEX idx_consultas_usuario   ON consultas_asistente(usuario_id);
 CREATE INDEX idx_consultas_intencion ON consultas_asistente(intencion_detectada);
+CREATE INDEX idx_consultas_fecha     ON consultas_asistente(creado_en);
+CREATE INDEX idx_consultas_util      ON consultas_asistente(util);
 
 PROMPT Indices creados correctamente.

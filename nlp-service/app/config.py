@@ -50,6 +50,11 @@ def _generar_token_servicio() -> str:
     if _token_generado and ahora < _token_generado_exp - 60:
         return _token_generado
 
+    # Rol minimo necesario: las rutas que este servicio consume
+    # (buscar-compatibles, /repuestos, /repuestos/{id}/compatibilidad) solo
+    # exigen un JWT valido, ninguna requiere rol admin. Firmar con "admin"
+    # convertia cualquier fuga de este token (o del JWT_SECRET) en acceso
+    # de administrador sobre TODO el backend, no solo sobre estas rutas.
     exp = int(ahora) + 3600
     payload = {
         "iss": "electrisys",
@@ -58,7 +63,7 @@ def _generar_token_servicio() -> str:
         "sub": 1,
         "nombre": "NLP Service",
         "email": "nlp-service@electrisys.internal",
-        "rol": "admin",
+        "rol": "vendedor",
     }
     _token_generado = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
     _token_generado_exp = exp

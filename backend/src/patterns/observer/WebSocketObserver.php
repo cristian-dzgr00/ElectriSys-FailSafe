@@ -33,7 +33,7 @@ class WebSocketObserver implements VentaObserver
             'timestamp'   => date('c'),
             'userId'      => $contexto['usuario_id'] ?? null,
             'detail'      => $contexto['detalle']    ?? '',
-            'targetRoles' => ['admin', 'supervisor'], // quién recibe la notif.
+            'targetRoles' => ['admin', 'dueno'], // quién recibe la notif. — roles reales del sistema (ver roles: admin/vendedor/dueno)
         ];
 
         $this->postToWsServer($event);

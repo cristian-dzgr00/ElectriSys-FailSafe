@@ -1,0 +1,64 @@
+# ============================================================
+# NetworkPolicy: allow-backend-egress
+#
+# deny-all.yaml bloquea Ingress Y Egress de todos los pods, y ninguna
+# política concedía salida a los pods backend. Como las NetworkPolicies
+# son aditivas y el tráfico pod-a-pod exige que AMBOS lados lo permitan
+# (egress del origen + ingress del destino), el backend no podía ni
+# resolver DNS ni alcanzar MySQL: las reglas de allow-backend-to-mysql
+# abrían el ingress de la base, pero el tráfico moría en la salida.
+#
+# Esta política concede exactamente las salidas que el backend necesita.
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-egress
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes:
+    - Egress
+  egress:
+    # Base de datos: primaria y réplica (fallback de Database.php)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: mysql-primary
+        - podSelector:
+            matchLabels:
+              app: mysql-replica
+      ports:
+        - protocol: TCP
+          port: 3306
+
+    # WebSocketObserver.php -> POST /notify
+    - to:
+        - podSelector:
+            matchLabels:
+              app: websocket-server
+      ports:
+        - protocol: TCP
+          port: 8080
+
+    # GestorAsistente.php -> microservicio de NLP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: nlp-service
+      ports:
+        - protocol: TCP
+          port: 8000
+
+    # DNS del clúster: sin esto no resuelve ni "mysql-primary"
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

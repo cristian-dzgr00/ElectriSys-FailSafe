@@ -40,7 +40,7 @@ class HealthTest extends TestCase
     {
         $health = file_get_contents(__DIR__ . '/../src/routes/health.php');
         $this->assertStringContainsString('/health', $health);
-        $this->assertStringContainsString('db_primary', $health);
+        $this->assertStringContainsString("checks']['db']", $health);
     }
 
     /** Valida que el rate limiting está implementado en login */

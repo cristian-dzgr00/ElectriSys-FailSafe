@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\patterns\observer;
 
 use App\models\Database;
-use PDO;
+use App\models\OciConnection;
 
 /**
  * AuditLogObserver — Observer Concreto
@@ -23,7 +23,7 @@ use PDO;
  */
 class AuditLogObserver implements VentaObserver
 {
-    private PDO $db;
+    private OciConnection $db;
 
     public function __construct()
     {

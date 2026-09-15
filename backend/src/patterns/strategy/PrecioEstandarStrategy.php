@@ -36,6 +36,20 @@ class PrecioEstandarStrategy implements DiscountStrategy
     /**
      * {@inheritDoc}
      */
+    public function desglosar(float $subtotal): array
+    {
+        $impuesto = round($subtotal * self::IVA, 2);
+        return [
+            'subtotal'  => round($subtotal, 2),
+            'descuento' => 0.0,
+            'impuesto'  => $impuesto,
+            'total'     => round($subtotal + $impuesto, 2),
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getNombre(): string
     {
         return 'Precio estándar con IVA 19%';

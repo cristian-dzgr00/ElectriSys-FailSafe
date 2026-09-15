@@ -1,0 +1,64 @@
+# ============================================================
+# ElectriSys - Microservicio de NLP (asistente de recomendación)
+# Sin este Deployment, /api/asistente/consultar responde 503 en el
+# clúster: no existía ningún workload para nlp-service (docker-compose.yml
+# sí lo levanta, pero los manifiestos de k8s nunca lo incluyeron).
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-service
+  namespace: electrisys
+  labels:
+    app: nlp-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nlp-service
+  template:
+    metadata:
+      labels:
+        app: nlp-service
+    spec:
+      containers:
+        - name: nlp-service
+          image: electrisys/nlp-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            # El backend PHP no habla HTTP directo (php-fpm detrás de
+            # stunnel) — se llega a él vía el Service "frontend" (nginx),
+            # igual que en docker-compose.yml. Ver nginx/nginx.conf.
+            - name: BACKEND_URL
+              value: "http://frontend"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: JWT_SECRET
+            - name: NLP_INTERNAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: NLP_INTERNAL_KEY
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10

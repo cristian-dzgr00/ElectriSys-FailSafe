@@ -14,27 +14,25 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     $off   = ($page - 1) * $limit;
     $q     = '%' . trim($p['q'] ?? '') . '%';
 
-    $db    = repuestosDB();
-    $total = (int) $db->prepare("
-        SELECT COUNT(*) FROM repuestos r
-        LEFT JOIN categorias c ON r.categoria_id = c.id
-        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ?)
-    ")->execute([$q,$q,$q]) ? $db->query("SELECT FOUND_ROWS()")->fetchColumn() : 0;
+    $db = repuestosDB();
 
-    // Re-query con SQL_CALC_FOUND_ROWS
     // Busca también por categoría (c.nombre LIKE) — lo usa el microservicio
-    // NLP para el fallback de "sin compatibilidad exacta, buscar por categoría".
+    // NLP para el fallback de "sin compatibilidad exacta, buscar por categoría" —
+    // y por proveedor, para el buscador de repuestos al armar una venta.
     $stmt = $db->prepare("
-        SELECT SQL_CALC_FOUND_ROWS r.*, c.nombre AS categoria
+        SELECT r.*, c.nombre AS categoria, p.nombre AS proveedor, COUNT(*) OVER() AS total_filas
         FROM repuestos r
         LEFT JOIN categorias c ON r.categoria_id = c.id
-        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ?)
+        LEFT JOIN proveedores p ON r.proveedor_id = p.id
+        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ? OR p.nombre LIKE ?)
         ORDER BY r.nombre
-        LIMIT ? OFFSET ?
+        OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
-    $stmt->execute([$q, $q, $q, $limit, $off]);
+    $stmt->execute([$q, $q, $q, $q, $off, $limit]);
     $rows  = $stmt->fetchAll();
-    $total = (int) $db->query("SELECT FOUND_ROWS()")->fetchColumn();
+    $total = (int) ($rows[0]['total_filas'] ?? 0);
+    foreach ($rows as &$fila) { unset($fila['total_filas']); }
+    unset($fila);
 
     $res->getBody()->write(json_encode(['data' => $rows, 'total' => $total, 'page' => $page]));
     return $res->withHeader('Content-Type', 'application/json');
@@ -158,8 +156,15 @@ $group->post('/repuestos/{id}/compatibilidad', function (Request $req, Response 
         $vehiculoId = $vehiculos->buscarOcrear($b);
     }
 
-    $db->prepare("INSERT IGNORE INTO repuesto_compatibilidad (repuesto_id, vehiculo_id) VALUES (?, ?)")
-        ->execute([$repuestoId, $vehiculoId]);
+    // Oracle no tiene INSERT IGNORE: se intenta y se ignora el duplicado
+    // (uq_repuesto_vehiculo -> ORA-00001), que es exactamente el caso que
+    // MySQL silenciaba con IGNORE.
+    try {
+        $db->prepare("INSERT INTO repuesto_compatibilidad (repuesto_id, vehiculo_id) VALUES (?, ?)")
+            ->execute([$repuestoId, $vehiculoId]);
+    } catch (\Throwable $e) {
+        if (!\App\models\OciConnection::esViolacionDeUnicidad($e)) { throw $e; }
+    }
 
     $res->getBody()->write(json_encode(['success' => true, 'vehiculo' => $vehiculos->buscarPorId($vehiculoId)]));
     return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
@@ -202,24 +207,28 @@ $group->post('/repuestos', function (Request $req, Response $res) {
     }
     try {
         $db = repuestosDB();
-        $db->prepare("
+        $stmt = $db->prepare("
             INSERT INTO repuestos (nombre, codigo, descripcion, categoria_id, proveedor_id, precio_compra, precio_venta, stock, stock_minimo)
             VALUES (:nombre, :codigo, :descripcion, :categoria_id, :proveedor_id, :precio_compra, :precio_venta, :stock, :stock_minimo)
-        ")->execute([
+            RETURNING id INTO :out_id
+        ");
+        $nuevoId = 0;
+        $stmt->bindOut(':out_id', $nuevoId);
+        $stmt->execute([
             ':nombre'       => trim($b['nombre']),
             ':codigo'       => trim($b['codigo'] ?? ''),
             ':descripcion'  => trim($b['descripcion'] ?? ''),
-            ':categoria_id' => $b['categoria_id'] ?: null,
-            ':proveedor_id' => $b['proveedor_id'] ?: null,
+            ':categoria_id' => ($b['categoria_id'] ?? null) ?: null,
+            ':proveedor_id' => ($b['proveedor_id'] ?? null) ?: null,
             ':precio_compra'=> (float)($b['precio_compra'] ?? 0),
             ':precio_venta' => (float)$b['precio_venta'],
             ':stock'        => (int)($b['stock'] ?? 0),
             ':stock_minimo' => (int)($b['stock_minimo'] ?? 5),
         ]);
-        $res->getBody()->write(json_encode(['success' => true, 'id' => $db->lastInsertId()]));
+        $res->getBody()->write(json_encode(['success' => true, 'id' => (int) $nuevoId]));
         return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
     } catch (\PDOException $e) {
-        $msg = str_contains($e->getMessage(), 'Duplicate')
+        $msg = \App\models\OciConnection::esViolacionDeUnicidad($e)
             ? 'Ya existe un repuesto con ese código' : 'Error al guardar el repuesto';
         $res->getBody()->write(json_encode(['error' => $msg]));
         return $res->withStatus(409)->withHeader('Content-Type', 'application/json');
@@ -248,8 +257,8 @@ $group->put('/repuestos/{id}', function (Request $req, Response $res, array $arg
             ':nombre'       => trim($b['nombre']),
             ':codigo'       => trim($b['codigo'] ?? ''),
             ':descripcion'  => trim($b['descripcion'] ?? ''),
-            ':categoria_id' => $b['categoria_id'] ?: null,
-            ':proveedor_id' => $b['proveedor_id'] ?: null,
+            ':categoria_id' => ($b['categoria_id'] ?? null) ?: null,
+            ':proveedor_id' => ($b['proveedor_id'] ?? null) ?: null,
             ':precio_compra'=> (float)($b['precio_compra'] ?? 0),
             ':precio_venta' => (float)$b['precio_venta'],
             ':stock'        => (int)($b['stock'] ?? 0),
@@ -272,7 +281,7 @@ $group->delete('/repuestos/{id}', function (Request $req, Response $res, array $
         return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
     $db = repuestosDB();
-    $db->prepare("UPDATE repuestos SET activo=0, deleted_at=NOW() WHERE id=?")->execute([(int)$args['id']]);
+    $db->prepare("UPDATE repuestos SET activo=0, deleted_at=SYSTIMESTAMP WHERE id=?")->execute([(int)$args['id']]);
     $res->getBody()->write(json_encode(['success' => true]));
     return $res->withHeader('Content-Type', 'application/json');
 });

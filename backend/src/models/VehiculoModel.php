@@ -1,14 +1,11 @@
 <?php
 namespace App\models;
 
-use PDO;
-use PDOException;
-
 class VehiculoModel
 {
     private const COMBUSTIBLES_VALIDOS = ['gasolina', 'diesel', 'hibrido', 'electrico', 'gas'];
 
-    private PDO $db;
+    private OciConnection $db;
 
     public function __construct()
     {
@@ -47,14 +44,14 @@ class VehiculoModel
     public function marcas(): array
     {
         return $this->db->query("SELECT DISTINCT marca FROM vehiculos ORDER BY marca")
-            ->fetchAll(PDO::FETCH_COLUMN);
+            ->fetchColumnAll();
     }
 
     public function modelos(string $marca): array
     {
         $stmt = $this->db->prepare("SELECT DISTINCT modelo FROM vehiculos WHERE marca = ? ORDER BY modelo");
         $stmt->execute([$marca]);
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $stmt->fetchColumnAll();
     }
 
     public function buscarPorId(int $id): ?array
@@ -85,13 +82,17 @@ class VehiculoModel
         }
 
         try {
-            $this->db->prepare("
+            $stmt = $this->db->prepare("
                 INSERT INTO vehiculos (marca, modelo, anio_desde, anio_hasta, motor, combustible)
                 VALUES (?, ?, ?, ?, ?, ?)
-            ")->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible]);
-            return (int) $this->db->lastInsertId();
-        } catch (PDOException $e) {
-            if (str_contains($e->getMessage(), 'Duplicate')) {
+                RETURNING id INTO :out_id
+            ");
+            $nuevoId = 0;
+            $stmt->bindOut(':out_id', $nuevoId);
+            $stmt->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible]);
+            return (int) $nuevoId;
+        } catch (\Throwable $e) {
+            if (OciConnection::esViolacionDeUnicidad($e)) {
                 $existente = $this->buscarExacto($marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible);
                 if ($existente !== null) {
                     return $existente;
@@ -109,12 +110,15 @@ class VehiculoModel
         ?string $motor,
         string $combustible
     ): ?int {
+        // Oracle no tiene "<=>" (null-safe equal de MySQL): se resuelve
+        // igualando o, si ambos lados son NULL, tratándolo como coincidencia.
         $stmt = $this->db->prepare("
             SELECT id FROM vehiculos
             WHERE marca = ? AND modelo = ? AND anio_desde = ? AND anio_hasta = ?
-              AND motor <=> ? AND combustible = ?
+              AND (motor = ? OR (motor IS NULL AND ? IS NULL))
+              AND combustible = ?
         ");
-        $stmt->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible]);
+        $stmt->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $motor, $combustible]);
         $id = $stmt->fetchColumn();
         return $id !== false ? (int) $id : null;
     }

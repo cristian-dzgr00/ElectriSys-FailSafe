@@ -46,6 +46,22 @@ class DescuentoVolumenStrategy implements DiscountStrategy
     /**
      * {@inheritDoc}
      */
+    public function desglosar(float $subtotal): array
+    {
+        $descuento          = round($subtotal * $this->porcentajeDescuento, 2);
+        $subtotalDescontado = $subtotal - $descuento;
+        $impuesto           = round($subtotalDescontado * self::IVA, 2);
+        return [
+            'subtotal'  => round($subtotal, 2),
+            'descuento' => $descuento,
+            'impuesto'  => $impuesto,
+            'total'     => round($subtotalDescontado + $impuesto, 2),
+        ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getNombre(): string
     {
         $pct = (int) ($this->porcentajeDescuento * 100);

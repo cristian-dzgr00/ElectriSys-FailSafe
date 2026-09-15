@@ -1,0 +1,16 @@
+{
+  "userIgnoreFilters": [
+    "node_modules/",
+    "backend/vendor/",
+    "nlp-service/venv/",
+    "nlp-service/.pytest_cache/",
+    "nlp-service/__pycache__/",
+    "frontend/dist/",
+    "frontend/node_modules/",
+    "graphify-out/",
+    "tls/ca/",
+    "tls/nginx/",
+    "tls/php-fpm/",
+    ".git/"
+  ]
+}

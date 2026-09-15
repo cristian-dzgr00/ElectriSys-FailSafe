@@ -27,6 +27,21 @@ COMBUSTIBLES_SINONIMOS = {
     "gas": "gas", "gnv": "gas",
 }
 
+# Casos donde la categoría correcta no se puede alcanzar por similitud de
+# caracteres (ver docs/evaluacion.md, sección 2): "bujía" y "Encendido" son
+# palabras sin parecido ortográfico, relacionadas solo por significado, y
+# "correa de distribución" no matcheaba "Correas y Bandas" por ser singular
+# vs. plural más una categoría de tres palabras (caso límite del fuzzy
+# matching). Se resuelven por sinónimo directo, ANTES de intentar
+# _mejor_match(), en vez de bajar el umbral fuzzy global (que degradaría
+# la precisión de las demás categorías).
+SINONIMOS_CATEGORIA = {
+    "bujia": "Encendido",
+    "bujias": "Encendido",
+    "correa": "Correas y Bandas",
+    "correas": "Correas y Bandas",
+}
+
 _RE_ANIO = re.compile(r"\b(19[5-9]\d|20[0-4]\d)\b")
 _RE_MOTOR = re.compile(r"\b(\d\.\d)\b|\b(\d{3,4})\s?cc\b", re.IGNORECASE)
 _RE_CODIGO = re.compile(r"\b[A-Za-z0-9]{1,10}-[A-Za-z0-9]{2,10}\b")
@@ -90,6 +105,16 @@ def extraer_modelo(texto_normalizado: str, modelos_conocidos: list[str]) -> str 
 
 
 def extraer_categoria(texto_normalizado: str, categorias_conocidas: list[str]) -> str | None:
+    """Resuelve categoría por sinónimo directo primero; si no aplica, por
+    fuzzy matching (_mejor_match).
+
+    El sinónimo solo se usa si la categoría mapeada realmente está en
+    categorias_conocidas (el catálogo real) — evita devolver una categoría
+    que no existe en este negocio en particular.
+    """
+    for palabra, categoria in SINONIMOS_CATEGORIA.items():
+        if palabra in texto_normalizado and categoria in categorias_conocidas:
+            return categoria
     return _mejor_match(texto_normalizado, categorias_conocidas)
 
 

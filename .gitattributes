@@ -1,0 +1,5 @@
+# Los scripts .sh se montan o copian dentro de contenedores Linux
+# (entrypoint-backend.sh, setup-replica.sh, generate-certs.sh...).
+# Con core.autocrlf=true, Git los entregaría con CRLF al clonar en Windows
+# y el contenedor fallaría con "bad interpreter: No such file or directory".
+*.sh text eol=lf

@@ -89,6 +89,22 @@ Esto no compromete la funcionalidad principal (recomendar sustitutos por
 vehículo), porque esa búsqueda depende de marca+modelo, no de categoría —
 categoría es un filtro adicional opcional.
 
+### Actualización: diccionario de sinónimos de categoría
+
+Implementado el punto 2 de "Próximos pasos" de arriba: `SINONIMOS_CATEGORIA`
+en `app/ner/extractor.py` resuelve por sinónimo directo (antes del fuzzy
+matching) los dos casos documentados arriba como fallas estructurales:
+`bujía/bujías → Encendido` y `correa/correas → Correas y Bandas`.
+
+**Límite honesto:** esto no es un enfoque semántico general — es un mapeo
+fijo de un puñado de términos observados en la evaluación. Un sinónimo no
+anticipado (ej. "platinos" para encendido, "faja" para correa en otros
+países) sigue sin resolverse, y seguirá sin resolverse hasta que aparezca
+en una evaluación y se agregue a mano. La alternativa real (embeddings
+semánticos) queda fuera de alcance por las mismas razones ya explicadas en
+`docs/asistente-nlp.md` para el resto del pipeline (no usar LLM externo,
+mantener todo explicable para la sustentación).
+
 ## 3. Motor de recomendación (precisión@k)
 
 6 consultas contra el catálogo semilla real (`database/seed_vehiculos.sql`),

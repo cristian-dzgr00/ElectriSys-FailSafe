@@ -1,0 +1,83 @@
+# ============================================================
+# NetworkPolicy: websocket-server y nlp-service
+#
+# Ninguno de los dos tenía política alguna, así que con deny-all quedaban
+# completamente aislados: nginx no podía proxyar /ws y el backend no podía
+# consultar el asistente de NLP.
+# ============================================================
+
+# ── WebSocket: lo llaman nginx (/ws) y el backend (/notify) ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-websocket
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: websocket-server
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+        - podSelector:
+            matchLabels:
+              app: backend
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# ── NLP: lo llama el backend; a su vez consulta el catálogo vía nginx ──
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nlp-service
+  namespace: electrisys
+spec:
+  podSelector:
+    matchLabels:
+      app: nlp-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: backend
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # client_backend.py consulta /api/repuestos a través de nginx
+    # (BACKEND_URL=http://frontend), no directo a php-fpm.
+    - to:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - protocol: TCP
+          port: 80
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

@@ -94,3 +94,28 @@ def test_extraer_entidades_texto_vacio_no_crashea():
 def test_extraer_categoria_por_fuzzy():
     entidades = extraer_entidades("necesito un filtro de aceite", categorias_conocidas=CATEGORIAS)
     assert entidades["categoria"] == "Filtros"
+
+
+def test_extraer_categoria_sinonimo_bujia():
+    # Antes: "bujias" no matcheaba "Encendido" por fuzzy matching (ver evaluacion.md).
+    entidades = extraer_entidades(
+        "no hay bujias NGK para Kia Rio 2017", categorias_conocidas=CATEGORIAS
+    )
+    assert entidades["categoria"] == "Encendido"
+
+
+def test_extraer_categoria_sinonimo_correa_distribucion():
+    # Antes: "correa de distribucion" no matcheaba "Correas y Bandas"
+    # (singular/plural + categoría de tres palabras, ver evaluacion.md).
+    entidades = extraer_entidades(
+        "no tengo en stock la correa de distribucion Gates para Sentra 2018",
+        categorias_conocidas=CATEGORIAS,
+    )
+    assert entidades["categoria"] == "Correas y Bandas"
+
+
+def test_extraer_categoria_sinonimo_ignora_si_no_esta_en_catalogo():
+    # El sinónimo no debe inventar una categoría que no existe en el
+    # catálogo real recibido como parámetro.
+    entidades = extraer_entidades("no hay bujias", categorias_conocidas=["Filtros", "Frenos"])
+    assert entidades["categoria"] is None
