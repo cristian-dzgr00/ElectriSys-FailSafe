@@ -55,10 +55,7 @@ export default function Usuarios() {
       }
       close(); load();
     } catch(e) {
-      const msg = e.response?.data?.error || '';
-      setError(msg.includes('Duplicate') || msg.includes('unique')
-        ? 'El email ya está registrado por otro usuario'
-        : 'Error al guardar el usuario');
+      setError(e.response?.data?.error || 'Error al guardar el usuario');
     } finally { setSaving(false); }
   };
 

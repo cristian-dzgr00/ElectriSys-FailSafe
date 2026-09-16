@@ -40,6 +40,19 @@ class Database
             throw new RuntimeException('[ElectriSys] No se pudo conectar a Oracle: ' . ($e['message'] ?? 'desconocido'));
         }
 
+        // Sin esto Oracle devuelve las fechas en su formato NLS por defecto
+        // ("16-SEP-26 04.38.34.781557 AM"), que new Date() del frontend no
+        // puede parsear. Los TIMESTAMP se guardan con SYSTIMESTAMP y el
+        // contenedor corre en UTC, así que la "Z" los marca como tales para
+        // que el navegador los convierta a la zona horaria local.
+        $alter = oci_parse($raw,
+            "ALTER SESSION SET"
+            . " NLS_DATE_FORMAT = 'YYYY-MM-DD'"
+            . " NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'"
+            . " NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD\"T\"HH24:MI:SSTZH:TZM'"
+        );
+        oci_execute($alter);
+
         self::$conn = new OciConnection($raw);
         return self::$conn;
     }

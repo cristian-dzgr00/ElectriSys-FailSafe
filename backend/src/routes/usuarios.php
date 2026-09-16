@@ -6,7 +6,7 @@ use App\middlewares\RoleMiddleware;
 
 function usuariosDB() { return Database::getConnection(); }
 
-function getRolId(AppmodelsOciConnection $db, string $rol): int
+function getRolId(\App\models\OciConnection $db, string $rol): int
 {
     $rolesValidos = ['admin', 'vendedor', 'dueno'];
     $rol = in_array($rol, $rolesValidos, true) ? $rol : 'vendedor';
