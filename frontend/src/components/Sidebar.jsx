@@ -2,9 +2,10 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Wrench, Truck, ShoppingCart,
-  FileText, Users, BarChart2, UserCog, Zap, ShieldCheck
+  FileText, Users, BarChart2, UserCog, ShieldCheck
 } from 'lucide-react';
 import OnboardingTour from './OnboardingTour';
+import logo from '../assets/logo.png';
 
 const adminLinks = [
   { to: '/',             icon: LayoutDashboard, label: 'Dashboard',     id: 'nav-dashboard' },
@@ -60,24 +61,12 @@ export default function Sidebar() {
         <div style={{
           padding: '20px 18px 16px',
           borderBottom: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <div style={{
-            width: 34, height: 34,
-            background: 'var(--accent)',
-            borderRadius: 8,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Zap size={18} color="#111" strokeWidth={2.5} />
-          </div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-primary)', letterSpacing: '-.01em' }}>
-              ElectriSys
-            </div>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-              POS System
-            </div>
-          </div>
+          <img
+            src={logo}
+            alt="ElectriSys · Electritorres"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         </div>
 
         {/* Nav */}

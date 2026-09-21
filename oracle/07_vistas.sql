@@ -27,13 +27,13 @@ SELECT r.id, r.codigo, r.nombre, r.stock, r.stock_minimo,
 -- ── Total vendido por vendedor y mes (reporte gerencial) ─────────
 CREATE OR REPLACE VIEW vw_ventas_por_vendedor AS
 SELECT u.id AS usuario_id, u.nombre AS vendedor,
-       TRUNC(v.creado_en, 'MM') AS mes,
+       TRUNC(fn_fecha_local(v.creado_en), 'MM') AS mes,
        COUNT(*) AS num_ventas,
        SUM(v.total) AS total_vendido
   FROM ventas v
   JOIN usuarios u ON u.id = v.usuario_id
  WHERE v.estado != 'anulada'
- GROUP BY u.id, u.nombre, TRUNC(v.creado_en, 'MM');
+ GROUP BY u.id, u.nombre, TRUNC(fn_fecha_local(v.creado_en), 'MM');
 
 -- ── Repuestos con su compatibilidad de vehículo (soporte al asistente NLP) ──
 -- Ampliada con descripcion/precio_venta/categoria/proveedor: son las

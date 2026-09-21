@@ -48,16 +48,19 @@ $group->get('/ventas', function (Request $req, Response $res) {
 // GET /api/ventas/resumen/semana
 $group->get('/ventas/resumen/semana', function (Request $req, Response $res) {
     $conn = Database::getConnection();
+    // Se agrupa por fecha local (fn_fecha_local) y no por TRUNC(creado_en):
+    // los TIMESTAMP están en UTC, así que una venta nocturna caía en el día
+    // siguiente y desaparecía del día que la UI muestra en la lista.
     $stmt = $conn->query("
         SELECT
-            TRUNC(creado_en)        AS fecha,
-            NVL(SUM(total), 0)      AS ingresos,
-            COUNT(*)                AS ventas
+            TRUNC(fn_fecha_local(creado_en)) AS fecha,
+            NVL(SUM(total), 0)               AS ingresos,
+            COUNT(*)                         AS ventas
         FROM ventas
         WHERE
-            creado_en >= TRUNC(SYSDATE) - 6
+            fn_fecha_local(creado_en) >= fn_hoy_local() - 6
             AND estado = 'completada'
-        GROUP BY TRUNC(creado_en)
+        GROUP BY TRUNC(fn_fecha_local(creado_en))
         ORDER BY fecha ASC
     ");
     $res->getBody()->write(json_encode(['data' => $stmt->fetchAll()]));

@@ -10,7 +10,6 @@ import {
 import { ventasService, repuestosService, clientesService } from '../services/ventasService';
 import { SkeletonStatGrid, SkeletonCard } from '../components/Skeleton';
 import api from '../services/api';
-import NotificationBell from '../components/NotificationBell';
 import { useWebSocket } from '../hooks/useWebSocket';
 
 const fmt = n => new Intl.NumberFormat('es-CO', {
@@ -97,13 +96,12 @@ function Calendario() {
         rows.forEach(v => {
           // Solo contar ventas completadas (ignorar anuladas)
           if (v.estado !== 'completada') return;
-          // Parsear día directo del string para evitar desfase UTC
-          const match = (v.creado_en ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-          if (!match) return;
-          const [, yy, mm, dd] = match;
-          // Validar que pertenece al mes/año correcto
-          if (parseInt(yy) !== año || parseInt(mm) !== mes + 1) return;
-          const dia = parseInt(dd, 10);
+          // creado_en viene en UTC; el día se toma en hora local para que
+          // coincida con la fecha que se muestra en la lista de ventas
+          const d = new Date(v.creado_en);
+          if (isNaN(d)) return;
+          if (d.getFullYear() !== año || d.getMonth() !== mes) return;
+          const dia = d.getDate();
           agrupado[dia] = (agrupado[dia] ?? 0) + 1;
         });
         setVentasPorDia(agrupado);
@@ -306,14 +304,11 @@ export default function Dashboard() {
           <div style={{fontSize:22,fontWeight:700}}>Dashboard</div>
           <div style={{fontSize:13,color:'var(--text-muted)',marginTop:2,textTransform:'capitalize'}}>{hoy}</div>
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          {liveVentas > 0 && (
-            <span style={{fontSize:12,color:'#0F6E56',background:'#E1F5EE',padding:'3px 10px',borderRadius:20}}>
-              +{liveVentas} {liveVentas === 1 ? 'venta nueva' : 'ventas nuevas'}
-            </span>
-          )}
-          <NotificationBell />
-        </div>
+        {liveVentas > 0 && (
+          <span style={{fontSize:12,color:'var(--success)',background:'var(--success-dim)',padding:'3px 10px',borderRadius:20}}>
+            +{liveVentas} {liveVentas === 1 ? 'venta nueva' : 'ventas nuevas'}
+          </span>
+        )}
       </div>
 
       {/* ── Stat cards ── */}
