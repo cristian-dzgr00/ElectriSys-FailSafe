@@ -9,6 +9,10 @@ const ESTADO_TOOLTIP = {
   aceptada:    'El cliente aceptó la cotización.',
   rechazada:   'El cliente rechazó la cotización.',
   vencida:     'La cotización superó su fecha límite.',
+  solicitado:  'Pedido enviado al proveedor, todavía sin despachar.',
+  en_transito: 'El proveedor ya despachó la mercancía; va en camino.',
+  recibido:    'La mercancía llegó y ya entró al inventario.',
+  cancelado:   'Pedido cancelado; nunca entró al inventario.',
   activo:      'Usuario con acceso al sistema.',
   inactivo:    'Usuario desactivado sin acceso.',
 };

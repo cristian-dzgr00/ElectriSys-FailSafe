@@ -1,0 +1,124 @@
+# ============================================================
+# CronJob — Backup lógico de Oracle con Data Pump (expdp)
+# Reemplaza a mysql-backup-cronjob.yaml, que pertenece al diseño MySQL
+# descartado y NO debe desplegarse.
+#
+# ⚠ LEER ANTES DE APLICAR ⚠
+#
+# 1) Data Pump escribe del lado del SERVIDOR, no del cliente.
+#    expdp no genera el archivo: le pide a la instancia de Oracle que lo
+#    escriba en su DIRECTORY. Por lo tanto el PVC de abajo tiene que estar
+#    montado en el POD DE ORACLE en /opt/oracle/backups, además de en este
+#    Job. Si solo se monta acá, el Job reporta éxito y el .dmp queda dentro
+#    del pod de la base — y desaparece con él.
+#    Por eso el PVC pide ReadWriteMany: dos pods lo montan a la vez. Si tu
+#    StorageClass no lo soporta (muchas solo dan ReadWriteOnce), la salida
+#    es programar este CronJob en el mismo nodo que Oracle, o ejecutar el
+#    export con DBMS_DATAPUMP desde dentro de la base (ver
+#    oracle/backup/11_pkg_backup_plsql.sql, que es justo lo que hace el
+#    botón "Respaldar ahora" del POS).
+#
+# 2) Este manifiesto ASUME que existe un Service llamado "oracle-db" en el
+#    namespace electrisys. Hoy k8s/ no tiene ningún manifiesto de Oracle
+#    (todos son del diseño MySQL): hay que desplegar la base primero.
+#
+# 3) El despliegue de producción de este proyecto usa Docker Compose
+#    (docker/docker-compose.backup.yml). Este archivo existe para el
+#    entorno de Kubernetes del curso.
+#
+# Los scripts llegan por ConfigMap para no duplicar la lógica que ya vive
+# en oracle/backup/. Crealo así antes de aplicar:
+#
+#   kubectl create configmap electrisys-backup-scripts \
+#     --from-file=oracle/backup/backup_logico.sh \
+#     --from-file=oracle/backup/restaurar_logico.sh \
+#     --from-file=oracle/backup/12_recompilar_invalidos.sql \
+#     -n electrisys
+# ============================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oracle-backup-pvc
+  namespace: electrisys
+spec:
+  accessModes:
+    # ReadWriteMany para que lo monten a la vez el pod de Oracle (que
+    # escribe el .dmp) y este Job (que aplica la retención). Ver el punto 1.
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  # storageClassName: nfs-client   # descomentar y ajustar: la clase por
+  # defecto de muchos clústeres solo ofrece ReadWriteOnce.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: oracle-backup
+  namespace: electrisys
+spec:
+  # 07:00 UTC = 02:00 en America/Bogota (UTC-5). Kubernetes interpreta el
+  # schedule en UTC salvo que se declare timeZone, así que se convierte a
+  # mano para que el backup caiga de madrugada para el negocio y no a las
+  # 9 de la noche.
+  schedule: "0 7 * * *"
+  # timeZone: "America/Bogota"   # k8s >= 1.27: alternativa a convertir a UTC
+  concurrencyPolicy: Forbid       # un export a la vez: dos compiten por la base
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 3
+  # Si el clúster estuvo caído a la hora programada, no dispares un backup
+  # tardío horas después: el siguiente ciclo ya lo cubre.
+  startingDeadlineSeconds: 3600
+  jobTemplate:
+    spec:
+      # Un export que falla no se arregla reintentando en bucle; que quede
+      # el Job fallido visible para que alguien lo mire.
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: expdp
+              # Misma imagen que la base: trae expdp/impdp con la versión
+              # exacta del servidor. No levanta una instancia porque se le
+              # pasa un command propio.
+              image: gvenzl/oracle-free:23-slim
+              command: ["/bin/sh", "/scripts/backup_logico.sh"]
+              env:
+                - name: ORACLE_USER
+                  value: "electrisys"
+                - name: ORACLE_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: electrisys-secrets
+                      key: DB_PASS
+                - name: ORACLE_CONNECT_STRING
+                  value: "//oracle-db:1521/freepdb1"
+                - name: BACKUP_DIR_OBJECT
+                  value: "electrisys_backup_dir"
+                - name: BACKUP_PATH
+                  value: "/opt/oracle/backups/electrisys"
+                - name: BACKUP_RETENCION_DIAS
+                  value: "14"
+                - name: TZ
+                  value: "America/Bogota"
+              resources:
+                requests:
+                  memory: "512Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "1Gi"
+                  cpu: "1"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /opt/oracle/backups
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: oracle-backup-pvc
+            - name: scripts
+              configMap:
+                name: electrisys-backup-scripts
+                defaultMode: 0755

@@ -285,3 +285,246 @@ $group->delete('/repuestos/{id}', function (Request $req, Response $res, array $
     $res->getBody()->write(json_encode(['success' => true]));
     return $res->withHeader('Content-Type', 'application/json');
 });
+
+// ─────────────────────────────────────────────────────────────────
+// IA sobre el catálogo (Sprint 3) — todo lo calcula el microservicio
+// propio en nlp-service/ (TF-IDF + coseno, promedio móvil). No hay
+// ninguna llamada a un LLM externo en este flujo.
+// ─────────────────────────────────────────────────────────────────
+
+/**
+ * GET a un path del microservicio de NLP.
+ * Devuelve el array decodificado, o null si el servicio no responde /
+ * responde con error — a propósito NO lanza: las funciones de IA son
+ * un extra de la vista de repuestos, y si el microservicio está caído
+ * la página tiene que seguir funcionando igual (criterio de aceptación
+ * del sprint). Mismo patrón de llamada interna que GestorAsistente.
+ */
+function nlpGet(string $path): ?array
+{
+    $base = rtrim($_ENV['NLP_SERVICE_URL'] ?? '', '/');
+    if ($base === '') {
+        return null;
+    }
+
+    $ch = curl_init($base . $path);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => ['X-Internal-Key: ' . ($_ENV['NLP_INTERNAL_KEY'] ?? '')],
+        // Timeouts cortos: esto corre mientras el usuario mira un modal ya
+        // abierto. Es preferible perder las sugerencias a dejarlo esperando.
+        CURLOPT_TIMEOUT        => 3,
+        CURLOPT_CONNECTTIMEOUT => 2,
+    ]);
+    $body     = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr  = curl_errno($ch) ? curl_error($ch) : null;
+    curl_close($ch);
+
+    if ($curlErr !== null || $body === false || $httpCode >= 400) {
+        error_log("[ElectriSys][NLP] {$path} no disponible (HTTP {$httpCode}) " . ($curlErr ?? ''));
+        return null;
+    }
+
+    $decoded = json_decode((string) $body, true);
+    return is_array($decoded) ? $decoded : null;
+}
+
+/**
+ * GET /api/repuestos/{id}/demanda?dias=90
+ * Serie diaria de unidades vendidas. La consume el microservicio de NLP
+ * para estimar la demanda; la agregación la hace Oracle para no mover
+ * las líneas de venta crudas por la red.
+ */
+$group->get('/repuestos/{id}/demanda', function (Request $req, Response $res, array $args) {
+    if (!ctype_digit((string)$args['id'])) {
+        $res->getBody()->write(json_encode(['error' => 'ID inválido']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+    $id   = (int) $args['id'];
+    $dias = min(365, max(7, (int)($req->getQueryParams()['dias'] ?? 90)));
+    $db   = repuestosDB();
+
+    $rep = $db->prepare("SELECT stock, stock_minimo FROM repuestos WHERE id = ?");
+    $rep->execute([$id]);
+    $repuesto = $rep->fetch();
+    if (!$repuesto) {
+        $res->getBody()->write(json_encode(['error' => 'Repuesto no encontrado']));
+        return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
+    }
+
+    // fn_fecha_local (no TRUNC crudo): los TIMESTAMP están en UTC y una venta
+    // nocturna caería en el día siguiente — mismo criterio que el resumen
+    // semanal de ventas.php. Las ventas anuladas no cuentan como demanda.
+    $stmt = $db->prepare("
+        SELECT TO_CHAR(TRUNC(fn_fecha_local(v.creado_en)), 'YYYY-MM-DD') AS fecha,
+               SUM(dv.cantidad) AS unidades
+        FROM detalle_ventas dv
+        JOIN ventas v ON v.id = dv.venta_id
+        WHERE dv.repuesto_id = ?
+          AND v.estado = 'completada'
+          AND fn_fecha_local(v.creado_en) >= fn_hoy_local() - ?
+        GROUP BY TRUNC(fn_fecha_local(v.creado_en))
+        ORDER BY 1
+    ");
+    $stmt->execute([$id, $dias]);
+
+    $res->getBody()->write(json_encode([
+        'repuesto_id'  => $id,
+        'stock'        => (int) $repuesto['stock'],
+        'stock_minimo' => (int) $repuesto['stock_minimo'],
+        'dias'         => $dias,
+        'serie'        => $stmt->fetchAll(),
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+/**
+ * GET /api/repuestos/{id}/recomendaciones
+ * Proxy hacia el microservicio: productos relacionados + señal de
+ * reabastecimiento. Responde 200 aunque el microservicio esté caído, con
+ * disponible=false, para que el frontend no tenga que distinguir "sin
+ * sugerencias" de "servicio inaccesible" para poder seguir renderizando.
+ */
+$group->get('/repuestos/{id}/recomendaciones', function (Request $req, Response $res, array $args) {
+    if (!ctype_digit((string)$args['id'])) {
+        $res->getBody()->write(json_encode(['error' => 'ID inválido']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+    $id = (int) $args['id'];
+
+    // Dos llamadas secuenciales y no una: son dos modelos distintos del
+    // microservicio, y si la predicción de demanda falla igual queremos
+    // mostrar las sugerencias (y viceversa).
+    $similares = nlpGet("/recomendaciones/{$id}");
+    $demanda   = nlpGet("/prediccion-demanda/{$id}");
+
+    $res->getBody()->write(json_encode([
+        'data' => [
+            'recomendaciones' => $similares['recomendaciones'] ?? [],
+            'demanda'         => $demanda,
+        ],
+        'disponible' => $similares !== null || $demanda !== null,
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+/**
+ * Helper: lee y valida el parámetro ?ids=1,2,3 de las rutas de demanda.
+ * Devuelve enteros únicos, o [] si no hay ninguno válido.
+ */
+function idsDesdeQuery(array $params): array
+{
+    $crudo = trim($params['ids'] ?? '');
+    if ($crudo === '') {
+        return [];
+    }
+    $ids = [];
+    foreach (explode(',', $crudo) as $valor) {
+        $valor = trim($valor);
+        if (ctype_digit($valor)) {
+            $ids[] = (int) $valor;
+        }
+    }
+    // Tope: la tabla pide 15 por página. Sin límite, un ids= gigante arma
+    // un IN (...) enorme en Oracle desde una ruta que no tiene rate limit.
+    return array_slice(array_values(array_unique($ids)), 0, 100);
+}
+
+/**
+ * GET /api/repuestos/demanda/lote?ids=1,2,3&dias=90
+ * Historial de ventas de VARIOS repuestos en una sola ida a la base.
+ * La consume el microservicio de NLP para calcular las señales de toda una
+ * página de la tabla; llamar N veces a /{id}/demanda multiplicaría por N
+ * tanto los round-trips HTTP como las consultas a Oracle.
+ *
+ * Ruta de tres segmentos a propósito: "/repuestos/demanda" (dos segmentos)
+ * chocaría con "/repuestos/{id}" y Slim la resolvería como id="demanda"
+ * — el mismo motivo por el que buscar-compatibles se registra antes de {id}.
+ */
+$group->get('/repuestos/demanda/lote', function (Request $req, Response $res) {
+    $params = $req->getQueryParams();
+    $ids    = idsDesdeQuery($params);
+    $dias   = min(365, max(7, (int)($params['dias'] ?? 90)));
+
+    if ($ids === []) {
+        $res->getBody()->write(json_encode(['dias' => $dias, 'repuestos' => []]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    $db     = repuestosDB();
+    $marcas = implode(',', array_fill(0, count($ids), '?'));
+
+    // Los repuestos se leen aunque no tengan ventas: un producto sin
+    // movimiento es justamente el caso "rotación baja", y si no viniera en
+    // la respuesta el microservicio no tendría nada que reportar de él.
+    $repStmt = $db->prepare("SELECT id, stock, stock_minimo FROM repuestos WHERE id IN ($marcas)");
+    $repStmt->execute($ids);
+
+    $porRepuesto = [];
+    foreach ($repStmt->fetchAll() as $fila) {
+        $porRepuesto[(int) $fila['id']] = [
+            'repuesto_id'  => (int) $fila['id'],
+            'stock'        => (int) $fila['stock'],
+            'stock_minimo' => (int) $fila['stock_minimo'],
+            'serie'        => [],
+        ];
+    }
+
+    // Una sola agregación para todos: se agrupa además por repuesto_id.
+    // fn_fecha_local por el mismo motivo que en /{id}/demanda (los
+    // TIMESTAMP están en UTC y una venta nocturna caería en otro día).
+    $stmt = $db->prepare("
+        SELECT dv.repuesto_id AS repuesto_id,
+               TO_CHAR(TRUNC(fn_fecha_local(v.creado_en)), 'YYYY-MM-DD') AS fecha,
+               SUM(dv.cantidad) AS unidades
+        FROM detalle_ventas dv
+        JOIN ventas v ON v.id = dv.venta_id
+        WHERE dv.repuesto_id IN ($marcas)
+          AND v.estado = 'completada'
+          AND fn_fecha_local(v.creado_en) >= fn_hoy_local() - ?
+        GROUP BY dv.repuesto_id, TRUNC(fn_fecha_local(v.creado_en))
+        ORDER BY 1, 2
+    ");
+    $stmt->execute([...$ids, $dias]);
+
+    foreach ($stmt->fetchAll() as $fila) {
+        $id = (int) $fila['repuesto_id'];
+        if (!isset($porRepuesto[$id])) {
+            continue;   // repuesto dado de baja: no se reporta
+        }
+        $porRepuesto[$id]['serie'][] = [
+            'fecha'    => $fila['fecha'],
+            'unidades' => (int) $fila['unidades'],
+        ];
+    }
+
+    $res->getBody()->write(json_encode([
+        'dias'      => $dias,
+        'repuestos' => array_values($porRepuesto),
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+/**
+ * GET /api/repuestos/demanda/senales?ids=1,2,3
+ * Proxy hacia el microservicio: devuelve la señal de reabastecimiento de
+ * cada repuesto para pintarla en la tabla. Como el resto de las rutas de
+ * IA, responde 200 con disponible=false si el servicio no contesta: la
+ * tabla tiene que renderizarse igual, solo que sin los badges.
+ */
+$group->get('/repuestos/demanda/senales', function (Request $req, Response $res) {
+    $ids = idsDesdeQuery($req->getQueryParams());
+    if ($ids === []) {
+        $res->getBody()->write(json_encode(['data' => [], 'disponible' => true]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    $resultado = nlpGet('/prediccion-demanda?ids=' . implode(',', $ids));
+
+    $res->getBody()->write(json_encode([
+        'data'       => $resultado['data'] ?? [],
+        'disponible' => $resultado !== null,
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+});

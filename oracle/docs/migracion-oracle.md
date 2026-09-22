@@ -25,15 +25,15 @@ Ejecutar en este orden:
 
 ```bash
 sqlplus sys/<password>@//localhost:1521/freepdb1 as sysdba @01_usuario_y_esquema.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @02_ddl_tablas.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @03_indices.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @04_triggers.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @05_seed.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @06_packages_plsql.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @07_vistas.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1 @08_roles_privilegios.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @02_ddl_tablas.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @03_indices.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @04_triggers.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @05_seed.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @06_packages_plsql.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @07_vistas.sql
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1 @08_roles_privilegios.sql
 sqlplus sys/<password>@//localhost:1521/freepdb1 as sysdba @09_usuarios_demo_sysdba.sql
-sqlplus electrisys/ElectriOra_2026!@//localhost:1521/freepdb1
+sqlplus electrisys/$DB_PASS@//localhost:1521/freepdb1
   GRANT rol_electrisys_admin    TO electrisys_admin_demo;
   GRANT rol_electrisys_vendedor TO electrisys_vendedor_demo;
   GRANT rol_electrisys_dueno    TO electrisys_dueno_demo;
@@ -166,7 +166,7 @@ Job "ELECTRISYS"."SYS_EXPORT_SCHEMA_01" terminado correctamente (2 min 13 seg)
 
 | Usuario | Password | Rol |
 |---|---|---|
-| `electrisys` | `ElectriOra_2026!` | Dueño del esquema |
+| `electrisys` | `$DB_PASS` | Dueño del esquema |
 | `electrisys_admin_demo` | `AdminOra_2026!` | `rol_electrisys_admin` |
 | `electrisys_vendedor_demo` | `VendedorOra_2026!` | `rol_electrisys_vendedor` |
 | `electrisys_dueno_demo` | `DuenoOra_2026!` | `rol_electrisys_dueno` |

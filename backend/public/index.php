@@ -73,6 +73,9 @@ $app->group('/api', function (RouteCollectorProxy $group) {
 $app->group('/api', function (RouteCollectorProxy $group) {
     require __DIR__ . '/../src/routes/usuarios.php';
     require __DIR__ . '/../src/routes/auditlog.php';
+    // Los respaldos contienen toda la base: van tras la VPN, igual que
+    // usuarios y auditoría, no solo tras un JWT.
+    require __DIR__ . '/../src/routes/admin_backup.php';
 })->add(new VpnMiddleware())->add(new JwtMiddleware());
 
 // ── Rutas protegidas: JWT únicamente ──────────────────────────
@@ -86,6 +89,7 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     require __DIR__ . '/../src/routes/proveedores.php';
     require __DIR__ . '/../src/routes/cotizaciones.php';
     require __DIR__ . '/../src/routes/categorias.php';
+    require __DIR__ . '/../src/routes/pedidos.php';
 })->add(new JwtMiddleware());
 
 $app->run();

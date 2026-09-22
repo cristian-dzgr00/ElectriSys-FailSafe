@@ -1,5 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { LogOut, User } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -16,6 +17,12 @@ export default function Navbar() {
       gap: 12,
       flexShrink: 0,
     }}>
+      {/* Campana: vive acá y no en una página para escuchar el WebSocket
+          desde cualquier vista del POS. */}
+      <NotificationBell />
+
+      <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{
           width: 30, height: 30,

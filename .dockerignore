@@ -1,25 +1,46 @@
-# backend-a, backend-b y frontend usan `context: ..` (la raíz del repo) en
-# docker-compose.yml, así que sin este archivo cada build de esos 3
-# servicios transfiere TODO el repositorio como contexto — incluyendo
-# frontend/node_modules y nlp-service/venv (cientos de MB cada uno), que
-# ninguno de esos Dockerfiles necesita.
+# ============================================================
+# Contexto de build de Docker.
+#
+# Sin este archivo, `docker compose build` empaqueta TODO el repositorio y
+# se lo manda al daemon antes de ejecutar la primera instrucción: más de
+# 50 MB, unos tres minutos solo en transferir, en cada build. Y de esos
+# 50 MB, nada se usa — las dependencias se instalan dentro de la imagen
+# (npm ci, pip install), no se copian desde acá.
+#
+# En el Droplet, donde el build corre sobre 2 vCPU, esto es la diferencia
+# entre un redespliegue de segundos y uno de varios minutos.
+# ============================================================
 
-# Dependencias que cada Dockerfile instala por su cuenta
-node_modules
-frontend/dist
+# ── Dependencias: se reinstalan dentro de la imagen ──────────
+**/node_modules
 nlp-service/venv
-nlp-service/__pycache__
-nlp-service/**/__pycache__
-nlp-service/.pytest_cache
-nlp-service/models/*.pkl
-backend/vendor
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
 
-# Control de versiones y artefactos de herramientas locales
+# ── Artefactos de build: la imagen los genera ────────────────
+frontend/dist
+frontend/.vite
+
+# ── Historia y metadatos ─────────────────────────────────────
 .git
-graphify-out
-.sixth
+.github
+.gitignore
 
-# Certificados privados — no deben viajar dentro de una imagen
-tls/ca
-tls/nginx
-tls/php-fpm
+# ── Material del curso y análisis, no parte del runtime ──────
+graphify-out
+network-analysis
+docs
+monitoring
+k8s
+vpn
+# Esquema MySQL del diseño descartado — no se despliega.
+database
+oracle/planes_ejecucion
+oracle/docs
+*.md
+
+# ── Entornos locales: nunca deben entrar a una imagen ────────
+**/.env
+**/.env.local
+*.log

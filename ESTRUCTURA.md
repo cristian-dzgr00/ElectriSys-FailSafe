@@ -169,3 +169,121 @@ electrisys/
 > El canary 90/10 ya no está en Istio: vive en el `upstream php_backend`
 > de `nginx/nginx.conf` (pesos 9 y 1). Istio no puede dividir tráfico
 > sobre el puerto 9000 porque habla FastCGI, no HTTP.
+
+---
+
+# Entrega: 5 features nuevas (inventario en vivo, pedidos, IA, backups, despliegue)
+
+Todo lo de arriba corresponde a la entrega de infraestructura (mTLS, VPN,
+Istio) y se mantiene. Lo que sigue son los archivos que agrega o toca esta
+entrega. El motor de base de datos es **solo Oracle 23ai**: cualquier
+referencia a MySQL en las secciones anteriores es del diseño descartado.
+
+## Sprint 1 — Inventario en tiempo real
+
+```
+backend/src/models/VentaModel.php            [EDITADO]  + stockDe(), itemsDeVenta()
+backend/src/patterns/observer/
+  ├── GestorVentas.php                       [EDITADO]  emite 'stock_actualizado'
+  ├── WebSocketObserver.php                  [EDITADO]  caso stock_actualizado (incluye
+  │                                                     al vendedor) + payload genérico
+  └── AuditLogObserver.php                   [EDITADO]  ignora 'stock_actualizado'
+frontend/src/pages/Repuestos.jsx             [EDITADO]  stock en vivo + resalte + En vivo/Offline
+frontend/src/pages/Dashboard.jsx             [EDITADO]  callback del WS en useCallback
+                                                        (antes reconectaba en cada render)
+```
+
+frontend/src/components/NotificationBell.jsx [NUEVO]  campana en tiempo real;
+                                                     filtra stock_actualizado
+frontend/src/components/Navbar.jsx           [EDITADO] monta la campana
+
+> El prompt asumía que `NotificationBell.jsx` ya existía; no era así: la
+> campana nunca se había construido (`Bell` estaba importado sin usar en
+> `Dashboard.jsx`). Se creó como componente propio en el Navbar, para que
+> escuche el WebSocket desde cualquier vista.
+
+## Sprint 2 — Pedidos a proveedor
+
+Un "pedido" acá es una **orden de compra a un proveedor**, no un encargo de
+cliente: el stock **sube al recibir**, no se reserva al crear.
+
+```
+oracle/10_pedidos.sql                        [NUEVO]  tablas, índices, 3 triggers, GRANTs
+backend/src/models/PedidoModel.php           [NUEVO]  listar/buscar/crear/cambiarEstado/cancelar
+backend/src/patterns/observer/GestorPedidos.php [NUEVO] Subject que reusa los Observers de ventas
+backend/src/routes/pedidos.php               [NUEVO]  REST + RoleMiddleware(admin,dueno)
+backend/public/index.php                     [EDITADO] registra pedidos.php
+frontend/src/services/pedidosService.js      [NUEVO]
+frontend/src/pages/Pedidos.jsx               [NUEVO]  tabla, filtros, modal, estados en vivo
+frontend/src/App.jsx                         [EDITADO] ruta /pedidos + PrivateRoute roles={[...]}
+frontend/src/components/Sidebar.jsx          [EDITADO] ítem Pedidos (admin y dueño)
+frontend/src/components/BuscadorRepuesto.jsx [EDITADO] prop campoPrecio (compra vs venta)
+frontend/src/components/Tooltip.jsx          [EDITADO] tooltips de los estados de pedido
+```
+
+## Sprint 3 — IA sobre el catálogo (modelo propio, sin LLM externo)
+
+```
+nlp-service/app/recommender/similares.py     [NUEVO]  productos relacionados (TF-IDF + coseno)
+nlp-service/app/demanda/forecast.py          [NUEVO]  promedio móvil ponderado -> señal
+nlp-service/app/recommender/client_backend.py [EDITADO] obtener_repuesto(), obtener_demanda()
+nlp-service/app/main.py                      [EDITADO] GET /recomendaciones/{id}
+                                                       GET /prediccion-demanda/{id}
+                                                       GET /prediccion-demanda?ids= (lote)
+nlp-service/tests/test_recomendaciones.py    [NUEVO]  12 tests de los modelos
+nlp-service/tests/test_endpoints_ia.py       [NUEVO]  10 tests HTTP de los endpoints
+backend/src/routes/repuestos.php             [EDITADO] GET /{id}/demanda + proxy /{id}/recomendaciones
+                                                       GET /demanda/lote  (serie de N repuestos en 1 consulta)
+                                                       GET /demanda/senales (proxy del lote)
+frontend/src/pages/Repuestos.jsx             [EDITADO] sección "Sugerencias" en el modal
+                                                       + badge de rotación en la tabla
+frontend/src/services/ventasService.js       [EDITADO] repuestosService.recomendaciones()
+                                                       + senalesDemanda(ids)
+```
+
+## Sprint 4 — Respaldos y recuperación
+
+```
+oracle/backup/10_directorio_backup_sysdba.sql [EDITADO] ruta Linux del volumen persistente
+oracle/backup/backup_logico.sh                [EDITADO] credenciales por env + retención
+oracle/backup/restaurar_logico.sh             [EDITADO] credenciales por env + procedimiento
+oracle/backup/cron_backup.sh                  [NUEVO]  planificador diario (2 AM)
+oracle/backup/11_pkg_backup_plsql.sql         [NUEVO]  pkg_backup con DBMS_DATAPUMP
+oracle/cargar_esquema.sh                      [NUEVO]  carga el esquema en orden y con el usuario correcto
+oracle/backup/12_recompilar_invalidos.sql     [NUEVO]  recompila lo que el impdp invalida
+oracle/01_usuario_y_esquema.sql               [EDITADO] contraseña por parámetro (ya no versionada)
+                                                        + re-ejecutable si el usuario/tablespace ya existen
+oracle/docs/migracion-oracle.md               [EDITADO] credencial de ejemplo -> $DB_PASS
+.dockerignore                                 [NUEVO]  contexto de build: 52MB -> 21MB
+docker/docker-compose.backup.yml              [NUEVO]  servicio oracle-backup + volumen persistente
+backend/src/routes/admin_backup.php           [NUEVO]  GET/POST /api/admin/backups (tras VPN)
+frontend/src/pages/Backups.jsx                [NUEVO]  vista de respaldos (admin y dueño)
+frontend/src/services/backupsService.js       [NUEVO]
+```
+
+k8s/oracle-backup-cronjob.yaml                [NUEVO]  CronJob 02:00 + PVC
+k8s/oracle-restore-job.yaml                   [NUEVO]  Job manual de restauración
+k8s/secrets.yaml                              [EDITADO] claves DB_* de Oracle
+
+> El despliegue de producción es **Docker Compose**; los manifiestos de
+> Kubernetes quedan para el entorno del curso. Ojo: `k8s/` todavía no tiene
+> ningún manifiesto de Oracle (los `mysql-*.yaml` son del diseño
+> descartado), así que el CronJob asume un Service `oracle-db` que hay que
+> desplegar antes. Y el PVC debe montarse TAMBIÉN en el pod de Oracle:
+> Data Pump escribe del lado del servidor, no del cliente.
+
+## Sprint 5 — Despliegue
+
+```
+docs/despliegue-produccion.md                 [NUEVO]  guía completa (DuckDNS, Droplet, TLS, humo)
+nginx/locations-electrisys.conf               [NUEVO]  rutas compartidas HTTP/HTTPS
+nginx/nginx.prod.conf                         [NUEVO]  server 443 + redirect 80 + ACME
+nginx/nginx.conf                              [EDITADO] incluye el archivo de rutas
+docker/docker-compose.prod.yml                [NUEVO]  TLS, cierra puertos internos, APP_ENV
+docker/Dockerfile.frontend                    [EDITADO] copia el archivo de rutas
+docker/docker-compose.yml                     [EDITADO] monta oracle/ en /scripts, rutas nginx
+docker/.env.example                           [EDITADO] DOMINIO, BACKUP_AL_ARRANCAR
+backend/.env.example                          [EDITADO] BACKUP_PATH
+.github/workflows/ci-cd.yml                   [EDITADO] fuera MySQL, + job test-nlp,
+                                                        deploy k8s condicionado
+```

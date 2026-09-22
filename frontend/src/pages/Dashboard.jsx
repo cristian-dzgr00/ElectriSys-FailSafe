@@ -1,7 +1,7 @@
 import { useEffect, useState, memo, useCallback } from 'react';
 import {
   ShoppingCart, DollarSign, Package, Users, TrendingUp,
-  ChevronLeft, ChevronRight, AlertTriangle, ArrowRight, Bell
+  ChevronLeft, ChevronRight, AlertTriangle, ArrowRight
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -223,16 +223,22 @@ export default function Dashboard() {
   const [chartData,  setChartData]  = useState([]);
   const [liveVentas, setLiveVentas] = useState(0); // contador en tiempo real
 
-  // WebSocket: escuchar eventos de ventas en tiempo real
-  useWebSocket((event) => {
-    if (event.type === 'crear_venta') {
-      setLiveVentas(n => n + 1);
-      // refrescar resumen de hoy automáticamente
-      ventasService.resumenHoy().then(r => {
-        setResumen(r.data.data ?? resumen);
-      }).catch(() => {});
-    }
-  });
+  // WebSocket: escuchar eventos de ventas en tiempo real.
+  // El callback va en useCallback con deps vacías a propósito: useWebSocket
+  // reabre la conexión cada vez que cambia la función que recibe, y un
+  // callback inline cambia de referencia en cada render — así el Dashboard
+  // se reconectaba en bucle. Por eso setResumen usa la forma funcional en
+  // vez de leer `resumen` del closure (que obligaría a declararlo dep).
+  const handleWsMessage = useCallback((event) => {
+    if (event.type !== 'crear_venta') return;
+    setLiveVentas(n => n + 1);
+    // refrescar resumen de hoy automáticamente
+    ventasService.resumenHoy()
+      .then(r => setResumen(prev => r.data.data ?? prev))
+      .catch(() => {});
+  }, []);
+
+  useWebSocket(handleWsMessage);
 
   useEffect(() => {
     const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];

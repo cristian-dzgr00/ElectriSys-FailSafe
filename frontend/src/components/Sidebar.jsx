@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, Wrench, Truck, ShoppingCart,
-  FileText, Users, BarChart2, UserCog, ShieldCheck
+  FileText, Users, BarChart2, UserCog, ShieldCheck, ClipboardList, DatabaseBackup
 } from 'lucide-react';
 import OnboardingTour from './OnboardingTour';
 import logo from '../assets/logo.png';
@@ -11,22 +11,26 @@ const adminLinks = [
   { to: '/',             icon: LayoutDashboard, label: 'Dashboard',     id: 'nav-dashboard' },
   { to: '/repuestos',    icon: Wrench,           label: 'Repuestos',     id: 'nav-repuestos' },
   { to: '/proveedores',  icon: Truck,            label: 'Proveedores',   id: 'nav-proveedores' },
+  { to: '/pedidos',      icon: ClipboardList,     label: 'Pedidos',       id: 'nav-pedidos' },
   { to: '/ventas',       icon: ShoppingCart,     label: 'Ventas',        id: 'nav-ventas' },
   { to: '/cotizaciones', icon: FileText,          label: 'Cotizaciones',  id: 'nav-cotizaciones' },
   { to: '/clientes',     icon: Users,             label: 'Clientes',      id: 'nav-clientes' },
   { to: '/reportes',     icon: BarChart2,         label: 'Reportes',      id: 'nav-reportes' },
   { to: '/usuarios',     icon: UserCog,           label: 'Usuarios',      id: 'nav-usuarios' },
+  { to: '/backups',      icon: DatabaseBackup,    label: 'Respaldos',     id: 'nav-backups' },
 ];
 
 const duenroLinks = [
   { to: '/',             icon: LayoutDashboard, label: 'Dashboard',     id: 'nav-dashboard' },
   { to: '/repuestos',    icon: Wrench,           label: 'Repuestos',     id: 'nav-repuestos' },
   { to: '/proveedores',  icon: Truck,            label: 'Proveedores',   id: 'nav-proveedores' },
+  { to: '/pedidos',      icon: ClipboardList,     label: 'Pedidos',       id: 'nav-pedidos' },
   { to: '/ventas',       icon: ShoppingCart,     label: 'Ventas',        id: 'nav-ventas' },
   { to: '/cotizaciones', icon: FileText,          label: 'Cotizaciones',  id: 'nav-cotizaciones' },
   { to: '/clientes',     icon: Users,             label: 'Clientes',      id: 'nav-clientes' },
   { to: '/reportes',     icon: BarChart2,         label: 'Reportes',      id: 'nav-reportes' },
   { to: '/usuarios',     icon: UserCog,           label: 'Usuarios',      id: 'nav-usuarios' },
+  { to: '/backups',      icon: DatabaseBackup,    label: 'Respaldos',     id: 'nav-backups' },
   { to: '/auditoria',    icon: ShieldCheck,       label: 'Auditoría',     id: 'nav-auditoria' },
 ];
 

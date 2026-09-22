@@ -58,3 +58,6 @@ graphify-out/
 /nginx.conf
 docker/execute(\[33\])
 docker/getMessage()
+
+# Temporales que Vite deja al recargar su config
+vite.config.js.timestamp-*
