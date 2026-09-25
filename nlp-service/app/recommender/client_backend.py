@@ -96,3 +96,14 @@ def obtener_demanda_lote(repuesto_ids, dias: int = 90) -> dict:
     """
     ids = ",".join(str(int(i)) for i in repuesto_ids)
     return _get("/api/repuestos/demanda/lote", {"ids": ids, "dias": dias})
+
+
+def obtener_canastas(dias: int = 180, limite: int = 2000) -> list[list]:
+    """Ventas históricas como listas de repuesto_id (una lista por venta).
+
+    Es la materia prima de las reglas de asociación. Se piden solo los ids:
+    para contar co-ocurrencias no hacen falta nombres ni precios, y traerlos
+    multiplicaría el tamaño de la respuesta sin cambiar el resultado.
+    """
+    datos = _get("/api/ventas/canastas", {"dias": dias, "limite": limite})
+    return datos.get("canastas", [])

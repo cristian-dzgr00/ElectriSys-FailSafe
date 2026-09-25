@@ -3,6 +3,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\VentaModel;
 use App\models\Database;
+use App\services\NlpClient;
 use App\patterns\observer\GestorVentas;
 use App\patterns\observer\AuditLogObserver;
 use App\patterns\observer\WebSocketObserver;
@@ -165,5 +166,141 @@ $group->put('/ventas/{id}/anular', function (Request $req, Response $res, array 
     }
 
     $res->getBody()->write(json_encode(['success' => true]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+// GET /api/ventas/resumen/serie?dias=7|30|90
+// Serie de ingresos para el gráfico del dashboard, con rango configurable.
+// Reemplaza a /resumen/semana (que queda fija en 7 días y se conserva por
+// compatibilidad): el selector del dashboard necesita 7 días, 1 mes y 3 meses.
+$group->get('/ventas/resumen/serie', function (Request $req, Response $res) {
+    $dias = (int)($req->getQueryParams()['dias'] ?? 7);
+    // Lista blanca: el valor entra en un cálculo de fechas y, sobre todo,
+    // evita que alguien pida 10 años y haga a Oracle recorrer la tabla entera.
+    if (!in_array($dias, [7, 30, 90], true)) {
+        $dias = 7;
+    }
+
+    // Más de un mes se agrupa por semana: 90 puntos en un gráfico de este
+    // tamaño no se leen, y lo que interesa en ese rango es la tendencia.
+    $porSemana = $dias > 31;
+    $truncado  = $porSemana
+        ? "TRUNC(fn_fecha_local(creado_en), 'IW')"   // lunes de la semana ISO
+        : "TRUNC(fn_fecha_local(creado_en))";
+
+    // fn_fecha_local y no TRUNC(creado_en) a secas: los TIMESTAMP están en
+    // UTC, así que una venta nocturna caía en el día siguiente.
+    $stmt = Database::getConnection()->prepare("
+        SELECT
+            TO_CHAR($truncado, 'YYYY-MM-DD') AS fecha,
+            NVL(SUM(total), 0)               AS ingresos,
+            COUNT(*)                         AS ventas
+        FROM ventas
+        WHERE fn_fecha_local(creado_en) >= fn_hoy_local() - ?
+          AND estado = 'completada'
+        GROUP BY $truncado
+        ORDER BY 1 ASC
+    ");
+    $stmt->execute([$dias - 1]);
+
+    $res->getBody()->write(json_encode([
+        'data'       => $stmt->fetchAll(),
+        'dias'       => $dias,
+        'agrupacion' => $porSemana ? 'semana' : 'dia',
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+// GET /api/ventas/canastas?dias=180&limite=2000
+// Ventas históricas como listas de repuesto_id. Materia prima de las reglas
+// de asociación del microservicio (productos que se venden juntos).
+// Solo ids: para contar co-ocurrencias no hacen falta nombres ni precios.
+$group->get('/ventas/canastas', function (Request $req, Response $res) {
+    $p      = $req->getQueryParams();
+    $dias   = min(730,  max(7,  (int)($p['dias']   ?? 180)));
+    $limite = min(5000, max(50, (int)($p['limite'] ?? 2000)));
+
+    // Se agrupa en PHP y no con LISTAGG en Oracle porque LISTAGG trunca a
+    // 4000 caracteres y una venta larga rompería la lista en silencio.
+    $stmt = Database::getConnection()->prepare("
+        SELECT venta_id, repuesto_id FROM (
+            SELECT dv.venta_id, dv.repuesto_id,
+                   DENSE_RANK() OVER (ORDER BY dv.venta_id DESC) AS rn
+            FROM detalle_ventas dv
+            JOIN ventas v ON v.id = dv.venta_id
+            WHERE v.estado = 'completada'
+              AND fn_fecha_local(v.creado_en) >= fn_hoy_local() - ?
+        ) WHERE rn <= ?
+        ORDER BY venta_id
+    ");
+    $stmt->execute([$dias, $limite]);
+
+    $canastas = [];
+    foreach ($stmt->fetchAll() as $fila) {
+        $canastas[(int) $fila['venta_id']][] = (int) $fila['repuesto_id'];
+    }
+
+    $res->getBody()->write(json_encode([
+        'canastas' => array_values($canastas),
+        'dias'     => $dias,
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+// GET /api/ventas/complementos?ids=1,2,3
+// Proxy: productos que suelen acompañar a los que ya están en la venta.
+// Como el resto de las rutas de IA, responde 200 con disponible=false si el
+// microservicio no contesta — la venta no puede depender de una sugerencia.
+$group->get('/ventas/complementos', function (Request $req, Response $res) {
+    $crudo = trim($req->getQueryParams()['ids'] ?? '');
+    $ids   = [];
+    foreach (explode(',', $crudo) as $v) {
+        $v = trim($v);
+        if (ctype_digit($v)) $ids[] = (int) $v;
+    }
+    $ids = array_slice(array_values(array_unique($ids)), 0, 50);
+
+    if ($ids === []) {
+        $res->getBody()->write(json_encode(['data' => [], 'disponible' => true]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    $r = NlpClient::get('/complementos?ids=' . implode(',', $ids));
+    $sugerencias = $r['data'] ?? [];
+
+    // El microservicio solo devuelve ids y métricas: hay que darles nombre y
+    // precio para poder mostrarlos, y de paso se descartan los que ya no
+    // estén activos o se hayan quedado sin stock.
+    $detalle = [];
+    if ($sugerencias) {
+        $marcas = implode(',', array_fill(0, count($sugerencias), '?'));
+        $stmt = Database::getConnection()->prepare(
+            "SELECT id, nombre, codigo, precio_venta, stock FROM repuestos
+             WHERE activo = 1 AND stock > 0 AND id IN ($marcas)"
+        );
+        $stmt->execute(array_map(fn($s) => (int) $s['repuesto_id'], $sugerencias));
+        $porId = [];
+        foreach ($stmt->fetchAll() as $rep) { $porId[(int) $rep['id']] = $rep; }
+
+        foreach ($sugerencias as $s) {
+            $rep = $porId[(int) $s['repuesto_id']] ?? null;
+            if (!$rep) continue;
+            $detalle[] = [
+                'id'           => (int) $rep['id'],
+                'nombre'       => $rep['nombre'],
+                'codigo'       => $rep['codigo'],
+                'precio_venta' => (float) $rep['precio_venta'],
+                'stock'        => (int) $rep['stock'],
+                'veces_juntos' => $s['veces_juntos'] ?? 0,
+                'confianza'    => $s['confianza'] ?? 0,
+                'lift'         => $s['lift'] ?? 0,
+            ];
+        }
+    }
+
+    $res->getBody()->write(json_encode([
+        'data'       => $detalle,
+        'disponible' => $r !== null,
+    ]));
     return $res->withHeader('Content-Type', 'application/json');
 });

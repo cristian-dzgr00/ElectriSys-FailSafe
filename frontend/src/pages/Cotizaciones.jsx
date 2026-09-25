@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, X, Trash2, Eye } from 'lucide-react';
+import { Plus, X, Trash2, Eye, ShoppingCart } from 'lucide-react';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import { StatusBadge } from '../components/Tooltip';
@@ -10,7 +10,7 @@ import api from '../services/api';
 import { clientesService } from '../services/ventasService';
 
 const fmt = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
-const estadoBadge = e => ({ borrador:'badge-neutral', enviada:'badge-warning', aceptada:'badge-success', rechazada:'badge-danger', vencida:'badge-danger' }[e]||'badge-neutral');
+const estadoBadge = e => ({ activa:'badge-success', vencida:'badge-danger', realizada:'badge-accent' }[e]||'badge-neutral');
 const PAGE_SIZE = 15;
 
 export default function Cotizaciones() {
@@ -22,6 +22,9 @@ export default function Cotizaciones() {
   const [loading,   setLoading]   = useState(true);
   const [modal,     setModal]     = useState(false);
   const [detalle,   setDetalle]   = useState(null);
+  // Cotización pendiente de confirmar como venta (null = sin confirmación abierta)
+  const [confirmVenta, setConfirmVenta] = useState(null);
+  const [vendiendo,    setVendiendo]    = useState(false);
   const [clientes,  setClientes]  = useState([]);
   const [items,     setItems]     = useState([]);
   const [clienteId, setClienteId] = useState('');
@@ -101,23 +104,53 @@ export default function Cotizaciones() {
   };
 
   const cambiarEstado = async (id, estado) => {
+    // "Realizada" no es un cambio de estado cualquiera: implica vender, con
+    // su descuento de stock y su factura. Se pide confirmación antes, y el
+    // trabajo real lo hace confirmarVenta().
+    if (estado === 'realizada') { setConfirmVenta(detalle); return; }
     try {
       await api.put(`/cotizaciones/${id}/estado`, { estado });
       load(page);
       if (detalle) setDetalle(prev => ({...prev, estado}));
-      toast(`Estado cambiado a "${estado}"`, { type:'success' });
-    } catch { toast('No se pudo cambiar el estado', { type:'error' }); }
+      toast(`Estado cambiado a "${ESTADO_LABEL[estado] ?? estado}"`, { type:'success' });
+    } catch (e) {
+      toast(e.response?.data?.error || 'No se pudo cambiar el estado', { type:'error' });
+    }
+  };
+
+  // Convierte la cotización en venta. El backend valida el stock y registra
+  // la factura con los precios COTIZADOS, no con los de hoy.
+  const confirmarVenta = async () => {
+    if (!confirmVenta || vendiendo) return;
+    setVendiendo(true);
+    try {
+      const r = await api.post(`/cotizaciones/${confirmVenta.id}/convertir-venta`);
+      setConfirmVenta(null);
+      setDetalle(prev => prev ? {...prev, estado:'realizada'} : prev);
+      load(page);
+      toast(r.data.mensaje || 'Venta registrada', { type:'success' });
+    } catch (e) {
+      // Cancelar el modal dejaría al usuario sin saber por qué falló (stock
+      // insuficiente, cotización vencida): se cierra y se explica en el toast.
+      setConfirmVenta(null);
+      toast(e.response?.data?.error || 'No se pudo registrar la venta', { type:'error' });
+    } finally {
+      setVendiendo(false);
+    }
   };
 
   const { subtotal, impuesto, total } = calcTotales();
 
-  const ESTADOS = ['borrador','enviada','aceptada','rechazada','vencida'];
+  const ESTADOS = ['activa','vencida','realizada'];
+  const ESTADO_LABEL = {
+    activa:    'Cotización activa',
+    vencida:   'Cotización vencida',
+    realizada: 'Cotización realizada',
+  };
   const ESTADO_DESC = {
-    borrador:  'Sin enviar al cliente',
-    enviada:   'Esperando respuesta del cliente',
-    aceptada:  'El cliente aceptó la cotización',
-    rechazada: 'El cliente rechazó la cotización',
-    vencida:   'La cotización superó su fecha límite',
+    activa:    'Los precios cotizados siguen vigentes',
+    vencida:   'Cambió el precio de algún repuesto: ya no se puede sostener este total',
+    realizada: 'Se convirtió en venta y quedó en el historial',
   };
 
   const columns = [
@@ -246,9 +279,11 @@ export default function Cotizaciones() {
                   {ESTADOS.map(e=>(
                     <button key={e} title={ESTADO_DESC[e]}
                       className={`btn btn-sm ${detalle.estado===e?'btn-primary':'btn-ghost'}`}
-                      style={{textTransform:'capitalize'}}
+                      // Una cotización vencida o ya vendida no vuelve atrás:
+                      // sus botones quedan inertes en vez de fallar con un 409.
+                      disabled={detalle.estado==='realizada' || (detalle.estado==='vencida' && e!=='vencida')}
                       onClick={()=>cambiarEstado(detalle.id,e)}>
-                      {e}
+                      {ESTADO_LABEL[e]}
                     </button>
                   ))}
                 </div>
@@ -286,6 +321,45 @@ export default function Cotizaciones() {
             </div>
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={()=>setModal(false)}>Cerrar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmación antes de convertir la cotización en venta.
+          Va por encima del modal de detalle (zIndex mayor): si el usuario
+          cancela, vuelve a ver la cotización tal como estaba. */}
+      {confirmVenta && (
+        <div className="modal-overlay" style={{zIndex:1000}}>
+          <div className="modal" style={{maxWidth:440,padding:0,overflow:'hidden'}}>
+            <div style={{background:'var(--accent-dim)',borderBottom:'1px solid var(--accent)',padding:'24px 28px 20px',textAlign:'center'}}>
+              <div style={{width:52,height:52,borderRadius:'50%',background:'var(--accent)',margin:'0 auto 12px',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <ShoppingCart size={22} color="#121212"/>
+              </div>
+              <div style={{fontSize:17,fontWeight:700,color:'var(--text-primary)',marginBottom:6}}>
+                ¿Vas a realizar la venta de esta cotización?
+              </div>
+              <div style={{fontSize:13,color:'var(--text-secondary)',lineHeight:1.5}}>
+                Cotización <span style={{color:'var(--accent)',fontWeight:700}}>{confirmVenta.numero}</span>
+                {confirmVenta.cliente_nombre ? <> para <strong>{confirmVenta.cliente_nombre}</strong></> : null}
+                <br/>
+                <span style={{fontSize:15,fontWeight:700,color:'var(--text-primary)'}}>{fmt(confirmVenta.total)}</span>
+              </div>
+            </div>
+            <div style={{padding:'16px 28px'}}>
+              <div style={{background:'var(--bg-hover)',borderRadius:8,padding:'10px 14px',fontSize:12,color:'var(--text-muted)',marginBottom:20,lineHeight:1.6}}>
+                Al confirmar se registra la venta en el historial, se descuenta el stock
+                de los productos y la cotización queda marcada como realizada.
+                Se cobran los precios cotizados, no los actuales.
+              </div>
+              <div style={{display:'flex',gap:10}}>
+                <button className="btn btn-ghost" style={{flex:1}} onClick={()=>setConfirmVenta(null)} disabled={vendiendo}>
+                  Cancelar
+                </button>
+                <button className="btn btn-primary" style={{flex:1}} onClick={confirmarVenta} disabled={vendiendo}>
+                  <ShoppingCart size={14}/> {vendiendo ? 'Registrando…' : 'Confirmar venta'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

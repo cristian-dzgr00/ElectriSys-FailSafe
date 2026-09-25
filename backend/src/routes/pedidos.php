@@ -6,6 +6,7 @@ use App\patterns\observer\GestorPedidos;
 use App\patterns\observer\AuditLogObserver;
 use App\patterns\observer\WebSocketObserver;
 use App\middlewares\RoleMiddleware;
+use App\services\NlpClient;
 
 /**
  * Pedidos a proveedor (órdenes de reabastecimiento).
@@ -43,6 +44,123 @@ $group->get('/pedidos', function (Request $req, Response $res) {
         'total' => $result['total'],
         'page'  => $page,
         'limit' => $limit,
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+})->add(new RoleMiddleware(['admin', 'dueno']));
+
+// OJO con el orden: /pedidos/sugerencia tiene DOS segmentos igual que
+// /pedidos/{id}, así que tiene que registrarse antes o Slim la resolvería
+// como id="sugerencia" (mismo caso que buscar-compatibles en repuestos.php).
+
+/**
+ * GET /api/pedidos/sugerencia?dias_entrega=7&dias_cobertura=30
+ *
+ * Qué conviene pedirle a cada proveedor, según la demanda estimada. Agrupa
+ * por proveedor porque un pedido se le hace a UNO: sin agrupar, el usuario
+ * tendría que separar a mano una lista mezclada.
+ */
+$group->get('/pedidos/sugerencia', function (Request $req, Response $res) {
+    $p              = $req->getQueryParams();
+    $diasEntrega    = min(90,  max(1, (int)($p['dias_entrega']   ?? 7)));
+    $diasCobertura  = min(180, max(7, (int)($p['dias_cobertura'] ?? 30)));
+    $db             = \App\models\Database::getConnection();
+
+    // Solo repuestos con proveedor: no se puede sugerir un pedido si no hay
+    // a quién hacérselo. Se avisa aparte cuántos quedaron fuera por eso.
+    $stmt = $db->query("
+        SELECT r.id, r.nombre, r.codigo, r.stock, r.stock_minimo, r.precio_compra,
+               r.proveedor_id, pr.nombre AS proveedor_nombre
+        FROM repuestos r
+        JOIN proveedores pr ON pr.id = r.proveedor_id
+        WHERE r.activo = 1
+        ORDER BY pr.nombre, r.nombre
+    ");
+    $repuestos = $stmt->fetchAll();
+
+    $sinProveedor = (int) $db->query(
+        "SELECT COUNT(*) FROM repuestos WHERE activo = 1 AND proveedor_id IS NULL"
+    )->fetchColumn();
+
+    if ($repuestos === []) {
+        $res->getBody()->write(json_encode([
+            'data' => [], 'disponible' => true, 'sin_proveedor' => $sinProveedor,
+        ]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    // Unidades ya pedidas y todavía no recibidas. Sin esto, cada vez que se
+    // abriera la pantalla se sugeriría volver a pedir lo que ya viene en
+    // camino, y el inventario terminaría duplicado.
+    $transito = [];
+    $tr = $db->query("
+        SELECT d.repuesto_id, SUM(d.cantidad) AS cantidad
+        FROM pedido_detalle d
+        JOIN pedidos p ON p.id = d.pedido_id
+        WHERE p.estado IN ('solicitado','en_transito')
+        GROUP BY d.repuesto_id
+    ");
+    foreach ($tr->fetchAll() as $fila) {
+        $transito[(string) $fila['repuesto_id']] = (float) $fila['cantidad'];
+    }
+
+    $ids       = array_map(fn($r) => (int) $r['id'], $repuestos);
+    $respuesta = NlpClient::post('/sugerencia-pedido', [
+        'repuesto_ids'   => $ids,
+        'dias_entrega'   => $diasEntrega,
+        'dias_cobertura' => $diasCobertura,
+        'en_transito'    => (object) $transito,
+    ]);
+
+    if ($respuesta === null) {
+        $res->getBody()->write(json_encode([
+            'data' => [], 'disponible' => false, 'sin_proveedor' => $sinProveedor,
+        ]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    // Indexar las sugerencias por repuesto para cruzarlas con el catálogo.
+    $porId = [];
+    foreach ($respuesta['data'] ?? [] as $s) {
+        $porId[(int) $s['repuesto_id']] = $s;
+    }
+
+    $porProveedor = [];
+    foreach ($repuestos as $r) {
+        $s = $porId[(int) $r['id']] ?? null;
+        if (!$s || empty($s['necesita_reabastecer'])) {
+            continue;
+        }
+        $provId = (int) $r['proveedor_id'];
+        if (!isset($porProveedor[$provId])) {
+            $porProveedor[$provId] = [
+                'proveedor_id'     => $provId,
+                'proveedor_nombre' => $r['proveedor_nombre'],
+                'items'            => [],
+                'total_estimado'   => 0,
+            ];
+        }
+        $cantidad = (int) $s['cantidad_sugerida'];
+        $precio   = (float) $r['precio_compra'];
+        $porProveedor[$provId]['items'][] = [
+            'repuesto_id'  => (int) $r['id'],
+            'nombre'       => $r['nombre'],
+            'codigo'       => $r['codigo'],
+            'stock'        => (int) $r['stock'],
+            'en_transito'  => (float) ($s['en_transito'] ?? 0),
+            'cantidad'     => $cantidad,
+            'precio_unit'  => $precio,
+            'punto_reorden' => $s['punto_reorden'] ?? null,
+            'motivo'       => $s['motivo'] ?? '',
+        ];
+        $porProveedor[$provId]['total_estimado'] += $cantidad * $precio;
+    }
+
+    $res->getBody()->write(json_encode([
+        'data'           => array_values($porProveedor),
+        'disponible'     => true,
+        'sin_proveedor'  => $sinProveedor,
+        'dias_entrega'   => $diasEntrega,
+        'dias_cobertura' => $diasCobertura,
     ]));
     return $res->withHeader('Content-Type', 'application/json');
 })->add(new RoleMiddleware(['admin', 'dueno']));

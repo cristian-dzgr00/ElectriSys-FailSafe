@@ -61,3 +61,6 @@ docker/getMessage()
 
 # Temporales que Vite deja al recargar su config
 vite.config.js.timestamp-*
+
+# Cliente de escritorio (Electron): binarios e instaladores generados
+desktop/dist/

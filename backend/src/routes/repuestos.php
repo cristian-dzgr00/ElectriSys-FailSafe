@@ -3,6 +3,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\Database;
 use App\models\VehiculoModel;
+use App\services\NlpClient;
 
 function repuestosDB() { return Database::getConnection(); }
 
@@ -34,7 +35,45 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     foreach ($rows as &$fila) { unset($fila['total_filas']); }
     unset($fila);
 
-    $res->getBody()->write(json_encode(['data' => $rows, 'total' => $total, 'page' => $page]));
+    // ── Búsqueda tolerante a errores de tipeo ──────────────────
+    // Cero resultados es la peor respuesta de un buscador: no distingue
+    // "no existe" de "lo escribiste mal". Solo en ese caso se le pide al
+    // microservicio que corrija el término y se reintenta una vez.
+    //
+    // Va acá y no antes de la consulta a propósito: así el costo extra lo
+    // paga únicamente quien se equivocó, y una búsqueda normal no depende
+    // de que el microservicio esté vivo.
+    $terminoBuscado = trim($p['q'] ?? '');
+    $correccion     = null;
+
+    if ($rows === [] && mb_strlen($terminoBuscado) >= 3) {
+        $sugerencia = NlpClient::get('/corregir-busqueda?q=' . urlencode($terminoBuscado));
+        $corregida  = $sugerencia['corregida'] ?? null;
+
+        if ($corregida) {
+            $q2 = '%' . $corregida . '%';
+            $stmt->execute([$q2, $q2, $q2, $q2, $off, $limit]);
+            $filas2 = $stmt->fetchAll();
+
+            // Solo se adopta la corrección si de verdad encontró algo: si
+            // tampoco da resultados, es mejor el "sin resultados" del
+            // término original que confundir con una búsqueda ajena.
+            if ($filas2 !== []) {
+                $total = (int) ($filas2[0]['total_filas'] ?? 0);
+                foreach ($filas2 as &$f2) { unset($f2['total_filas']); }
+                unset($f2);
+                $rows       = $filas2;
+                $correccion = ['buscado' => $terminoBuscado, 'mostrando' => $corregida];
+            }
+        }
+    }
+
+    $salida = ['data' => $rows, 'total' => $total, 'page' => $page];
+    if ($correccion) {
+        $salida['correccion'] = $correccion;
+    }
+
+    $res->getBody()->write(json_encode($salida));
     return $res->withHeader('Content-Type', 'application/json');
 });
 
@@ -292,43 +331,9 @@ $group->delete('/repuestos/{id}', function (Request $req, Response $res, array $
 // ninguna llamada a un LLM externo en este flujo.
 // ─────────────────────────────────────────────────────────────────
 
-/**
- * GET a un path del microservicio de NLP.
- * Devuelve el array decodificado, o null si el servicio no responde /
- * responde con error — a propósito NO lanza: las funciones de IA son
- * un extra de la vista de repuestos, y si el microservicio está caído
- * la página tiene que seguir funcionando igual (criterio de aceptación
- * del sprint). Mismo patrón de llamada interna que GestorAsistente.
- */
-function nlpGet(string $path): ?array
-{
-    $base = rtrim($_ENV['NLP_SERVICE_URL'] ?? '', '/');
-    if ($base === '') {
-        return null;
-    }
-
-    $ch = curl_init($base . $path);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => ['X-Internal-Key: ' . ($_ENV['NLP_INTERNAL_KEY'] ?? '')],
-        // Timeouts cortos: esto corre mientras el usuario mira un modal ya
-        // abierto. Es preferible perder las sugerencias a dejarlo esperando.
-        CURLOPT_TIMEOUT        => 3,
-        CURLOPT_CONNECTTIMEOUT => 2,
-    ]);
-    $body     = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlErr  = curl_errno($ch) ? curl_error($ch) : null;
-    curl_close($ch);
-
-    if ($curlErr !== null || $body === false || $httpCode >= 400) {
-        error_log("[ElectriSys][NLP] {$path} no disponible (HTTP {$httpCode}) " . ($curlErr ?? ''));
-        return null;
-    }
-
-    $decoded = json_decode((string) $body, true);
-    return is_array($decoded) ? $decoded : null;
-}
+// Las llamadas al microservicio pasan por App\services\NlpClient: antes
+// había una función global nlpGet() acá que también usaban ventas.php y
+// pedidos.php, lo que ataba esos archivos al orden de los require.
 
 /**
  * GET /api/repuestos/{id}/demanda?dias=90
@@ -396,8 +401,8 @@ $group->get('/repuestos/{id}/recomendaciones', function (Request $req, Response 
     // Dos llamadas secuenciales y no una: son dos modelos distintos del
     // microservicio, y si la predicción de demanda falla igual queremos
     // mostrar las sugerencias (y viceversa).
-    $similares = nlpGet("/recomendaciones/{$id}");
-    $demanda   = nlpGet("/prediccion-demanda/{$id}");
+    $similares = NlpClient::get("/recomendaciones/{$id}");
+    $demanda   = NlpClient::get("/prediccion-demanda/{$id}");
 
     $res->getBody()->write(json_encode([
         'data' => [
@@ -520,7 +525,7 @@ $group->get('/repuestos/demanda/senales', function (Request $req, Response $res)
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    $resultado = nlpGet('/prediccion-demanda?ids=' . implode(',', $ids));
+    $resultado = NlpClient::get('/prediccion-demanda?ids=' . implode(',', $ids));
 
     $res->getBody()->write(json_encode([
         'data'       => $resultado['data'] ?? [],
