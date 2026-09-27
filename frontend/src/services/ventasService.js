@@ -50,6 +50,7 @@ export const cotizacionesService = {
 
 export const proveedoresService = {
   listar:     (params = {}) => api.get('/proveedores',       { params }),
+  buscar:     (id)          => api.get(`/proveedores/${id}`),
   crear:      (data)        => api.post('/proveedores',       data),
   actualizar: (id, data)    => api.put(`/proveedores/${id}`, data),
   eliminar:   (id)          => api.delete(`/proveedores/${id}`),

@@ -40,6 +40,25 @@ $group->get('/proveedores', function (Request $req, Response $res) {
     return $res->withHeader('Content-Type', 'application/json');
 });
 
+// GET /api/proveedores/{id} — para el popup de contacto en pedidos, etc.
+// No filtra por activo=1: un pedido histórico puede apuntar a un proveedor
+// ya desactivado y sus datos de contacto siguen siendo válidos de mostrar.
+$group->get('/proveedores/{id}', function (Request $req, Response $res, array $args) {
+    if (!ctype_digit((string)$args['id'])) {
+        $res->getBody()->write(json_encode(['error' => 'ID inválido']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+    $stmt = proveedoresDB()->prepare("SELECT * FROM proveedores WHERE id = ?");
+    $stmt->execute([(int)$args['id']]);
+    $prov = $stmt->fetch();
+    if (!$prov) {
+        $res->getBody()->write(json_encode(['error' => 'Proveedor no encontrado']));
+        return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
+    }
+    $res->getBody()->write(json_encode(['data' => $prov]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
 // POST /api/proveedores
 $group->post('/proveedores', function (Request $req, Response $res) {
     $b = (array) $req->getParsedBody();

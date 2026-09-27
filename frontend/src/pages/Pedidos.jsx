@@ -57,6 +57,7 @@ export default function Pedidos() {
   const [detalle,     setDetalle]     = useState(null);
   const [confirmCancel, setConfirmCancel] = useState(null);
   const [accionando,  setAccionando]  = useState(false);
+  const [provPopup,   setProvPopup]   = useState(null); // { loading, error, data } | null
 
   // ── Formulario de nuevo pedido ──
   const [provId,   setProvId]   = useState('');
@@ -148,6 +149,16 @@ export default function Pedidos() {
       setModal('detail');
     } catch {
       toast('No se pudo abrir el pedido', { type: 'error' });
+    }
+  };
+
+  const verProveedor = async (id) => {
+    setProvPopup({ loading: true, error: '', data: null });
+    try {
+      const r = await proveedoresService.buscar(id);
+      setProvPopup({ loading: false, error: '', data: r.data.data });
+    } catch (e) {
+      setProvPopup({ loading: false, error: e.response?.data?.error || 'No se pudo cargar el proveedor', data: null });
     }
   };
 
@@ -443,7 +454,19 @@ export default function Pedidos() {
             </div>
             <div className="modal-body">
               <div className="form-row" style={{ marginBottom: 12 }}>
-                <div><span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Proveedor</span><br /><strong>{detalle.proveedor_nombre}</strong></div>
+                <div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Proveedor</span><br />
+                  <button
+                    style={{
+                      padding: 0, background: 'none', border: 'none',
+                      color: 'var(--accent)', fontWeight: 700, fontSize: 14, cursor: 'pointer', textDecoration: 'underline',
+                    }}
+                    onClick={() => verProveedor(detalle.proveedor_id)}
+                    title="Ver datos de contacto"
+                  >
+                    {detalle.proveedor_nombre}
+                  </button>
+                </div>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Solicitado por</span><br /><strong>{detalle.usuario_nombre}</strong></div>
                 <div><span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Estado</span><br />
                   <StatusBadge status={ESTADO_LABEL[detalle.estado] ?? detalle.estado} className={`badge ${estadoBadge(detalle.estado)}`} />
@@ -494,6 +517,56 @@ export default function Pedidos() {
             </div>
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setModal(false)}>Cerrar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup de contacto del proveedor */}
+      {provPopup && (
+        <div className="modal-overlay" style={{ zIndex: 1000 }}
+          onClick={e => e.target === e.currentTarget && setProvPopup(null)}>
+          <div className="modal" style={{ maxWidth: 420 }}>
+            <div className="modal-header">
+              <div className="modal-title">Datos del proveedor</div>
+              <button className="modal-close" onClick={() => setProvPopup(null)}><X size={18} /></button>
+            </div>
+            <div className="modal-body">
+              {provPopup.loading && (
+                <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Cargando…</div>
+              )}
+              {provPopup.error && <div className="alert alert-error">{provPopup.error}</div>}
+              {provPopup.data && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div>
+                    <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Nombre</span><br />
+                    <strong>{provPopup.data.nombre}</strong>
+                  </div>
+                  {provPopup.data.contacto && (
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Persona de contacto</span><br />
+                      {provPopup.data.contacto}
+                    </div>
+                  )}
+                  <div>
+                    <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Teléfono</span><br />
+                    {provPopup.data.telefono || '—'}
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Correo electrónico</span><br />
+                    {provPopup.data.email || '—'}
+                  </div>
+                  {provPopup.data.direccion && (
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>Dirección</span><br />
+                      {provPopup.data.direccion}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={() => setProvPopup(null)}>Cerrar</button>
             </div>
           </div>
         </div>
