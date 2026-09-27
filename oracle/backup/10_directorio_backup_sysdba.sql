@@ -22,7 +22,12 @@
 -- Documentos, que quedan restringidas al usuario de Windows:
 --   mkdir C:\oracle_backups\electrisys
 --   icacls C:\oracle_backups\electrisys /grant "NT SERVICE\OracleServiceFREE:(OI)(CI)F" /T
---   CREATE OR REPLACE DIRECTORY electrisys_backup_dir AS 'C:\oracle_backups\electrisys';
+--   -- Igual que en 01_usuario_y_esquema.sql: forzar la PDB. Un DIRECTORY creado
+-- en CDB$ROOT no es visible para una sesión conectada a FREEPDB1 (como la
+-- app, o electrisys), así que esto también evita un ORA-29283/ORA-06564.
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
+CREATE OR REPLACE DIRECTORY electrisys_backup_dir AS 'C:\oracle_backups\electrisys';
 -- ============================================================
 
 CREATE OR REPLACE DIRECTORY electrisys_backup_dir AS '/opt/oracle/backups/electrisys';

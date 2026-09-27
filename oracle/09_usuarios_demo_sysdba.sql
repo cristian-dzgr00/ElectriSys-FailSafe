@@ -4,6 +4,10 @@
 -- Ejecutar conectado AS SYSDBA (crear usuarios es un privilegio de sistema).
 -- ============================================================
 
+-- Igual que en 01_usuario_y_esquema.sql: forzar la PDB, no confiar en el
+-- contenedor por defecto de la conexión SYSDBA.
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
 -- Perfil con política de contraseña — vencimiento, bloqueo por intentos
 -- fallidos y complejidad mínima (función estándar de Oracle).
 CREATE PROFILE electrisys_profile LIMIT

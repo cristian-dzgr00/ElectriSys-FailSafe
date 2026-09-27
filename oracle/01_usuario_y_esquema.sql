@@ -16,6 +16,12 @@
 -- una base que puede estar a medio armar.
 -- ============================================================
 
+-- Conexiones SYSDBA vía bequeath (docker exec ... sqlplus / as sysdba) caen por
+-- defecto en CDB$ROOT, no en la PDB, sin importar TWO_TASK/env del shell que
+-- las invoque. Forzar el contenedor acá hace este script correcto sin
+-- importar cómo se lo llame (cargar_esquema.sh, un docker exec suelto, etc).
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
 SET VERIFY OFF
 SET SERVEROUTPUT ON
 DEFINE app_pass = &1
@@ -28,7 +34,7 @@ BEGIN
      WHERE tablespace_name = 'ELECTRISYS_DATA';
     IF v_existe = 0 THEN
         EXECUTE IMMEDIATE 'CREATE TABLESPACE electrisys_data ' ||
-            'DATAFILE ''electrisys_data01.dbf'' SIZE 200M ' ||
+            'DATAFILE ''/opt/oracle/oradata/electrisys_data01.dbf'' SIZE 200M ' ||
             'AUTOEXTEND ON NEXT 50M MAXSIZE 2G';
         DBMS_OUTPUT.PUT_LINE('Tablespace ELECTRISYS_DATA creado.');
     ELSE
