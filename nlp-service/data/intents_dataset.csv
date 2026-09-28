@@ -64,3 +64,312 @@ texto,intencion
 "Cuéntame un chiste",fuera_de_dominio
 "¿Qué opinas del nuevo modelo de carro eléctrico?",fuera_de_dominio
 "¿Cómo llego a la estación del metro más cercana?",fuera_de_dominio
+"¿Esta correa de accesorios sirve para un Renault Logan 1.6 2021?",consultar_compatibilidad
+"¿El amortiguador Monroe aplica también para el Ford Escape 2015?",consultar_compatibilidad
+"¿Me confirma si esta bomba de agua funciona en un Nissan Frontier 2018?",consultar_compatibilidad
+"¿Sirve esta rótula para Suzuki Swift 2020?",consultar_compatibilidad
+"¿Es compatible el radiador con el Mazda CX-5 2019 y también con el CX-3?",consultar_compatibilidad
+"¿La bobina de encendido aplica para Kia Sportage 2020?",consultar_compatibilidad
+"¿Funciona este alternador en un Hyundai Tucson 2022 diésel?",consultar_compatibilidad
+"¿Sirve pa un Chevrolet Spark GT 2018 esta caja de dirección?",consultar_compatibilidad
+"¿Esta pieza de suspensión aplica también a otros modelos Mitsubishi?",consultar_compatibilidad
+"Necesito saber si el sensor de oxígeno es compatible con Volkswagen Gol 2019",consultar_compatibilidad
+"¿Aplica esta bujía NGK a motores de 1.4 y 1.6 por igual?",consultar_compatibilidad
+"¿Le sirve esta banda poly-v a un Kia Rio 2017?",consultar_compatibilidad
+"¿Es compatible este kit de embrague con la versión automática del Aveo?",consultar_compatibilidad
+"¿La bomba de gasolina funciona en Nissan Sentra modelo 2015 en adelante?",consultar_compatibilidad
+"Profe, ¿esta autoparte sirve tambien para el Duster 1.6?",consultar_compatibilidad
+"¿Este disco de freno aplica únicamente al Tucson 2022 o también a modelos anteriores?",consultar_compatibilidad
+"¿Sirve este filtro de cabina en más de un modelo de Renault?",consultar_compatibilidad
+"¿Me puede confirmar si esta pieza es compatible con motores turbo?",consultar_compatibilidad
+"¿Aplica esta rotula pa un Mitsubishi Montero 2016?",consultar_compatibilidad
+"¿Este mazo de cables eléctricos funciona en el Spark 2019 con aire acondicionado?",consultar_compatibilidad
+"¿Es compatible esta caja de cambios con la versión manual y automática?",consultar_compatibilidad
+"¿Sirve este sensor ABS para un Ford Fiesta 2015?",consultar_compatibilidad
+"Quisiera confirmar si esta parte aplica a un Hyundai Accent 2015 con motor 1.6",consultar_compatibilidad
+"¿Funciona esta bomba de dirección hidráulica en un Suzuki Vitara?",consultar_compatibilidad
+"¿La correa de distribución Gates aplica solo a gasolina o también a diésel?",consultar_compatibilidad
+"¿Es compatible este radiador de aire con el motor 2.0 turbo?",consultar_compatibilidad
+"¿Aplica esta bujia para toyta corolla 2017?",consultar_compatibilidad
+"¿Le sirve este soporte de motor a un Chevrolet Tracker 2020?",consultar_compatibilidad
+"¿Es compatible esta parte eléctrica con vehículos híbridos?",consultar_compatibilidad
+"¿Aplica este kit de suspensión a la versión 4x4 de la Frontier?",consultar_compatibilidad
+"¿Sirve esta manguera de radiador en un Mazda 3 2020 y en el Mazda 6?",consultar_compatibilidad
+"¿Funciona este switch de luces en un Kia Picanto 2019?",consultar_compatibilidad
+"¿Es compatible el filtro de aire con motores 1.8 y 2.0?",consultar_compatibilidad
+"¿Le aplica esta bomba de aceite a un Mitsubishi L200 2018?",consultar_compatibilidad
+"¿Esta pieza de transmisión sirve para versiones anteriores al 2020?",consultar_compatibilidad
+"sirve esto para un renault logan o solo duster",consultar_compatibilidad
+"¿Aplica este terminal de dirección tanto al lado izquierdo como al derecho?",consultar_compatibilidad
+"¿Es compatible esta batería con sistemas start-stop?",consultar_compatibilidad
+"¿Funciona este relé de arranque en un Volkswagen Polo 2018?",consultar_compatibilidad
+"¿Sirve esta pieza para un Chevrolet Captiva 2016 con motor 2.4?",consultar_compatibilidad
+"¿Es compatible el juego de rodamientos con la Hilux 4x2 y 4x4?",consultar_compatibilidad
+"quiero saber si esta parte aplica pa una camioneta ford ranger 2019",consultar_compatibilidad
+"¿Le sirve este actuador de embrague a un Suzuki Swift automático?",consultar_compatibilidad
+"¿Quién ganó el partido de anoche?",fuera_de_dominio
+"Recomiéndame una receta para hacer arroz con pollo",fuera_de_dominio
+"¿Cuál es la capital de Australia?",fuera_de_dominio
+"oye y tu sabes bailar salsa",fuera_de_dominio
+"¿Qué signo del zodiaco es más compatible con Escorpio?",fuera_de_dominio
+"¿Me puedes recomendar una película de acción?",fuera_de_dominio
+"asdkjaslkdj",fuera_de_dominio
+"¿Eres una persona real o un robot?",fuera_de_dominio
+"¿Cuánto es 458 multiplicado por 12?",fuera_de_dominio
+"¿Qué opinas de la política actual del país?",fuera_de_dominio
+"necesito el numero de whatsapp del jefe",fuera_de_dominio
+"¿Tienen baño para clientes?",fuera_de_dominio
+"¿Cuál es tu color favorito?",fuera_de_dominio
+"Feliz cumpleaños, espero que la pases muy bien",fuera_de_dominio
+"¿Cómo está el tráfico en la autopista norte?",fuera_de_dominio
+"jajaja eso estuvo muy bueno",fuera_de_dominio
+"¿Cuántos empleados trabajan en este local?",fuera_de_dominio
+"¿Qué canción está sonando ahorita?",fuera_de_dominio
+"prueba prueba 123",fuera_de_dominio
+"¿Cuál es el mejor equipo de fútbol de Colombia?",fuera_de_dominio
+"¿Ustedes venden comida también?",fuera_de_dominio
+"hola necesito saber si hay wifi aca",fuera_de_dominio
+"¿Qué hora es en España ahora mismo?",fuera_de_dominio
+"Cuéntame algo interesante sobre el universo",fuera_de_dominio
+"¿Vende ropa esta tienda?",fuera_de_dominio
+"¿Cómo se dice buenos días en inglés?",fuera_de_dominio
+"xxxxxxx",fuera_de_dominio
+"¿Tienen parqueadero disponible?",fuera_de_dominio
+"quien es el presidente de colombia",fuera_de_dominio
+"¿Puedes ayudarme con mi tarea de matemáticas?",fuera_de_dominio
+"¿Qué serie me recomiendas ver este fin de semana?",fuera_de_dominio
+"buenas, aca vive alguien de apellido gomez",fuera_de_dominio
+"¿Cuál es el sentido de la vida?",fuera_de_dominio
+"¿Tienen servicio de domicilio los fines de semana?",fuera_de_dominio
+"¿Cómo va el dólar hoy?",fuera_de_dominio
+"me late que va a llover toda la tarde",fuera_de_dominio
+"¿Qué opinas de la inteligencia artificial?",fuera_de_dominio
+"recomiendame musica para trabajar",fuera_de_dominio
+"¿Cuánto falta para navidad?",fuera_de_dominio
+"hshshshs no se ni que estoy escribiendo",fuera_de_dominio
+"¿Ustedes reparan celulares también?",fuera_de_dominio
+"¿Cuál es tu serie favorita de todos los tiempos?",fuera_de_dominio
+"buenas tardes queria saber si aqui hacen cambio de aceite en el local o solo venden repuestos",fuera_de_dominio
+"¿Cuánto vale un radiador para Mazda CX-5 2019?",consultar_precio
+"¿Qué precio maneja la bomba de agua para Nissan Frontier?",consultar_precio
+"Deme el valor del kit de suspensión para Ford Fiesta 2015",consultar_precio
+"¿A cómo sale el alternador de Hyundai Accent 2016?",consultar_precio
+"¿Cuál es el costo de las bujías NGK para Kia Rio?",consultar_precio
+"necesito el precio del filtro de cabina pa un duster",consultar_precio
+"¿Me puede cotizar un juego de amortiguadores para Suzuki Swift 2020?",consultar_precio
+"¿Cuánto sale la correa poly-v del Sportage 2020?",consultar_precio
+"Precio del sensor ABS para Ford Fiesta, por favor",consultar_precio
+"¿En cuánto está el disco de freno delantero de la Tucson?",consultar_precio
+"¿Qué valor tiene el mazo de cables del Spark 2019?",consultar_precio
+"cuanto cuesta la bomba de gasolina del sentra",consultar_precio
+"¿Podría indicarme el precio de la caja de dirección para Chevrolet Tracker?",consultar_precio
+"¿A cómo está el soporte de motor para Mitsubishi L200?",consultar_precio
+"Quiero saber el precio del filtro de aire para Renault Logan",consultar_precio
+"¿Cuánto cuesta el kit de embrague completo de la Aveo automática?",consultar_precio
+"valor del terminal de direccion para golf 2018",consultar_precio
+"¿Cuál es el precio del rodamiento delantero de la Hilux 4x4?",consultar_precio
+"¿Me confirma el precio de la batería para sistemas start-stop?",consultar_precio
+"¿Cuánto vale una bomba de aceite para L200 2018?",consultar_precio
+"deme el costo de la bobina de encendido del sportage",consultar_precio
+"¿Qué precio tiene el relé de arranque para Polo 2018?",consultar_precio
+"¿A cuánto está el actuador de embrague del Swift automático?",consultar_precio
+"necesito cotizar dos filtros de aceite para captiva 2016",consultar_precio
+"¿Cuánto cuesta la manguera de radiador del Mazda 6?",consultar_precio
+"vale mucho el switch de luces del picanto",consultar_precio
+"¿Cuál es el precio de venta de los rodamientos traseros?",consultar_precio
+"¿Me indica el valor del radiador de aire para motor 2.0 turbo?",consultar_precio
+"cotización del sensor de oxígeno para Volkswagen Gol",consultar_precio
+"¿Cuánto está saliendo el kit de suspensión completo?",consultar_precio
+"precio total de cambiar las cuatro bujías",consultar_precio
+"¿A cómo me deja el juego de pastillas traseras?",consultar_precio
+"¿Cuánto cuesta una rótula para Mitsubishi Montero?",consultar_precio
+"buenas, el precio de la caja de cambios manual cual es",consultar_precio
+"¿Me puede decir cuánto vale el mazo eléctrico completo?",consultar_precio
+"¿Qué tan caro está el radiador original comparado con el genérico?",consultar_precio
+"vale del filtro combustible bosch para el gol",consultar_precio
+"¿Cuánto cuesta instalar y comprar el kit de distribución completo?",consultar_precio
+"¿Cuál es el precio actual del amortiguador delantero derecho?",consultar_precio
+"me puede pasar el precio de la bomba hidraulica",consultar_precio
+"¿Cuánto sale el kit completo de frenos para camioneta?",consultar_precio
+"¿Qué precio tiene esa pieza en efectivo y con tarjeta?",consultar_precio
+"¿Podría decirme cuánto cuesta la pieza con código M1-102?",consultar_precio
+"¿Cuántas bujías NGK quedan en bodega?",consultar_stock
+"¿Hay disponibilidad del radiador para CX-5 2019?",consultar_stock
+"¿Cuántas unidades hay del kit de embrague de Aveo?",consultar_stock
+"verifica cuantas correas poly-v quedan",consultar_stock
+"¿Se está agotando el filtro de cabina del Duster?",consultar_stock
+"¿Cuánto inventario queda de amortiguadores Monroe?",consultar_stock
+"¿Hay stock suficiente de discos de freno para esta semana?",consultar_stock
+"revisa existencias del sensor ABS M1-102",consultar_stock
+"¿Cuántas bombas de agua quedan disponibles?",consultar_stock
+"¿Se acabaron los filtros de aire del Logan?",consultar_stock
+"¿Qué cantidad hay del terminal de dirección para Golf?",consultar_stock
+"hay pocas unidades del alternador o ya no queda",consultar_stock
+"¿Cuántos juegos de pastillas traseras hay en bodega?",consultar_stock
+"confirmame el stock del rodamiento delantero",consultar_stock
+"¿Cuántas baterías start-stop quedan en el local?",consultar_stock
+"¿Está por agotarse la correa de distribución Gates?",consultar_stock
+"¿Qué stock hay de la bomba de aceite para L200?",consultar_stock
+"cuantas piezas del kit de suspension hay",consultar_stock
+"¿Hay existencias del relé de arranque para Polo?",consultar_stock
+"¿Cuántos mazos de cables completos quedan?",consultar_stock
+"¿Todavía hay stock del actuador de embrague?",consultar_stock
+"revisa si queda inventario del switch de luces",consultar_stock
+"¿Cuántas unidades del sensor de oxígeno tenemos?",consultar_stock
+"¿Se está agotando el radiador de aire 2.0 turbo?",consultar_stock
+"cuanto queda del filtro combustible bosch",consultar_stock
+"¿Hay suficientes rótulas para surtir el fin de semana?",consultar_stock
+"¿Qué cantidad de bobinas de encendido hay disponibles?",consultar_stock
+"verifica el inventario del soporte de motor L200",consultar_stock
+"¿Cuántos kits de distribución quedan en bodega?",consultar_stock
+"¿Se agotaron las bombas de gasolina para Sentra?",consultar_stock
+"dime cuantas unidades hay del repuesto hp-1002",consultar_stock
+"¿Cuánto stock queda del disco de freno Tucson?",consultar_stock
+"¿Está agotado el kit de embrague de la Aveo automática?",consultar_stock
+"¿Cuántas piezas del mazo eléctrico hay en existencia?",consultar_stock
+"revisa disponibilidad del rodamiento trasero",consultar_stock
+"¿Ya no queda inventario de la caja de dirección?",consultar_stock
+"¿Cuántas correas de accesorios hay disponibles ahorita?",consultar_stock
+"existe stock de la manguera de radiador del Mazda 6",consultar_stock
+"¿Cuántas unidades quedan del filtro K&N HP-1002?",consultar_stock
+"verifica si hay suficientes pastillas delanteras para surtir",consultar_stock
+"¿Qué tan bajo está el inventario de baterías Mac?",consultar_stock
+"¿Cuántas piezas del kit de frenos completo hay en bodega?",consultar_stock
+"¿Tienen radiador para Mazda CX-5 2019?",buscar_repuesto
+"Busco un kit de suspensión para Ford Fiesta 2015",buscar_repuesto
+"¿Manejan sensor ABS código M1-102?",buscar_repuesto
+"Necesito una bomba de agua para Nissan Frontier",buscar_repuesto
+"¿Tienen correa poly-v para Kia Sportage 2020?",buscar_repuesto
+"estoy buscando bujias ngk para un rio",buscar_repuesto
+"¿Hay disponible un mazo de cables para Spark 2019?",buscar_repuesto
+"Quiero comprar un terminal de dirección para Volkswagen Golf",buscar_repuesto
+"¿Manejan rodamientos delanteros para camioneta Hilux?",buscar_repuesto
+"Busco una batería compatible con sistema start-stop",buscar_repuesto
+"¿Tienen soporte de motor para Mitsubishi L200 2018?",buscar_repuesto
+"necesito un filtro de cabina para duster 2022",buscar_repuesto
+"¿Manejan actuador de embrague para Suzuki Swift?",buscar_repuesto
+"Busco relé de arranque para un Volkswagen Polo",buscar_repuesto
+"¿Tienen switch de luces para Kia Picanto 2019?",buscar_repuesto
+"Estoy buscando un sensor de oxígeno para Gol 2019",buscar_repuesto
+"¿Hay bomba de aceite para Mitsubishi L200?",buscar_repuesto
+"necesito una rotula para montero 2016",buscar_repuesto
+"¿Manejan bobina de encendido para Sportage 2020?",buscar_repuesto
+"Busco kit de distribución completo para Logan 1.6",buscar_repuesto
+"¿Tienen manguera de radiador para Mazda 6?",buscar_repuesto
+"Quiero un radiador de aire para motor 2.0 turbo",buscar_repuesto
+"¿Manejan caja de dirección para Chevrolet Tracker?",buscar_repuesto
+"busco pieza para el sistema electrico de un spark",buscar_repuesto
+"¿Tienen amortiguadores traseros para Suzuki Vitara?",buscar_repuesto
+"Necesito un kit de embrague completo para Aveo automática",buscar_repuesto
+"¿Manejan filtro de aire para motor 1.8?",buscar_repuesto
+"Busco discos de freno traseros para Tucson 2022",buscar_repuesto
+"¿Hay pastillas delanteras para un Captiva 2016?",buscar_repuesto
+"tienen alguna pieza de transmision para nissan sentra",buscar_repuesto
+"¿Manejan juego de rodamientos traseros?",buscar_repuesto
+"Busco una bomba de gasolina para Sentra reciente",buscar_repuesto
+"¿Tienen el repuesto con código HP-1002 en otra presentación?",buscar_repuesto
+"quiero comprar un kit de frenos completo pa una camioneta",buscar_repuesto
+"¿Manejan piezas eléctricas para vehículos híbridos?",buscar_repuesto
+"Busco filtro de combustible Bosch para Volkswagen Gol",buscar_repuesto
+"¿Tienen banda de accesorios para Suzuki Swift 2020?",buscar_repuesto
+"Necesito autopartes de suspensión para Renault Duster",buscar_repuesto
+"No hay radiador original para Mazda CX-5 2019, ¿qué me sugiere?",recomendar_sustituto
+"Se acabó el sensor ABS M1-102, deme otra opción que sirva",recomendar_sustituto
+"No tenemos el mazo de cables original del Spark, ¿con qué lo reemplazo?",recomendar_sustituto
+"ya no hay terminal de direccion pa golf, que me recomienda",recomendar_sustituto
+"Se agotaron los rodamientos delanteros de la Hilux, sugiérame un reemplazo",recomendar_sustituto
+"No queda batería start-stop original, ¿qué alternativa hay?",recomendar_sustituto
+"No hay soporte de motor L200 original, deme un equivalente",recomendar_sustituto
+"Se acabó el filtro de cabina para Duster, ¿qué le puedo ofrecer al cliente?",recomendar_sustituto
+"No tenemos actuador de embrague original para Swift, ¿hay algo compatible?",recomendar_sustituto
+"Se agotó el relé de arranque del Polo, necesito una alternativa",recomendar_sustituto
+"No hay switch de luces original para Picanto, qué me recomienda",recomendar_sustituto
+"no tengo sensor de oxigeno para el gol, deme otra marca",recomendar_sustituto
+"Se acabó la bomba de aceite para L200, ¿con qué la sustituyo?",recomendar_sustituto
+"No hay bobina de encendido original para Sportage, ofrézcame otra",recomendar_sustituto
+"Ya no queda kit de distribución completo para Logan, deme una opción similar",recomendar_sustituto
+"No tenemos manguera de radiador original de Mazda 6, ¿qué otra sirve?",recomendar_sustituto
+"Se agotó el radiador de aire para motor 2.0 turbo, sugiérame algo",recomendar_sustituto
+"No hay caja de dirección original para Tracker, deme otra marca",recomendar_sustituto
+"no queda pieza electrica original del spark, hay algo parecido",recomendar_sustituto
+"Se acabaron los amortiguadores originales para Vitara, ¿qué otra marca ofrezco?",recomendar_sustituto
+"No hay kit de embrague original para Aveo automática, deme una alternativa",recomendar_sustituto
+"Ya no tenemos filtro de aire original para motor 1.8, ¿qué recomienda?",recomendar_sustituto
+"Se agotaron los discos de freno traseros de la Tucson, sugiérame otro",recomendar_sustituto
+"No hay pastillas delanteras originales para Captiva, ¿con qué las sustituyo?",recomendar_sustituto
+"no tenemos pieza de transmision para el sentra, deme algo similar",recomendar_sustituto
+"Se acabó la bomba de gasolina original del Sentra, ¿qué otra marca sirve?",recomendar_sustituto
+"No hay más unidades del HP-1002, ¿qué otro código lo reemplaza?",recomendar_sustituto
+"Ya no tengo kit de frenos completo original, ¿qué le ofrezco al cliente?",recomendar_sustituto
+"No hay piezas eléctricas originales para híbridos, deme una opción",recomendar_sustituto
+"Se agotó el filtro de combustible Bosch para Gol, sugiérame otro",recomendar_sustituto
+"No tenemos banda de accesorios original para Swift 2020, ¿hay similar?",recomendar_sustituto
+"Ya no queda autoparte de suspensión original para Duster, deme alternativa",recomendar_sustituto
+"no hay sensor de oxigeno original, cual otro me recomienda",recomendar_sustituto
+"Se acabaron las rótulas para Montero, ¿qué otra opción manejamos?",recomendar_sustituto
+"No hay juego de rodamientos traseros original, deme un sustituto confiable",recomendar_sustituto
+"ya no tenemos correa de accesorios pa el swift, deme otra",recomendar_sustituto
+"Buenas",saludo_despedida
+"¿Aló, hay alguien ahí?",saludo_despedida
+"Buen día, ¿me puede atender?",saludo_despedida
+"Hola, buenas tardes",saludo_despedida
+"Qué tal, ¿cómo va todo?",saludo_despedida
+"buenas como estas",saludo_despedida
+"Mil gracias por la atención",saludo_despedida
+"Perfecto, muchas gracias",saludo_despedida
+"Listo, muy amable",saludo_despedida
+"Chao, que tenga buen día",saludo_despedida
+"Nos vemos luego",saludo_despedida
+"Hasta pronto",saludo_despedida
+"gracias mano, eso era todo",saludo_despedida
+"Buenas noches, ¿aún están atendiendo?",saludo_despedida
+"Hola, buenas, quisiera un favor",saludo_despedida
+"Ok gracias, hasta luego",saludo_despedida
+"Le agradezco mucho la ayuda",saludo_despedida
+"Muy amable, que tenga buena tarde",saludo_despedida
+"buenas tardes senor necesito ayuda",saludo_despedida
+"Hola, ¿me puede colaborar con algo?",saludo_despedida
+"Gracias por la información",saludo_despedida
+"Bueno, listo, nos hablamos después",saludo_despedida
+"Hola buenas, ¿está el asistente disponible ahorita?",saludo_despedida
+"Vale, gracias por todo",saludo_despedida
+"Un gusto saludarlo",saludo_despedida
+"Hasta la próxima entonces",saludo_despedida
+"Ok perfecto, hasta mañana",saludo_despedida
+"buenas, disculpe la molestia",saludo_despedida
+"Gracias, que esté muy bien",saludo_despedida
+"Hola, buenos días, tengo una consulta",saludo_despedida
+"Estamos en contacto, gracias",saludo_despedida
+"hola alguien me puede ayudar porfa",saludo_despedida
+"Le agradezco la paciencia",saludo_despedida
+"Feliz día, gracias por todo",saludo_despedida
+"Buenas tardes, un gusto",saludo_despedida
+"Ya con eso quedo, gracias",saludo_despedida
+"hasta luego que este bien",saludo_despedida
+"Buenas, ¿hay alguien que me pueda atender?",saludo_despedida
+"Muchas gracias, eso era todo por hoy",saludo_despedida
+"Hola, buen día para todos",saludo_despedida
+"y para un Mazda 3 2020",recomendar_sustituto
+"ok, ¿y ese mismo pero para un Kia Rio?",recomendar_sustituto
+"también para una Hilux diésel",recomendar_sustituto
+"¿y si es para un Renault Duster?",recomendar_sustituto
+"y ese otro que me recomienda para el Spark",recomendar_sustituto
+"listo, ¿y para la versión automática?",recomendar_sustituto
+"y para un Sentra 2019",buscar_repuesto
+"¿y para el modelo anterior?",buscar_repuesto
+"también lo necesito para un Kia Picanto",buscar_repuesto
+"¿y en otra marca lo manejan?",buscar_repuesto
+"y ese mismo pero para camioneta",buscar_repuesto
+"¿tienen también para el 2021?",buscar_repuesto
+"¿y ese cuánto vale?",consultar_precio
+"¿y el otro precio?",consultar_precio
+"¿y para el modelo automático cuánto sale?",consultar_precio
+"listo, ¿y ese otro a cómo está?",consultar_precio
+"¿y si lo llevo original, cuánto sube?",consultar_precio
+"¿y con instalación incluida cuánto sería?",consultar_precio
+"¿y de ese cuántos quedan?",consultar_stock
+"¿y stock del otro?",consultar_stock
+"¿y para el modelo 2021 hay?",consultar_stock
+"¿y en la otra marca cuántas hay?",consultar_stock
+"¿todavía queda de ese mismo?",consultar_stock
+"¿y cuántas unidades del otro código?",consultar_stock

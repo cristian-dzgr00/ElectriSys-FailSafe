@@ -64,3 +64,6 @@ vite.config.js.timestamp-*
 
 # Cliente de escritorio (Electron): binarios e instaladores generados
 desktop/dist/
+
+# Claves SSH generadas para el despliegue en Azure (no subir)
+azure-deploy/

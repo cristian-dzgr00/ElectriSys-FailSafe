@@ -77,98 +77,6 @@ $group->get('/ventas/resumen/hoy', function (Request $req, Response $res) {
     return $res->withHeader('Content-Type', 'application/json');
 });
 
-// GET /api/ventas/{id}
-$group->get('/ventas/{id}', function (Request $req, Response $res, array $args) {
-    if (!ctype_digit((string)$args['id'])) {
-        $res->getBody()->write(json_encode(['error' => 'ID de venta inválido']));
-        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-    }
-    $model = new VentaModel();
-    $venta = $model->buscarPorId((int)$args['id']);
-    if (!$venta) {
-        $res->getBody()->write(json_encode(['error' => 'Venta no encontrada']));
-        return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
-    }
-    $res->getBody()->write(json_encode(['data' => $venta]));
-    return $res->withHeader('Content-Type', 'application/json');
-});
-
-// POST /api/ventas — usa GestorVentas con Observer + Strategy
-$group->post('/ventas', function (Request $req, Response $res) {
-    $user = $req->getAttribute('user');
-    $body = (array) $req->getParsedBody();
-    $ip   = $req->getServerParams()['REMOTE_ADDR'] ?? '';
-
-    if (empty($body['items']) || !is_array($body['items'])) {
-        $res->getBody()->write(json_encode(['error' => 'Debes agregar al menos un producto a la venta']));
-        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-    }
-
-    foreach ($body['items'] as $i => $item) {
-        if (empty($item['repuesto_id']) || !is_numeric($item['repuesto_id'])) {
-            $res->getBody()->write(json_encode(['error' => "Item #".($i+1).": repuesto_id inválido"]));
-            return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        if (empty($item['cantidad']) || (int)$item['cantidad'] <= 0) {
-            $res->getBody()->write(json_encode(['error' => "Item #".($i+1).": cantidad debe ser mayor a 0"]));
-            return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        if (!isset($item['precio_unit']) || !is_numeric($item['precio_unit']) || $item['precio_unit'] <= 0) {
-            $res->getBody()->write(json_encode(['error' => "Item #".($i+1).": precio_unit inválido"]));
-            return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-    }
-
-    $metodosValidos = ['efectivo', 'tarjeta', 'transferencia', 'credito'];
-    if (!empty($body['metodo_pago']) && !in_array($body['metodo_pago'], $metodosValidos)) {
-        $res->getBody()->write(json_encode(['error' => 'Método de pago inválido']));
-        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-    }
-
-    try {
-        // GestorVentas aplica Strategy (descuento) + notifica Observers
-        // (AuditLogObserver guarda en DB, WebSocketObserver notifica al frontend)
-        $gestor = makeGestorVentas();
-        $result = $gestor->crearVenta($body, (int)($user['sub'] ?? $user['id'] ?? 0), $ip);
-
-        $res->getBody()->write(json_encode(['success' => true, ...$result]));
-        return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
-    } catch (\RuntimeException $e) {
-        $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
-        return $res->withStatus(422)->withHeader('Content-Type', 'application/json');
-    } catch (\Throwable $e) {
-        error_log('[Ventas] Error: ' . $e->getMessage());
-        $res->getBody()->write(json_encode(['error' => 'Error interno al procesar la venta']));
-        return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
-    }
-});
-
-// PUT /api/ventas/{id}/anular — usa GestorVentas con Observer
-$group->put('/ventas/{id}/anular', function (Request $req, Response $res, array $args) {
-
-    if (!ctype_digit((string)$args['id'])) {
-        $res->getBody()->write(json_encode(['error' => 'ID inválido']));
-        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
-    }
-
-    $user   = $req->getAttribute('user');
-    $ip     = $req->getServerParams()['REMOTE_ADDR'] ?? '';
-    $gestor = makeGestorVentas();
-    $result = $gestor->anularVenta(
-        (int)$args['id'],
-        (int)($user['sub'] ?? $user['id'] ?? 0),
-        $ip
-    );
-
-    if (!$result) {
-        $res->getBody()->write(json_encode(['error' => 'No se pudo anular (ya anulada o no existe)']));
-        return $res->withStatus(409)->withHeader('Content-Type', 'application/json');
-    }
-
-    $res->getBody()->write(json_encode(['success' => true]));
-    return $res->withHeader('Content-Type', 'application/json');
-});
-
 // GET /api/ventas/resumen/serie?dias=7|30|90
 // Serie de ingresos para el gráfico del dashboard, con rango configurable.
 // Reemplaza a /resumen/semana (que queda fija en 7 días y se conserva por
@@ -304,3 +212,95 @@ $group->get('/ventas/complementos', function (Request $req, Response $res) {
     ]));
     return $res->withHeader('Content-Type', 'application/json');
 });
+// GET /api/ventas/{id}
+$group->get('/ventas/{id}', function (Request $req, Response $res, array $args) {
+    if (!ctype_digit((string)$args['id'])) {
+        $res->getBody()->write(json_encode(['error' => 'ID de venta inválido']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+    $model = new VentaModel();
+    $venta = $model->buscarPorId((int)$args['id']);
+    if (!$venta) {
+        $res->getBody()->write(json_encode(['error' => 'Venta no encontrada']));
+        return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
+    }
+    $res->getBody()->write(json_encode(['data' => $venta]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
+// POST /api/ventas — usa GestorVentas con Observer + Strategy
+$group->post('/ventas', function (Request $req, Response $res) {
+    $user = $req->getAttribute('user');
+    $body = (array) $req->getParsedBody();
+    $ip   = $req->getServerParams()['REMOTE_ADDR'] ?? '';
+
+    if (empty($body['items']) || !is_array($body['items'])) {
+        $res->getBody()->write(json_encode(['error' => 'Debes agregar al menos un producto a la venta']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+
+    foreach ($body['items'] as $i => $item) {
+        if (empty($item['repuesto_id']) || !is_numeric($item['repuesto_id'])) {
+            $res->getBody()->write(json_encode(['error' => "Item #".($i+1).": repuesto_id inválido"]));
+            return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+        if (empty($item['cantidad']) || (int)$item['cantidad'] <= 0) {
+            $res->getBody()->write(json_encode(['error' => "Item #".($i+1).": cantidad debe ser mayor a 0"]));
+            return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+        if (!isset($item['precio_unit']) || !is_numeric($item['precio_unit']) || $item['precio_unit'] <= 0) {
+            $res->getBody()->write(json_encode(['error' => "Item #".($i+1).": precio_unit inválido"]));
+            return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    $metodosValidos = ['efectivo', 'tarjeta', 'transferencia', 'credito'];
+    if (!empty($body['metodo_pago']) && !in_array($body['metodo_pago'], $metodosValidos)) {
+        $res->getBody()->write(json_encode(['error' => 'Método de pago inválido']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+
+    try {
+        // GestorVentas aplica Strategy (descuento) + notifica Observers
+        // (AuditLogObserver guarda en DB, WebSocketObserver notifica al frontend)
+        $gestor = makeGestorVentas();
+        $result = $gestor->crearVenta($body, (int)($user['sub'] ?? $user['id'] ?? 0), $ip);
+
+        $res->getBody()->write(json_encode(['success' => true, ...$result]));
+        return $res->withStatus(201)->withHeader('Content-Type', 'application/json');
+    } catch (\RuntimeException $e) {
+        $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $res->withStatus(422)->withHeader('Content-Type', 'application/json');
+    } catch (\Throwable $e) {
+        error_log('[Ventas] Error: ' . $e->getMessage());
+        $res->getBody()->write(json_encode(['error' => 'Error interno al procesar la venta']));
+        return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+});
+
+// PUT /api/ventas/{id}/anular — usa GestorVentas con Observer
+$group->put('/ventas/{id}/anular', function (Request $req, Response $res, array $args) {
+
+    if (!ctype_digit((string)$args['id'])) {
+        $res->getBody()->write(json_encode(['error' => 'ID inválido']));
+        return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
+    }
+
+    $user   = $req->getAttribute('user');
+    $ip     = $req->getServerParams()['REMOTE_ADDR'] ?? '';
+    $gestor = makeGestorVentas();
+    $result = $gestor->anularVenta(
+        (int)$args['id'],
+        (int)($user['sub'] ?? $user['id'] ?? 0),
+        $ip
+    );
+
+    if (!$result) {
+        $res->getBody()->write(json_encode(['error' => 'No se pudo anular (ya anulada o no existe)']));
+        return $res->withStatus(409)->withHeader('Content-Type', 'application/json');
+    }
+
+    $res->getBody()->write(json_encode(['success' => true]));
+    return $res->withHeader('Content-Type', 'application/json');
+});
+
