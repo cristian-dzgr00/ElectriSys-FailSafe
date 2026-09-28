@@ -74,6 +74,83 @@ $group->get('/admin/backups', function (Request $req, Response $res) {
     return $res->withHeader('Content-Type', 'application/json');
 })->add(new RoleMiddleware(['admin', 'dueno']));
 
+// GET /api/admin/backups/exportar-csv — exporta los datos de negocio
+//
+// Esto NO es el .dmp de Oracle: ese sigue sin poder bajarse por el
+// navegador porque contiene toda la base, incluidos los hashes de
+// contraseñas (ver la nota en frontend/src/pages/Backups.jsx). Este
+// endpoint arma, al vuelo, un .zip con un .csv por tabla de negocio para
+// que el dueño/admin pueda revisar o archivar los datos fuera del sistema.
+// De "usuarios" se listan las columnas explícitamente para excluir
+// "password"; "login_attempts" se omite del todo por no aportar valor de
+// negocio y ser puramente de seguridad.
+$group->get('/admin/backups/exportar-csv', function (Request $req, Response $res) {
+    $db = Database::getConnection();
+
+    $tablas = [
+        'roles'                   => null,
+        'usuarios'                => ['id', 'nombre', 'email', 'rol_id', 'activo', 'creado_en', 'updated_at', 'deleted_at'],
+        'proveedores'             => null,
+        'categorias'              => null,
+        'repuestos'               => null,
+        'clientes'                => null,
+        'ventas'                  => null,
+        'detalle_ventas'          => null,
+        'cotizaciones'            => null,
+        'detalle_cotizaciones'    => null,
+        'pedidos'                 => null,
+        'pedido_detalle'          => null,
+        'vehiculos'               => null,
+        'repuesto_compatibilidad' => null,
+        'consultas_asistente'     => null,
+        'audit_log'               => null,
+    ];
+
+    $tmp = tempnam(sys_get_temp_dir(), 'electrisys_export_');
+    $zip = new \ZipArchive();
+    $zip->open($tmp, \ZipArchive::OVERWRITE);
+
+    foreach ($tablas as $tabla => $columnas) {
+        $select = $columnas ? implode(',', $columnas) : '*';
+        try {
+            $filas = $db->query("SELECT {$select} FROM {$tabla}")->fetchAll();
+        } catch (\Throwable $e) {
+            error_log("[ElectriSys][Export] No se pudo leer {$tabla}: " . $e->getMessage());
+            continue;
+        }
+
+        $csv = fopen('php://temp', 'r+');
+        if ($filas) {
+            fputcsv($csv, array_keys($filas[0]));
+            foreach ($filas as $fila) {
+                fputcsv($csv, $fila);
+            }
+        } elseif ($columnas) {
+            fputcsv($csv, $columnas);
+        }
+        rewind($csv);
+        $zip->addFromString("{$tabla}.csv", stream_get_contents($csv));
+        fclose($csv);
+    }
+
+    $zip->close();
+    $contenido = file_get_contents($tmp);
+    unlink($tmp);
+
+    $nombre = 'electrisys_export_' . date('Ymd_His') . '.zip';
+    $user   = $req->getAttribute('user');
+    (new AuditLogObserver())->actualizar('exportar_datos', [
+        'usuario_id' => (int) ($user['sub'] ?? $user['id'] ?? 0),
+        'detalle'    => "Exportación CSV de datos de negocio: {$nombre}",
+        'ip'         => $req->getServerParams()['REMOTE_ADDR'] ?? '',
+    ]);
+
+    $res->getBody()->write($contenido);
+    return $res->withHeader('Content-Type', 'application/zip')
+               ->withHeader('Content-Disposition', "attachment; filename=\"{$nombre}\"")
+               ->withHeader('Content-Length', (string) strlen($contenido));
+})->add(new RoleMiddleware(['admin', 'dueno']));
+
 // POST /api/admin/backups — dispara un respaldo manual
 $group->post('/admin/backups', function (Request $req, Response $res) {
     $user = $req->getAttribute('user');

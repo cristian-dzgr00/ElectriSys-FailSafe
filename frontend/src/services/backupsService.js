@@ -18,4 +18,10 @@ export const backupsService = {
   // "no se pudo iniciar" mientras el respaldo se estaba haciendo igual —
   // el peor error posible: decirle al usuario que falló algo que funcionó.
   crear:  () => api.post('/admin/backups', null, { timeout: 60000 }),
+
+  // Arma un .zip con un .csv por tabla de negocio (no el .dmp real, ver
+  // Backups.jsx). responseType 'blob' porque la respuesta es binaria, y un
+  // timeout mayor porque leer todas las tablas puede tardar más que una
+  // consulta normal.
+  exportarCsv: () => api.get('/admin/backups/exportar-csv', { responseType: 'blob', timeout: 60000 }),
 };
