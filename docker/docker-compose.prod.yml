@@ -57,3 +57,8 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
       # Webroot del desafío ACME, compartido con certbot del host.
       - /var/www/certbot:/var/www/certbot:ro
+
+  nlp-service:
+    environment:
+      # Ver nginx.prod.conf: server interno 8081 (el 80 redirige a HTTPS).
+      BACKEND_URL: "http://frontend:8081"
