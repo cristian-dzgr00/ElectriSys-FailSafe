@@ -67,6 +67,7 @@ html, body, #root {
    de 768px más abajo); en escritorio el sidebar ya está siempre visible. */
 .sidebar-toggle { display: none; }
 .sidebar-backdrop { display: none; }
+.sidebar-collapse-toggle { flex-shrink: 0; }
 
 /* ── Cards ── */
 .card {
@@ -349,6 +350,11 @@ select.form-control { appearance: none; cursor: pointer; }
     left: 0;
     bottom: 0;
     z-index: 200;
+    /* Ancho completo siempre en el drawer: el colapso a solo-íconos es un
+       concepto de escritorio (ver .sidebar-collapse-toggle) y su botón está
+       oculto acá, pero por si el estado quedó en "colapsado" de una sesión
+       de escritorio previa, se fuerza el ancho completo igual. */
+    width: var(--sidebar-width) !important;
     transform: translateX(-100%);
     transition: transform var(--transition);
   }
@@ -358,6 +364,9 @@ select.form-control { appearance: none; cursor: pointer; }
   }
   .sidebar-toggle {
     display: inline-flex;
+  }
+  .sidebar-collapse-toggle {
+    display: none;
   }
   .sidebar-backdrop.sidebar-backdrop-open {
     display: block;

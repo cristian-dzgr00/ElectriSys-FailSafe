@@ -12,7 +12,6 @@ export default function Navbar({ onToggleSidebar }) {
       borderBottom: '1px solid var(--border)',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
       padding: '0 24px',
       gap: 12,
       flexShrink: 0,
@@ -23,7 +22,12 @@ export default function Navbar({ onToggleSidebar }) {
         <PanelLeft size={18} />
       </button>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      {/* marginLeft:auto en vez de justifyContent:space-between en el header:
+          con space-between, cuando el botón de arriba está en display:none
+          (fuera de móvil) quedaba un solo hijo visible, y ese se pega al
+          inicio en vez de quedar a la derecha — por eso "Administrador" y
+          cerrar sesión aparecían pegados al sidebar. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
       {/* Campana: vive acá y no en una página para escuchar el WebSocket
           desde cualquier vista del POS. */}
       <NotificationBell />
