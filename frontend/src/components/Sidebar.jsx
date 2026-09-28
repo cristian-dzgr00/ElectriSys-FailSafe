@@ -41,7 +41,7 @@ const vendedorLinks = [
   { to: '/clientes',     icon: Users,        label: 'Clientes',     id: 'nav-clientes' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ open = false, onNavigate }) {
   const { user, isAdmin } = useAuth();
   const isDueno = () => user?.rol === 'dueno';
   const links = isDueno() ? duenroLinks : isAdmin() ? adminLinks : vendedorLinks;
@@ -51,7 +51,9 @@ export default function Sidebar() {
       {/* Tour aparece una sola vez para usuarios nuevos */}
       <OnboardingTour />
 
-      <aside className="sidebar" style={{
+      {/* sidebar-open solo hace algo dentro de la media query móvil de
+          index.css (drawer superpuesto); en escritorio no tiene efecto. */}
+      <aside className={`sidebar ${open ? 'sidebar-open' : ''}`} style={{
         width: 'var(--sidebar-width)',
         background: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border)',
@@ -81,6 +83,7 @@ export default function Sidebar() {
               to={to}
               end={to === '/'}
               id={id}
+              onClick={() => onNavigate?.()}
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',

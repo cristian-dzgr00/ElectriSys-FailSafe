@@ -63,6 +63,11 @@ html, body, #root {
   padding: 24px 28px;
 }
 
+/* El botón hamburguesa solo existe para el drawer móvil (ver media query
+   de 768px más abajo); en escritorio el sidebar ya está siempre visible. */
+.sidebar-toggle { display: none; }
+.sidebar-backdrop { display: none; }
+
 /* ── Cards ── */
 .card {
   background: var(--bg-card);
@@ -331,12 +336,35 @@ select.form-control { appearance: none; cursor: pointer; }
    RESPONSIVIDAD — Mobile (≤768px)
 ══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Layout: ocultar sidebar, usar nav bottom o drawer */
+  /* Layout: el sidebar pasa a ser un drawer que se superpone al contenido
+     en vez de ocupar columna propia — no hay ancho de sobra en un celular
+     para mostrar ambos a la vez. Arranca fuera de pantalla (translateX) y
+     el botón hamburguesa de Navbar.jsx alterna la clase .sidebar-open. */
   .app-layout {
     grid-template-columns: 1fr;
   }
   .sidebar {
-    display: none;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform var(--transition);
+  }
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: var(--shadow);
+  }
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+  .sidebar-backdrop.sidebar-backdrop-open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 190;
   }
 
   /* Página */

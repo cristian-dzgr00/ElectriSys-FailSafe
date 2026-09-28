@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
@@ -46,11 +46,20 @@ function PrivateRoute({ children, adminOnly = false, duenoOnly = false, roles = 
 }
 
 function AppLayout() {
+  // Solo importa en el drawer móvil (ver la media query de 768px en
+  // index.css) — en escritorio el sidebar ignora esta clase y queda
+  // siempre visible en su columna.
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="app-layout">
-      <Sidebar />
+      <Sidebar open={sidebarOpen} onNavigate={() => setSidebarOpen(false)} />
+      <div
+        className={`sidebar-backdrop ${sidebarOpen ? 'sidebar-backdrop-open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
       <div className="main-content">
-        <Navbar />
+        <Navbar onToggleSidebar={() => setSidebarOpen(o => !o)} />
         <div className="page-body">
           <Suspense fallback={<PageFallback />}>
             <Routes>
