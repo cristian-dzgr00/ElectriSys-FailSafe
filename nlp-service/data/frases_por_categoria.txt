@@ -1,0 +1,399 @@
+FRASES DEL DATASET POR CATEGORÍA (intención)
+Fuente: nlp-service/data/intents_dataset.csv
+Total: 374 frases en 7 categorías
+======================================================================
+
+RECOMENDAR_SUSTITUTO  (56 frases)
+----------------------------------------------------------------------
+1. No hay filtro de aceite original de Toyota para una Hilux 2.7 gasolina 2024, ¿qué me recomienda?
+2. Se me acabaron las balatas Brembo para un Mazda 3 2020, ¿hay algo parecido?
+3. El cliente pide una batería Mac original para un Chevrolet Spark 2019 pero no tenemos, ¿qué le ofrezco?
+4. No tengo en stock la correa de distribución Gates para Sentra 2018, deme una alternativa
+5. ¿Qué otro filtro de aire le sirve a un Renault Logan 1.6 2021 si no hay el original?
+6. Se agotó el disco de freno delantero para Hyundai Tucson 2022, sugiérame un reemplazo
+7. No hay bujías NGK para Kia Rio 2017, ¿cuál puedo ofrecer en su lugar?
+8. Necesito una opción distinta al amortiguador Monroe para Ford Escape 2015 porque no hay stock
+9. ¿Con qué puedo sustituir el kit de embrague original de Chevrolet Aveo 2016?
+10. No queda filtro de combustible Bosch para Volkswagen Gol 2019, deme otro
+11. El repuesto 90915-YZZD4 está agotado, ¿qué otro filtro sirve para esa Hilux?
+12. Dame una alternativa de banda de accesorios para Suzuki Swift 2020
+13. No hay stock de la batería para el Aveo, qué le puedo vender al cliente
+14. Se nos acabó el filtro de aceite K&N para la Fortuner, hay algo similar
+15. No hay radiador original para Mazda CX-5 2019, ¿qué me sugiere?
+16. Se acabó el sensor ABS M1-102, deme otra opción que sirva
+17. No tenemos el mazo de cables original del Spark, ¿con qué lo reemplazo?
+18. ya no hay terminal de direccion pa golf, que me recomienda
+19. Se agotaron los rodamientos delanteros de la Hilux, sugiérame un reemplazo
+20. No queda batería start-stop original, ¿qué alternativa hay?
+21. No hay soporte de motor L200 original, deme un equivalente
+22. Se acabó el filtro de cabina para Duster, ¿qué le puedo ofrecer al cliente?
+23. No tenemos actuador de embrague original para Swift, ¿hay algo compatible?
+24. Se agotó el relé de arranque del Polo, necesito una alternativa
+25. No hay switch de luces original para Picanto, qué me recomienda
+26. no tengo sensor de oxigeno para el gol, deme otra marca
+27. Se acabó la bomba de aceite para L200, ¿con qué la sustituyo?
+28. No hay bobina de encendido original para Sportage, ofrézcame otra
+29. Ya no queda kit de distribución completo para Logan, deme una opción similar
+30. No tenemos manguera de radiador original de Mazda 6, ¿qué otra sirve?
+31. Se agotó el radiador de aire para motor 2.0 turbo, sugiérame algo
+32. No hay caja de dirección original para Tracker, deme otra marca
+33. no queda pieza electrica original del spark, hay algo parecido
+34. Se acabaron los amortiguadores originales para Vitara, ¿qué otra marca ofrezco?
+35. No hay kit de embrague original para Aveo automática, deme una alternativa
+36. Ya no tenemos filtro de aire original para motor 1.8, ¿qué recomienda?
+37. Se agotaron los discos de freno traseros de la Tucson, sugiérame otro
+38. No hay pastillas delanteras originales para Captiva, ¿con qué las sustituyo?
+39. no tenemos pieza de transmision para el sentra, deme algo similar
+40. Se acabó la bomba de gasolina original del Sentra, ¿qué otra marca sirve?
+41. No hay más unidades del HP-1002, ¿qué otro código lo reemplaza?
+42. Ya no tengo kit de frenos completo original, ¿qué le ofrezco al cliente?
+43. No hay piezas eléctricas originales para híbridos, deme una opción
+44. Se agotó el filtro de combustible Bosch para Gol, sugiérame otro
+45. No tenemos banda de accesorios original para Swift 2020, ¿hay similar?
+46. Ya no queda autoparte de suspensión original para Duster, deme alternativa
+47. no hay sensor de oxigeno original, cual otro me recomienda
+48. Se acabaron las rótulas para Montero, ¿qué otra opción manejamos?
+49. No hay juego de rodamientos traseros original, deme un sustituto confiable
+50. ya no tenemos correa de accesorios pa el swift, deme otra
+51. y para un Mazda 3 2020
+52. ok, ¿y ese mismo pero para un Kia Rio?
+53. también para una Hilux diésel
+54. ¿y si es para un Renault Duster?
+55. y ese otro que me recomienda para el Spark
+56. listo, ¿y para la versión automática?
+
+BUSCAR_REPUESTO  (56 frases)
+----------------------------------------------------------------------
+1. ¿Tienen filtro de aceite para Toyota Hilux 2.7 2024?
+2. Busco pastillas de freno para un Chevrolet Onix 2021
+3. ¿Hay disponible una bomba de agua para Nissan Frontier 2018?
+4. Necesito un radiador para Mazda CX-5 2019
+5. ¿Manejan el repuesto con código HP-1002?
+6. Estoy buscando un alternador para Hyundai Accent 2016
+7. ¿Tienen la correa poly-v para un Kia Sportage 2020?
+8. Quiero comprar un filtro de cabina para Renault Duster 2022
+9. ¿Hay amortiguadores traseros para Ford Fiesta 2015?
+10. Busco bujías para un Chevrolet Spark GT 2018
+11. ¿Manejan bomba de gasolina para Nissan Sentra?
+12. Necesito un kit de embrague para Aveo 2016
+13. ¿Tienen radiador para Mazda CX-5 2019?
+14. Busco un kit de suspensión para Ford Fiesta 2015
+15. ¿Manejan sensor ABS código M1-102?
+16. Necesito una bomba de agua para Nissan Frontier
+17. ¿Tienen correa poly-v para Kia Sportage 2020?
+18. estoy buscando bujias ngk para un rio
+19. ¿Hay disponible un mazo de cables para Spark 2019?
+20. Quiero comprar un terminal de dirección para Volkswagen Golf
+21. ¿Manejan rodamientos delanteros para camioneta Hilux?
+22. Busco una batería compatible con sistema start-stop
+23. ¿Tienen soporte de motor para Mitsubishi L200 2018?
+24. necesito un filtro de cabina para duster 2022
+25. ¿Manejan actuador de embrague para Suzuki Swift?
+26. Busco relé de arranque para un Volkswagen Polo
+27. ¿Tienen switch de luces para Kia Picanto 2019?
+28. Estoy buscando un sensor de oxígeno para Gol 2019
+29. ¿Hay bomba de aceite para Mitsubishi L200?
+30. necesito una rotula para montero 2016
+31. ¿Manejan bobina de encendido para Sportage 2020?
+32. Busco kit de distribución completo para Logan 1.6
+33. ¿Tienen manguera de radiador para Mazda 6?
+34. Quiero un radiador de aire para motor 2.0 turbo
+35. ¿Manejan caja de dirección para Chevrolet Tracker?
+36. busco pieza para el sistema electrico de un spark
+37. ¿Tienen amortiguadores traseros para Suzuki Vitara?
+38. Necesito un kit de embrague completo para Aveo automática
+39. ¿Manejan filtro de aire para motor 1.8?
+40. Busco discos de freno traseros para Tucson 2022
+41. ¿Hay pastillas delanteras para un Captiva 2016?
+42. tienen alguna pieza de transmision para nissan sentra
+43. ¿Manejan juego de rodamientos traseros?
+44. Busco una bomba de gasolina para Sentra reciente
+45. ¿Tienen el repuesto con código HP-1002 en otra presentación?
+46. quiero comprar un kit de frenos completo pa una camioneta
+47. ¿Manejan piezas eléctricas para vehículos híbridos?
+48. Busco filtro de combustible Bosch para Volkswagen Gol
+49. ¿Tienen banda de accesorios para Suzuki Swift 2020?
+50. Necesito autopartes de suspensión para Renault Duster
+51. y para un Sentra 2019
+52. ¿y para el modelo anterior?
+53. también lo necesito para un Kia Picanto
+54. ¿y en otra marca lo manejan?
+55. y ese mismo pero para camioneta
+56. ¿tienen también para el 2021?
+
+CONSULTAR_STOCK  (56 frases)
+----------------------------------------------------------------------
+1. ¿Cuántas unidades hay del filtro 90915-YZZD4?
+2. ¿Qué stock queda de las pastillas de freno Brembo?
+3. ¿Hay suficiente inventario de baterías Mac para esta semana?
+4. ¿Cuántos filtros de aceite K&N tienen disponibles?
+5. Verifica el stock del repuesto M1-102
+6. ¿Se está agotando el filtro de aire para Sentra?
+7. ¿Cuántas correas de distribución quedan en bodega?
+8. ¿Cuánto stock queda de bujías NGK?
+9. ¿Cuántas bujías NGK quedan en bodega?
+10. ¿Hay disponibilidad del radiador para CX-5 2019?
+11. ¿Cuántas unidades hay del kit de embrague de Aveo?
+12. verifica cuantas correas poly-v quedan
+13. ¿Se está agotando el filtro de cabina del Duster?
+14. ¿Cuánto inventario queda de amortiguadores Monroe?
+15. ¿Hay stock suficiente de discos de freno para esta semana?
+16. revisa existencias del sensor ABS M1-102
+17. ¿Cuántas bombas de agua quedan disponibles?
+18. ¿Se acabaron los filtros de aire del Logan?
+19. ¿Qué cantidad hay del terminal de dirección para Golf?
+20. hay pocas unidades del alternador o ya no queda
+21. ¿Cuántos juegos de pastillas traseras hay en bodega?
+22. confirmame el stock del rodamiento delantero
+23. ¿Cuántas baterías start-stop quedan en el local?
+24. ¿Está por agotarse la correa de distribución Gates?
+25. ¿Qué stock hay de la bomba de aceite para L200?
+26. cuantas piezas del kit de suspension hay
+27. ¿Hay existencias del relé de arranque para Polo?
+28. ¿Cuántos mazos de cables completos quedan?
+29. ¿Todavía hay stock del actuador de embrague?
+30. revisa si queda inventario del switch de luces
+31. ¿Cuántas unidades del sensor de oxígeno tenemos?
+32. ¿Se está agotando el radiador de aire 2.0 turbo?
+33. cuanto queda del filtro combustible bosch
+34. ¿Hay suficientes rótulas para surtir el fin de semana?
+35. ¿Qué cantidad de bobinas de encendido hay disponibles?
+36. verifica el inventario del soporte de motor L200
+37. ¿Cuántos kits de distribución quedan en bodega?
+38. ¿Se agotaron las bombas de gasolina para Sentra?
+39. dime cuantas unidades hay del repuesto hp-1002
+40. ¿Cuánto stock queda del disco de freno Tucson?
+41. ¿Está agotado el kit de embrague de la Aveo automática?
+42. ¿Cuántas piezas del mazo eléctrico hay en existencia?
+43. revisa disponibilidad del rodamiento trasero
+44. ¿Ya no queda inventario de la caja de dirección?
+45. ¿Cuántas correas de accesorios hay disponibles ahorita?
+46. existe stock de la manguera de radiador del Mazda 6
+47. ¿Cuántas unidades quedan del filtro K&N HP-1002?
+48. verifica si hay suficientes pastillas delanteras para surtir
+49. ¿Qué tan bajo está el inventario de baterías Mac?
+50. ¿Cuántas piezas del kit de frenos completo hay en bodega?
+51. ¿y de ese cuántos quedan?
+52. ¿y stock del otro?
+53. ¿y para el modelo 2021 hay?
+54. ¿y en la otra marca cuántas hay?
+55. ¿todavía queda de ese mismo?
+56. ¿y cuántas unidades del otro código?
+
+CONSULTAR_PRECIO  (56 frases)
+----------------------------------------------------------------------
+1. ¿Cuánto cuesta el filtro de aceite original de Toyota?
+2. ¿Qué precio tiene el disco de freno para Tucson 2022?
+3. Dime el valor de las bujías NGK
+4. ¿A cómo está el kit de embrague de Aveo?
+5. ¿Cuál es el precio de venta del repuesto HP-1002?
+6. ¿Cuánto vale la batería Mac para Spark?
+7. ¿Qué precio tiene la correa de distribución Gates?
+8. ¿Cuánto vale un radiador para Mazda CX-5 2019?
+9. ¿Qué precio maneja la bomba de agua para Nissan Frontier?
+10. Deme el valor del kit de suspensión para Ford Fiesta 2015
+11. ¿A cómo sale el alternador de Hyundai Accent 2016?
+12. ¿Cuál es el costo de las bujías NGK para Kia Rio?
+13. necesito el precio del filtro de cabina pa un duster
+14. ¿Me puede cotizar un juego de amortiguadores para Suzuki Swift 2020?
+15. ¿Cuánto sale la correa poly-v del Sportage 2020?
+16. Precio del sensor ABS para Ford Fiesta, por favor
+17. ¿En cuánto está el disco de freno delantero de la Tucson?
+18. ¿Qué valor tiene el mazo de cables del Spark 2019?
+19. cuanto cuesta la bomba de gasolina del sentra
+20. ¿Podría indicarme el precio de la caja de dirección para Chevrolet Tracker?
+21. ¿A cómo está el soporte de motor para Mitsubishi L200?
+22. Quiero saber el precio del filtro de aire para Renault Logan
+23. ¿Cuánto cuesta el kit de embrague completo de la Aveo automática?
+24. valor del terminal de direccion para golf 2018
+25. ¿Cuál es el precio del rodamiento delantero de la Hilux 4x4?
+26. ¿Me confirma el precio de la batería para sistemas start-stop?
+27. ¿Cuánto vale una bomba de aceite para L200 2018?
+28. deme el costo de la bobina de encendido del sportage
+29. ¿Qué precio tiene el relé de arranque para Polo 2018?
+30. ¿A cuánto está el actuador de embrague del Swift automático?
+31. necesito cotizar dos filtros de aceite para captiva 2016
+32. ¿Cuánto cuesta la manguera de radiador del Mazda 6?
+33. vale mucho el switch de luces del picanto
+34. ¿Cuál es el precio de venta de los rodamientos traseros?
+35. ¿Me indica el valor del radiador de aire para motor 2.0 turbo?
+36. cotización del sensor de oxígeno para Volkswagen Gol
+37. ¿Cuánto está saliendo el kit de suspensión completo?
+38. precio total de cambiar las cuatro bujías
+39. ¿A cómo me deja el juego de pastillas traseras?
+40. ¿Cuánto cuesta una rótula para Mitsubishi Montero?
+41. buenas, el precio de la caja de cambios manual cual es
+42. ¿Me puede decir cuánto vale el mazo eléctrico completo?
+43. ¿Qué tan caro está el radiador original comparado con el genérico?
+44. vale del filtro combustible bosch para el gol
+45. ¿Cuánto cuesta instalar y comprar el kit de distribución completo?
+46. ¿Cuál es el precio actual del amortiguador delantero derecho?
+47. me puede pasar el precio de la bomba hidraulica
+48. ¿Cuánto sale el kit completo de frenos para camioneta?
+49. ¿Qué precio tiene esa pieza en efectivo y con tarjeta?
+50. ¿Podría decirme cuánto cuesta la pieza con código M1-102?
+51. ¿y ese cuánto vale?
+52. ¿y el otro precio?
+53. ¿y para el modelo automático cuánto sale?
+54. listo, ¿y ese otro a cómo está?
+55. ¿y si lo llevo original, cuánto sube?
+56. ¿y con instalación incluida cuánto sería?
+
+CONSULTAR_COMPATIBILIDAD  (50 frases)
+----------------------------------------------------------------------
+1. ¿Este filtro le sirve a una Hilux 2.7 gasolina 2024?
+2. ¿La pastilla de freno Brembo es compatible con Mazda 3 2020?
+3. ¿El repuesto 90915-YZZD4 aplica para otros modelos de Toyota?
+4. ¿A qué vehículos le sirve la correa de distribución Gates?
+5. ¿Esta batería es compatible con Chevrolet Spark 2019?
+6. ¿El filtro K&N HP-1002 sirve para más motores?
+7. ¿Estas bujías NGK aplican para un Hyundai Accent 2015?
+8. ¿Esta correa de accesorios sirve para un Renault Logan 1.6 2021?
+9. ¿El amortiguador Monroe aplica también para el Ford Escape 2015?
+10. ¿Me confirma si esta bomba de agua funciona en un Nissan Frontier 2018?
+11. ¿Sirve esta rótula para Suzuki Swift 2020?
+12. ¿Es compatible el radiador con el Mazda CX-5 2019 y también con el CX-3?
+13. ¿La bobina de encendido aplica para Kia Sportage 2020?
+14. ¿Funciona este alternador en un Hyundai Tucson 2022 diésel?
+15. ¿Sirve pa un Chevrolet Spark GT 2018 esta caja de dirección?
+16. ¿Esta pieza de suspensión aplica también a otros modelos Mitsubishi?
+17. Necesito saber si el sensor de oxígeno es compatible con Volkswagen Gol 2019
+18. ¿Aplica esta bujía NGK a motores de 1.4 y 1.6 por igual?
+19. ¿Le sirve esta banda poly-v a un Kia Rio 2017?
+20. ¿Es compatible este kit de embrague con la versión automática del Aveo?
+21. ¿La bomba de gasolina funciona en Nissan Sentra modelo 2015 en adelante?
+22. Profe, ¿esta autoparte sirve tambien para el Duster 1.6?
+23. ¿Este disco de freno aplica únicamente al Tucson 2022 o también a modelos anteriores?
+24. ¿Sirve este filtro de cabina en más de un modelo de Renault?
+25. ¿Me puede confirmar si esta pieza es compatible con motores turbo?
+26. ¿Aplica esta rotula pa un Mitsubishi Montero 2016?
+27. ¿Este mazo de cables eléctricos funciona en el Spark 2019 con aire acondicionado?
+28. ¿Es compatible esta caja de cambios con la versión manual y automática?
+29. ¿Sirve este sensor ABS para un Ford Fiesta 2015?
+30. Quisiera confirmar si esta parte aplica a un Hyundai Accent 2015 con motor 1.6
+31. ¿Funciona esta bomba de dirección hidráulica en un Suzuki Vitara?
+32. ¿La correa de distribución Gates aplica solo a gasolina o también a diésel?
+33. ¿Es compatible este radiador de aire con el motor 2.0 turbo?
+34. ¿Aplica esta bujia para toyta corolla 2017?
+35. ¿Le sirve este soporte de motor a un Chevrolet Tracker 2020?
+36. ¿Es compatible esta parte eléctrica con vehículos híbridos?
+37. ¿Aplica este kit de suspensión a la versión 4x4 de la Frontier?
+38. ¿Sirve esta manguera de radiador en un Mazda 3 2020 y en el Mazda 6?
+39. ¿Funciona este switch de luces en un Kia Picanto 2019?
+40. ¿Es compatible el filtro de aire con motores 1.8 y 2.0?
+41. ¿Le aplica esta bomba de aceite a un Mitsubishi L200 2018?
+42. ¿Esta pieza de transmisión sirve para versiones anteriores al 2020?
+43. sirve esto para un renault logan o solo duster
+44. ¿Aplica este terminal de dirección tanto al lado izquierdo como al derecho?
+45. ¿Es compatible esta batería con sistemas start-stop?
+46. ¿Funciona este relé de arranque en un Volkswagen Polo 2018?
+47. ¿Sirve esta pieza para un Chevrolet Captiva 2016 con motor 2.4?
+48. ¿Es compatible el juego de rodamientos con la Hilux 4x2 y 4x4?
+49. quiero saber si esta parte aplica pa una camioneta ford ranger 2019
+50. ¿Le sirve este actuador de embrague a un Suzuki Swift automático?
+
+SALUDO_DESPEDIDA  (50 frases)
+----------------------------------------------------------------------
+1. Hola
+2. Buenos días
+3. Buenas tardes, necesito ayuda
+4. Qué más, ¿me puede colaborar?
+5. Hola, ¿está disponible el asistente?
+6. Gracias, eso era todo
+7. Listo, hasta luego
+8. Muchas gracias por la ayuda
+9. Nos vemos
+10. Buenas, quisiera hacer una consulta
+11. Buenas
+12. ¿Aló, hay alguien ahí?
+13. Buen día, ¿me puede atender?
+14. Hola, buenas tardes
+15. Qué tal, ¿cómo va todo?
+16. buenas como estas
+17. Mil gracias por la atención
+18. Perfecto, muchas gracias
+19. Listo, muy amable
+20. Chao, que tenga buen día
+21. Nos vemos luego
+22. Hasta pronto
+23. gracias mano, eso era todo
+24. Buenas noches, ¿aún están atendiendo?
+25. Hola, buenas, quisiera un favor
+26. Ok gracias, hasta luego
+27. Le agradezco mucho la ayuda
+28. Muy amable, que tenga buena tarde
+29. buenas tardes senor necesito ayuda
+30. Hola, ¿me puede colaborar con algo?
+31. Gracias por la información
+32. Bueno, listo, nos hablamos después
+33. Hola buenas, ¿está el asistente disponible ahorita?
+34. Vale, gracias por todo
+35. Un gusto saludarlo
+36. Hasta la próxima entonces
+37. Ok perfecto, hasta mañana
+38. buenas, disculpe la molestia
+39. Gracias, que esté muy bien
+40. Hola, buenos días, tengo una consulta
+41. Estamos en contacto, gracias
+42. hola alguien me puede ayudar porfa
+43. Le agradezco la paciencia
+44. Feliz día, gracias por todo
+45. Buenas tardes, un gusto
+46. Ya con eso quedo, gracias
+47. hasta luego que este bien
+48. Buenas, ¿hay alguien que me pueda atender?
+49. Muchas gracias, eso era todo por hoy
+50. Hola, buen día para todos
+
+FUERA_DE_DOMINIO  (50 frases)
+----------------------------------------------------------------------
+1. ¿Cuál es el clima hoy?
+2. ¿A qué hora cierra el negocio?
+3. ¿Aceptan pago con tarjeta?
+4. ¿Hacen domicilios?
+5. Cuéntame un chiste
+6. ¿Qué opinas del nuevo modelo de carro eléctrico?
+7. ¿Cómo llego a la estación del metro más cercana?
+8. ¿Quién ganó el partido de anoche?
+9. Recomiéndame una receta para hacer arroz con pollo
+10. ¿Cuál es la capital de Australia?
+11. oye y tu sabes bailar salsa
+12. ¿Qué signo del zodiaco es más compatible con Escorpio?
+13. ¿Me puedes recomendar una película de acción?
+14. asdkjaslkdj
+15. ¿Eres una persona real o un robot?
+16. ¿Cuánto es 458 multiplicado por 12?
+17. ¿Qué opinas de la política actual del país?
+18. necesito el numero de whatsapp del jefe
+19. ¿Tienen baño para clientes?
+20. ¿Cuál es tu color favorito?
+21. Feliz cumpleaños, espero que la pases muy bien
+22. ¿Cómo está el tráfico en la autopista norte?
+23. jajaja eso estuvo muy bueno
+24. ¿Cuántos empleados trabajan en este local?
+25. ¿Qué canción está sonando ahorita?
+26. prueba prueba 123
+27. ¿Cuál es el mejor equipo de fútbol de Colombia?
+28. ¿Ustedes venden comida también?
+29. hola necesito saber si hay wifi aca
+30. ¿Qué hora es en España ahora mismo?
+31. Cuéntame algo interesante sobre el universo
+32. ¿Vende ropa esta tienda?
+33. ¿Cómo se dice buenos días en inglés?
+34. xxxxxxx
+35. ¿Tienen parqueadero disponible?
+36. quien es el presidente de colombia
+37. ¿Puedes ayudarme con mi tarea de matemáticas?
+38. ¿Qué serie me recomiendas ver este fin de semana?
+39. buenas, aca vive alguien de apellido gomez
+40. ¿Cuál es el sentido de la vida?
+41. ¿Tienen servicio de domicilio los fines de semana?
+42. ¿Cómo va el dólar hoy?
+43. me late que va a llover toda la tarde
+44. ¿Qué opinas de la inteligencia artificial?
+45. recomiendame musica para trabajar
+46. ¿Cuánto falta para navidad?
+47. hshshshs no se ni que estoy escribiendo
+48. ¿Ustedes reparan celulares también?
+49. ¿Cuál es tu serie favorita de todos los tiempos?
+50. buenas tardes queria saber si aqui hacen cambio de aceite en el local o solo venden repuestos
