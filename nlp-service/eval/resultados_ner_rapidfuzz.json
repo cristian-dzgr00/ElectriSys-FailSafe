@@ -75,12 +75,12 @@
         "no_acierto": 0
       },
       "1": {
-        "acierto": 215,
-        "no_acierto": 25
+        "acierto": 234,
+        "no_acierto": 6
       },
       "2": {
-        "acierto": 181,
-        "no_acierto": 59
+        "acierto": 222,
+        "no_acierto": 18
       }
     },
     "modelo": {
@@ -89,12 +89,12 @@
         "no_acierto": 1
       },
       "1": {
-        "acierto": 323,
-        "no_acierto": 25
+        "acierto": 340,
+        "no_acierto": 8
       },
       "2": {
-        "acierto": 285,
-        "no_acierto": 63
+        "acierto": 308,
+        "no_acierto": 40
       }
     },
     "categoria": {
@@ -114,8 +114,8 @@
   },
   "rapidfuzz_nombre_corto_vs_largo_1_error": {
     "corto": {
-      "acierto": 80,
-      "no_acierto": 49
+      "acierto": 116,
+      "no_acierto": 13
     },
     "largo": {
       "acierto": 458,
@@ -124,59 +124,10 @@
   },
   "ejemplos_fallos_rapidfuzz": [
     {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "no hay bujias ngk para kiu rio 2017 cual puedo ofrecer en su lugar",
-      "esperado": "Kia",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 1,
-      "texto": "no hay bujias ngk para kia roi 2017 cual puedo ofrecer en su lugar",
-      "esperado": "Rio",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "no hay bujias ngk para kia ieo 2017 cual puedo ofrecer en su lugar",
-      "esperado": "Rio",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "necesito una opcion distinta al amortiguador monroe para fprdd escape 2015 porque no hay stock",
-      "esperado": "Ford",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "con que puedo sustituir el kit de embrague original de chevrolet aov 2016",
-      "esperado": "Aveo",
-      "obtenido": null
-    },
-    {
       "campo": "modelo",
       "errores": 2,
       "texto": "no hay stock de la bateria para el aveii que le puedo vender al cliente",
       "esperado": "Aveo",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "necesito un radiador para mazda x 5 2019",
-      "esperado": "CX-5",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "tienen la correa poly v para un ika sportage 2020",
-      "esperado": "Kia",
       "obtenido": null
     },
     {
@@ -194,66 +145,10 @@
       "obtenido": null
     },
     {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "el amortiguador monroe aplica tambien para el firdd escape 2015",
-      "esperado": "Ford",
-      "obtenido": null
-    },
-    {
       "campo": "modelo",
       "errores": 2,
       "texto": "me confirma si esta bomba de agua funciona en un nissan frotuer 2018",
       "esperado": "Frontier",
-      "obtenido": "Fortuner"
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "es compatible el radiador con el mazda cxe 5 2019 y tambien con el cx 3",
-      "esperado": "CX-5",
-      "obtenido": "3"
-    },
-    {
-      "campo": "marca",
-      "errores": 1,
-      "texto": "la bobina de encendido aplica para ia sportage 2020",
-      "esperado": "Kia",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "la bobina de encendido aplica para kkis sportage 2020",
-      "esperado": "Kia",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 1,
-      "texto": "le sirve esta banda poly v a un kai rio 2017",
-      "esperado": "Kia",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "le sirve esta banda poly v a un kii rio 2017",
-      "esperado": "Kia",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "le sirve esta banda poly v a un kia eo 2017",
-      "esperado": "Rio",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "sirve este sensor abs para un foedd fiesta 2015",
-      "esperado": "Ford",
       "obtenido": null
     },
     {
@@ -271,52 +166,10 @@
       "obtenido": null
     },
     {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "cuanto vale un radiador para mazda cco 5 2019",
-      "esperado": "CX-5",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "deme el valor del kit de suspension para feod fiesta 2015",
-      "esperado": "Ford",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 1,
-      "texto": "cual es el costo de las bujias ngk para uia rio",
-      "esperado": "Kia",
-      "obtenido": null
-    },
-    {
       "campo": "marca",
       "errores": 2,
       "texto": "cual es el costo de las bujias ngk para a rio",
       "esperado": "Kia",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 1,
-      "texto": "cual es el costo de las bujias ngk para kia ro",
-      "esperado": "Rio",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
-      "texto": "cual es el costo de las bujias ngk para kia ruoo",
-      "esperado": "Rio",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "precio del sensor abs para ffod fiesta por favor",
-      "esperado": "Ford",
       "obtenido": null
     },
     {
@@ -364,22 +217,8 @@
     {
       "campo": "modelo",
       "errores": 2,
-      "texto": "tienen radiador para mazda x 5 2019",
-      "esperado": "CX-5",
-      "obtenido": null
-    },
-    {
-      "campo": "modelo",
-      "errores": 2,
       "texto": "busco un kit de suspension para ford esta 2015",
       "esperado": "Fiesta",
-      "obtenido": null
-    },
-    {
-      "campo": "marca",
-      "errores": 2,
-      "texto": "tienen correa poly v para ua sportage 2020",
-      "esperado": "Kia",
       "obtenido": null
     },
     {
@@ -402,24 +241,185 @@
       "texto": "tienen switch de luces para ki picanto 2019",
       "esperado": "Kia",
       "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "tienen switch de luces para pia picanto 2019",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "tienen manguera de radiador para maoad 6",
+      "esperado": "Mazda",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "no hay radiador original para mazda a 5 2019 que me sugiere",
+      "esperado": "CX-5",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "no hay kit de embrague original para auo automatica deme una alternativa",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "ya no tenemos correa de accesorios pa el swioy deme otra",
+      "esperado": "Swift",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "ok y ese mismo pero para un k rio",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "y para un serta 2019",
+      "esperado": "Sentra",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 1,
+      "texto": "tambien lo necesito para un ika picanto",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "tambien lo necesito para un ia picanto",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "no hay filtro de aceite original de toyota para una hikue 2 7 gasolina 2024 que me recomienda",
+      "esperado": "Hilux",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "no hay stock de la bateria para el vae que le puedo vender al cliente",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "necesito un kit de embrague para veo 2016",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "necesito un kit de embrague para avroo 2016",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "a como esta el kit de embrague de veo",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "le sirve esta banda poly v a un kia o 2017",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "es compatible este kit de embrague con la version automatica del avooe",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 1,
+      "texto": "funciona este switch de luces en un kiq picanto 2019",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "funciona este switch de luces en un ksi picanto 2019",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "quiero saber si esta parte aplica pa una camioneta ofrrd ranger 2019",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "cuanto vale un radiador para maedq cx 5 2019",
+      "esperado": "Mazda",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "quiero saber el precio del filtro de aire para renault loeab",
+      "esperado": "Logan",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cuanto cuesta el kit de embrague completo de la ao automatica",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "hay disponibilidad del radiador para xc 5 2019",
+      "esperado": "CX-5",
+      "obtenido": null
     }
   ],
   "rapidfuzz_por_tipo_error": {
     "borrar": {
-      "acierto": 496,
-      "no_acierto": 92
+      "acierto": 553,
+      "no_acierto": 35
     },
     "duplicar": {
       "acierto": 588,
       "no_acierto": 0
     },
     "sustituir": {
-      "acierto": 507,
-      "no_acierto": 81
+      "acierto": 564,
+      "no_acierto": 24
     },
     "transponer": {
-      "acierto": 552,
-      "no_acierto": 36
+      "acierto": 580,
+      "no_acierto": 8
     }
   },
   "formatos_alternativos": [

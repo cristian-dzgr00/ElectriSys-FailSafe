@@ -18,8 +18,28 @@ categoria,rotor,Motor,1,palabra común del español
 categoria,otro,Motor,3,palabra común del español
 categoria,trans,Transmisión,2,palabra común del español
 marca,foro,Ford,1,palabra común del español
+marca,foro escape,Ford,1,palabra común del español
+marca,foro fiesta,Ford,1,palabra común del español
 marca,fort,Ford,1,palabra común del español
+marca,fort escape,Ford,1,palabra común del español
+marca,fort fiesta,Ford,1,palabra común del español
 marca,lord,Ford,1,palabra común del español
+marca,lord escape,Ford,1,palabra común del español
+marca,lord fiesta,Ford,1,palabra común del español
+marca,dia rio,Kia,1,palabra común del español
+marca,dia sportage,Kia,1,palabra común del español
+marca,kit rio,Kia,1,palabra común del español
+marca,kit sportage,Kia,1,palabra común del español
+marca,a rio,Kia,3,palabra común del español
+marca,a sportage,Kia,3,palabra común del español
+marca,k rio,Kia,3,palabra común del español
+marca,k sportage,Kia,3,palabra común del español
+marca,la rio,Kia,3,palabra común del español
+marca,la sportage,Kia,3,palabra común del español
+marca,mi rio,Kia,3,palabra común del español
+marca,mi sportage,Kia,3,palabra común del español
+marca,mis rio,Kia,3,palabra común del español
+marca,mis sportage,Kia,3,palabra común del español
 marca,masa,Mazda,3,palabra común del español
 marca,nada,Mazda,3,palabra común del español
 marca,nisa,Nissan,3,palabra común del español
@@ -29,7 +49,12 @@ marca,toyta,Toyota,1,palabra común del español
 modelo,ave,Aveo,1,palabra común del español
 modelo,aveno,Aveo,1,palabra común del español
 modelo,aves,Aveo,1,palabra común del español
+modelo,chevrolet ave,Aveo,1,palabra común del español
+modelo,chevrolet aveno,Aveo,1,palabra común del español
+modelo,chevrolet aves,Aveo,1,palabra común del español
+modelo,chevrolet veo,Aveo,1,palabra común del español
 modelo,veo,Aveo,1,palabra común del español
+modelo,mazda v 5,CX-5,3,palabra común del español
 modelo,rolla,Corolla,3,palabra común del español
 modelo,buster,Duster,1,palabra común del español
 modelo,escapa,Escape,1,palabra común del español
@@ -43,6 +68,10 @@ modelo,fori,Fortuner,2,a un paso del nombre oficial 'Ford'
 modelo,fory,Fortuner,2,a un paso del nombre oficial 'Ford'
 modelo,lux,Hilux,3,palabra común del español
 modelo,lona,Logan,3,palabra común del español
+modelo,kia rico,Rio,1,palabra común del español
+modelo,kia rin,Rio,1,palabra común del español
+modelo,kia o,Rio,3,palabra común del español
+modelo,kia ti,Rio,3,palabra común del español
 modelo,centra,Sentra,1,palabra común del español
 modelo,entra,Sentra,1,palabra común del español
 modelo,sentar,Sentra,1,palabra común del español

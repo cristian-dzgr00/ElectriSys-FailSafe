@@ -72,6 +72,11 @@ UMBRAL_TABLA_ERRORES = 90  # fuzz.ratio contra las claves de la tabla
 MIN_LETRAS_FUZZY_TABLA = 5  # en palabras más cortas fuzz.ratio es ruidoso
 # Nivel 4 (más allá de la tabla): ediciones arbitrarias de 2+ letras.
 UMBRAL_RESPALDO_SIMILITUD = 0.75  # DamerauLevenshtein.normalized_similarity
+# Si dos nombres distintos quedan así de cerca, la palabra es ambigua
+# ("frotuer": Fortuner y Frontier empatan) y es mejor no adivinar: un
+# "no sé" se corrige preguntando, un modelo equivocado da un repuesto que no sirve.
+MARGEN_AMBIGUEDAD_TABLA = 3  # puntos de fuzz.ratio
+MARGEN_AMBIGUEDAD_SIMILITUD = 0.05
 
 _tabla_en_memoria: dict | None = None
 _lock_tabla = threading.Lock()
@@ -234,12 +239,18 @@ def _buscar_en_tabla_errores(texto_normalizado: str, tipo: str, opciones: list[s
             for largo in (len(candidato) - 1, len(candidato), len(candidato) + 1)
             for clave in indice.get((candidato[0], largo), ())
         ]
-        r = process.extractOne(candidato, claves, scorer=fuzz.ratio, score_cutoff=UMBRAL_TABLA_ERRORES)
-        if r is None:
+        resultados = process.extract(candidato, claves, scorer=fuzz.ratio,
+                                     score_cutoff=UMBRAL_TABLA_ERRORES, limit=10)
+        if not resultados:
             continue
-        correcto = normalizar(errores[r[0]])
-        if correcto in opciones_normalizadas and (mejor_orden is None or (n, r[1]) > mejor_orden):
-            mejor, mejor_orden = opciones_normalizadas[correcto], (n, r[1])
+        puntaje = resultados[0][1]
+        destinos = {normalizar(errores[clave]) for clave, p, _ in resultados
+                    if p >= puntaje - MARGEN_AMBIGUEDAD_TABLA}
+        if len(destinos) != 1:
+            continue  # se parece por igual a errores de dos nombres distintos
+        correcto = destinos.pop()
+        if correcto in opciones_normalizadas and (mejor_orden is None or (n, puntaje) > mejor_orden):
+            mejor, mejor_orden = opciones_normalizadas[correcto], (n, puntaje)
     return mejor
 
 
@@ -278,10 +289,18 @@ def _respaldo_similitud(texto_normalizado: str, opciones: list[str]) -> str | No
     nombres = {k: v for k, v in nombres.items() if len(k) >= MIN_LETRAS_FUZZY_TABLA}
     mejor, mejor_orden = None, None
     for n, candidato in _candidatos_respaldo(texto_normalizado):
-        for junto, original in nombres.items():
-            similitud = DamerauLevenshtein.normalized_similarity(candidato, junto)
-            if similitud >= UMBRAL_RESPALDO_SIMILITUD and (mejor_orden is None or (similitud, n) > mejor_orden):
-                mejor, mejor_orden = original, (similitud, n)
+        puntajes = sorted(
+            ((DamerauLevenshtein.normalized_similarity(candidato, junto), original)
+             for junto, original in nombres.items()),
+            key=lambda x: x[0], reverse=True,
+        )
+        if not puntajes or puntajes[0][0] < UMBRAL_RESPALDO_SIMILITUD:
+            continue
+        if len(puntajes) > 1 and puntajes[0][0] - puntajes[1][0] < MARGEN_AMBIGUEDAD_SIMILITUD:
+            continue  # ambiguo: no adivinar
+        similitud, original = puntajes[0]
+        if mejor_orden is None or (similitud, n) > mejor_orden:
+            mejor, mejor_orden = original, (similitud, n)
     return mejor
 
 

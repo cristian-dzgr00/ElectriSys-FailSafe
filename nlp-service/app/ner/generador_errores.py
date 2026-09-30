@@ -57,6 +57,7 @@ MIN_LETRAS_APODO = 6
 MIN_LETRAS_TRUNCADO = 7
 MIN_LETRAS_ERROR = 3
 MAX_CAMBIOS_TRANSLITERACION = 3
+MAX_LETRAS_CONTEXTO = 4  # nombres cortos: sus errores solo valen junto a su pareja
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 PALABRAS_COMUNES_PATH = DATA_DIR / "palabras_comunes_es.txt"
@@ -428,6 +429,49 @@ def generar_errores(nombre: str, tipo: str, niveles=(1, 2, 3)) -> list[dict]:
         if _letras(error) >= MIN_LETRAS_ERROR
     ]
     return sorted(filas, key=lambda f: (f["nivel"], f["error"]))
+
+
+def generar_errores_contextuales(marca: str, modelo: str) -> list[dict]:
+    """Errores de nombres cortos que solo se aceptan junto a su pareja.
+
+    Solos, casi todos los errores de "Kia", "Rio" o "Ford" son palabras
+    normales o ruido ("kiu", "roi", "fod"), por eso generar_errores() no
+    los produce. Pegados a la otra mitad del vehículo el contexto los
+    desambigua: "kiu rio" -> Kia, "kia roi" -> Rio, "fprdd escape" -> Ford.
+    Se genera para el lado de 4 letras o menos: nivel 1 completo (todas las
+    ediciones de una letra) y nivel 3 (dos errores de tipeo realistas).
+    """
+    marca_n, modelo_n = normalizar(marca), normalizar(modelo)
+    if not marca_n or not modelo_n:
+        return []
+    filas = []
+    for tipo, nombre, propio, pareja, delante in (
+        ("marca", marca, marca_n, modelo_n, True),
+        ("modelo", modelo, modelo_n, marca_n, False),
+    ):
+        if _letras(propio) > MAX_LETRAS_CONTEXTO or propio.replace(" ", "").isdigit():
+            continue
+        tokens = propio.split()
+        variantes: dict[str, tuple[int, str]] = {}
+        for i, token in enumerate(tokens):
+            if token.isdigit():
+                continue
+            una = ediciones_una_letra(token)
+            dos = set()
+            for v in ediciones_realistas(token):
+                dos |= ediciones_realistas(v)
+            for v, nivel, nota in [(v, 1, n) for v, n in sorted(una.items())] + \
+                                  [(v, 3, "dos errores de tipeo") for v in sorted(dos - set(una))]:
+                if not v:
+                    continue
+                texto = " ".join(tokens[:i] + [v] + tokens[i + 1:])
+                if texto != propio and texto not in variantes:
+                    variantes[texto] = (nivel, f"{nota} (contexto)")
+        for texto, (nivel, nota) in variantes.items():
+            error = f"{texto} {pareja}" if delante else f"{pareja} {texto}"
+            filas.append({"tipo": tipo, "error": error, "correcto": nombre.strip(), "nivel": nivel,
+                          "origen": "auto", "nota": nota})
+    return sorted(filas, key=lambda f: (f["tipo"], f["nivel"], f["error"]))
 
 
 # ---------------------------------------------------------------- colisiones

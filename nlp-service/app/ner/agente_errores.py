@@ -40,6 +40,7 @@ from app.ner.generador_errores import (
     cerca_de_nombres,
     filtrar_errores,
     generar_errores,
+    generar_errores_contextuales,
 )
 from app.preprocessing import normalizar
 
@@ -62,6 +63,14 @@ CATALOGO_SEMILLA = {
         "Filtros", "Frenos", "Baterías", "Suspensión", "Motor", "Transmisión",
         "Encendido", "Correas y Bandas",
     ],
+}
+# Parejas marca-modelo del catálogo semilla: los errores de nombres cortos
+# (Kia, Rio, Ford...) se generan pegados a su pareja ("kiu rio").
+PARES_SEMILLA = {
+    "Toyota": ["Hilux", "Corolla", "Fortuner"], "Chevrolet": ["Spark", "Spark GT", "Aveo"],
+    "Mazda": ["3", "CX-5"], "Nissan": ["Sentra", "Frontier"], "Hyundai": ["Tucson", "Accent"],
+    "Kia": ["Rio", "Sportage"], "Renault": ["Logan", "Duster"], "Ford": ["Escape", "Fiesta"],
+    "Suzuki": ["Swift"],
 }
 
 _lock = threading.RLock()
@@ -198,7 +207,9 @@ def registrar_nombre(tipo: str, nombre: str, marca: str | None = None) -> dict:
 
     Idempotente (registrar dos veces no duplica nada), seguro con hilos y
     con escritura atómica. Al terminar, el nombre ya es buscable en el
-    extractor. `marca` es informativa para modelos (se registra en el log).
+    extractor. Para un modelo, `marca` agrega además los errores con
+    contexto de la pareja ("kiu rio"), que valen aunque el modelo ya
+    estuviera registrado con otra marca.
     """
     if tipo not in TIPOS:
         raise ValueError(f"Tipo inválido: {tipo!r}. Válidos: {', '.join(TIPOS)}")
@@ -209,15 +220,24 @@ def registrar_nombre(tipo: str, nombre: str, marca: str | None = None) -> dict:
     inicio = time.perf_counter()
     with _lock:
         estado = _cargar_estado()
-        if (tipo, normalizar(nombre)) in estado["nombres"]:
-            return {"tipo": tipo, "nombre": nombre, "ya_registrado": True, "agregadas": 0,
+        ya_registrado = (tipo, normalizar(nombre)) in estado["nombres"]
+        candidatas = []
+        if not ya_registrado:
+            candidatas = [f for f in _filas_manuales()
+                          if f["tipo"] == tipo and normalizar(f["correcto"]) == normalizar(nombre)]
+            candidatas += generar_errores(nombre, tipo)
+        if tipo == "modelo" and marca and normalizar(marca):
+            descartados = {(a["error"], normalizar(a["correcto"])) for a in estado["avisos"]}
+            candidatas += [f for f in generar_errores_contextuales(marca, nombre)
+                           if f["error"] not in estado["filas"]
+                           and (f["error"], normalizar(f["correcto"])) not in descartados]
+        if not candidatas:
+            return {"tipo": tipo, "nombre": nombre, "ya_registrado": ya_registrado, "agregadas": 0,
                     "descartadas": 0, "ms": round((time.perf_counter() - inicio) * 1000, 1)}
-        manuales = [f for f in _filas_manuales()
-                    if f["tipo"] == tipo and normalizar(f["correcto"]) == normalizar(nombre)]
         agregadas, descartadas = _cambiar_y_guardar(
-            estado, lambda e: _incorporar(e, manuales + generar_errores(nombre, tipo), [(tipo, nombre)])
+            estado, lambda e: _incorporar(e, candidatas, [] if ya_registrado else [(tipo, nombre)])
         )
-    resumen = {"tipo": tipo, "nombre": nombre, "ya_registrado": False, "agregadas": agregadas,
+    resumen = {"tipo": tipo, "nombre": nombre, "ya_registrado": ya_registrado, "agregadas": agregadas,
                "descartadas": descartadas, "ms": round((time.perf_counter() - inicio) * 1000, 1)}
     logger.info("Errores registrados para %s %r%s: %s", tipo, nombre, f" (marca {marca})" if marca else "", resumen)
     return resumen
@@ -262,10 +282,15 @@ def sincronizar_catalogo(catalogo: dict[str, list[str]] | None = None) -> dict:
             "ms": round((time.perf_counter() - inicio) * 1000, 1)}
 
 
-def regenerar_tabla(catalogo: dict[str, list[str]] | None = None) -> dict:
-    """Reconstruye la tabla completa desde cero (filas manuales + generadas)."""
+def regenerar_tabla(catalogo: dict[str, list[str]] | None = None, pares: dict | None = None) -> dict:
+    """Reconstruye la tabla completa desde cero (filas manuales + generadas).
+
+    Sin argumentos usa el catálogo semilla y sus parejas marca-modelo.
+    """
     global _estado
-    catalogo = catalogo or CATALOGO_SEMILLA
+    if catalogo is None:
+        catalogo, pares = CATALOGO_SEMILLA, PARES_SEMILLA if pares is None else pares
+    pares = pares or {}
     inicio = time.perf_counter()
     with _lock:
         _estado = {"filas": {}, "avisos": [], "nombres": {}}
@@ -276,6 +301,9 @@ def regenerar_tabla(catalogo: dict[str, list[str]] | None = None) -> dict:
             for nombre in catalogo.get(tipo, []):
                 candidatas += generar_errores(nombre, tipo)
                 nombres.append((tipo, nombre))
+        for marca, modelos in pares.items():
+            for modelo in modelos:
+                candidatas += generar_errores_contextuales(marca, modelo)
         agregadas, descartadas = _incorporar(_estado, candidatas, nombres)
         _guardar_y_publicar(_estado)
     return {"agregadas": agregadas, "descartadas": descartadas,

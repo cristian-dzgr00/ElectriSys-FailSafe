@@ -199,3 +199,13 @@ def test_endpoint_registra_y_responde_el_resumen(cliente):
     assert cuerpo["nombre"] == "Coolray" and cuerpo["agregadas"] > 0
     assert {"descartadas", "ms"} <= cuerpo.keys()
     assert _extraer("pastillas para culrei", modelos=MODELOS + ["Coolray"])["modelo"] == "Coolray"
+
+
+def test_registrar_modelo_con_marca_agrega_errores_con_contexto(agente):
+    modelos = MODELOS + ["Kx3"]
+    agente.registrar_nombre("modelo", "Kx3", marca="Kia")
+    assert _extraer("filtro para kia kx4", modelos=modelos)["modelo"] == "Kx3"
+    # El modelo corto solo no se reconoce: sin "kia" al lado, "kx4" es ruido.
+    assert _extraer("filtro para kx4", modelos=modelos)["modelo"] is None
+    # Y la marca corta mal escrita junto al modelo nuevo también.
+    assert _extraer("filtro para kua kx3", modelos=modelos)["marca"] == "Kia"

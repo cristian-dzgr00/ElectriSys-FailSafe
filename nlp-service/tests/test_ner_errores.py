@@ -260,3 +260,29 @@ def test_csv_sin_colisiones_con_otros_nombres_del_catalogo():
 def test_palabras_comunes_no_son_errores():
     errores = {f["error"] for f in _leer(RUTA_TABLA)}
     assert not {"centra", "rotor", "aves", "buster", "cuesta", "motos"} & errores
+
+
+# ---------------------------------------------------------------- contexto y ambigüedad
+
+
+@pytest.mark.parametrize("frase,campo,esperado", [
+    ("bujias para kiu rio 2017", "marca", "Kia"),
+    ("bujias para kia roi 2017", "modelo", "Rio"),
+    ("amortiguador para fprdd escape", "marca", "Ford"),
+    ("embrague de chevrolet aov 2016", "modelo", "Aveo"),
+    ("radiador para mazda x 5 2019", "modelo", "CX-5"),
+])
+def test_nombre_corto_mal_escrito_se_reconoce_junto_a_su_pareja(frase, campo, esperado):
+    assert _extraer(frase)[campo] == esperado
+
+
+def test_nombre_corto_mal_escrito_solo_no_se_reconoce():
+    """Sin la pareja al lado, "kiu" o "roi" no bastan: serían falsos positivos."""
+    ent = _extraer("bujias para kiu 2017")
+    assert ent["marca"] is None
+    assert _extraer("el roi del negocio")["modelo"] is None
+
+
+def test_error_ambiguo_entre_dos_modelos_no_adivina():
+    # "frotuer" está igual de cerca de Fortuner que de Frontier.
+    assert _extraer("bomba de agua para un nissan frotuer 2018")["modelo"] is None
