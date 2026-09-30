@@ -100,7 +100,9 @@ def test_sin_ventas_no_inventa_reglas():
 
 
 def test_metricas_presentes():
-    canastas = [[1, 2], [1, 2], [1, 2]]
+    # Con 2 en TODAS las ventas el lift sería 1.0 y la regla se descarta a
+    # propósito (ver test anterior); las ventas [3] y [4] lo vuelven > 1.
+    canastas = [[1, 2], [1, 2], [1, 2], [3], [4]]
     r = reglas.recomendar_complementos(canastas, [1])[0]
     for campo in ("veces_juntos", "soporte", "confianza", "lift"):
         assert campo in r
