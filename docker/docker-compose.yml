@@ -136,6 +136,13 @@ services:
       BACKEND_URL:      "http://frontend"
       JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
       NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
+    volumes:
+      # Tabla de posibles errores del NER (la mantiene app/ner/agente_errores.py).
+      # Solo data/errores/ y no data/ entera: un volumen sobre data/ taparía el
+      # intents_dataset.csv de cada imagen nueva. La primera vez Docker copia
+      # la tabla de la imagen al volumen; aunque se borrara, las filas "auto"
+      # se regeneran solas al arrancar (el generador es determinista).
+      - nlp_errores:/app/data/errores
     networks:
       - electrisys_net
     depends_on:
@@ -172,6 +179,7 @@ services:
 
 volumes:
   oracle_data:
+  nlp_errores:
 
 networks:
   electrisys_net:
