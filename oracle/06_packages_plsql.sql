@@ -31,6 +31,27 @@ EXCEPTION
 END;
 /
 
+-- ── Fecha local del negocio ──────────────────────────────────────
+-- Las columnas TIMESTAMP se llenan con SYSTIMESTAMP y el contenedor de
+-- Oracle corre en UTC, pero el negocio (y la UI) razonan en hora de
+-- Colombia. Sin convertir, una venta de las 11:42 p.m. del 15 cae en el
+-- 16 al agrupar por día: aparecía en "Ingresos hoy" y faltaba en el
+-- gráfico del día 15. Toda agrupación por día/mes debe pasar por aquí;
+-- es el único lugar donde se declara la zona horaria del negocio.
+CREATE OR REPLACE FUNCTION fn_fecha_local(p_ts IN TIMESTAMP)
+    RETURN DATE DETERMINISTIC IS
+BEGIN
+    RETURN CAST(FROM_TZ(p_ts, 'UTC') AT TIME ZONE 'America/Bogota' AS DATE);
+END;
+/
+
+-- Hoy según la hora local del negocio (no la del servidor).
+CREATE OR REPLACE FUNCTION fn_hoy_local RETURN DATE IS
+BEGIN
+    RETURN TRUNC(CAST(SYSTIMESTAMP AT TIME ZONE 'America/Bogota' AS DATE));
+END;
+/
+
 -- ============================================================
 -- PKG_VENTAS — lógica de negocio equivalente a VentaModel.php,
 -- pero garantizada a nivel de base de datos (funciona igual si la
@@ -192,8 +213,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_ventas AS
               LEFT JOIN clientes c ON v.cliente_id = c.id
               JOIN usuarios u      ON v.usuario_id = u.id
              WHERE (p_estado IS NULL OR v.estado = p_estado)
-               AND (p_desde  IS NULL OR v.creado_en >= TO_DATE(p_desde, 'YYYY-MM-DD'))
-               AND (p_hasta  IS NULL OR v.creado_en <  TO_DATE(p_hasta, 'YYYY-MM-DD') + 1)
+               AND (p_desde  IS NULL OR fn_fecha_local(v.creado_en) >= TO_DATE(p_desde, 'YYYY-MM-DD'))
+               AND (p_hasta  IS NULL OR fn_fecha_local(v.creado_en) <  TO_DATE(p_hasta, 'YYYY-MM-DD') + 1)
                AND (p_q      IS NULL OR v.numero LIKE '%' || p_q || '%'
                                       OR c.nombre LIKE '%' || p_q || '%')
              ORDER BY v.creado_en DESC
@@ -299,7 +320,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_reportes AS
                    NVL(SUM(total),0) AS ingresos,
                    NVL(AVG(total),0) AS ticket_promedio
               FROM ventas
-             WHERE TRUNC(creado_en) = TRUNC(SYSDATE)
+             WHERE TRUNC(fn_fecha_local(creado_en)) = fn_hoy_local()
                AND estado = 'completada';
     END resumen_hoy;
 

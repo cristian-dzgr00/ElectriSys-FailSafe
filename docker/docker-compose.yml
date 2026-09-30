@@ -14,8 +14,11 @@ services:
   # Reemplazó a MySQL primary+réplica: Oracle 23ai Free no soporta Data
   # Guard/RAC (features Enterprise), así que la topología es de una sola
   # instancia. Ver oracle/docs/migracion-oracle.md.
-  # Los scripts de oracle/ se cargan solos en el primer arranque desde
-  # /container-entrypoint-initdb.d (mismo mecanismo que tenía MySQL).
+  # Los scripts de oracle/ se montan en /scripts pero NO se auto-ejecutan:
+  # hay que correr `docker compose exec oracle-db sh /scripts/cargar_esquema.sh`
+  # una vez tras el primer arranque. El encabezado de ese script explica por
+  # qué el orden y el usuario de cada .sql importan demasiado como para
+  # dejárselo a /container-entrypoint-initdb.d.
   oracle-db:
     image: gvenzl/oracle-free:23-slim
     container_name: es_oracle_db
@@ -32,6 +35,7 @@ services:
       - "1522:1521"
     volumes:
       - oracle_data:/opt/oracle/oradata
+      - ../oracle:/scripts:ro
     networks:
       - electrisys_net
     healthcheck:
@@ -132,6 +136,13 @@ services:
       BACKEND_URL:      "http://frontend"
       JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
       NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
+    volumes:
+      # Tabla de posibles errores del NER (la mantiene app/ner/agente_errores.py).
+      # Solo data/errores/ y no data/ entera: un volumen sobre data/ taparía el
+      # intents_dataset.csv de cada imagen nueva. La primera vez Docker copia
+      # la tabla de la imagen al volumen; aunque se borrara, las filas "auto"
+      # se regeneran solas al arrancar (el generador es determinista).
+      - nlp_errores:/app/data/errores
     networks:
       - electrisys_net
     depends_on:
@@ -154,6 +165,9 @@ services:
       - "80:80"
     volumes:
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Rutas compartidas con la config de producción (nginx.prod.conf);
+      # nginx.conf las incluye, así que este montaje no es opcional.
+      - ../nginx/locations-electrisys.conf:/etc/nginx/locations-electrisys.conf:ro
       - ../tls/stunnel/nginx-to-fpm.conf:/etc/stunnel/stunnel.conf:ro
       - ../tls:/etc/tls:ro
     depends_on:
@@ -165,6 +179,7 @@ services:
 
 volumes:
   oracle_data:
+  nlp_errores:
 
 networks:
   electrisys_net:

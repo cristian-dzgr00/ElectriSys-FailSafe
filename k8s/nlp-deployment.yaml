@@ -4,6 +4,23 @@
 # clúster: no existía ningún workload para nlp-service (docker-compose.yml
 # sí lo levanta, pero los manifiestos de k8s nunca lo incluyeron).
 # ============================================================
+
+# ── Tabla de posibles errores del NER ─────────────────────
+# La mantiene app/ner/agente_errores.py (marcas/modelos nuevos se agregan
+# en caliente). Equivale al volumen nlp_errores de docker-compose.yml.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nlp-errores-pvc
+  namespace: electrisys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: standard
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +38,17 @@ spec:
       labels:
         app: nlp-service
     spec:
+      # A diferencia de un volumen de Docker, un PVC nuevo arranca vacío:
+      # se copia la tabla que trae la imagen solo si todavía no existe
+      # (cp -n), para no pisar lo que el agente agregó en ejecución.
+      initContainers:
+        - name: sembrar-tabla-errores
+          image: electrisys/nlp-service:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "cp -n /app/data/errores/* /semilla/ || true"]
+          volumeMounts:
+            - name: tabla-errores
+              mountPath: /semilla
       containers:
         - name: nlp-service
           image: electrisys/nlp-service:latest
@@ -43,6 +71,9 @@ spec:
                 secretKeyRef:
                   name: electrisys-secrets
                   key: NLP_INTERNAL_KEY
+          volumeMounts:
+            - name: tabla-errores
+              mountPath: /app/data/errores
           resources:
             requests:
               cpu: "200m"
@@ -62,3 +93,7 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+      volumes:
+        - name: tabla-errores
+          persistentVolumeClaim:
+            claimName: nlp-errores-pvc

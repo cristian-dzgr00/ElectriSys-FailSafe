@@ -1,0 +1,64 @@
+# ============================================================
+# ElectriSys POS — override de PRODUCCIÓN (Droplet de DigitalOcean)
+#
+# Uso completo en el servidor (los tres archivos, en este orden):
+#
+#   docker compose -f docker-compose.yml \
+#                  -f docker-compose.backup.yml \
+#                  -f docker-compose.prod.yml up -d
+#
+# Qué cambia respecto al compose de desarrollo:
+#   1. nginx sirve HTTPS con el certificado de Let's Encrypt del host.
+#   2. Se publica el 443 y se deja el 80 solo para la renovación + redirect.
+#   3. Se DEJAN DE PUBLICAR los puertos que no tienen que salir a internet
+#      (Oracle 1521/1522 y el WebSocket 8080): el backend le habla a la base
+#      y al websocket por la red interna de Docker. El firewall del Droplet
+#      es la segunda capa, no la única.
+#   4. APP_ENV=production: desactiva el detalle de errores del backend.
+#
+# Antes de la primera vez hay que emitir el certificado — ver
+# docs/despliegue-produccion.md.
+# ============================================================
+
+services:
+
+  oracle-db:
+    # Lista vacía: reemplaza (no concatena) los ports del compose base, así
+    # el 1522 deja de estar publicado en la IP pública del Droplet.
+    ports: []
+
+  websocket-server:
+    # El navegador llega al WebSocket por wss://dominio/ws, que nginx
+    # proxya internamente — no hace falta exponer el 8080 al exterior.
+    ports: []
+
+  backend-a:
+    environment:
+      APP_ENV: production
+      FRONTEND_URL: "https://${DOMINIO:?falta DOMINIO en docker/.env}"
+
+  backend-b:
+    environment:
+      APP_ENV: production
+      FRONTEND_URL: "https://${DOMINIO:?falta DOMINIO en docker/.env}"
+
+  frontend:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/locations-electrisys.conf:/etc/nginx/locations-electrisys.conf:ro
+      - ../tls/stunnel/nginx-to-fpm.conf:/etc/stunnel/stunnel.conf:ro
+      - ../tls:/etc/tls:ro
+      # Certificados emitidos por certbot en el HOST (no dentro del
+      # contenedor): así `certbot renew` del host los renueva y basta con
+      # recargar nginx, sin reconstruir la imagen.
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Webroot del desafío ACME, compartido con certbot del host.
+      - /var/www/certbot:/var/www/certbot:ro
+
+  nlp-service:
+    environment:
+      # Ver nginx.prod.conf: server interno 8081 (el 80 redirige a HTTPS).
+      BACKEND_URL: "http://frontend:8081"

@@ -1,15 +1,56 @@
 <?php
 namespace App\models;
 
-class VehiculoModel
+use App\patterns\observer\ErroresNlpObserver;
+use App\patterns\observer\VentaObserver;
+use App\patterns\observer\VentaSubject;
+
+/**
+ * También es Subject (patrón Observer): al insertar un vehículo nuevo
+ * notifica 'vehiculo_creado'. Es el único punto por donde entran marcas y
+ * modelos nuevos (POST /api/vehiculos y la alta de compatibilidad de
+ * repuestos.php pasan por buscarOcrear()).
+ */
+class VehiculoModel implements VentaSubject
 {
     private const COMBUSTIBLES_VALIDOS = ['gasolina', 'diesel', 'hibrido', 'electrico', 'gas'];
 
     private OciConnection $db;
 
+    /** @var VentaObserver[] */
+    private array $observers = [];
+
     public function __construct()
     {
         $this->db = Database::getConnection();
+        // El asistente NLP genera los posibles errores de escritura de cada
+        // marca/modelo nuevo ("geely" -> "yili") para reconocerlos al instante.
+        $this->agregarObserver(new ErroresNlpObserver());
+    }
+
+    public function agregarObserver(VentaObserver $observer): void
+    {
+        $this->observers[] = $observer;
+    }
+
+    public function removerObserver(VentaObserver $observer): void
+    {
+        $this->observers = array_filter($this->observers, fn($o) => $o !== $observer);
+    }
+
+    public function notificarObservers(string $accion, array $contexto): void
+    {
+        foreach ($this->observers as $observer) {
+            try {
+                $observer->actualizar($accion, $contexto);
+            } catch (\Throwable $e) {
+                // El vehículo ya se guardó: un Observer que falla no lo deshace.
+                error_log(
+                    "[ElectriSys][VehiculoModel] Observer " . get_class($observer) .
+                    " falló silenciosamente: " . $e->getMessage()
+                );
+            }
+        }
     }
 
     public function listar(array $filtros = []): array
@@ -90,6 +131,7 @@ class VehiculoModel
             $nuevoId = 0;
             $stmt->bindOut(':out_id', $nuevoId);
             $stmt->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible]);
+            $this->notificarObservers('vehiculo_creado', ['marca' => $marca, 'modelo' => $modelo]);
             return (int) $nuevoId;
         } catch (\Throwable $e) {
             if (OciConnection::esViolacionDeUnicidad($e)) {

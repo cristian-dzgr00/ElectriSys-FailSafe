@@ -1,0 +1,125 @@
+# ============================================================
+# Job — Restauración del esquema ELECTRISYS desde un backup Data Pump
+#
+# Es un Job y NO un CronJob a propósito: una restauración reemplaza los
+# datos actuales (table_exists_action=replace). Se dispara a mano, cuando
+# alguien decidió que hay que recuperar.
+#
+# ── CÓMO EJECUTARLO ─────────────────────────────────────────────────
+#
+# 1) Ver qué dumps hay disponibles en el PVC:
+#
+#      kubectl -n electrisys run listar-backups --rm -it --restart=Never \
+#        --image=busybox --overrides='{"spec":{"containers":[{"name":"ls",
+#        "image":"busybox","command":["ls","-lh","/backups/electrisys"],
+#        "volumeMounts":[{"name":"b","mountPath":"/backups"}]}],
+#        "volumes":[{"name":"b","persistentVolumeClaim":
+#        {"claimName":"oracle-backup-pvc"}}]}}'
+#
+# 2) Poner el nombre del dump elegido en el ConfigMap de abajo (o
+#    sobrescribirlo sin editar el archivo):
+#
+#      kubectl -n electrisys create configmap electrisys-restore-config \
+#        --from-literal=DUMPFILE=electrisys_backup_AAAAMMDD_HHMMSS_01.dmp \
+#        --dry-run=client -o yaml | kubectl apply -f -
+#
+# 3) Lanzar el Job. Si ya corrió antes hay que borrarlo primero: un Job
+#    completado no se vuelve a ejecutar con apply.
+#
+#      kubectl -n electrisys delete job oracle-restore --ignore-not-found
+#      kubectl apply -f k8s/oracle-restore-job.yaml
+#
+# 4) Seguir el progreso (tarda varios minutos):
+#
+#      kubectl -n electrisys logs -f job/oracle-restore
+#
+# 5) Verificar que la aplicación levanta y los datos están: entrar al POS
+#    y contrastar el conteo de ventas/repuestos con el log.
+#
+# ── ANTES DE RESTAURAR ──────────────────────────────────────────────
+# Si el desastre se llevó el esquema entero, primero hay que recrear el
+# usuario y el DIRECTORY (ver el encabezado de
+# oracle/backup/restaurar_logico.sh, pasos 2 y 3). El script 01 es
+# re-ejecutable: no falla si el usuario ya existe.
+#
+# Escalar los backends a 0 mientras corre evita que la aplicación escriba
+# sobre tablas que el import está reemplazando:
+#
+#   kubectl -n electrisys scale deployment electrisys-backend --replicas=0
+#   ... restaurar ...
+#   kubectl -n electrisys scale deployment electrisys-backend --replicas=2
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: electrisys-restore-config
+  namespace: electrisys
+data:
+  # Nombre del .dmp a restaurar. Sin un valor válido acá el script aborta
+  # con un mensaje claro en vez de restaurar algo al azar.
+  DUMPFILE: "CAMBIAR_POR_EL_DUMP_A_RESTAURAR.dmp"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oracle-restore
+  namespace: electrisys
+spec:
+  # Sin reintentos: si una restauración falla, hay que MIRAR por qué antes
+  # de volver a lanzarla. Reintentar a ciegas sobre un esquema a medio
+  # importar empeora el estado en vez de arreglarlo.
+  backoffLimit: 0
+  # Se conserva una hora tras terminar para poder leer los logs, y después
+  # se limpia solo.
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: impdp
+          image: gvenzl/oracle-free:23-slim
+          command: ["/bin/sh", "/scripts/restaurar_logico.sh"]
+          env:
+            - name: ORACLE_USER
+              value: "electrisys"
+            - name: ORACLE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: electrisys-secrets
+                  key: DB_PASS
+            - name: ORACLE_CONNECT_STRING
+              value: "//oracle-db:1521/freepdb1"
+            - name: BACKUP_DIR_OBJECT
+              value: "electrisys_backup_dir"
+            - name: DUMPFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: electrisys-restore-config
+                  key: DUMPFILE
+            - name: TZ
+              value: "America/Bogota"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          volumeMounts:
+            # El PVC se monta aunque impdp lea del lado del servidor: el
+            # script lo usa para resolver rutas y dejar el log al alcance.
+            - name: backup-storage
+              mountPath: /opt/oracle/backups
+            - name: scripts
+              mountPath: /scripts
+      volumes:
+        - name: backup-storage
+          persistentVolumeClaim:
+            claimName: oracle-backup-pvc
+        - name: scripts
+          # Mismo ConfigMap que usa el CronJob: incluye restaurar_logico.sh
+          # y 12_recompilar_invalidos.sql, que el script invoca al terminar
+          # el import para dejar packages y vistas compilados.
+          configMap:
+            name: electrisys-backup-scripts
+            defaultMode: 0755

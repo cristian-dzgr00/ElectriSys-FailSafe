@@ -124,6 +124,21 @@ class GestorVentas implements VentaSubject
             'ip'         => $ip,
         ]);
 
+        // ── Notificar stock actualizado (Sprint 1: inventario en vivo) ──
+        // stockDe() hace un solo SELECT ... WHERE id IN (...) para todos
+        // los repuestos vendidos, no uno por línea.
+        $repuestoIds = array_values(array_unique(array_map(
+            fn($item) => (int) $item['repuesto_id'],
+            $data['items']
+        )));
+        if ($repuestoIds !== []) {
+            $this->notificarObservers('stock_actualizado', [
+                'usuario_id' => $usuarioId,
+                'items'      => $this->model->stockDe($repuestoIds),
+                'ip'         => $ip,
+            ]);
+        }
+
         return $resultado;
     }
 
@@ -137,6 +152,11 @@ class GestorVentas implements VentaSubject
      */
     public function anularVenta(int $ventaId, int $usuarioId, string $ip = ''): bool
     {
+        // Repuestos afectados: hay que leerlos ANTES de anular (ver
+        // VentaModel::itemsDeVenta) — después de anular ya no se puede
+        // reconstruir qué se vendió a partir de detalle_ventas.
+        $repuestoIds = $this->model->itemsDeVenta($ventaId);
+
         // ── Ejecutar la operación principal ──────────────────────
         $resultado = $this->model->anular($ventaId);
 
@@ -147,6 +167,16 @@ class GestorVentas implements VentaSubject
                 'detalle'    => "Venta ID {$ventaId} anulada",
                 'ip'         => $ip,
             ]);
+
+            // Stock ya repuesto por trg_ventas_anulada_restaura_stock —
+            // mismo patrón de notificación que crearVenta().
+            if ($repuestoIds !== []) {
+                $this->notificarObservers('stock_actualizado', [
+                    'usuario_id' => $usuarioId,
+                    'items'      => $this->model->stockDe($repuestoIds),
+                    'ip'         => $ip,
+                ]);
+            }
         }
 
         return $resultado;

@@ -11,7 +11,10 @@ import { repuestosService } from '../services/ventasService';
 
 const fmt = n => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
 
-export default function BuscadorRepuesto({ onSeleccionar }) {
+// campoPrecio: qué precio mostrar en la lista. Las ventas miran el precio
+// de venta; los pedidos a proveedor, el de compra — mostrar el de venta al
+// armar una orden de compra haría que se tipee el número equivocado.
+export default function BuscadorRepuesto({ onSeleccionar, campoPrecio = 'precio_venta' }) {
   const [buscando, setBuscando]     = useState(false); // campo de texto visible
   const [texto, setTexto]           = useState('');
   const [productos, setProductos]   = useState([]);
@@ -100,7 +103,7 @@ export default function BuscadorRepuesto({ onSeleccionar }) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13 }}>
               <span style={{ fontWeight: 600 }}>{r.nombre}</span>
-              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{fmt(r.precio_venta)}</span>
+              <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{fmt(r[campoPrecio])}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2, fontSize: 11, color: 'var(--text-muted)' }}>
               <span>{r.codigo}{r.proveedor ? ` · ${r.proveedor}` : ''}</span>

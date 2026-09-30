@@ -65,16 +65,11 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: testroot
-          MYSQL_DATABASE: electrisys_test
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpass
-        ports: ['3306:3306']
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    # Sin servicio de base de datos: la suite de PHPUnit (HealthTest,
+    # GestorAsistenteTest) no toca Oracle. Antes este job levantaba MySQL 8
+    # y cargaba database/schema.sql — el esquema del diseño descartado, que
+    # ya no se despliega. Probar contra un motor que la aplicación no usa no
+    # demostraba nada y sumaba dos minutos a cada push.
     steps:
       - uses: actions/checkout@v4
 
@@ -82,33 +77,59 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: pdo, pdo_mysql, mbstring
+          extensions: mbstring
           coverage: xdebug
 
       - name: Install Composer dependencies
         run: composer install --optimize-autoloader
 
-      - name: Run schema migration
-        run: mysql -h 127.0.0.1 -u testuser -ptestpass electrisys_test < ../database/schema.sql
+      - name: Lint de sintaxis (php -l) sobre todo src/
+        run: find src public -name '*.php' -print0 | xargs -0 -n1 php -l
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit --configuration phpunit.xml --coverage-text
         env:
-          DB_PRIMARY_HOST: 127.0.0.1
-          DB_PRIMARY_PORT: 3306
-          DB_NAME: electrisys_test
-          DB_USER: testuser
-          DB_PASS: testpass
           JWT_SECRET: test_secret_key_for_ci
           JWT_EXPIRATION: 3600
           APP_ENV: testing
+
+  # ─────────────────────────────────────────
+  # JOB 2b: Test microservicio NLP (Python)
+  # ─────────────────────────────────────────
+  # Los modelos propios (intención, NER, recomendador, predicción de
+  # demanda) tienen su propia suite y hasta ahora no corría en CI: un
+  # cambio en el recomendador podía romper la vista de repuestos sin que
+  # ningún check lo marcara.
+  test-nlp:
+    name: Test NLP Service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nlp-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: nlp-service/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run pytest
+        run: pytest tests -q
 
   # ─────────────────────────────────────────
   # JOB 3: Build & Push Docker Images
   # ─────────────────────────────────────────
   build-push:
     name: Build & Push Images
-    needs: [test-frontend, test-backend]
+    needs: [test-frontend, test-backend, test-nlp]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     permissions:
@@ -161,11 +182,15 @@ jobs:
   # ─────────────────────────────────────────
   # JOB 4: Deploy a Kubernetes
   # ─────────────────────────────────────────
+  # El despliegue de producción de este proyecto es Docker Compose sobre un
+  # Droplet (ver docs/despliegue-produccion.md), no Kubernetes. Este job se
+  # conserva para el entorno de k8s del curso y solo corre si existe el
+  # secret KUBE_CONFIG — sin el, se salta en vez de fallar el pipeline.
   deploy:
     name: Deploy to K8s
     needs: build-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && vars.DEPLOY_K8S == 'true'
     environment: production
     steps:
       - uses: actions/checkout@v4

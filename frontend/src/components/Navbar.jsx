@@ -1,7 +1,8 @@
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, PanelLeft } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
-export default function Navbar() {
+export default function Navbar({ onToggleSidebar }) {
   const { user, logout } = useAuth();
 
   return (
@@ -11,11 +12,28 @@ export default function Navbar() {
       borderBottom: '1px solid var(--border)',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'flex-end',
       padding: '0 24px',
       gap: 12,
       flexShrink: 0,
     }}>
+      {/* Solo visible en el drawer móvil (ver .sidebar-toggle en
+          index.css) — en escritorio el sidebar ya está siempre visible. */}
+      <button className="sidebar-toggle btn-icon" onClick={onToggleSidebar} title="Menú">
+        <PanelLeft size={18} />
+      </button>
+
+      {/* marginLeft:auto en vez de justifyContent:space-between en el header:
+          con space-between, cuando el botón de arriba está en display:none
+          (fuera de móvil) quedaba un solo hijo visible, y ese se pega al
+          inicio en vez de quedar a la derecha — por eso "Administrador" y
+          cerrar sesión aparecían pegados al sidebar. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
+      {/* Campana: vive acá y no en una página para escuchar el WebSocket
+          desde cualquier vista del POS. */}
+      <NotificationBell />
+
+      <div style={{ width: 1, height: 24, background: 'var(--border)' }} />
+
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <div style={{
           width: 30, height: 30,
@@ -42,6 +60,7 @@ export default function Navbar() {
       <button className="btn-icon" onClick={logout} title="Cerrar sesión">
         <LogOut size={15} />
       </button>
+      </div>
     </header>
   );
 }

@@ -39,6 +39,13 @@ class AuditLogObserver implements VentaObserver
      */
     public function actualizar(string $accion, array $contexto): void
     {
+        // Evento derivado del mismo hecho de negocio que crear_venta/
+        // anular_venta (que ya se auditan) — auditarlo de nuevo duplicaría
+        // la fila sin agregar información nueva.
+        if ($accion === 'stock_actualizado') {
+            return;
+        }
+
         try {
             $stmt = $this->db->prepare(
                 "INSERT INTO audit_log (usuario_id, accion, detalle, ip)

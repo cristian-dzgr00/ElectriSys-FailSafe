@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ElectriSys POS — Sin conexión</title>
+  <!--
+    Pantalla que se muestra cuando el servidor del POS no responde.
+    Existe para que el cajero no vea el error crudo de Chromium ("No se
+    puede acceder a este sitio"), que no dice nada útil ni deja hacer nada.
+    Acá se explica qué revisar y se puede corregir la dirección sin tocar
+    archivos ni reinstalar.
+  -->
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: #121212; color: #e8e8e8;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      padding: 24px;
+    }
+    .caja {
+      background: #1a1a1a; border: 1px solid #2c2c2c; border-radius: 12px;
+      padding: 32px; max-width: 520px; width: 100%;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    }
+    h1 { margin: 0 0 6px; font-size: 19px; }
+    .sub { color: #9a9a9a; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+    .motivo {
+      background: #241a1a; border: 1px solid #5c2b2b; color: #e8a0a0;
+      border-radius: 8px; padding: 10px 12px; font-size: 12px;
+      margin-bottom: 20px; word-break: break-word;
+    }
+    label { display: block; font-size: 12px; color: #9a9a9a; margin-bottom: 6px; }
+    input {
+      width: 100%; padding: 10px 12px; font-size: 14px;
+      background: #121212; border: 1px solid #2c2c2c; border-radius: 8px;
+      color: #e8e8e8; margin-bottom: 8px;
+    }
+    input:focus { outline: none; border-color: #f5a623; }
+    .fila { display: flex; gap: 10px; margin-top: 14px; }
+    button {
+      flex: 1; padding: 11px 16px; font-size: 14px; font-weight: 600;
+      border-radius: 8px; border: none; cursor: pointer;
+    }
+    .primario { background: #f5a623; color: #121212; }
+    .secundario { background: transparent; color: #e8e8e8; border: 1px solid #2c2c2c; }
+    button:hover { filter: brightness(1.1); }
+    .pistas { margin: 18px 0 0; padding-left: 18px; font-size: 12px; color: #9a9a9a; line-height: 1.8; }
+    .error { color: #e8a0a0; font-size: 12px; min-height: 16px; }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <h1>No se pudo conectar al servidor</h1>
+    <div class="sub">
+      La caja no alcanza el servidor de ElectriSys. Las ventas no se pueden
+      registrar hasta restablecer la conexión.
+    </div>
+
+    <div class="motivo" id="motivo"></div>
+
+    <label for="servidor">Dirección del servidor</label>
+    <input id="servidor" type="url" placeholder="http://localhost" autocomplete="off" spellcheck="false">
+    <div class="error" id="error"></div>
+
+    <div class="fila">
+      <button class="secundario" id="reintentar">Reintentar</button>
+      <button class="primario" id="guardar">Guardar y conectar</button>
+    </div>
+
+    <ul class="pistas">
+      <li>Verificá que el servidor esté encendido y en la misma red.</li>
+      <li>Si el POS corre en esta máquina con Docker: <code>docker compose ps</code>.</li>
+      <li>En producción la dirección empieza por <code>https://</code>.</li>
+    </ul>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    document.getElementById('motivo').textContent =
+      params.get('motivo') || 'El servidor no respondió.';
+    const campo = document.getElementById('servidor');
+    campo.value = params.get('servidor') || 'http://localhost';
+    campo.focus();
+    campo.select();
+
+    const err = document.getElementById('error');
+
+    async function guardar() {
+      err.textContent = '';
+      const r = await window.electrisys.guardarServidor(campo.value.trim());
+      if (!r.ok) err.textContent = r.error;
+    }
+
+    document.getElementById('guardar').addEventListener('click', guardar);
+    document.getElementById('reintentar').addEventListener('click', () => window.electrisys.reintentar());
+    campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') guardar(); });
+  </script>
+</body>
+</html>

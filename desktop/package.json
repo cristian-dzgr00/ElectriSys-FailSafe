@@ -1,0 +1,49 @@
+{
+  "name": "electrisys-pos-desktop",
+  "version": "2.0.0",
+  "description": "Cliente de escritorio del punto de venta ElectriSys (Electritorres)",
+  "main": "main.js",
+  "private": true,
+  "author": "Electritorres",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.electritorres.electrisys.pos",
+    "productName": "ElectriSys POS",
+    "copyright": "Electritorres",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "error.html",
+      "assets/**"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ElectriSys POS",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerLanguages": ["es_ES"],
+      "language": "1034"
+    }
+  }
+}

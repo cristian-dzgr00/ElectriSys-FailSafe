@@ -68,3 +68,42 @@ def buscar_en_catalogo(termino: str, limit: int = 20) -> list[dict]:
 
 def obtener_compatibilidad(repuesto_id) -> list[dict]:
     return _get(f"/api/repuestos/{repuesto_id}/compatibilidad").get("data", [])
+
+
+def obtener_repuesto(repuesto_id) -> dict:
+    """Un repuesto puntual, con su categoría — base de las recomendaciones
+    de productos relacionados (recommender/similares.py)."""
+    return _get(f"/api/repuestos/{repuesto_id}").get("data", {})
+
+
+def obtener_demanda(repuesto_id, dias: int = 90) -> dict:
+    """Historial de unidades vendidas por día del repuesto.
+
+    La agregación la hace Oracle (ver backend/src/routes/repuestos.php):
+    traer las líneas de venta crudas hasta acá solo para sumarlas sería
+    mover miles de filas por la red para calcular tres números.
+    """
+    return _get(f"/api/repuestos/{repuesto_id}/demanda", {"dias": dias})
+
+
+def obtener_demanda_lote(repuesto_ids, dias: int = 90) -> dict:
+    """Historial de varios repuestos en una sola consulta.
+
+    El backend agrupa por repuesto y por día en una única sentencia SQL; la
+    alternativa —llamar N veces a obtener_demanda()— multiplica por N tanto
+    los round-trips HTTP como las consultas a Oracle, y esto lo invoca la
+    tabla de repuestos en cada cambio de página.
+    """
+    ids = ",".join(str(int(i)) for i in repuesto_ids)
+    return _get("/api/repuestos/demanda/lote", {"ids": ids, "dias": dias})
+
+
+def obtener_canastas(dias: int = 180, limite: int = 2000) -> list[list]:
+    """Ventas históricas como listas de repuesto_id (una lista por venta).
+
+    Es la materia prima de las reglas de asociación. Se piden solo los ids:
+    para contar co-ocurrencias no hacen falta nombres ni precios, y traerlos
+    multiplicaría el tamaño de la respuesta sin cambiar el resultado.
+    """
+    datos = _get("/api/ventas/canastas", {"dias": dias, "limite": limite})
+    return datos.get("canastas", [])

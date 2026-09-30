@@ -14,6 +14,13 @@ export const repuestosService = {
   crear:      (data)        => api.post('/repuestos',         data),
   actualizar: (id, data)    => api.put(`/repuestos/${id}`,   data),
   eliminar:   (id)          => api.delete(`/repuestos/${id}`),
+  // Sugerencias del microservicio propio de NLP (TF-IDF + coseno) y señal
+  // de reabastecimiento. Responde 200 aun si el microservicio está caído,
+  // con disponible:false — ver backend/src/routes/repuestos.php.
+  recomendaciones:       (id)        => api.get(`/repuestos/${id}/recomendaciones`),
+  // Señales de reabastecimiento de TODA una página en una sola llamada
+  // (el backend resuelve las N con una consulta agrupada).
+  senalesDemanda:        (ids)      => api.get('/repuestos/demanda/senales', { params: { ids: ids.join(',') } }),
   listarCompatibilidad:  (id)        => api.get(`/repuestos/${id}/compatibilidad`),
   agregarCompatibilidad: (id, data)  => api.post(`/repuestos/${id}/compatibilidad`, data),
   quitarCompatibilidad:  (id, vehId) => api.delete(`/repuestos/${id}/compatibilidad/${vehId}`),
@@ -43,6 +50,7 @@ export const cotizacionesService = {
 
 export const proveedoresService = {
   listar:     (params = {}) => api.get('/proveedores',       { params }),
+  buscar:     (id)          => api.get(`/proveedores/${id}`),
   crear:      (data)        => api.post('/proveedores',       data),
   actualizar: (id, data)    => api.put(`/proveedores/${id}`, data),
   eliminar:   (id)          => api.delete(`/proveedores/${id}`),

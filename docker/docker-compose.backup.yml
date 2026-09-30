@@ -1,0 +1,88 @@
+# ============================================================
+# ElectriSys POS — Backup lógico automatizado (Oracle Data Pump)
+#
+# Override de docker-compose.yml, mismo patrón que
+# monitoring/docker-compose.monitoring.yml. Se usa así:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.backup.yml up -d
+#
+# Qué agrega:
+#   1. Un volumen persistente (oracle_backups) montado en oracle-db, que es
+#      donde Data Pump escribe: expdp le pide al SERVIDOR que escriba el
+#      .dmp, no lo escribe el cliente. Si el .dmp quedara en el filesystem
+#      del contenedor, desaparecería con el primer `docker compose down`.
+#   2. Ese mismo volumen en los backends, de solo lectura, para que
+#      GET /api/admin/backups pueda listar los dumps disponibles.
+#   3. El servicio oracle-backup: un contenedor con el cliente de Oracle
+#      que corre el backup todas las noches a las 2 AM.
+#
+# Restauración: ver el procedimiento paso a paso en el encabezado de
+# oracle/backup/restaurar_logico.sh.
+# ============================================================
+
+services:
+
+  oracle-db:
+    volumes:
+      # Se suma a oracle_data del compose base (Compose concatena las
+      # listas de volumes entre archivos, no las reemplaza).
+      - oracle_backups:/opt/oracle/backups
+
+  # Los backends solo LEEN el volumen: listar los backups es una función de
+  # la vista de administración; borrarlos o sobrescribirlos, no. Si el
+  # proceso web se ve comprometido, no puede destruir los respaldos.
+  backend-a:
+    volumes:
+      - oracle_backups:/opt/oracle/backups:ro
+    environment:
+      BACKUP_PATH: /opt/oracle/backups/electrisys
+
+  backend-b:
+    volumes:
+      - oracle_backups:/opt/oracle/backups:ro
+    environment:
+      BACKUP_PATH: /opt/oracle/backups/electrisys
+
+  # ── Backup automático nocturno ────────────────────────────
+  oracle-backup:
+    # Misma imagen que la base: trae expdp/impdp ya instalados y con la
+    # versión exacta del servidor. El entrypoint propio evita que además
+    # levante una segunda instancia de Oracle — solo se usan los binarios
+    # de cliente.
+    image: gvenzl/oracle-free:23-slim
+    container_name: es_oracle_backup
+    restart: unless-stopped
+    # root para poder ajustar los permisos del volumen vacío en el primer
+    # arranque (ver cron_backup.sh); el expdp en sí no necesita privilegios.
+    user: root
+    entrypoint: ["/bin/sh", "/scripts/cron_backup.sh"]
+    environment:
+      ORACLE_USER: electrisys
+      # La contraseña llega de docker/.env, nunca del script versionado.
+      ORACLE_PASS: "${DB_PASS:?falta en docker/.env}"
+      ORACLE_CONNECT_STRING: "//oracle-db:1521/freepdb1"
+      BACKUP_DIR_OBJECT: electrisys_backup_dir
+      BACKUP_PATH: /opt/oracle/backups/electrisys
+      BACKUP_HORA: "02"
+      BACKUP_MINUTO: "00"
+      BACKUP_RETENCION_DIAS: "14"
+      # Poner en "1" para que corra un backup apenas levanta el servicio —
+      # así se verifica el despliegue sin esperar a la madrugada.
+      BACKUP_AL_ARRANCAR: "${BACKUP_AL_ARRANCAR:-0}"
+      # La hora del backup es la hora local del negocio, no UTC.
+      TZ: "America/Bogota"
+    volumes:
+      - oracle_backups:/opt/oracle/backups
+      - ../oracle/backup:/scripts:ro
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+    networks:
+      - electrisys_net
+
+volumes:
+  # Volumen propio y no una carpeta del host (bind mount): queda fuera del
+  # árbol del proyecto, así que un `git clean` o un redespliegue no se
+  # lleva los respaldos por delante, y no es accesible desde fuera del
+  # Droplet sin entrar por SSH.
+  oracle_backups:

@@ -211,6 +211,40 @@ class VentaModel
         return true;
     }
 
+    /**
+     * Stock actual de un conjunto de repuestos, como mapa [id => stock].
+     * Usado tras crear/anular una venta para difundir el stock real por
+     * WebSocket (ver GestorVentas::crearVenta/anularVenta).
+     */
+    public function stockDe(array $repuestoIds): array
+    {
+        if ($repuestoIds === []) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($repuestoIds), '?'));
+        $stmt = $this->db->prepare("SELECT id, stock FROM repuestos WHERE activo = 1 AND id IN ($placeholders)");
+        $stmt->execute(array_values($repuestoIds));
+
+        $stock = [];
+        foreach ($stmt->fetchAll() as $fila) {
+            $stock[(int) $fila['id']] = (int) $fila['stock'];
+        }
+        return $stock;
+    }
+
+    /**
+     * repuesto_id únicos vendidos en una venta. Hay que leerlos ANTES de
+     * anular: trg_ventas_anulada_restaura_stock repone el stock recién al
+     * anular, pero las líneas de detalle_ventas no dicen qué se vendió
+     * después de ese momento.
+     */
+    public function itemsDeVenta(int $ventaId): array
+    {
+        $stmt = $this->db->prepare("SELECT DISTINCT repuesto_id FROM detalle_ventas WHERE venta_id = ?");
+        $stmt->execute([$ventaId]);
+        return array_map('intval', $stmt->fetchColumnAll());
+    }
+
     public function resumenHoy(): array
     {
         $conn = $this->db->raw();

@@ -1,7 +1,7 @@
 import { useEffect, useState, memo, useCallback } from 'react';
 import {
   ShoppingCart, DollarSign, Package, Users, TrendingUp,
-  ChevronLeft, ChevronRight, AlertTriangle, ArrowRight, Bell
+  ChevronLeft, ChevronRight, AlertTriangle, ArrowRight
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -10,8 +10,72 @@ import {
 import { ventasService, repuestosService, clientesService } from '../services/ventasService';
 import { SkeletonStatGrid, SkeletonCard } from '../components/Skeleton';
 import api from '../services/api';
-import NotificationBell from '../components/NotificationBell';
 import { useWebSocket } from '../hooks/useWebSocket';
+
+// Rangos del gráfico de ingresos. `dias` viaja al backend, que decide si
+// agrupa por día o por semana (más de un mes se agrupa, o el gráfico queda
+// con 90 puntos ilegibles). Ver GET /api/ventas/resumen/serie.
+const RANGOS = [
+  { id: '7d', label: '7 días',   titulo: 'últimos 7 días',   dias: 7 },
+  { id: '1m', label: '1 mes',    titulo: 'último mes',       dias: 30 },
+  { id: '3m', label: '3 meses',  titulo: 'últimos 3 meses',  dias: 90 },
+];
+
+const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+/**
+ * Arma los puntos del gráfico a partir de lo que devuelve el backend.
+ *
+ * El backend solo manda los periodos CON ventas; acá se rellenan los que no
+ * tuvieron. Sin eso, una semana sin ventas se vería como una línea continua
+ * entre dos días lejanos, sugiriendo ingresos que no existieron.
+ *
+ * Las fechas se parsean como locales (YYYY-MM-DD con new Date() se
+ * interpreta como UTC y, en Colombia, correría todo un día hacia atrás).
+ */
+function construirSerie(filas, dias, agrupacion) {
+  const porFecha = {};
+  (filas ?? []).forEach(f => { porFecha[f.fecha] = parseFloat(f.ingresos) || 0; });
+
+  const clave = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (agrupacion === 'semana') {
+    // El backend agrupa por lunes de la semana ISO; acá se reconstruye la
+    // misma grilla hacia atrás para que las claves coincidan.
+    const lunesDe = (f) => {
+      const d = new Date(f);
+      const diff = (d.getDay() + 6) % 7;   // 0 = lunes
+      d.setDate(d.getDate() - diff);
+      return d;
+    };
+    const semanas = Math.ceil(dias / 7);
+    const lunesActual = lunesDe(hoy);
+    return Array.from({ length: semanas }, (_, i) => {
+      const d = new Date(lunesActual);
+      d.setDate(lunesActual.getDate() - (semanas - 1 - i) * 7);
+      return {
+        dia: `${d.getDate()} ${MESES[d.getMonth()]}`,
+        ventas: porFecha[clave(d)] ?? 0,
+      };
+    });
+  }
+
+  return Array.from({ length: dias }, (_, i) => {
+    const d = new Date(hoy);
+    d.setDate(hoy.getDate() - (dias - 1 - i));
+    const esHoy = i === dias - 1;
+    return {
+      // En 7 días entran los nombres de día; en 30 se satura y se usa d/m.
+      dia: esHoy ? 'Hoy'
+         : dias <= 7 ? DIAS_SEMANA[d.getDay()]
+         : `${d.getDate()}/${d.getMonth() + 1}`,
+      ventas: porFecha[clave(d)] ?? 0,
+    };
+  });
+}
 
 const fmt = n => new Intl.NumberFormat('es-CO', {
   style: 'currency', currency: 'COP', maximumFractionDigits: 0,
@@ -97,13 +161,12 @@ function Calendario() {
         rows.forEach(v => {
           // Solo contar ventas completadas (ignorar anuladas)
           if (v.estado !== 'completada') return;
-          // Parsear día directo del string para evitar desfase UTC
-          const match = (v.creado_en ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-          if (!match) return;
-          const [, yy, mm, dd] = match;
-          // Validar que pertenece al mes/año correcto
-          if (parseInt(yy) !== año || parseInt(mm) !== mes + 1) return;
-          const dia = parseInt(dd, 10);
+          // creado_en viene en UTC; el día se toma en hora local para que
+          // coincida con la fecha que se muestra en la lista de ventas
+          const d = new Date(v.creado_en);
+          if (isNaN(d)) return;
+          if (d.getFullYear() !== año || d.getMonth() !== mes) return;
+          const dia = d.getDate();
           agrupado[dia] = (agrupado[dia] ?? 0) + 1;
         });
         setVentasPorDia(agrupado);
@@ -223,57 +286,58 @@ export default function Dashboard() {
   const [ventas,    setVentas]    = useState(null);
   const [stockBajo, setStockBajo] = useState([]);
   const [chartData,  setChartData]  = useState([]);
+  const [rango,      setRango]      = useState(RANGOS[0]);   // 7 días por defecto
+  const [cargandoChart, setCargandoChart] = useState(false);
   const [liveVentas, setLiveVentas] = useState(0); // contador en tiempo real
 
-  // WebSocket: escuchar eventos de ventas en tiempo real
-  useWebSocket((event) => {
-    if (event.type === 'crear_venta') {
-      setLiveVentas(n => n + 1);
-      // refrescar resumen de hoy automáticamente
-      ventasService.resumenHoy().then(r => {
-        setResumen(r.data.data ?? resumen);
-      }).catch(() => {});
-    }
-  });
+  // WebSocket: escuchar eventos de ventas en tiempo real.
+  // El callback va en useCallback con deps vacías a propósito: useWebSocket
+  // reabre la conexión cada vez que cambia la función que recibe, y un
+  // callback inline cambia de referencia en cada render — así el Dashboard
+  // se reconectaba en bucle. Por eso setResumen usa la forma funcional en
+  // vez de leer `resumen` del closure (que obligaría a declararlo dep).
+  const handleWsMessage = useCallback((event) => {
+    if (event.type !== 'crear_venta') return;
+    setLiveVentas(n => n + 1);
+    // refrescar resumen de hoy automáticamente
+    ventasService.resumenHoy()
+      .then(r => setResumen(prev => r.data.data ?? prev))
+      .catch(() => {});
+  }, []);
+
+  useWebSocket(handleWsMessage);
 
   useEffect(() => {
-    const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-    const hoyDate = new Date();
-
-    // Construir estructura de 7 días con 0s por defecto
-    const buildChart = (rows) => {
-      const porFecha = {};
-      (rows ?? []).forEach(row => {
-        porFecha[row.fecha] = parseFloat(row.ingresos);
-      });
-      return Array.from({ length: 7 }, (_, i) => {
-        const d = new Date(hoyDate);
-        d.setDate(hoyDate.getDate() - (6 - i));
-        const key = d.toISOString().slice(0, 10);
-        return {
-          dia: i === 6 ? 'Hoy' : DIAS[d.getDay()],
-          ventas: porFecha[key] ?? 0,
-        };
-      });
-    };
-
     Promise.all([
       ventasService.resumenHoy(),
       repuestosService.listar({ limit: 1 }),
       clientesService.listar({ limit: 1 }),
       ventasService.listar({ limit: 6 }),
       repuestosService.listar({ limit: 100 }),
-      api.get('/ventas/resumen/semana'),
-    ]).then(([r, rep, cli, v, allRep, semana]) => {
+    ]).then(([r, rep, cli, v, allRep]) => {
       setResumen(r.data.data ?? { total_ventas:0, ingresos:0, ticket_promedio:0 });
       setTotalRep(rep.data.total ?? 0);
       setTotalCli(cli.data.total ?? 0);
       setVentas(v.data.data ?? []);
       const bajo = (allRep.data.data ?? []).filter(r => r.stock <= r.stock_minimo);
       setStockBajo(bajo.slice(0, 4));
-      setChartData(buildChart(semana.data.data));
     }).catch(console.error);
   }, []);
+
+  // La serie del gráfico se carga aparte del resto del dashboard: cambiar el
+  // rango no tiene por qué recargar ventas, clientes ni stock bajo.
+  useEffect(() => {
+    let cancelado = false;
+    setCargandoChart(true);
+    api.get('/ventas/resumen/serie', { params: { dias: rango.dias } })
+      .then(r => {
+        if (cancelado) return;   // llegó tarde: el usuario ya cambió de rango
+        setChartData(construirSerie(r.data.data, rango.dias, r.data.agrupacion));
+      })
+      .catch(() => { if (!cancelado) setChartData([]); })
+      .finally(() => { if (!cancelado) setCargandoChart(false); });
+    return () => { cancelado = true; };
+  }, [rango]);
 
   const loading = resumen === null;
 
@@ -306,14 +370,11 @@ export default function Dashboard() {
           <div style={{fontSize:22,fontWeight:700}}>Dashboard</div>
           <div style={{fontSize:13,color:'var(--text-muted)',marginTop:2,textTransform:'capitalize'}}>{hoy}</div>
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          {liveVentas > 0 && (
-            <span style={{fontSize:12,color:'#0F6E56',background:'#E1F5EE',padding:'3px 10px',borderRadius:20}}>
-              +{liveVentas} {liveVentas === 1 ? 'venta nueva' : 'ventas nuevas'}
-            </span>
-          )}
-          <NotificationBell />
-        </div>
+        {liveVentas > 0 && (
+          <span style={{fontSize:12,color:'var(--success)',background:'var(--success-dim)',padding:'3px 10px',borderRadius:20}}>
+            +{liveVentas} {liveVentas === 1 ? 'venta nueva' : 'ventas nuevas'}
+          </span>
+        )}
       </div>
 
       {/* ── Stat cards ── */}
@@ -331,12 +392,18 @@ export default function Dashboard() {
         {/* Gráfica */}
         <div style={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:14,padding:'18px 20px'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-            <div style={{fontSize:14,fontWeight:600}}>Ingresos — últimos 7 días</div>
-            <select style={{
-              fontSize:11,background:'var(--bg-hover)',border:'1px solid var(--border)',
-              color:'var(--text-secondary)',borderRadius:6,padding:'3px 8px',cursor:'pointer',
-            }}>
-              <option>Últimos 7 días</option>
+            <div style={{fontSize:14,fontWeight:600}}>
+              Ingresos — {rango.titulo}
+              {cargandoChart && <span style={{fontSize:11,fontWeight:400,color:'var(--text-muted)'}}> · actualizando…</span>}
+            </div>
+            <select
+              value={rango.id}
+              onChange={e => setRango(RANGOS.find(r => r.id === e.target.value) ?? RANGOS[0])}
+              style={{
+                fontSize:11,background:'var(--bg-hover)',border:'1px solid var(--border)',
+                color:'var(--text-secondary)',borderRadius:6,padding:'3px 8px',cursor:'pointer',
+              }}>
+              {RANGOS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
             </select>
           </div>
           <ResponsiveContainer width="100%" height={190}>

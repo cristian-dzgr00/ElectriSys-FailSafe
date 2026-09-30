@@ -18,8 +18,11 @@ FROM nginx:1.25-alpine
 # Copiar build de React
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copiar config de NGINX
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+# Copiar config de NGINX. locations-electrisys.conf es obligatorio: el
+# server de nginx.conf lo incluye, y sin el archivo nginx no arranca.
+# En producción, docker-compose.prod.yml monta encima la version TLS.
+COPY nginx/nginx.conf                 /etc/nginx/nginx.conf
+COPY nginx/locations-electrisys.conf  /etc/nginx/locations-electrisys.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
