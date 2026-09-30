@@ -5,8 +5,11 @@ NLP_INTERNAL_KEY está configurado — evita que cualquiera dentro de la
 red de Docker pueda usar el microservicio; solo el backend PHP conoce
 la clave (ver backend/src/patterns/observer/GestorAsistente.php).
 """
+import logging
+import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
@@ -15,6 +18,7 @@ from app import config
 from app.demanda.forecast import predecir_demanda, predecir_demanda_lote
 from app.demanda.reabastecimiento import DIAS_COBERTURA, DIAS_ENTREGA, sugerir_pedido
 from app.intent.train import MODEL_PATH, entrenar
+from app.ner import agente_errores, dictionary
 from app.pipeline import procesar_consulta
 from app.asociacion.reglas import recomendar_complementos
 from app.busqueda.corrector import corregir
@@ -26,10 +30,23 @@ from app.recommender.client_backend import (
 from app.recommender.similares import recomendar_similares
 
 
+logger = logging.getLogger(__name__)
+
+
+def _sincronizar_tabla_errores() -> None:
+    try:
+        logger.info("Sincronización de la tabla de errores: %s", agente_errores.sincronizar_catalogo())
+    except Exception as e:  # nunca debe tumbar el arranque
+        logger.warning("No se pudo sincronizar la tabla de errores: %s", e)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if not Path(MODEL_PATH).exists():
         entrenar()
+    # En segundo plano: si el backend no responde, el servicio arranca igual
+    # y la sincronización se repite cada vez que dictionary.py refresca.
+    threading.Thread(target=_sincronizar_tabla_errores, daemon=True).start()
     yield
 
 
@@ -39,6 +56,12 @@ app = FastAPI(title="ElectriSys NLP Service", version="0.5.0", lifespan=lifespan
 class ConsultaRequest(BaseModel):
     texto: str = Field(..., min_length=1, max_length=1000)
     contexto_previo: dict | None = None
+
+
+class RegistrarErroresRequest(BaseModel):
+    tipo: Literal["marca", "modelo"]
+    nombre: str = Field(..., min_length=1, max_length=80)
+    marca: str | None = Field(default=None, max_length=80)
 
 
 class SugerenciaPedidoRequest(BaseModel):
@@ -64,6 +87,23 @@ def health():
 @app.post("/nlp/consultar", dependencies=[Depends(_verificar_clave_interna)])
 def consultar(payload: ConsultaRequest):
     return procesar_consulta(payload.texto, payload.contexto_previo)
+
+
+@app.post("/nlp/errores/registrar", dependencies=[Depends(_verificar_clave_interna)])
+def registrar_errores(payload: RegistrarErroresRequest):
+    """Genera los posibles errores de escritura de una marca o modelo nuevo.
+
+    Lo llama el backend PHP al crear un vehículo (ErroresNlpObserver). Al
+    responder, el nombre ya es buscable con sus errores; se invalida la
+    caché del catálogo para que la próxima consulta traiga el nombre nuevo
+    del backend y no lo descarte por "no existe en el catálogo".
+    """
+    try:
+        resumen = agente_errores.registrar_nombre(payload.tipo, payload.nombre, marca=payload.marca)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+    dictionary.invalidar_cache()
+    return resumen
 
 
 @app.get("/recomendaciones/{repuesto_id}", dependencies=[Depends(_verificar_clave_interna)])

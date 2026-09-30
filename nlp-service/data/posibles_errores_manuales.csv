@@ -1,0 +1,17 @@
+tipo,error,correcto,nivel,origen,nota
+marca,chevy,Chevrolet,2,manual,apodo
+marca,cheby,Chevrolet,2,manual,apodo
+marca,kya,Kia,1,manual,tipeo
+marca,kiya,Kia,2,manual,fonético
+marca,quia,Kia,2,manual,fonético
+marca,kia motors,Kia,2,manual,apodo
+marca,reno,Renault,2,manual,fonético extranjero
+marca,renol,Renault,2,manual,fonético extranjero
+marca,yundai,Hyundai,2,manual,fonético extranjero
+marca,jiundai,Hyundai,2,manual,fonético extranjero
+marca,susuki,Suzuki,2,manual,fonético
+modelo,ryo,Rio,2,manual,fonético
+modelo,cx5,CX-5,1,manual,espacio
+modelo,jilux,Hilux,2,manual,fonético
+modelo,jilus,Hilux,2,manual,fonético
+categoria,trasmision,Transmisión,1,manual,fonético

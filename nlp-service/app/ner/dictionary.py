@@ -12,11 +12,13 @@ año/motor/combustible se siguen extrayendo por regex de todas formas, solo
 marca/modelo/categoría quedan sin reconocer.
 """
 import logging
+import threading
 import time
 
 import httpx
 
 from app.config import BACKEND_URL, backend_auth_headers
+from app.ner import agente_errores
 
 logger = logging.getLogger(__name__)
 
@@ -42,12 +44,35 @@ def _obtener_con_cache(clave: str, cargar_fn) -> list[str]:
     try:
         valores = cargar_fn()
         _cache[clave] = (ahora + _TTL_SEGUNDOS, valores)
+        _avisar_agente_errores(clave, valores)
         return valores
     except Exception as e:
         logger.warning("No se pudo refrescar '%s' desde el backend: %s", clave, e)
         if clave in _cache:
             return _cache[clave][1]  # mejor un valor viejo que nada
         return []
+
+
+def _avisar_agente_errores(clave: str, valores: list[str]) -> None:
+    """Red de seguridad de la tabla de errores: cada refresco del catálogo
+    registra los nombres que todavía no tienen errores generados (por si el
+    aviso directo del backend a /nlp/errores/registrar falló).
+
+    En un hilo aparte para no sumarle latencia a la consulta que disparó el
+    refresco.
+    """
+    if clave == "marcas":
+        tipo = "marca"
+    elif clave == "categorias":
+        tipo = "categoria"
+    elif clave.startswith("modelos:"):
+        tipo = "modelo"
+    else:
+        return
+    if valores:
+        threading.Thread(
+            target=agente_errores.sincronizar_catalogo, args=({tipo: list(valores)},), daemon=True
+        ).start()
 
 
 def obtener_marcas() -> list[str]:

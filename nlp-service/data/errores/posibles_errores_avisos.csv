@@ -1,0 +1,84 @@
+tipo,error,correcto,nivel,motivo
+categoria,bateria,Baterías,1,palabra común del español
+categoria,correa y bandas,Correas y Bandas,1,palabra común del español
+categoria,correas y banda,Correas y Bandas,1,palabra común del español
+categoria,bandas,Correas y Bandas,2,palabra común del español
+categoria,correas,Correas y Bandas,2,palabra común del español
+categoria,correa y banda,Correas y Bandas,3,palabra común del español
+categoria,encendida,Encendido,1,palabra común del español
+categoria,filtro,Filtros,1,palabra común del español
+categoria,filos,Filtros,3,palabra común del español
+categoria,litros,Filtros,3,palabra común del español
+categoria,freno,Frenos,1,palabra común del español
+categoria,frena,Frenos,3,palabra común del español
+categoria,moto,Motor,1,palabra común del español
+categoria,motora,Motor,1,palabra común del español
+categoria,motos,Motor,1,palabra común del español
+categoria,rotor,Motor,1,palabra común del español
+categoria,otro,Motor,3,palabra común del español
+categoria,trans,Transmisión,2,palabra común del español
+marca,foro,Ford,1,palabra común del español
+marca,fort,Ford,1,palabra común del español
+marca,lord,Ford,1,palabra común del español
+marca,masa,Mazda,3,palabra común del español
+marca,nada,Mazda,3,palabra común del español
+marca,nisa,Nissan,3,palabra común del español
+marca,reo,Renault,3,a un paso del nombre oficial 'Rio'
+marca,rno,Renault,3,a un paso del nombre oficial 'Rio'
+marca,toyta,Toyota,1,palabra común del español
+modelo,ave,Aveo,1,palabra común del español
+modelo,aveno,Aveo,1,palabra común del español
+modelo,aves,Aveo,1,palabra común del español
+modelo,veo,Aveo,1,palabra común del español
+modelo,rolla,Corolla,3,palabra común del español
+modelo,buster,Duster,1,palabra común del español
+modelo,escapa,Escape,1,palabra común del español
+modelo,escapo,Escape,1,palabra común del español
+modelo,cape,Escape,3,palabra común del español
+modelo,fiest,Fiesta,1,palabra común del español
+modelo,fiestas,Fiesta,1,palabra común del español
+modelo,cuesta,Fiesta,3,palabra común del español
+modelo,esta,Fiesta,3,palabra común del español
+modelo,fori,Fortuner,2,a un paso del nombre oficial 'Ford'
+modelo,fory,Fortuner,2,a un paso del nombre oficial 'Ford'
+modelo,lux,Hilux,3,palabra común del español
+modelo,lona,Logan,3,palabra común del español
+modelo,centra,Sentra,1,palabra común del español
+modelo,entra,Sentra,1,palabra común del español
+modelo,sentar,Sentra,1,palabra común del español
+modelo,serta,Sentra,3,palabra común del español
+modelo,spar,Spark,1,palabra común del español
+modelo,sparkg,Spark,1,a un paso del nombre oficial 'Spark GT'
+modelo,sparkt,Spark,1,a un paso del nombre oficial 'Spark GT'
+modelo,par,Spark,3,palabra común del español
+modelo,spar gt,Spark GT,1,palabra común del español
+modelo,sparkg,Spark GT,1,a un paso del nombre oficial 'Spark'
+modelo,sparkt,Spark GT,1,a un paso del nombre oficial 'Spark'
+modelo,spark,Spark GT,2,igual al nombre oficial 'Spark'
+modelo,par gt,Spark GT,3,palabra común del español
+modelo,portaje,Sportage,3,palabra común del español
+modelo,sport,Sportage,3,palabra común del español
+modelo,sporte,Sportage,3,palabra común del español
+modelo,suif,Swift,3,palabra común del español
+modelo,tucan,Tucson,3,palabra común del español
+categoria,feno,Frenos,3,apunta a dos nombres distintos
+marca,feno,Renault,3,apunta a dos nombres distintos
+categoria,reno,Frenos,3,apunta a dos nombres distintos
+categoria,rreno,Frenos,3,apunta a dos nombres distintos
+marca,rreno,Renault,3,apunta a dos nombres distintos
+modelo,fornter,Fortuner,3,apunta a dos nombres distintos
+modelo,fornter,Frontier,3,apunta a dos nombres distintos
+modelo,forntuer,Fortuner,3,apunta a dos nombres distintos
+modelo,forntuer,Frontier,3,apunta a dos nombres distintos
+modelo,fortier,Fortuner,3,apunta a dos nombres distintos
+modelo,fortier,Frontier,3,apunta a dos nombres distintos
+modelo,fortnier,Fortuner,3,apunta a dos nombres distintos
+modelo,fortnier,Frontier,3,apunta a dos nombres distintos
+modelo,frotiner,Fortuner,3,apunta a dos nombres distintos
+modelo,frotiner,Frontier,3,apunta a dos nombres distintos
+modelo,frotner,Fortuner,3,apunta a dos nombres distintos
+modelo,frotner,Frontier,3,apunta a dos nombres distintos
+modelo,frotnuer,Fortuner,3,apunta a dos nombres distintos
+modelo,frotnuer,Frontier,3,apunta a dos nombres distintos
+modelo,frotuer,Fortuner,3,apunta a dos nombres distintos
+modelo,frotuer,Frontier,3,apunta a dos nombres distintos
