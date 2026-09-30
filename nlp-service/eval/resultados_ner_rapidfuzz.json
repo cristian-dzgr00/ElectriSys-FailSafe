@@ -1,0 +1,951 @@
+{
+  "ner_por_campo": {
+    "categoria": {
+      "acierto": 293,
+      "no_acierto": 107
+    },
+    "marca": {
+      "acierto": 400,
+      "no_acierto": 0
+    },
+    "modelo": {
+      "acierto": 376,
+      "no_acierto": 24
+    },
+    "motor": {
+      "acierto": 151,
+      "no_acierto": 0
+    },
+    "anio": {
+      "acierto": 232,
+      "no_acierto": 0
+    },
+    "codigo": {
+      "acierto": 99,
+      "no_acierto": 0
+    },
+    "combustible": {
+      "acierto": 109,
+      "no_acierto": 0
+    }
+  },
+  "categoria_por_grupo": {
+    "directa": {
+      "acierto": 293,
+      "no_acierto": 0
+    },
+    "significado": {
+      "acierto": 0,
+      "no_acierto": 107
+    }
+  },
+  "reales_limpias": {
+    "marca": {
+      "con_entidad": {
+        "acierto": 80,
+        "no_acierto": 0
+      },
+      "sin_entidad": {
+        "acierto": 317,
+        "no_acierto": 0
+      }
+    },
+    "modelo": {
+      "con_entidad": {
+        "acierto": 119,
+        "no_acierto": 1
+      },
+      "sin_entidad": {
+        "acierto": 277,
+        "no_acierto": 0
+      }
+    }
+  },
+  "n_frases_reales": 397,
+  "frases_reales_excluidas": [
+    "Busco bujías para un Chevrolet Spark GT 2018",
+    "¿Sirve pa un Chevrolet Spark GT 2018 esta caja de dirección?",
+    "¿Aplica esta bujia para toyta corolla 2017?",
+    "sirve esto para un renault logan o solo duster"
+  ],
+  "rapidfuzz": {
+    "marca": {
+      "0": {
+        "acierto": 80,
+        "no_acierto": 0
+      },
+      "1": {
+        "acierto": 215,
+        "no_acierto": 25
+      },
+      "2": {
+        "acierto": 181,
+        "no_acierto": 59
+      }
+    },
+    "modelo": {
+      "0": {
+        "acierto": 115,
+        "no_acierto": 1
+      },
+      "1": {
+        "acierto": 323,
+        "no_acierto": 25
+      },
+      "2": {
+        "acierto": 285,
+        "no_acierto": 63
+      }
+    },
+    "categoria": {
+      "0": {
+        "acierto": 82,
+        "no_acierto": 0
+      },
+      "1": {
+        "acierto": 229,
+        "no_acierto": 23
+      },
+      "2": {
+        "acierto": 216,
+        "no_acierto": 36
+      }
+    }
+  },
+  "rapidfuzz_nombre_corto_vs_largo_1_error": {
+    "corto": {
+      "acierto": 80,
+      "no_acierto": 49
+    },
+    "largo": {
+      "acierto": 458,
+      "no_acierto": 1
+    }
+  },
+  "ejemplos_fallos_rapidfuzz": [
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "no hay bujias ngk para kiu rio 2017 cual puedo ofrecer en su lugar",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "no hay bujias ngk para kia roi 2017 cual puedo ofrecer en su lugar",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "no hay bujias ngk para kia ieo 2017 cual puedo ofrecer en su lugar",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "necesito una opcion distinta al amortiguador monroe para fprdd escape 2015 porque no hay stock",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "con que puedo sustituir el kit de embrague original de chevrolet aov 2016",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "no hay stock de la bateria para el aveii que le puedo vender al cliente",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "necesito un radiador para mazda x 5 2019",
+      "esperado": "CX-5",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "tienen la correa poly v para un ika sportage 2020",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "a como esta el kit de embrague de avwp",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cuanto vale la bateria mac para uark",
+      "esperado": "Spark",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "el amortiguador monroe aplica tambien para el firdd escape 2015",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "me confirma si esta bomba de agua funciona en un nissan frotuer 2018",
+      "esperado": "Frontier",
+      "obtenido": "Fortuner"
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "es compatible el radiador con el mazda cxe 5 2019 y tambien con el cx 3",
+      "esperado": "CX-5",
+      "obtenido": "3"
+    },
+    {
+      "campo": "marca",
+      "errores": 1,
+      "texto": "la bobina de encendido aplica para ia sportage 2020",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "la bobina de encendido aplica para kkis sportage 2020",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 1,
+      "texto": "le sirve esta banda poly v a un kai rio 2017",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "le sirve esta banda poly v a un kii rio 2017",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "le sirve esta banda poly v a un kia eo 2017",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "sirve este sensor abs para un foedd fiesta 2015",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "funciona este switch de luces en un kioa picanto 2019",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "quiero saber si esta parte aplica pa una camioneta ifrd ranger 2019",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cuanto vale un radiador para mazda cco 5 2019",
+      "esperado": "CX-5",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "deme el valor del kit de suspension para feod fiesta 2015",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 1,
+      "texto": "cual es el costo de las bujias ngk para uia rio",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "cual es el costo de las bujias ngk para a rio",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "cual es el costo de las bujias ngk para kia ro",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cual es el costo de las bujias ngk para kia ruoo",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "precio del sensor abs para ffod fiesta por favor",
+      "esperado": "Ford",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cuanto cuesta el kit de embrague completo de la seo automatica",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cual es el precio del rodamiento delantero de la alux 4x4",
+      "esperado": "Hilux",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "a cuanto esta el actuador de embrague del siwat automatico",
+      "esperado": "Swift",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "hay disponibilidad del radiador para xc 5 2019",
+      "esperado": "CX-5",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "cuantas unidades hay del kit de embrague de auro",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "esta agotado el kit de embrague de la ave automatica",
+      "esperado": "Aveo",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "tienen radiador para mazda x 5 2019",
+      "esperado": "CX-5",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "busco un kit de suspension para ford esta 2015",
+      "esperado": "Fiesta",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 2,
+      "texto": "tienen correa poly v para ua sportage 2020",
+      "esperado": "Kia",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 1,
+      "texto": "estoy buscando bujias ngk para un io",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "modelo",
+      "errores": 2,
+      "texto": "estoy buscando bujias ngk para un r",
+      "esperado": "Rio",
+      "obtenido": null
+    },
+    {
+      "campo": "marca",
+      "errores": 1,
+      "texto": "tienen switch de luces para ki picanto 2019",
+      "esperado": "Kia",
+      "obtenido": null
+    }
+  ],
+  "rapidfuzz_por_tipo_error": {
+    "borrar": {
+      "acierto": 496,
+      "no_acierto": 92
+    },
+    "duplicar": {
+      "acierto": 588,
+      "no_acierto": 0
+    },
+    "sustituir": {
+      "acierto": 507,
+      "no_acierto": 81
+    },
+    "transponer": {
+      "acierto": 552,
+      "no_acierto": 36
+    }
+  },
+  "formatos_alternativos": [
+    {
+      "campo": "motor",
+      "texto": "hilux 2.7 gasolina",
+      "esperado": "2.7",
+      "obtenido": "2.7",
+      "acierto": true
+    },
+    {
+      "campo": "motor",
+      "texto": "hilux 2,7 gasolina",
+      "esperado": "2.7",
+      "obtenido": null,
+      "acierto": false
+    },
+    {
+      "campo": "motor",
+      "texto": "hilux 2.7L",
+      "esperado": "2.7",
+      "obtenido": null,
+      "acierto": false
+    },
+    {
+      "campo": "motor",
+      "texto": "hilux 2.7 litros",
+      "esperado": "2.7",
+      "obtenido": "2.7",
+      "acierto": true
+    },
+    {
+      "campo": "motor",
+      "texto": "logan 1,6",
+      "esperado": "1.6",
+      "obtenido": null,
+      "acierto": false
+    },
+    {
+      "campo": "motor",
+      "texto": "logan de 1600 cc",
+      "esperado": "1600cc",
+      "obtenido": "1600cc",
+      "acierto": true
+    },
+    {
+      "campo": "motor",
+      "texto": "logan 1600cc",
+      "esperado": "1600cc",
+      "obtenido": "1600cc",
+      "acierto": true
+    },
+    {
+      "campo": "anio",
+      "texto": "logan 2018",
+      "esperado": 2018,
+      "obtenido": 2018,
+      "acierto": true
+    },
+    {
+      "campo": "anio",
+      "texto": "logan modelo 2018",
+      "esperado": 2018,
+      "obtenido": 2018,
+      "acierto": true
+    },
+    {
+      "campo": "anio",
+      "texto": "logan del 18",
+      "esperado": 2018,
+      "obtenido": null,
+      "acierto": false
+    },
+    {
+      "campo": "anio",
+      "texto": "logan 2018-2021",
+      "esperado": 2018,
+      "obtenido": 2018,
+      "acierto": true
+    },
+    {
+      "campo": "codigo",
+      "texto": "el HP-1002",
+      "esperado": "HP-1002",
+      "obtenido": "HP-1002",
+      "acierto": true
+    },
+    {
+      "campo": "codigo",
+      "texto": "el hp 1002",
+      "esperado": "HP-1002",
+      "obtenido": null,
+      "acierto": false
+    },
+    {
+      "campo": "codigo",
+      "texto": "el HP1002",
+      "esperado": "HP-1002",
+      "obtenido": null,
+      "acierto": false
+    },
+    {
+      "campo": "codigo",
+      "texto": "el 90915-YZZD4",
+      "esperado": "90915-YZZD4",
+      "obtenido": "90915-YZZD4",
+      "acierto": true
+    },
+    {
+      "campo": "combustible",
+      "texto": "logan diesel",
+      "esperado": "diesel",
+      "obtenido": "diesel",
+      "acierto": true
+    },
+    {
+      "campo": "combustible",
+      "texto": "logan diésel",
+      "esperado": "diesel",
+      "obtenido": "diesel",
+      "acierto": true
+    },
+    {
+      "campo": "combustible",
+      "texto": "logan a gasolina",
+      "esperado": "gasolina",
+      "obtenido": "gasolina",
+      "acierto": true
+    },
+    {
+      "campo": "combustible",
+      "texto": "logan a gas",
+      "esperado": "gas",
+      "obtenido": "gas",
+      "acierto": true
+    },
+    {
+      "campo": "combustible",
+      "texto": "logan acpm",
+      "esperado": "diesel",
+      "obtenido": null,
+      "acierto": false
+    }
+  ],
+  "intencion_con_tipeo": {
+    "0": {
+      "acierto": 333,
+      "no_acierto": 68
+    },
+    "1": {
+      "acierto": 307,
+      "no_acierto": 94
+    },
+    "2": {
+      "acierto": 267,
+      "no_acierto": 134
+    }
+  },
+  "fallos_generadas": [
+    {
+      "texto": "busco bujias para chevrolet spark gt",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "necesito rotula superior para nissan sentra",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por kit de embrague para nissan frontier 2020",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "busco balatas para kia sportage 2021 2.0",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿hay correa de distribucion para ford escape 2024 3.0 codigo 90915-YZZD4",
+      "campo": "modelo",
+      "esperado": "Escape",
+      "obtenido": "3"
+    },
+    {
+      "texto": "quiero cotizar balatas para un mazda 3 2017 codigo HP-1002",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿hay rotula superior para toyota corolla 2005 2.7",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen rotula superior para toyota corolla 2023 hibrido",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "quiero cotizar correa de distribucion para un nissan frontier 3.0 gas",
+      "campo": "modelo",
+      "esperado": "Frontier",
+      "obtenido": "3"
+    },
+    {
+      "texto": "busco amortiguadores para un kia rio 2013 hibrido",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "quiero cotizar rotula superior para un toyota corolla 2005 2.7 gasolina",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por balatas para kia sportage",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta kit de embrague para un kia rio 1600cc gasolina",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta amortiguadores para un mazda 3 gasolina",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta amortiguadores para hyundai accent 2005 gasolina",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta kit de embrague para un mazda cx-5 3.0",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta kit de embrague para un mazda cx-5 3.0",
+      "campo": "modelo",
+      "esperado": "CX-5",
+      "obtenido": "3"
+    },
+    {
+      "texto": "quiero cotizar balatas para ford fiesta 2018 1.4",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen amortiguadores para renault logan 2016 gasolina codigo M1-102",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "necesito kit de embrague para suzuki swift 2022 1.4",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "quiero cotizar bateria para chevrolet spark gt 150cc diesel",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "pregunto por bateria para chevrolet spark gt 2022 diesel codigo 90915-YZZD4",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "quiero cotizar amortiguadores para nissan sentra 2011",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen rotula superior para renault logan 2020 2.0",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿hay kit de embrague para ford fiesta",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿hay kit de embrague para chevrolet spark 2007 codigo M1-102",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "quiero cotizar rotula superior para kia rio 2007 gas",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "busco kit de embrague para toyota hilux",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta balatas para kia sportage codigo AB-1234",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "busco kit de embrague para toyota hilux gas",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por amortiguadores para un toyota hilux 2007 1.6 gasolina",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por rotula superior para un suzuki swift 1600cc gasolina",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por amortiguadores para un chevrolet spark 150cc diesel",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta balatas para kia sportage 2005",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta discos de freno para chevrolet spark gt 2005 1.6",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "busco amortiguadores para un renault logan 150cc codigo M1-102",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "busco balatas para hyundai accent",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta baterias para ford escape 2024 3.0 codigo FO-3011",
+      "campo": "modelo",
+      "esperado": "Escape",
+      "obtenido": "3"
+    },
+    {
+      "texto": "me hace falta rotula superior para un chevrolet aveo 2019",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta correa de distribucion para chevrolet spark gt",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "¿hay bujias para un chevrolet spark gt 2013 1.6 codigo AB-1234",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "¿tienen balatas para nissan sentra",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta bujias para hyundai tucson 3.0",
+      "campo": "modelo",
+      "esperado": "Tucson",
+      "obtenido": "3"
+    },
+    {
+      "texto": "pregunto por rotula superior para toyota corolla",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por kit de embrague para un chevrolet spark 2017 codigo AB-1234",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "busco kit de embrague para hyundai accent 150cc",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta kit de embrague para suzuki swift 2008 gasolina codigo 90915-YZZD4",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen balatas para ford escape 2013 gasolina",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "necesito kit de embrague para suzuki swift 2005 hibrido codigo FG-FF5320",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por balatas para un chevrolet spark 2015",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿cuánto cuesta rotula superior para renault duster 2022 gas codigo 90915-YZZD4",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "me hace falta caja de transmision para chevrolet spark gt",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    },
+    {
+      "texto": "¿tienen amortiguadores para mazda 3 2009 codigo 90915-YZZD4",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen rotula superior para mazda cx-5 2016",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "necesito amortiguadores para un toyota hilux 2016 1.6",
+      "campo": "categoria",
+      "esperado": "Suspensión",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen kit de embrague para mazda 3 2011",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por balatas para nissan frontier 2006 1.4",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "¿tienen balatas para un suzuki swift 2020 gas",
+      "campo": "categoria",
+      "esperado": "Frenos",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por kit de embrague para un chevrolet spark gt hibrido",
+      "campo": "categoria",
+      "esperado": "Transmisión",
+      "obtenido": null
+    },
+    {
+      "texto": "pregunto por kit de embrague para un chevrolet spark gt hibrido",
+      "campo": "modelo",
+      "esperado": "Spark GT",
+      "obtenido": "Spark"
+    }
+  ],
+  "fallos_reales": [
+    {
+      "texto": "¿Es compatible el radiador con el Mazda CX-5 2019 y también con el CX-3?",
+      "campo": "modelo",
+      "esperado": "CX-5",
+      "obtenido": "3"
+    }
+  ]
+}
