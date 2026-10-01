@@ -80,6 +80,9 @@ app 12_nlp_dataset.sql
 app 13_posibles_errores.sql
 app 14_seed_posibles_errores.sql
 
+# Índices sobre las columnas de FK que no tenían (bloqueos y JOIN).
+app 15_indices_fk.sql
+
 # Backup: el DIRECTORY lo crea SYSDBA; el package corre como la aplicación.
 sysdba backup/10_directorio_backup_sysdba.sql
 app    backup/11_pkg_backup_plsql.sql
