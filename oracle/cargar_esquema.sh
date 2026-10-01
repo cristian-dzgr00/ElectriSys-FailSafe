@@ -29,6 +29,10 @@ set -e
 
 PDB="${PDB:-freepdb1}"
 DIR="$(dirname "$0")"
+# Los scripts tienen tildes (seed, dataset del asistente). La imagen
+# gvenzl/oracle-free ya define NLS_LANG así; se fija igual por si se usa
+# otra imagen o una instalación nativa, donde el default rompe las tildes.
+export NLS_LANG="${NLS_LANG:-.AL32UTF8}"
 
 if [ -z "${DB_PASS:-}" ]; then
     echo "ERROR: falta DB_PASS (contraseña del usuario electrisys)." >&2
@@ -69,6 +73,12 @@ sysdba 09_usuarios_demo_sysdba.sql
 
 # Módulo de pedidos a proveedor (Sprint 2).
 app 10_pedidos.sql
+
+# Asistente NLP: dataset de intenciones + evaluación (12) y tabla de
+# posibles errores de escritura del NER (13 DDL, 14 carga inicial).
+app 12_nlp_dataset.sql
+app 13_posibles_errores.sql
+app 14_seed_posibles_errores.sql
 
 # Backup: el DIRECTORY lo crea SYSDBA; el package corre como la aplicación.
 sysdba backup/10_directorio_backup_sysdba.sql

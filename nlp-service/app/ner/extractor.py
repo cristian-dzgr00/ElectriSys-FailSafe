@@ -11,13 +11,16 @@ matching no depende de esos detalles. Para año y motor se usa el texto
 ORIGINAL: normalizar() quita el punto de "2.7" (queda "2 7"), lo que
 rompería la regex del motor.
 
-Tabla de posibles errores (data/errores/posibles_errores.csv): antes de la
-lógica fuzzy de siempre, marca/modelo/categoría se buscan en una tabla de
-formas mal escritas ya conocidas ("jilus" -> "Hilux"), generada por
-generador_errores.py y mantenida al día por agente_errores.py. Si la
-tabla está vacía o no existe, el resultado es exactamente el de antes.
+Tabla de posibles errores: antes de la lógica fuzzy de siempre,
+marca/modelo/categoría se buscan en una tabla de formas mal escritas ya
+conocidas ("jilus" -> "Hilux"), generada por generador_errores.py y
+mantenida al día por agente_errores.py. Vive en Oracle (POSIBLES_ERRORES)
+y se carga una vez a memoria; si Oracle no responde se usa el CSV de
+respaldo (data/errores/posibles_errores.csv). Si la tabla está vacía o no
+existe, el resultado es exactamente el de antes.
 """
 import csv
+import logging
 import os
 import re
 import threading
@@ -26,8 +29,11 @@ from pathlib import Path
 from rapidfuzz import fuzz, process
 from rapidfuzz.distance import DamerauLevenshtein
 
+from app.ner import repositorio_oracle
 from app.ner.generador_errores import TIPOS, clave_fonetica, es_palabra_comun
 from app.preprocessing import normalizar
+
+logger = logging.getLogger(__name__)
 
 UMBRAL_FUZZY = 85  # 0-100; token_set_ratio es permisivo, se exige bastante certeza
 
@@ -79,6 +85,7 @@ MARGEN_AMBIGUEDAD_TABLA = 3  # puntos de fuzz.ratio
 MARGEN_AMBIGUEDAD_SIMILITUD = 0.05
 
 _tabla_en_memoria: dict | None = None
+_origen_tabla: str | None = None  # "oracle" | "csv": de dónde salió la tabla en memoria
 _lock_tabla = threading.Lock()
 _indices_fuzzy: dict[int, tuple[dict, dict]] = {}
 
@@ -148,14 +155,40 @@ def cargar_tabla_errores(ruta=None) -> dict:
     return tabla
 
 
+def _cargar_tabla_preferida() -> tuple[dict, str]:
+    """Oracle primero; el CSV si Oracle no está configurado, no responde o
+    tiene la tabla vacía (esquema creado sin 14_seed_posibles_errores.sql)."""
+    if repositorio_oracle.configurado():
+        try:
+            tabla = repositorio_oracle.cargar()
+            if tabla:
+                return tabla, "oracle"
+            logger.warning("POSIBLES_ERRORES está vacía en Oracle: se usa el CSV de respaldo")
+        except Exception as e:  # cualquier fallo de red o de base: no tumbar el NER
+            logger.warning("Oracle no respondió al cargar POSIBLES_ERRORES (%s): se usa el CSV", e)
+    return cargar_tabla_errores(), "csv"
+
+
 def obtener_tabla_errores() -> dict:
-    """La tabla en memoria (se carga del CSV la primera vez)."""
-    global _tabla_en_memoria
+    """La tabla en memoria. Se carga una sola vez (de Oracle o del CSV).
+
+    Es una caché completa y no una consulta por palabra: cada frase genera
+    entre 20 y 60 candidatos por tipo, y un viaje a Oracle por candidato
+    pasaría de ~0,6 ms a decenas de milisegundos por frase. Las altas
+    nuevas llegan a la memoria por el agente (reemplazar_tabla_errores).
+    """
+    global _tabla_en_memoria, _origen_tabla
     if _tabla_en_memoria is None:
         with _lock_tabla:
             if _tabla_en_memoria is None:
-                _tabla_en_memoria = cargar_tabla_errores()
+                _tabla_en_memoria, _origen_tabla = _cargar_tabla_preferida()
+                logger.info("Tabla de errores cargada desde %s: %d filas", _origen_tabla,
+                            sum(len(v) for v in _tabla_en_memoria.values()))
     return _tabla_en_memoria
+
+
+def origen_tabla_errores() -> str | None:
+    return _origen_tabla
 
 
 def reemplazar_tabla_errores(nueva: dict) -> None:

@@ -136,6 +136,13 @@ services:
       BACKEND_URL:      "http://frontend"
       JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
       NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
+      # Tabla POSIBLES_ERRORES del NER (oracle/13 y 14). Mismo usuario que el
+      # backend. Si Oracle no responde, el NLP usa el CSV del volumen de abajo.
+      DB_HOST:          oracle-db
+      DB_PORT:          "1521"
+      DB_SERVICE_NAME:  FREEPDB1
+      DB_USER:          electrisys
+      DB_PASS:          "${DB_PASS:?falta en docker/.env}"
     volumes:
       # Tabla de posibles errores del NER (la mantiene app/ner/agente_errores.py).
       # Solo data/errores/ y no data/ entera: un volumen sobre data/ taparía el

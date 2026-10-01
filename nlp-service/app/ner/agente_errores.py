@@ -14,9 +14,13 @@ Se entera por dos vías:
    que dictionary.py refresca su caché, como red de seguridad si el aviso
    directo falló (backend sin red hacia el microservicio, servicio caído).
 
-Persistencia: data/errores/ se monta como volumen en docker-compose. Aunque
-se perdiera, las filas "auto" se regeneran solas porque el generador es
-determinista; las "manual" vienen versionadas en data/posibles_errores_manuales.csv.
+Persistencia: la tabla vive en Oracle (POSIBLES_ERRORES, oracle/13 y 14);
+cada cambio se escribe con MERGE. El CSV de data/errores/ (volumen en
+docker-compose) es la copia de respaldo: se reescribe en cada cambio y es
+lo que se usa si Oracle no responde. Si Oracle falla al guardar, el cambio
+queda pendiente y se reconcilia en la próxima sincronización. Aunque se
+perdieran ambos, las filas "auto" se regeneran solas (el generador es
+determinista); las "manual" vienen en data/posibles_errores_manuales.csv.
 
 Uso manual (regenerar la tabla del catálogo semilla):
     python -m app.ner.agente_errores
@@ -29,7 +33,7 @@ import threading
 import time
 from pathlib import Path
 
-from app.ner import extractor
+from app.ner import extractor, repositorio_oracle
 from app.ner.generador_errores import (
     COLUMNAS,
     COLUMNAS_AVISOS,
@@ -75,6 +79,7 @@ PARES_SEMILLA = {
 
 _lock = threading.RLock()
 _estado: dict | None = None  # {"filas": {error: fila}, "avisos": [...], "nombres": {(tipo, norm): original}}
+_oracle_pendiente = False  # hubo cambios que no llegaron a Oracle
 
 
 def _leer_csv(ruta: Path) -> list[dict]:
@@ -126,11 +131,26 @@ def _tabla_para_extractor(filas: dict) -> dict:
     return tabla
 
 
+def _filas_de_origen() -> list[dict]:
+    """Filas de Oracle (fuente de verdad) o del CSV si Oracle no está disponible."""
+    global _oracle_pendiente
+    if repositorio_oracle.configurado():
+        try:
+            filas = repositorio_oracle.cargar_filas()
+            if filas:
+                return filas
+            _oracle_pendiente = True  # tabla vacía: la sincronización la llena desde el CSV
+        except Exception as e:
+            logger.warning("Oracle no respondió al leer POSIBLES_ERRORES (%s): se usa el CSV", e)
+            _oracle_pendiente = True
+    return _leer_csv(RUTA_TABLA)
+
+
 def _cargar_estado() -> dict:
-    """Estado en memoria a partir del CSV (se lee una sola vez)."""
+    """Estado en memoria a partir de Oracle o del CSV (se lee una sola vez)."""
     global _estado
     if _estado is None:
-        filas = {f["error"]: f for f in _leer_csv(RUTA_TABLA) if f.get("tipo") in TIPOS and f.get("error")}
+        filas = {f["error"]: f for f in _filas_de_origen() if f.get("tipo") in TIPOS and f.get("error")}
         avisos = _leer_csv(RUTA_AVISOS)
         nombres = {(f["tipo"], normalizar(f["correcto"])): f["correcto"] for f in filas.values()}
         _estado = {"filas": filas, "avisos": avisos, "nombres": nombres}
@@ -147,6 +167,20 @@ def _guardar_y_publicar(estado: dict) -> None:
     extractor.reemplazar_tabla_errores(_tabla_para_extractor(estado["filas"]))
 
 
+def _publicar_en_oracle(agregadas: list[dict], borradas: list[tuple[str, str]]) -> None:
+    """Lleva el cambio a Oracle con MERGE. Si la base no responde, el cambio
+    ya quedó en el CSV y en memoria: se marca pendiente y lo reconcilia
+    sincronizar_catalogo() más tarde. Nunca hace fallar el registro."""
+    global _oracle_pendiente
+    if not repositorio_oracle.configurado():
+        return
+    try:
+        repositorio_oracle.guardar(agregadas, borrar=borradas)
+    except Exception as e:
+        _oracle_pendiente = True
+        logger.warning("No se pudo guardar en Oracle (%s); queda pendiente de sincronizar", e)
+
+
 def _cambiar_y_guardar(estado: dict, cambio) -> tuple[int, int]:
     """Aplica `cambio(estado)` y lo persiste; si falla la escritura, deshace
     el cambio en memoria para que memoria y disco sigan iguales (y un
@@ -155,10 +189,36 @@ def _cambiar_y_guardar(estado: dict, cambio) -> tuple[int, int]:
     try:
         resultado = cambio(estado)
         _guardar_y_publicar(estado)
-        return resultado
     except BaseException:
         estado["filas"], estado["avisos"], estado["nombres"] = respaldo
         raise
+    antes, despues = respaldo[0], estado["filas"]
+    agregadas = [f for e, f in despues.items() if e not in antes or antes[e]["correcto"] != f["correcto"]]
+    borradas = [(f["tipo"], e) for e, f in antes.items() if e not in despues]
+    _publicar_en_oracle(agregadas, borradas)
+    return resultado
+
+
+def reconciliar_oracle() -> dict:
+    """Lleva a Oracle las filas que le faltan (cambios que quedaron pendientes,
+    o una tabla recién creada sin el seed). Solo inserta/actualiza con MERGE:
+    nunca borra filas que estén en Oracle y no en memoria."""
+    global _oracle_pendiente
+    if not repositorio_oracle.configurado():
+        return {"oracle": "no configurado"}
+    with _lock:
+        estado = _cargar_estado()
+        try:
+            en_oracle = repositorio_oracle.contar()
+            if not _oracle_pendiente and en_oracle >= len(estado["filas"]):
+                return {"oracle": "al día", "filas": en_oracle}
+            repositorio_oracle.guardar(list(estado["filas"].values()))
+            _oracle_pendiente = False
+            return {"oracle": "reconciliado", "antes": en_oracle, "filas": repositorio_oracle.contar()}
+        except Exception as e:
+            _oracle_pendiente = True
+            logger.warning("No se pudo reconciliar POSIBLES_ERRORES con Oracle: %s", e)
+            return {"oracle": "pendiente", "error": str(e)}
 
 
 def _agregar_avisos(estado: dict, nuevos: list[dict]) -> None:
@@ -261,6 +321,7 @@ def sincronizar_catalogo(catalogo: dict[str, list[str]] | None = None) -> dict:
     registrados, agregadas, descartadas = [], 0, 0
     with _lock:
         estado = _cargar_estado()
+        oracle = reconciliar_oracle() if _oracle_pendiente else None
         # Filas manuales agregadas al repo después de crear el volumen.
         descartados_antes = {(a["error"], normalizar(a["correcto"])) for a in estado["avisos"]}
         manuales = [f for f in _filas_manuales()
@@ -278,8 +339,11 @@ def sincronizar_catalogo(catalogo: dict[str, list[str]] | None = None) -> dict:
                 registrados.append(f"{tipo}:{nombre}")
                 agregadas += r["agregadas"]
                 descartadas += r["descartadas"]
-    return {"registrados": registrados, "agregadas": agregadas, "descartadas": descartadas,
-            "ms": round((time.perf_counter() - inicio) * 1000, 1)}
+    resumen = {"registrados": registrados, "agregadas": agregadas, "descartadas": descartadas,
+               "ms": round((time.perf_counter() - inicio) * 1000, 1)}
+    if oracle is not None:
+        resumen["oracle"] = oracle
+    return resumen
 
 
 def regenerar_tabla(catalogo: dict[str, list[str]] | None = None, pares: dict | None = None) -> dict:
@@ -311,10 +375,11 @@ def regenerar_tabla(catalogo: dict[str, list[str]] | None = None, pares: dict | 
 
 
 def _reiniciar_estado() -> None:
-    """Olvida el estado en memoria (lo vuelve a leer del CSV). Para pruebas."""
-    global _estado
+    """Olvida el estado en memoria (lo vuelve a leer del origen). Para pruebas."""
+    global _estado, _oracle_pendiente
     with _lock:
         _estado = None
+        _oracle_pendiente = False
 
 
 if __name__ == "__main__":
