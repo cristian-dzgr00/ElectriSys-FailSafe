@@ -212,4 +212,7 @@ PROMPT Vehiculos sin modelo_id (debe ser 0):
 SELECT COUNT(*) AS sin_modelo FROM vehiculos WHERE modelo_id IS NULL;
 PROMPT Documentos cuyo total no cuadra con sus detalles (debe ser 0):
 SELECT COUNT(*) AS descuadrados FROM vw_totales_documento WHERE diferencia <> 0;
+-- Revalida objetos que quedaron INVALID por el orden de creacion (p. ej. vistas sobre vehiculos).
+BEGIN DBMS_UTILITY.COMPILE_SCHEMA(USER, FALSE); END;
+/
 PROMPT Normalizacion 3FN (fase 1) lista.

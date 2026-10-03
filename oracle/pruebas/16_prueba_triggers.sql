@@ -3,7 +3,7 @@
 -- Prueba de triggers: venta baja stock, anulación lo devuelve,
 -- stock negativo es rechazado por ck_repuestos_stock.
 -- Ejecutar como ELECTRISYS:  sqlplus electrisys/CLAVE@//localhost:1521/freepdb1 @16_prueba_triggers.sql
--- No deja datos: termina con ROLLBACK.   (SIN PROBAR en Oracle real)
+-- No deja datos: termina con ROLLBACK.   (probado en Oracle 23ai Free)
 -- ============================================================
 SET SERVEROUTPUT ON SIZE UNLIMITED
 SET FEEDBACK OFF

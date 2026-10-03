@@ -61,14 +61,16 @@ app 03_indices.sql
 app 04_triggers.sql
 app 05_seed.sql
 app 06_packages_plsql.sql
-app 07_vistas.sql
-app 08_roles_privilegios.sql
 
 # Crear usuarios de base de datos es privilegio de sistema.
 sysdba 09_usuarios_demo_sysdba.sql
 
 # Módulo de pedidos a proveedor (Sprint 2).
 app 10_pedidos.sql
+app 11_cotizaciones_estados.sql
+# 07 va despues de 10: vw_totales_documento lee pedido_detalle
+app 07_vistas.sql
+app 08_roles_privilegios.sql
 
 # Asistente de lenguaje natural (Sprint 3, tarjeta 3.14): corpus NLP y posibles errores.
 app 12_nlp_dataset.sql
