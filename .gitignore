@@ -67,3 +67,4 @@ desktop/dist/
 
 # Claves SSH generadas para el despliegue en Azure (no subir)
 azure-deploy/
+.atl/
