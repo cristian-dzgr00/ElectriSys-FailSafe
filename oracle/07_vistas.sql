@@ -1,6 +1,6 @@
 -- ============================================================
 -- ElectriSys — Migración a Oracle 23ai
--- 07. Vistas
+-- 07. Vistas (incluye vw_totales_documento)
 -- Ejecutar conectado como ELECTRISYS.
 -- ============================================================
 
@@ -50,5 +50,44 @@ SELECT r.id AS repuesto_id, r.codigo, r.nombre AS repuesto, r.descripcion,
   LEFT JOIN categorias cat  ON cat.id = r.categoria_id
   LEFT JOIN proveedores p   ON p.id = r.proveedor_id
  WHERE r.activo = 1;
+
+-- ── Totales de cada documento calculados desde sus detalles ──────
+-- Une ventas, cotizaciones y pedidos. El subtotal sale de SUMAR los
+-- detalles (no de lo que diga la cabecera) y el total se recalcula con
+-- el descuento y el impuesto de la cabecera. La columna DIFERENCIA
+-- compara ese total con el guardado: debe ser 0. Sirve para:
+--   1) detectar cabeceras que no cuadran con sus líneas, y
+--   2) preparar la 3FN: cuando el backend lea de acá, se podrán quitar
+--      las columnas derivadas de las cabeceras (ver 15_normalizacion_3fn.sql).
+-- Los pedidos no llevan descuento ni IVA, por eso van en 0.
+CREATE OR REPLACE VIEW vw_totales_documento AS
+SELECT 'venta' AS tipo, v.id AS documento_id, v.numero, v.estado,
+       NVL(d.subtotal_detalle, 0)                                     AS subtotal_detalle,
+       v.descuento                                                    AS descuento,
+       v.impuesto                                                     AS impuesto,
+       NVL(d.subtotal_detalle, 0) - v.descuento + v.impuesto          AS total_calculado,
+       v.total                                                        AS total_guardado,
+       v.total - (NVL(d.subtotal_detalle, 0) - v.descuento + v.impuesto) AS diferencia
+  FROM ventas v
+  LEFT JOIN (SELECT venta_id, SUM(subtotal) AS subtotal_detalle
+               FROM detalle_ventas GROUP BY venta_id) d ON d.venta_id = v.id
+UNION ALL
+SELECT 'cotizacion', c.id, c.numero, c.estado,
+       NVL(d.subtotal_detalle, 0), c.descuento, c.impuesto,
+       NVL(d.subtotal_detalle, 0) - c.descuento + c.impuesto,
+       c.total,
+       c.total - (NVL(d.subtotal_detalle, 0) - c.descuento + c.impuesto)
+  FROM cotizaciones c
+  LEFT JOIN (SELECT cotizacion_id, SUM(subtotal) AS subtotal_detalle
+               FROM detalle_cotizaciones GROUP BY cotizacion_id) d ON d.cotizacion_id = c.id
+UNION ALL
+SELECT 'pedido', p.id, p.numero, p.estado,
+       NVL(d.subtotal_detalle, 0), 0, 0,
+       NVL(d.subtotal_detalle, 0),
+       p.total,
+       p.total - NVL(d.subtotal_detalle, 0)
+  FROM pedidos p
+  LEFT JOIN (SELECT pedido_id, SUM(subtotal) AS subtotal_detalle
+               FROM pedido_detalle GROUP BY pedido_id) d ON d.pedido_id = p.id;
 
 PROMPT Vistas creadas correctamente.

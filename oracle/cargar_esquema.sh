@@ -70,6 +70,14 @@ sysdba 09_usuarios_demo_sysdba.sql
 # Módulo de pedidos a proveedor (Sprint 2).
 app 10_pedidos.sql
 
+# Asistente de lenguaje natural (Sprint 3, tarjeta 3.14): corpus NLP y posibles errores.
+app 12_nlp_dataset.sql
+app 13_posibles_errores.sql
+app 14_seed_posibles_errores.sql
+
+# 3FN fase 1 (Sprint 3, tarjetas 3.1 y 3.2): marcas, modelos, respuestas del asistente.
+app 15_normalizacion_3fn.sql
+
 # Backup: el DIRECTORY lo crea SYSDBA; el package corre como la aplicación.
 sysdba backup/10_directorio_backup_sysdba.sql
 app    backup/11_pkg_backup_plsql.sql
