@@ -69,3 +69,5 @@ desktop/dist/
 azure-deploy/
 .atl/
 nlp-service/notebooks/salida/electrisys_nlp.sqlite
+Claude outputs/
+nlp-service_para_IA.zip
