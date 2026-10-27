@@ -1,0 +1,307 @@
+﻿id_producto,sku,nombre,categoria,marca,proveedor,tipo_aplicacion,es_original,codigo_barras,ubicacion_bodega,unidad,costo_cop,precio_venta_cop,margen_pct,iva_pct,stock_actual,stock_minimo,stock_maximo,estado_stock,sustituto_sku,garantia_meses,fecha_ingreso,fecha_ultima_compra
+0001,CA-1303,Cables de arranque 500A,Accesorios,Truper,Eléctricos Sur,Universal,No,7708073021573,D-09-1,Unidad,47000,68000,30.9,19,18,6,30,Disponible,,12,2025-03-31,2026-06-17
+0002,GA-1304,Gato hidráulico 2 ton,Accesorios,Truper,Importadora Llanos,Universal,No,7704262129972,B-01-1,Unidad,125000,188500,33.7,19,10,4,16,Disponible,,3,2025-08-24,2026-08-05
+0003,PL-1301,Plumillas limpiabrisas par,Accesorios,Bosch,Ilumina Colombia,Universal,No,7705383236405,D-03-2,Unidad,38000,60500,37.2,19,5,4,16,Disponible,,6,2025-10-14,2026-08-20
+0004,TP-1302,Tapetes de caucho universales,Accesorios,Genérico,Ilumina Colombia,Universal,No,7709909514547,C-03-4,Unidad,55000,82000,32.9,19,20,3,15,Disponible,,6,2025-05-29,2026-06-14
+0005,AL-4004,Alternador Chevrolet Aveo,Eléctrico,Delco,Eléctricos Sur,Automotriz,Sí,7705608656907,A-12-2,Unidad,380000,582000,34.7,19,5,8,32,Stock bajo,,12,2026-03-10,2026-06-23
+0006,BA-4001,Batería 12V 65Ah,Eléctrico,Mac,Baterías Titán,Universal,No,7707585847195,C-01-4,Unidad,290000,432500,32.9,19,14,4,16,Disponible,,0,2025-07-25,2026-06-14
+0007,BA-4002,Batería 12V 100Ah camión,Eléctrico,Bosch,Baterías Titán,Pesado,No,7705254814542,A-11-2,Unidad,520000,845500,38.5,19,8,1,6,Disponible,,6,2024-10-24,2026-07-10
+0008,BO-4006,Bobina de encendido Renault Logan,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7709860395476,B-01-6,Unidad,115000,174500,34.1,19,14,5,20,Disponible,,0,2026-02-12,2026-09-16
+0009,BU-4003,Bujía iridio NGK x4,Eléctrico,NGK,AutoPartes del Meta,Universal,No,7709261265206,C-03-4,Unidad,96000,159000,39.6,19,14,5,25,Disponible,,12,2025-09-02,2026-09-10
+0010,EL-3004,Bujías x4 Hilux,Eléctrico,NGK,AutoPartes del Meta,Automotriz,No,7705744762168,B-11-4,Unidad,74500,120500,38.2,19,8,4,24,Disponible,,6,2024-12-24,2026-07-26
+0011,EL-3005,Bobina de encendido Hilux,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7708885159045,C-08-3,Unidad,103500,166000,37.7,19,6,4,16,Disponible,,6,2024-11-15,2026-08-23
+0012,EL-3013,Bujías x4 Corolla,Eléctrico,NGK,AutoPartes del Meta,Automotriz,No,7700784547485,C-05-6,Unidad,73500,104000,29.3,19,10,5,30,Disponible,,6,2025-10-02,2026-07-14
+0013,EL-3014,Bobina de encendido Corolla,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7702755828235,D-05-6,Unidad,119500,182500,34.5,19,10,8,40,Disponible,,0,2025-04-09,2026-06-11
+0014,EL-3020,Bujías x4 Fortuner,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7709986498403,B-10-4,Unidad,48500,69000,29.7,19,15,8,48,Disponible,,12,2025-01-31,2026-09-05
+0015,EL-3021,Bobina de encendido Fortuner,Eléctrico,Delphi,Eléctricos Sur,Automotriz,No,7702073202152,D-04-5,Unidad,168000,278500,39.7,19,18,8,32,Disponible,,0,2025-08-21,2026-06-21
+0016,EL-3027,Bujías x4 Spark GT,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7709193350564,D-02-6,Unidad,76500,123500,38.1,19,25,5,25,Disponible,,12,2025-04-08,2026-08-09
+0017,EL-3028,Bobina de encendido Spark GT,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7704148859452,D-07-5,Unidad,135500,198500,31.7,19,25,5,20,Disponible,,12,2024-09-16,2026-07-10
+0018,EL-3034,Bujías x4 Aveo,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7709697329150,D-02-3,Unidad,76000,123500,38.5,19,4,5,25,Stock bajo,,12,2025-11-08,2026-09-06
+0019,EL-3035,Bobina de encendido Aveo,Eléctrico,Denso,Eléctricos Sur,Automotriz,Sí,7709666374766,B-10-5,Unidad,160500,230500,30.4,19,15,6,36,Disponible,,6,2024-06-27,2026-06-06
+0020,EL-3040,Bujías x4 Sail,Eléctrico,NGK,AutoPartes del Meta,Automotriz,No,7706054742701,D-04-3,Unidad,97000,160000,39.4,19,25,8,40,Disponible,,0,2024-11-10,2026-08-25
+0021,EL-3041,Bobina de encendido Sail,Eléctrico,Delphi,Eléctricos Sur,Automotriz,No,7708843703742,C-05-4,Unidad,146500,230000,36.3,19,12,4,20,Disponible,,12,2026-03-20,2026-07-27
+0022,EL-3063,Bujías x4 Logan,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7709102448594,A-08-3,Unidad,42000,62500,32.8,19,10,5,30,Disponible,,6,2024-06-11,2026-06-08
+0023,EL-3064,Bobina de encendido Logan,Eléctrico,Delphi,Eléctricos Sur,Automotriz,No,7700048718306,D-10-5,Unidad,102500,149000,31.2,19,6,8,48,Stock bajo,,6,2024-08-06,2026-09-10
+0024,EL-3070,Bujías x4 Duster,Eléctrico,Denso,AutoPartes del Meta,Automotriz,Sí,7704714069474,B-03-4,Unidad,107000,170500,37.2,19,10,5,25,Disponible,,12,2025-09-13,2026-06-03
+0025,EL-3071,Bobina de encendido Duster,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7706980134110,C-12-4,Unidad,165000,241000,31.5,19,3,5,25,Stock bajo,,0,2024-09-29,2026-09-07
+0026,EL-3077,Bujías x4 Sandero,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7701139124722,B-07-2,Unidad,39000,58000,32.8,19,7,5,30,Disponible,,0,2024-11-20,2026-09-20
+0027,EL-3078,Bobina de encendido Sandero,Eléctrico,Delphi,Eléctricos Sur,Automotriz,No,7701614099169,B-01-4,Unidad,139500,199500,30.1,19,25,6,24,Disponible,,0,2026-02-17,2026-07-17
+0028,EL-3084,Bujías x4 Kwid,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7707550242984,B-05-1,Unidad,100000,145000,31.0,19,3,5,30,Stock bajo,,12,2024-07-27,2026-07-26
+0029,EL-3085,Bobina de encendido Kwid,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7702357622051,A-02-1,Unidad,98000,155000,36.8,19,10,4,20,Disponible,,12,2025-06-16,2026-07-22
+0030,EL-3091,Bujías x4 Mazda 2,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7707751808602,D-11-2,Unidad,89000,138500,35.7,19,20,6,30,Disponible,,0,2025-08-01,2026-08-08
+0031,EL-3092,Bobina de encendido Mazda 2,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7703296534595,D-07-2,Unidad,136000,203500,33.2,19,3,3,18,Stock bajo,,6,2024-11-15,2026-06-13
+0032,EL-3098,Bujías x4 Mazda 3,Eléctrico,Denso,AutoPartes del Meta,Automotriz,No,7705809932611,A-01-2,Unidad,97500,146500,33.4,19,10,8,40,Disponible,,3,2025-01-14,2026-06-09
+0033,EL-3099,Bobina de encendido Mazda 3,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7707506749657,D-02-2,Unidad,129000,204000,36.8,19,25,4,16,Disponible,,3,2024-11-17,2026-06-05
+0034,EL-3105,Bujías x4 CX-5,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7706728414243,A-08-1,Unidad,105500,173000,39.0,19,18,8,32,Disponible,,6,2026-01-20,2026-08-10
+0035,EL-3106,Bobina de encendido CX-5,Eléctrico,Delphi,Eléctricos Sur,Automotriz,No,7700772154732,A-04-6,Unidad,167500,250500,33.1,19,15,5,25,Disponible,,0,2026-02-01,2026-06-30
+0036,EL-3119,Bujías x4 Escape,Eléctrico,NGK,AutoPartes del Meta,Automotriz,No,7709654275417,B-04-2,Unidad,47500,76000,37.5,19,12,6,24,Disponible,,3,2024-05-30,2026-09-16
+0037,EL-3120,Bobina de encendido Escape,Eléctrico,Delphi,Eléctricos Sur,Automotriz,No,7704070762008,C-02-6,Unidad,107500,179000,39.9,19,5,3,18,Disponible,,0,2024-07-18,2026-08-02
+0038,EL-3126,Bujías x4 Picanto,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7700307600467,C-11-1,Unidad,82000,118000,30.5,19,8,4,20,Disponible,,0,2025-12-29,2026-07-28
+0039,EL-3127,Bobina de encendido Picanto,Eléctrico,Denso,Eléctricos Sur,Automotriz,No,7703831511829,A-12-2,Unidad,106000,155500,31.8,19,8,4,16,Disponible,,12,2024-06-16,2026-08-06
+0040,EL-3133,Bujías x4 Sportage,Eléctrico,Denso,AutoPartes del Meta,Automotriz,Sí,7709682047381,B-05-4,Unidad,101000,147000,31.3,19,14,3,15,Disponible,,0,2024-11-20,2026-08-03
+0041,EL-3134,Bobina de encendido Sportage,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7702817316934,A-08-6,Unidad,100000,141500,29.3,19,5,5,25,Stock bajo,,3,2025-05-17,2026-09-10
+0042,EL-3148,Bujías x4 Versa,Eléctrico,Bosch,AutoPartes del Meta,Automotriz,No,7704511656804,B-10-1,Unidad,45000,70000,35.7,19,6,3,18,Disponible,,6,2025-09-10,2026-06-17
+0043,EL-3149,Bobina de encendido Versa,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7700064168251,C-03-2,Unidad,118500,179000,33.8,19,14,4,24,Disponible,,6,2024-05-31,2026-06-18
+0044,EL-3155,Bujías x4 Accent,Eléctrico,Denso,AutoPartes del Meta,Automotriz,Sí,7708800102564,A-04-5,Unidad,106000,168500,37.1,19,20,5,30,Disponible,,6,2026-02-27,2026-09-18
+0045,EL-3156,Bobina de encendido Accent,Eléctrico,Bosch,Eléctricos Sur,Automotriz,No,7705029921489,B-11-6,Unidad,143500,209500,31.5,19,25,4,20,Disponible,,3,2025-09-08,2026-08-15
+0046,EL-3162,Bujías x4 Tucson,Eléctrico,NGK,AutoPartes del Meta,Automotriz,No,7705573796270,B-09-4,Unidad,103500,156500,33.9,19,10,5,25,Disponible,,6,2025-01-18,2026-09-11
+0047,EL-3163,Bobina de encendido Tucson,Eléctrico,Denso,Eléctricos Sur,Automotriz,Sí,7700300937567,B-04-3,Unidad,120000,180500,33.5,19,20,6,24,Disponible,,3,2025-01-28,2026-07-01
+0048,MA-4005,Motor de arranque Hilux,Eléctrico,Denso,Eléctricos Sur,Automotriz,Sí,7705309765223,D-07-1,Unidad,620000,1019500,39.2,19,0,1,6,Agotado,,0,2025-07-29,2026-08-11
+0049,CT-9002,Catalizador Corolla,Escape,Bosal,Escapes Villavo,Automotriz,No,7704357789136,A-02-5,Unidad,890000,1420000,37.3,19,7,1,6,Disponible,,12,2025-12-22,2026-06-22
+0050,SL-9001,Silenciador Spark,Escape,Walker,Escapes Villavo,Automotriz,No,7706050948687,D-08-5,Unidad,128000,202000,36.6,19,10,6,36,Disponible,,12,2025-09-25,2026-06-14
+0051,SO-9003,Sensor de oxígeno universal,Escape,NTK,Eléctricos Sur,Universal,No,7706590834410,A-06-5,Unidad,185000,301000,38.5,19,18,8,32,Disponible,,12,2024-09-30,2026-09-08
+0052,90915-YZZD4,Filtro de aceite original Toyota,Filtros,Toyota,Toyota Colombia,Automotriz,Sí,7703101459983,D-09-1,Unidad,36000,55500,35.1,19,0,8,40,Agotado,HP-1002,0,2026-03-19,2026-08-22
+0053,FA-1003,Filtro de aire Corolla 1.8,Filtros,Mann,AutoPartes del Meta,Automotriz,No,7706066283956,C-02-6,Unidad,32000,49500,35.4,19,0,4,20,Agotado,,12,2024-09-22,2026-08-03
+0054,FC-1004,Filtro de combustible Ranger,Filtros,Bosch,Importadora Llanos,Automotriz,No,7701344491216,B-04-6,Unidad,41000,60500,32.2,19,6,8,48,Stock bajo,,0,2025-03-16,2026-08-26
+0055,FG-FF5320,Filtro de combustible diésel FG,Filtros,Fleetguard,Importadora Llanos,Universal,No,7708663678934,D-05-1,Unidad,52000,86500,39.9,19,0,6,36,Agotado,M1-102,12,2024-06-30,2026-06-12
+0056,FH-1008,Filtro hidráulico tractor Massey,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7702149899263,C-10-1,Unidad,96000,155500,38.3,19,0,5,20,Agotado,,6,2025-01-26,2026-09-23
+0057,FI-3003,Filtro de aire Hilux,Filtros,Fram,AutoPartes del Meta,Automotriz,No,7702815376397,A-01-2,Unidad,25000,41500,39.8,19,25,8,32,Disponible,,3,2026-01-30,2026-07-26
+0058,FI-3006,Filtro de combustible diésel Hilux 2.8L,Filtros,Bosch,Importadora Llanos,Automotriz,No,7705919752891,C-02-1,Unidad,70000,106000,34.0,19,4,3,12,Disponible,,3,2025-04-24,2026-09-07
+0059,FI-3009,Filtro de aceite Corolla,Filtros,Fram,Distribuidora Andina,Automotriz,No,7707136876019,C-03-6,Unidad,30500,50000,39.0,19,8,4,20,Disponible,,0,2025-03-15,2026-09-04
+0060,FI-3017,Filtro de aceite Fortuner,Filtros,Fram,Distribuidora Andina,Automotriz,No,7701740175356,B-05-4,Unidad,32500,47500,31.6,19,10,5,25,Disponible,,0,2025-04-17,2026-06-23
+0061,FI-3018,Filtro de aire Fortuner,Filtros,Fram,AutoPartes del Meta,Automotriz,No,7705186036341,B-05-1,Unidad,57000,94500,39.7,19,25,6,24,Disponible,,12,2025-06-03,2026-08-05
+0062,FI-3033,Filtro de aceite Aveo,Filtros,Fram,Distribuidora Andina,Automotriz,No,7706317521025,A-01-3,Unidad,38000,60000,36.7,19,25,5,25,Disponible,,12,2025-09-30,2026-07-19
+0063,FI-3036,Filtro de aceite Sail,Filtros,Fram,Distribuidora Andina,Automotriz,No,7700337078149,D-09-1,Unidad,37000,54500,32.1,19,15,5,25,Disponible,,0,2024-10-20,2026-09-16
+0064,FI-3042,Filtro de aceite pesado NHR 2.8L,Filtros,Fleetguard,Importadora Llanos,Pesado,No,7709990306666,A-03-3,Unidad,74000,117000,36.8,19,10,4,20,Disponible,,3,2024-11-06,2026-08-02
+0065,FI-3045,Filtro de combustible diésel NHR 2.8L,Filtros,Baldwin,Importadora Llanos,Pesado,No,7701536634275,C-01-6,Unidad,61000,87000,29.9,19,15,5,20,Disponible,,0,2025-01-25,2026-06-12
+0066,FI-3046,Filtro de aceite pesado NPR 4.8L,Filtros,Donaldson,Importadora Llanos,Pesado,No,7706062307597,B-08-2,Unidad,68000,107000,36.4,19,15,4,20,Disponible,,0,2026-01-14,2026-09-17
+0067,FI-3049,Filtro de combustible diésel NPR 4.8L,Filtros,Fleetguard,Importadora Llanos,Pesado,No,7702614255324,A-05-1,Unidad,85500,131000,34.7,19,7,5,30,Disponible,,0,2026-03-02,2026-09-25
+0068,FI-3050,Filtro de aire D-Max 3.0L,Filtros,Bosch,AutoPartes del Meta,Automotriz,No,7705789739240,A-12-4,Unidad,50000,73500,32.0,19,3,8,40,Stock bajo,,3,2025-03-15,2026-08-19
+0069,FI-3052,Filtro de aceite D-Max 3.0L,Filtros,Mann,Distribuidora Andina,Automotriz,No,7700003638934,A-09-2,Unidad,25000,40500,38.3,19,10,4,20,Disponible,,0,2024-05-22,2026-06-28
+0070,FI-3055,Filtro de combustible diésel D-Max 3.0L,Filtros,Baldwin,Importadora Llanos,Automotriz,No,7700847711598,C-12-5,Unidad,92000,139000,33.8,19,15,8,40,Disponible,,12,2025-04-13,2026-06-19
+0071,FI-3058,Filtro de aceite Logan,Filtros,Mann,Distribuidora Andina,Automotriz,No,7702917038961,C-09-3,Unidad,27500,40500,32.1,19,4,5,25,Stock bajo,,6,2025-05-28,2026-06-10
+0072,FI-3060,Filtro de aire Logan,Filtros,Fram,AutoPartes del Meta,Automotriz,No,7707099397001,A-06-2,Unidad,42000,60000,30.0,19,6,4,20,Disponible,,6,2025-04-08,2026-09-18
+0073,FI-3067,Filtro de aceite Duster,Filtros,Bosch,Distribuidora Andina,Automotriz,No,7702144046234,D-03-5,Unidad,26500,41500,36.1,19,4,5,25,Stock bajo,,3,2025-06-24,2026-07-27
+0074,FI-3068,Filtro de aire Duster,Filtros,Mann,AutoPartes del Meta,Automotriz,No,7701070970096,A-07-6,Unidad,41000,61500,33.3,19,10,6,24,Disponible,,12,2025-04-04,2026-07-17
+0075,FI-3073,Filtro de aire Sandero,Filtros,Bosch,AutoPartes del Meta,Automotriz,No,7703811910174,A-11-6,Unidad,32500,49500,34.3,19,7,6,30,Disponible,,6,2024-07-15,2026-07-15
+0076,FI-3075,Filtro de aceite Sandero,Filtros,Bosch,Distribuidora Andina,Automotriz,No,7707440587762,B-05-3,Unidad,30000,46000,34.8,19,10,3,15,Disponible,,12,2025-05-25,2026-08-24
+0077,FI-3079,Filtro de aceite Kwid,Filtros,Wix,Distribuidora Andina,Automotriz,No,7705167986232,D-03-6,Unidad,38000,57500,33.9,19,4,4,20,Stock bajo,,12,2026-01-02,2026-09-07
+0078,FI-3088,Filtro de aire Mazda 2,Filtros,Mann,AutoPartes del Meta,Automotriz,No,7700264978838,B-11-2,Unidad,28000,44000,36.4,19,0,5,30,Agotado,,6,2025-04-15,2026-06-02
+0079,FI-3089,Filtro de aceite Mazda 2,Filtros,Wix,Distribuidora Andina,Automotriz,No,7709134658471,A-12-1,Unidad,18500,28000,33.9,19,14,6,30,Disponible,,6,2025-05-16,2026-08-20
+0080,FI-3093,Filtro de aire Mazda 3,Filtros,Bosch,AutoPartes del Meta,Automotriz,No,7709208625416,C-02-3,Unidad,58000,83000,30.1,19,12,3,12,Disponible,,0,2024-06-24,2026-08-21
+0081,FI-3094,Filtro de aceite Mazda 3,Filtros,Wix,Distribuidora Andina,Automotriz,No,7706114120186,A-08-4,Unidad,30000,46000,34.8,19,5,5,30,Stock bajo,,0,2025-04-22,2026-08-05
+0082,FI-3100,Filtro de aire CX-5,Filtros,Hengst,AutoPartes del Meta,Automotriz,No,7708418551761,B-04-1,Unidad,55000,78500,29.9,19,6,4,20,Disponible,,12,2026-03-06,2026-07-16
+0083,FI-3102,Filtro de aceite CX-5,Filtros,Fram,Distribuidora Andina,Automotriz,No,7708661448760,B-09-2,Unidad,22500,33500,32.8,19,8,6,24,Disponible,,6,2026-01-07,2026-07-05
+0084,FI-3109,Filtro de aire Ranger 3.2L,Filtros,Hengst,AutoPartes del Meta,Automotriz,No,7703581240747,C-05-2,Unidad,25500,36000,29.2,19,6,8,48,Stock bajo,,6,2025-09-29,2026-06-01
+0085,FI-3111,Filtro de aceite Ranger 3.2L,Filtros,Bosch,Distribuidora Andina,Automotriz,No,7709129371732,B-03-6,Unidad,24000,38000,36.8,19,8,5,25,Disponible,,0,2025-02-13,2026-06-21
+0086,FI-3112,Filtro de combustible diésel Ranger 3.2L,Filtros,Baldwin,Importadora Llanos,Automotriz,No,7707271494508,A-04-1,Unidad,81500,130000,37.3,19,10,8,40,Disponible,,6,2025-07-13,2026-07-09
+0087,FI-3115,Filtro de aceite Escape,Filtros,Mann,Distribuidora Andina,Automotriz,No,7707894950428,D-05-4,Unidad,34500,51000,32.4,19,12,6,36,Disponible,,6,2024-11-26,2026-07-07
+0088,FI-3118,Filtro de aire Escape,Filtros,Hengst,AutoPartes del Meta,Automotriz,No,7700072464697,C-12-5,Unidad,45000,72500,37.9,19,12,4,20,Disponible,,12,2024-06-01,2026-09-02
+0089,FI-3121,Filtro de aceite Picanto,Filtros,Bosch,Distribuidora Andina,Automotriz,No,7700297087750,B-09-1,Unidad,34500,51500,33.0,19,25,5,30,Disponible,,6,2024-04-27,2026-07-10
+0090,FI-3124,Filtro de aire Picanto,Filtros,Bosch,AutoPartes del Meta,Automotriz,No,7702836166340,B-11-2,Unidad,52000,84000,38.1,19,4,3,18,Disponible,,12,2025-09-07,2026-09-05
+0091,FI-3129,Filtro de aceite Sportage,Filtros,Wix,Distribuidora Andina,Automotriz,No,7706943158987,A-05-5,Unidad,23000,34500,33.3,19,6,3,18,Disponible,,0,2024-11-03,2026-08-10
+0092,FI-3138,Filtro de aire Frontier,Filtros,Bosch,AutoPartes del Meta,Automotriz,No,7700331277774,A-01-6,Unidad,26000,39500,34.2,19,15,4,20,Disponible,,12,2026-02-03,2026-07-29
+0093,FI-3140,Filtro de combustible diésel Frontier,Filtros,Baldwin,Importadora Llanos,Automotriz,No,7709930783153,A-09-3,Unidad,79500,113000,29.6,19,15,6,30,Disponible,,0,2024-07-08,2026-07-10
+0094,FI-3143,Filtro de aire Versa,Filtros,Hengst,AutoPartes del Meta,Automotriz,No,7700604366216,B-04-2,Unidad,29000,44000,34.1,19,12,4,16,Disponible,,6,2025-02-21,2026-09-26
+0095,FI-3151,Filtro de aire Accent,Filtros,Bosch,AutoPartes del Meta,Automotriz,No,7704783413668,D-12-2,Unidad,53000,80500,34.2,19,10,5,20,Disponible,,3,2025-02-08,2026-09-23
+0096,FI-3152,Filtro de aceite Accent,Filtros,Bosch,Distribuidora Andina,Automotriz,No,7700382519652,C-03-1,Unidad,19000,28500,33.3,19,5,5,30,Stock bajo,,12,2025-07-20,2026-06-27
+0097,FI-3157,Filtro de aceite Tucson,Filtros,Wix,Distribuidora Andina,Automotriz,No,7700875172500,C-08-3,Unidad,17500,28000,37.5,19,3,4,24,Stock bajo,,12,2025-01-22,2026-09-13
+0098,FI-3158,Filtro de aire Tucson,Filtros,Hengst,AutoPartes del Meta,Automotriz,No,7706266870374,A-09-1,Unidad,29500,49000,39.8,19,4,5,25,Stock bajo,,12,2024-07-19,2026-07-20
+0099,FI-3167,Filtro de aceite L200,Filtros,Wix,Distribuidora Andina,Automotriz,No,7709511562550,C-11-6,Unidad,24500,36000,31.9,19,14,5,20,Disponible,,0,2026-01-07,2026-07-03
+0100,FI-3169,Filtro de combustible diésel L200,Filtros,Fleetguard,Importadora Llanos,Automotriz,No,7701078737426,C-10-4,Unidad,73500,105500,30.3,19,15,6,24,Disponible,,12,2024-06-15,2026-06-07
+0101,FI-3172,Filtro de aceite Amarok,Filtros,Fram,Distribuidora Andina,Automotriz,No,7704194164612,C-11-4,Unidad,19500,29500,33.9,19,5,3,18,Disponible,,0,2024-10-20,2026-08-26
+0102,FI-3177,Filtro de combustible diésel Amarok,Filtros,Bosch,Importadora Llanos,Automotriz,No,7701751750709,B-05-3,Unidad,72500,106000,31.6,19,7,5,20,Disponible,,6,2025-04-03,2026-07-01
+0103,FI-3180,Filtro de aceite pesado 300,Filtros,Fleetguard,Importadora Llanos,Pesado,No,7708818976396,D-02-2,Unidad,104500,158500,34.1,19,14,5,30,Disponible,,0,2024-10-11,2026-08-13
+0104,FI-3183,Filtro de combustible diésel 300,Filtros,Baldwin,Importadora Llanos,Pesado,No,7705699120724,A-10-1,Unidad,75500,122500,38.4,19,18,5,25,Disponible,,12,2026-02-23,2026-08-18
+0105,FI-3184,Filtro de aceite pesado T800,Filtros,Baldwin,Importadora Llanos,Pesado,No,7704446306742,C-09-6,Unidad,47000,74000,36.5,19,12,8,32,Disponible,,12,2026-01-23,2026-09-16
+0106,FI-3187,Filtro de combustible diésel T800,Filtros,Bosch,Importadora Llanos,Pesado,No,7707025759117,C-06-3,Unidad,47000,68500,31.4,19,0,6,30,Agotado,,0,2024-12-11,2026-07-09
+0107,FI-3188,Filtro de aceite motor MF 290,Filtros,Baldwin,AgroRepuestos Orinoquía,Agrícola,No,7702287542260,D-06-3,Unidad,75500,111000,32.0,19,10,5,25,Disponible,,3,2024-12-28,2026-08-24
+0108,FI-3189,Filtro hidráulico MF 290,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7709871460336,B-12-4,Unidad,150500,243000,38.1,19,14,6,24,Disponible,,12,2025-01-10,2026-06-02
+0109,FI-3193,Filtro de aceite motor MF 4283,Filtros,Baldwin,AgroRepuestos Orinoquía,Agrícola,No,7701841559520,A-04-4,Unidad,116500,188500,38.2,19,18,8,48,Disponible,,0,2026-03-07,2026-06-03
+0110,FI-3194,Filtro hidráulico MF 4283,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7700355357001,B-02-6,Unidad,139000,197000,29.4,19,5,5,25,Stock bajo,,6,2024-10-11,2026-08-31
+0111,FI-3198,Filtro de aceite motor 5075E,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7701955462441,D-03-2,Unidad,110000,155000,29.0,19,10,3,12,Disponible,,6,2026-01-26,2026-07-07
+0112,FI-3199,Filtro hidráulico 5075E,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7703083691470,C-01-4,Unidad,89500,130000,31.2,19,14,3,15,Disponible,,3,2024-12-07,2026-06-10
+0113,FI-3203,Filtro de aceite motor 6110J,Filtros,Baldwin,AgroRepuestos Orinoquía,Agrícola,No,7705539700958,D-06-3,Unidad,82500,121000,31.8,19,0,3,18,Agotado,,6,2026-01-10,2026-08-26
+0114,FI-3204,Filtro hidráulico 6110J,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7707209933094,A-04-2,Unidad,121500,182000,33.2,19,7,8,32,Stock bajo,,3,2024-08-13,2026-08-20
+0115,FI-3208,Filtro de aceite motor TT75,Filtros,Baldwin,AgroRepuestos Orinoquía,Agrícola,No,7703423219999,D-04-4,Unidad,72000,108000,33.3,19,18,5,30,Disponible,,6,2024-06-09,2026-07-14
+0116,FI-3209,Filtro hidráulico TT75,Filtros,Baldwin,AgroRepuestos Orinoquía,Agrícola,No,7702978159780,C-01-5,Unidad,112000,167500,33.1,19,8,8,40,Stock bajo,,3,2026-01-12,2026-07-12
+0117,FI-3213,Filtro de aceite motor M9540,Filtros,Fleetguard,AgroRepuestos Orinoquía,Agrícola,No,7704647995237,B-12-1,Unidad,100500,152000,33.9,19,15,6,24,Disponible,,12,2024-05-31,2026-06-18
+0118,FI-3214,Filtro hidráulico M9540,Filtros,Donaldson,AgroRepuestos Orinoquía,Agrícola,No,7708034246415,C-12-1,Unidad,150500,228000,34.0,19,8,3,15,Disponible,,12,2025-09-29,2026-08-20
+0119,FO-1001,Filtro de aceite Hilux 2.7,Filtros,Fram,Distribuidora Andina,Automotriz,No,7704674176726,D-09-1,Unidad,28000,44000,36.4,19,5,4,16,Disponible,,6,2024-07-23,2026-08-28
+0120,FO-1002,Filtro de aceite Spark GT,Filtros,Wix,Distribuidora Andina,Automotriz,No,7708458256992,D-12-6,Unidad,19000,29500,35.6,19,18,6,36,Disponible,,3,2026-02-16,2026-09-01
+0121,HP-1002,Filtro de aceite sustituto HP,Filtros,HP Filters,Distribuidora Andina,Automotriz,No,7700436778277,D-08-6,Unidad,22000,34500,36.2,19,10,6,36,Disponible,,12,2024-07-06,2026-07-04
+0122,M1-102,Filtro de aceite sustituto M1,Filtros,Motorcraft,AutoPartes del Meta,Automotriz,No,7703211778020,D-12-5,Unidad,24000,37500,36.0,19,10,4,16,Disponible,,3,2025-05-06,2026-06-28
+0123,BF-2005,Banda de freno camión NPR,Frenos,Fras-le,Importadora Llanos,Pesado,No,7706721056885,B-03-4,Unidad,118000,182500,35.3,19,30,3,12,Disponible,,12,2026-01-26,2026-06-11
+0124,DF-2003,Disco de freno ventilado Duster,Frenos,TRW,Frenos y Más,Automotriz,No,7700950703384,C-05-2,Unidad,145000,220000,34.1,19,14,5,30,Disponible,,3,2024-09-04,2026-08-16
+0125,FR-3002,Pastillas de freno delanteras Hilux,Frenos,TRW,Frenos y Más,Automotriz,No,7707735643560,C-02-2,Unidad,63000,97000,35.1,19,3,5,30,Stock bajo,,3,2026-01-24,2026-07-16
+0126,FR-3025,Pastillas de freno delanteras Spark GT,Frenos,Fras-le,Frenos y Más,Automotriz,No,7705341874188,C-01-2,Unidad,92500,141500,34.6,19,20,5,25,Disponible,,0,2025-08-05,2026-06-01
+0127,FR-3031,Pastillas de freno delanteras Aveo,Frenos,TRW,Frenos y Más,Automotriz,No,7702835520666,A-02-3,Unidad,76500,127000,39.8,19,18,3,15,Disponible,,12,2025-05-30,2026-06-20
+0128,FR-3043,Banda de freno NHR 2.8L,Frenos,Fras-le,Importadora Llanos,Pesado,No,7701054872258,C-05-1,Unidad,146500,234500,37.5,19,10,8,40,Disponible,,6,2026-01-03,2026-06-15
+0129,FR-3047,Banda de freno NPR 4.8L,Frenos,Bendix,Importadora Llanos,Pesado,No,7707471481361,A-10-2,Unidad,113000,172500,34.5,19,6,5,30,Disponible,,12,2026-03-26,2026-07-30
+0130,FR-3054,Pastillas de freno delanteras D-Max 3.0L,Frenos,TRW,Frenos y Más,Automotriz,No,7707885320019,D-07-1,Unidad,92000,139000,33.8,19,3,6,30,Stock bajo,,6,2024-10-13,2026-09-02
+0131,FR-3101,Pastillas de freno delanteras CX-5,Frenos,TRW,Frenos y Más,Automotriz,No,7705743377414,A-10-5,Unidad,66500,109000,39.0,19,8,5,30,Disponible,,12,2025-08-06,2026-06-04
+0132,FR-3123,Pastillas de freno delanteras Picanto,Frenos,Brembo,Frenos y Más,Automotriz,No,7707020368923,C-04-6,Unidad,78000,112500,30.7,19,3,5,30,Stock bajo,,0,2025-01-15,2026-09-21
+0133,FR-3132,Pastillas de freno delanteras Sportage,Frenos,Bendix,Frenos y Más,Automotriz,No,7707792725717,C-02-4,Unidad,77500,119000,34.9,19,4,6,30,Stock bajo,,6,2025-09-29,2026-08-29
+0134,FR-3139,Pastillas de freno delanteras Frontier,Frenos,TRW,Frenos y Más,Automotriz,No,7703184548055,C-03-2,Unidad,96000,160000,40.0,19,4,8,40,Stock bajo,,6,2024-07-20,2026-06-25
+0135,FR-3145,Pastillas de freno delanteras Versa,Frenos,Bendix,Frenos y Más,Automotriz,No,7704663920501,B-12-4,Unidad,72000,112000,35.7,19,15,6,30,Disponible,,12,2025-03-17,2026-07-11
+0136,FR-3154,Pastillas de freno delanteras Accent,Frenos,Fras-le,Frenos y Más,Automotriz,No,7701635361906,C-04-3,Unidad,67500,104500,35.4,19,15,6,30,Disponible,,3,2024-05-15,2026-06-26
+0137,FR-3161,Pastillas de freno delanteras Tucson,Frenos,TRW,Frenos y Más,Automotriz,No,7704752307531,D-06-3,Unidad,95500,137500,30.5,19,8,5,25,Disponible,,0,2025-06-21,2026-06-11
+0138,FR-3165,Pastillas de freno delanteras L200,Frenos,Fras-le,Frenos y Más,Automotriz,No,7708727367499,A-12-5,Unidad,61500,87500,29.7,19,15,5,20,Disponible,,3,2024-07-20,2026-08-15
+0139,FR-3174,Pastillas de freno delanteras Amarok,Frenos,Brembo,Frenos y Más,Automotriz,No,7700954008561,B-11-2,Unidad,65500,106500,38.5,19,6,3,15,Disponible,,12,2025-10-24,2026-07-23
+0140,FR-3181,Banda de freno 300,Frenos,Bendix,Importadora Llanos,Pesado,No,7703962297496,D-06-6,Unidad,167000,238500,30.0,19,3,8,40,Stock bajo,,6,2025-06-12,2026-06-29
+0141,FR-3185,Banda de freno T800,Frenos,Fras-le,Importadora Llanos,Pesado,No,7706798341119,A-10-4,Unidad,96000,146500,34.5,19,0,5,25,Agotado,,12,2026-02-26,2026-08-21
+0142,LF-2004,Líquido de frenos DOT4 500ml,Frenos,Castrol,Lubricantes del Oriente,Universal,No,7706079559418,B-10-5,Unidad,14000,22500,37.8,19,7,3,15,Disponible,,0,2025-11-16,2026-07-25
+0143,PF-2001,Pastillas de freno delanteras Mazda 3,Frenos,Brembo,Frenos y Más,Automotriz,No,7704293061271,B-11-4,Unidad,78000,119000,34.5,19,0,5,20,Agotado,,0,2026-01-24,2026-08-13
+0144,PF-2002,Pastillas de freno traseras Hilux,Frenos,Bendix,Frenos y Más,Automotriz,No,7709839939689,D-05-1,Unidad,64000,103000,37.9,19,25,5,30,Disponible,,3,2026-03-31,2026-09-14
+0145,LL-1201,Llanta 185/65 R15,Llantas,Michelin,Llantas del Oriente,Universal,No,7705970264206,A-07-2,Unidad,295000,444500,33.6,19,30,4,24,Disponible,,6,2024-11-22,2026-07-11
+0146,LL-1202,Llanta 265/65 R17 AT,Llantas,Goodyear,Llantas del Oriente,Universal,No,7707763557610,A-04-6,Unidad,560000,836000,33.0,19,8,2,6,Disponible,,12,2024-12-19,2026-07-05
+0147,LL-1203,Llanta agrícola 18.4-30,Llantas,Firestone,AgroRepuestos Orinoquía,Agrícola,No,7706154611111,B-02-2,Unidad,1580000,2466000,35.9,19,14,1,6,Disponible,,6,2025-05-01,2026-08-16
+0148,RL-1204,Rin de acero 15,Llantas,Genérico,Llantas del Oriente,Universal,No,7709533144069,D-04-5,Unidad,115000,179000,35.8,19,7,5,25,Disponible,,6,2025-03-07,2026-08-26
+0149,AC-3001,Aceite 20W-50 mineral galón,Lubricantes,Terpel,Lubricantes del Oriente,Universal,No,7700373005477,D-02-4,Unidad,62000,88000,29.5,19,18,4,24,Disponible,,12,2024-07-24,2026-09-07
+0150,AC-3002,Aceite 5W-30 sintético cuarto,Lubricantes,Mobil 1,Lubricantes del Oriente,Universal,No,7709809109511,D-01-5,Unidad,34000,52000,34.6,19,30,3,18,Disponible,,3,2025-05-13,2026-09-04
+0151,AC-3003,Aceite 15W-40 diésel caneca 5gal,Lubricantes,Shell Rimula,Lubricantes del Oriente,Universal,No,7703651013754,B-06-5,Unidad,390000,576000,32.3,19,5,6,30,Stock bajo,,6,2026-03-07,2026-06-29
+0152,AC-3004,Aceite hidráulico tractor 20L,Lubricantes,Chevron,AgroRepuestos Orinoquía,Agrícola,No,7702319670497,B-01-2,Unidad,210000,341000,38.4,19,15,6,24,Disponible,,0,2025-08-04,2026-09-02
+0153,VL-3005,Valvulina 80W-90 galón,Lubricantes,Castrol,Lubricantes del Oriente,Universal,No,7702264258154,B-06-6,Unidad,58000,86000,32.6,19,10,6,36,Disponible,,12,2025-01-20,2026-06-04
+0154,FA-1101,Faro delantero Sail derecho,Luces,Depo,Ilumina Colombia,Automotriz,No,7706273502884,C-03-1,Unidad,190000,287000,33.8,19,6,8,48,Stock bajo,,6,2025-03-18,2026-09-03
+0155,FB-1102,Bombillo LED H4 par,Luces,Philips,Ilumina Colombia,Universal,No,7704540737372,B-05-6,Unidad,89000,130000,31.5,19,12,3,12,Disponible,,6,2024-10-14,2026-09-10
+0156,ST-1103,Stop trasero Duster izquierdo,Luces,Depo,Ilumina Colombia,Automotriz,No,7700045635190,D-12-5,Unidad,120000,175000,31.4,19,30,8,32,Disponible,,6,2024-05-29,2026-08-03
+0157,BO-7003,Bomba de agua Hilux,Motor,Aisin,AutoPartes del Meta,Automotriz,No,7705776819497,B-07-3,Unidad,175000,276000,36.6,19,6,8,48,Stock bajo,,0,2024-07-24,2026-09-11
+0158,CO-7001,Correa de repartición Logan,Motor,Gates,AutoPartes del Meta,Automotriz,No,7705843142421,B-02-2,Unidad,88000,129500,32.0,19,30,3,15,Disponible,,6,2025-04-20,2026-08-03
+0159,CO-7002,Kit de distribución Corolla,Motor,Dayco,AutoPartes del Meta,Automotriz,No,7708949461646,D-07-2,Unidad,310000,449000,31.0,19,14,6,24,Disponible,,0,2025-11-20,2026-06-01
+0160,EM-7004,Empaque de culata Spark,Motor,Victor Reinz,Importadora Llanos,Automotriz,No,7703834627566,B-05-6,Unidad,95000,138000,31.2,19,0,4,16,Agotado,,6,2024-08-19,2026-08-10
+0161,IN-7006,Inyector diésel Ranger,Motor,Bosch,Importadora Llanos,Automotriz,No,7706199961884,B-01-5,Unidad,470000,732500,35.8,19,0,1,6,Agotado,,6,2025-04-27,2026-09-06
+0162,MO-3007,Inyector diésel Hilux 2.8L,Motor,Delphi,Importadora Llanos,Automotriz,No,7707155237804,B-08-1,Unidad,717500,1192000,39.8,19,18,2,6,Disponible,,6,2026-03-16,2026-08-01
+0163,MO-3010,Bomba de agua Corolla,Motor,Graf,AutoPartes del Meta,Automotriz,No,7708284332224,D-08-6,Unidad,208500,333500,37.5,19,14,8,40,Disponible,,6,2024-07-08,2026-08-10
+0164,MO-3012,Correa de accesorios Corolla,Motor,Gates,AutoPartes del Meta,Automotriz,No,7708022593043,D-10-5,Unidad,79500,119000,33.2,19,3,8,32,Stock bajo,,12,2025-10-04,2026-08-05
+0165,MO-3015,Bomba de agua Fortuner,Motor,Gates,AutoPartes del Meta,Automotriz,No,7707421752183,D-04-6,Unidad,171500,242000,29.1,19,8,8,32,Stock bajo,,6,2025-11-19,2026-07-07
+0166,MO-3024,Correa de accesorios Spark GT,Motor,Continental,AutoPartes del Meta,Automotriz,No,7702412111467,B-04-6,Unidad,42000,59500,29.4,19,4,5,25,Stock bajo,,6,2026-01-16,2026-07-14
+0167,MO-3026,Bomba de agua Spark GT,Motor,Gates,AutoPartes del Meta,Automotriz,No,7707453702045,A-08-6,Unidad,125500,207500,39.5,19,10,5,25,Disponible,,12,2026-01-22,2026-08-07
+0168,MO-3030,Correa de accesorios Aveo,Motor,Continental,AutoPartes del Meta,Automotriz,No,7708897356632,C-06-5,Unidad,91000,145500,37.5,19,10,5,20,Disponible,,3,2024-12-11,2026-09-16
+0169,MO-3032,Bomba de agua Aveo,Motor,Gates,AutoPartes del Meta,Automotriz,No,7701586842845,C-06-6,Unidad,220500,324500,32.0,19,5,4,20,Disponible,,12,2024-10-07,2026-07-02
+0170,MO-3037,Bomba de agua Sail,Motor,Graf,AutoPartes del Meta,Automotriz,No,7700626942055,B-03-3,Unidad,111000,177000,37.3,19,10,6,30,Disponible,,6,2025-09-20,2026-07-03
+0171,MO-3038,Correa de accesorios Sail,Motor,Gates,AutoPartes del Meta,Automotriz,No,7703394728361,B-12-5,Unidad,84000,119500,29.7,19,0,4,20,Agotado,,12,2025-02-21,2026-06-10
+0172,MO-3044,Bomba de inyección NHR 2.8L,Motor,Bosch,Importadora Llanos,Pesado,No,7701495263075,B-09-3,Unidad,1033000,1598000,35.4,19,10,1,6,Disponible,,6,2024-05-23,2026-09-22
+0173,MO-3048,Bomba de inyección NPR 4.8L,Motor,Bosch,Importadora Llanos,Pesado,No,7707102911005,D-08-5,Unidad,1148000,1675500,31.5,19,15,1,6,Disponible,,6,2025-06-18,2026-08-18
+0174,MO-3051,Bomba de agua D-Max 3.0L,Motor,Graf,AutoPartes del Meta,Automotriz,No,7706041236850,B-03-5,Unidad,178000,268500,33.7,19,10,6,36,Disponible,,0,2025-03-29,2026-08-07
+0175,MO-3056,Inyector diésel D-Max 3.0L,Motor,Denso,Importadora Llanos,Automotriz,Sí,7706407224253,B-12-4,Unidad,398000,567500,29.9,19,8,4,20,Disponible,,3,2024-09-11,2026-08-19
+0176,MO-3061,Correa de accesorios Logan,Motor,Gates,AutoPartes del Meta,Automotriz,No,7709778233929,C-09-5,Unidad,77000,119500,35.6,19,10,4,24,Disponible,,3,2024-08-26,2026-07-12
+0177,MO-3066,Bomba de agua Duster,Motor,Graf,AutoPartes del Meta,Automotriz,No,7702029477049,C-08-3,Unidad,197500,303500,34.9,19,8,5,30,Disponible,,0,2025-01-22,2026-07-21
+0178,MO-3069,Correa de accesorios Duster,Motor,Continental,AutoPartes del Meta,Automotriz,No,7703337432335,B-07-4,Unidad,58000,83500,30.5,19,7,3,18,Disponible,,0,2026-01-01,2026-06-26
+0179,MO-3072,Correa de accesorios Sandero,Motor,Dayco,AutoPartes del Meta,Automotriz,No,7702596263989,A-08-3,Unidad,84500,139500,39.4,19,15,5,20,Disponible,,3,2025-11-29,2026-07-06
+0180,MO-3076,Bomba de agua Sandero,Motor,Aisin,AutoPartes del Meta,Automotriz,Sí,7709832636672,B-08-6,Unidad,124000,175500,29.3,19,0,5,30,Agotado,,12,2026-01-17,2026-09-08
+0181,MO-3080,Correa de accesorios Kwid,Motor,Continental,AutoPartes del Meta,Automotriz,No,7704486910885,C-06-6,Unidad,88500,145000,39.0,19,4,5,20,Stock bajo,,0,2024-04-21,2026-08-22
+0182,MO-3083,Bomba de agua Kwid,Motor,Gates,AutoPartes del Meta,Automotriz,No,7707431063382,C-02-1,Unidad,186000,286500,35.1,19,20,3,12,Disponible,,0,2024-09-20,2026-08-13
+0183,MO-3090,Correa de accesorios Mazda 2,Motor,Gates,AutoPartes del Meta,Automotriz,No,7704641069850,A-01-3,Unidad,51000,82500,38.2,19,10,3,18,Disponible,,6,2026-02-05,2026-08-12
+0184,MO-3095,Correa de accesorios Mazda 3,Motor,Continental,AutoPartes del Meta,Automotriz,No,7705955183526,B-10-2,Unidad,89500,135500,33.9,19,4,8,48,Stock bajo,,12,2025-10-02,2026-08-05
+0185,MO-3103,Correa de accesorios CX-5,Motor,Dayco,AutoPartes del Meta,Automotriz,No,7707996448448,B-11-3,Unidad,91000,150000,39.3,19,3,5,25,Stock bajo,,3,2025-05-04,2026-07-31
+0186,MO-3108,Correa de accesorios Ranger 3.2L,Motor,Gates,AutoPartes del Meta,Automotriz,No,7700459875798,D-10-6,Unidad,89500,134500,33.5,19,7,5,20,Disponible,,6,2024-11-22,2026-07-07
+0187,MO-3110,Bomba de agua Ranger 3.2L,Motor,Gates,AutoPartes del Meta,Automotriz,No,7708453775002,C-08-6,Unidad,168500,248500,32.2,19,0,6,36,Agotado,,6,2024-10-30,2026-08-03
+0188,MO-3116,Bomba de agua Escape,Motor,Aisin,AutoPartes del Meta,Automotriz,No,7702263552763,B-06-5,Unidad,149000,243500,38.8,19,10,3,18,Disponible,,0,2025-09-14,2026-09-12
+0189,MO-3117,Correa de accesorios Escape,Motor,Continental,AutoPartes del Meta,Automotriz,No,7708886650970,B-11-4,Unidad,61000,98000,37.8,19,20,6,36,Disponible,,0,2026-03-06,2026-07-21
+0190,MO-3122,Bomba de agua Picanto,Motor,Aisin,AutoPartes del Meta,Automotriz,No,7705318728387,A-09-5,Unidad,214000,327500,34.7,19,4,8,48,Stock bajo,,6,2025-03-18,2026-06-30
+0191,MO-3125,Correa de accesorios Picanto,Motor,Continental,AutoPartes del Meta,Automotriz,No,7701030271671,C-10-2,Unidad,54500,78000,30.1,19,3,6,24,Stock bajo,,3,2025-04-09,2026-06-16
+0192,MO-3128,Bomba de agua Sportage,Motor,Aisin,AutoPartes del Meta,Automotriz,No,7706986276931,D-11-5,Unidad,119000,192500,38.2,19,3,6,30,Stock bajo,,12,2025-09-15,2026-08-27
+0193,MO-3131,Correa de accesorios Sportage,Motor,Gates,AutoPartes del Meta,Automotriz,No,7701379464845,D-02-2,Unidad,87000,138500,37.2,19,5,3,18,Disponible,,0,2025-03-07,2026-08-06
+0194,MO-3135,Bomba de agua Frontier,Motor,Gates,AutoPartes del Meta,Automotriz,No,7701291909160,C-02-3,Unidad,109500,172500,36.5,19,6,6,36,Stock bajo,,12,2024-08-02,2026-08-15
+0195,MO-3136,Correa de accesorios Frontier,Motor,Continental,AutoPartes del Meta,Automotriz,No,7707487128448,D-05-6,Unidad,42000,62000,32.3,19,3,5,20,Stock bajo,,0,2025-07-15,2026-08-14
+0196,MO-3141,Inyector diésel Frontier,Motor,Denso,Importadora Llanos,Automotriz,Sí,7704944608626,A-08-6,Unidad,704500,1108500,36.4,19,10,1,6,Disponible,,3,2025-03-18,2026-09-03
+0197,MO-3146,Correa de accesorios Versa,Motor,Gates,AutoPartes del Meta,Automotriz,No,7706145100555,D-02-2,Unidad,69000,102500,32.7,19,10,8,32,Disponible,,3,2025-01-31,2026-06-08
+0198,MO-3153,Bomba de agua Accent,Motor,Graf,AutoPartes del Meta,Automotriz,No,7701962155005,A-02-1,Unidad,185000,299500,38.2,19,0,5,25,Agotado,,6,2024-08-09,2026-08-28
+0199,MO-3160,Bomba de agua Tucson,Motor,Gates,AutoPartes del Meta,Automotriz,No,7702473300741,D-09-2,Unidad,195000,280000,30.4,19,25,4,16,Disponible,,12,2025-11-15,2026-06-18
+0200,MO-3164,Correa de accesorios L200,Motor,Gates,AutoPartes del Meta,Automotriz,No,7702124437327,D-05-2,Unidad,55500,79500,30.2,19,12,6,24,Disponible,,12,2024-10-03,2026-09-05
+0201,MO-3168,Bomba de agua L200,Motor,Aisin,AutoPartes del Meta,Automotriz,Sí,7709328033848,A-01-3,Unidad,141000,207500,32.0,19,5,5,30,Stock bajo,,3,2024-10-08,2026-08-14
+0202,MO-3170,Inyector diésel L200,Motor,Denso,Importadora Llanos,Automotriz,Sí,7700413061685,A-01-6,Unidad,477500,717500,33.4,19,12,2,6,Disponible,,6,2025-11-30,2026-08-07
+0203,MO-3173,Bomba de agua Amarok,Motor,Graf,AutoPartes del Meta,Automotriz,No,7708488282394,B-08-6,Unidad,193000,314500,38.6,19,18,8,48,Disponible,,12,2024-06-09,2026-09-20
+0204,MO-3178,Inyector diésel Amarok,Motor,Bosch,Importadora Llanos,Automotriz,No,7704983637335,A-03-5,Unidad,651500,1046000,37.7,19,18,1,6,Disponible,,6,2025-05-14,2026-06-27
+0205,MO-3182,Bomba de inyección 300,Motor,Delphi,Importadora Llanos,Pesado,No,7705752524592,A-05-5,Unidad,1036500,1549500,33.1,19,7,1,6,Disponible,,0,2024-04-26,2026-07-16
+0206,MO-3186,Bomba de inyección T800,Motor,Bosch,Importadora Llanos,Pesado,No,7706776927322,B-04-5,Unidad,922000,1321500,30.2,19,12,1,6,Disponible,,12,2026-02-23,2026-08-20
+0207,MO-3191,Correa de ventilador MF 290,Motor,Gates,AgroRepuestos Orinoquía,Agrícola,No,7701620231502,C-11-1,Unidad,83500,132000,36.7,19,6,5,25,Disponible,,12,2026-02-12,2026-08-21
+0208,MO-3196,Correa de ventilador MF 4283,Motor,Dayco,AgroRepuestos Orinoquía,Agrícola,No,7700038040128,D-06-2,Unidad,93500,153000,38.9,19,7,4,24,Disponible,,6,2025-06-11,2026-08-25
+0209,MO-3201,Correa de ventilador 5075E,Motor,Dayco,AgroRepuestos Orinoquía,Agrícola,No,7709265187328,A-11-6,Unidad,72500,105000,31.0,19,4,3,18,Disponible,,12,2025-04-22,2026-08-17
+0210,MO-3206,Correa de ventilador 6110J,Motor,Gates,AgroRepuestos Orinoquía,Agrícola,No,7709987665285,B-04-4,Unidad,69500,115500,39.8,19,12,4,20,Disponible,,3,2025-06-06,2026-08-07
+0211,MO-3211,Correa de ventilador TT75,Motor,Dayco,AgroRepuestos Orinoquía,Agrícola,No,7709090791941,D-07-6,Unidad,99000,156000,36.5,19,7,5,25,Disponible,,0,2026-03-19,2026-06-24
+0212,MO-3216,Correa de ventilador M9540,Motor,Dayco,AgroRepuestos Orinoquía,Agrícola,No,7704017179333,A-10-5,Unidad,80000,127000,37.0,19,14,3,12,Disponible,,6,2025-05-06,2026-08-19
+0213,PI-7007,Pistón y anillos tractor John Deere,Motor,Mahle,AgroRepuestos Orinoquía,Agrícola,No,7702814842925,A-10-5,Unidad,1350000,1994500,32.3,19,14,1,6,Disponible,,6,2025-04-22,2026-06-16
+0214,TR-7005,Turbo Hilux 3.0 diésel,Motor,Garrett,Importadora Llanos,Automotriz,No,7705578365980,D-02-6,Unidad,1380000,2001000,31.0,19,18,2,6,Disponible,,0,2024-09-01,2026-08-13
+0215,CD-1501,Cadena de transmisión moto 428,Motos,Kmc,Motos y Repuestos Llano,Motocicleta,No,7700702156270,A-02-5,Unidad,58000,85500,32.2,19,0,6,36,Agotado,,6,2025-01-28,2026-06-08
+0216,LM-1503,Llanta moto 2.75-18,Motos,Pirelli,Motos y Repuestos Llano,Motocicleta,No,7706996188481,A-11-4,Unidad,98000,158500,38.2,19,6,8,32,Stock bajo,,0,2025-04-26,2026-06-30
+0217,MT-3218,Kit de arrastre NKD 125,Motos,DID,Motos y Repuestos Llano,Motocicleta,No,7707249719030,C-03-5,Unidad,134000,198000,32.3,19,6,5,30,Disponible,,3,2025-09-17,2026-09-25
+0218,MT-3219,Pastillas de freno delanteras NKD 125,Motos,Vesrah,Motos y Repuestos Llano,Motocicleta,No,7700410931176,B-03-2,Unidad,27500,43500,36.8,19,10,8,32,Disponible,,12,2025-12-14,2026-07-27
+0219,MT-3220,Bujía NKD 125,Motos,Denso,Motos y Repuestos Llano,Motocicleta,No,7707661905318,D-02-5,Unidad,11500,16500,30.3,19,20,5,30,Disponible,,6,2024-11-08,2026-09-22
+0220,MT-3221,Filtro de aire NKD 125,Motos,Hiflofiltro,Motos y Repuestos Llano,Motocicleta,No,7706035417009,D-08-5,Unidad,39000,61500,36.6,19,10,4,16,Disponible,,12,2024-10-02,2026-07-03
+0221,MT-3222,Llanta trasera NKD 125,Motos,Michelin,Motos y Repuestos Llano,Motocicleta,No,7708009415989,C-03-3,Unidad,170500,257000,33.7,19,14,5,25,Disponible,,6,2025-07-06,2026-07-30
+0222,MT-3223,Kit de arrastre FZ 150,Motos,Tsubaki,Motos y Repuestos Llano,Motocicleta,No,7706409482259,C-06-4,Unidad,153500,241500,36.4,19,6,8,32,Stock bajo,,6,2025-02-17,2026-07-24
+0223,MT-3224,Pastillas de freno delanteras FZ 150,Motos,EBC,Motos y Repuestos Llano,Motocicleta,No,7702856512144,A-09-1,Unidad,39500,59000,33.1,19,7,6,36,Disponible,,6,2026-01-22,2026-06-02
+0224,MT-3225,Bujía FZ 150,Motos,Denso,Motos y Repuestos Llano,Motocicleta,Sí,7703582995352,A-02-4,Unidad,15000,21000,28.6,19,5,5,20,Stock bajo,,0,2026-01-05,2026-07-25
+0225,MT-3226,Filtro de aire FZ 150,Motos,Hiflofiltro,Motos y Repuestos Llano,Motocicleta,No,7704958438803,A-12-1,Unidad,33000,48000,31.2,19,0,4,24,Agotado,,6,2025-05-23,2026-09-16
+0226,MT-3227,Llanta trasera FZ 150,Motos,Metzeler,Motos y Repuestos Llano,Motocicleta,No,7703603987901,D-04-4,Unidad,150500,214000,29.7,19,7,4,20,Disponible,,3,2025-01-01,2026-06-10
+0227,MT-3228,Kit de arrastre CB 190R,Motos,Kmc,Motos y Repuestos Llano,Motocicleta,No,7709370845914,A-10-4,Unidad,91500,152500,40.0,19,10,3,12,Disponible,,6,2025-03-06,2026-07-13
+0228,MT-3229,Pastillas de freno delanteras CB 190R,Motos,Brembo,Motos y Repuestos Llano,Motocicleta,No,7709620441418,B-03-4,Unidad,43000,62000,30.6,19,20,8,32,Disponible,,12,2024-07-24,2026-09-19
+0229,MT-3230,Bujía CB 190R,Motos,Denso,Motos y Repuestos Llano,Motocicleta,Sí,7706141902914,A-06-3,Unidad,18000,29500,39.0,19,12,5,30,Disponible,,12,2025-12-03,2026-07-24
+0230,MT-3231,Filtro de aire CB 190R,Motos,Hiflofiltro,Motos y Repuestos Llano,Motocicleta,No,7709349042102,D-01-6,Unidad,35500,54500,34.9,19,10,3,15,Disponible,,6,2025-10-09,2026-08-31
+0231,MT-3232,Llanta trasera CB 190R,Motos,Pirelli,Motos y Repuestos Llano,Motocicleta,No,7708344365761,D-10-1,Unidad,216000,334500,35.4,19,12,8,48,Disponible,,6,2025-01-25,2026-09-18
+0232,MT-3233,Kit de arrastre Pulsar NS 200,Motos,DID,Motos y Repuestos Llano,Motocicleta,No,7702801743642,C-10-4,Unidad,108000,168000,35.7,19,18,4,20,Disponible,,6,2024-10-07,2026-06-11
+0233,MT-3234,Pastillas de freno delanteras Pulsar NS 200,Motos,Vesrah,Motos y Repuestos Llano,Motocicleta,No,7700069134552,D-04-2,Unidad,43500,64000,32.0,19,14,5,20,Disponible,,6,2025-12-15,2026-08-08
+0234,MT-3235,Bujía Pulsar NS 200,Motos,NGK,Motos y Repuestos Llano,Motocicleta,No,7709585189539,C-07-6,Unidad,13000,20000,35.0,19,5,6,30,Stock bajo,,6,2025-01-23,2026-09-23
+0235,MT-3236,Filtro de aire Pulsar NS 200,Motos,Genérico,Motos y Repuestos Llano,Motocicleta,No,7709332636871,D-08-2,Unidad,31500,47500,33.7,19,12,3,12,Disponible,,12,2024-07-05,2026-08-14
+0236,MT-3237,Llanta trasera Pulsar NS 200,Motos,Michelin,Motos y Repuestos Llano,Motocicleta,No,7709682958398,B-11-4,Unidad,215000,305000,29.5,19,7,8,40,Stock bajo,,6,2024-09-22,2026-06-27
+0237,MT-3238,Kit de arrastre Gixxer 150,Motos,Tsubaki,Motos y Repuestos Llano,Motocicleta,No,7709250208569,D-11-5,Unidad,111000,181000,38.7,19,3,3,18,Stock bajo,,0,2024-08-26,2026-09-24
+0238,MT-3239,Pastillas de freno delanteras Gixxer 150,Motos,Vesrah,Motos y Repuestos Llano,Motocicleta,No,7703246802530,C-03-1,Unidad,29500,45500,35.2,19,10,5,30,Disponible,,3,2024-06-18,2026-09-18
+0239,MT-3240,Bujía Gixxer 150,Motos,NGK,Motos y Repuestos Llano,Motocicleta,No,7709258505870,D-12-4,Unidad,18500,29500,37.3,19,6,6,24,Stock bajo,,0,2024-05-13,2026-09-15
+0240,MT-3241,Filtro de aire Gixxer 150,Motos,Genérico,Motos y Repuestos Llano,Motocicleta,No,7706152566619,B-08-6,Unidad,47500,74500,36.2,19,4,3,18,Disponible,,6,2025-12-09,2026-08-12
+0241,MT-3242,Llanta trasera Gixxer 150,Motos,Pirelli,Motos y Repuestos Llano,Motocicleta,No,7702432231391,D-02-5,Unidad,196000,306000,35.9,19,4,8,48,Stock bajo,,3,2026-03-03,2026-08-31
+0242,PM-1502,Pastillas de freno moto AKT 125,Motos,Vesrah,Motos y Repuestos Llano,Motocicleta,No,7706401002405,D-03-5,Unidad,24000,36500,34.2,19,8,5,20,Disponible,,6,2026-02-04,2026-06-24
+0243,MV-8003,Motoventilador Logan,Refrigeración,Denso,Radiadores Meta,Automotriz,No,7708223923221,D-11-5,Unidad,210000,321000,34.6,19,0,5,25,Agotado,,6,2025-02-02,2026-08-26
+0244,RA-8001,Radiador Aveo,Refrigeración,Valeo,Radiadores Meta,Automotriz,No,7705175701404,C-10-5,Unidad,245000,350000,30.0,19,10,4,24,Disponible,,6,2026-01-09,2026-06-26
+0245,RF-8004,Refrigerante 50/50 galón,Refrigeración,Prestone,Lubricantes del Oriente,Universal,No,7705373330079,C-11-3,Unidad,27000,38500,29.9,19,20,4,16,Disponible,,0,2024-09-26,2026-08-24
+0246,TM-8002,Termostato Duster,Refrigeración,Wahler,Radiadores Meta,Automotriz,No,7704290285588,D-10-2,Unidad,32000,46000,30.4,19,20,6,30,Disponible,,12,2024-05-24,2026-06-10
+0247,SE-1401,Sello de cigüeñal trasero Hilux,Sellos,Corteco,Importadora Llanos,Automotriz,No,7702815823939,A-03-4,Unidad,44000,62500,29.6,19,18,6,36,Disponible,,12,2024-10-27,2026-09-03
+0248,SE-1402,Kit de sellos hidráulicos tractor,Sellos,Parker,AgroRepuestos Orinoquía,Agrícola,No,7701990323479,D-10-1,Unidad,275000,449500,38.8,19,8,3,12,Disponible,,3,2025-10-07,2026-07-04
+0249,SE-3190,Kit de sellos hidráulicos MF 290,Sellos,Parker,AgroRepuestos Orinoquía,Agrícola,No,7704114680090,B-04-1,Unidad,370000,550000,32.7,19,4,6,30,Stock bajo,,6,2025-09-15,2026-09-01
+0250,SE-3195,Kit de sellos hidráulicos MF 4283,Sellos,Trelleborg,AgroRepuestos Orinoquía,Agrícola,No,7707604277381,D-11-6,Unidad,369500,564500,34.5,19,6,5,25,Disponible,,0,2024-04-17,2026-07-19
+0251,SE-3200,Kit de sellos hidráulicos 5075E,Sellos,Trelleborg,AgroRepuestos Orinoquía,Agrícola,No,7709624791120,D-03-3,Unidad,288000,473500,39.2,19,7,5,20,Disponible,,6,2024-08-12,2026-09-16
+0252,SE-3205,Kit de sellos hidráulicos 6110J,Sellos,Trelleborg,AgroRepuestos Orinoquía,Agrícola,No,7702112381567,B-08-5,Unidad,269500,403000,33.1,19,25,8,32,Disponible,,0,2024-05-26,2026-09-11
+0253,SE-3210,Kit de sellos hidráulicos TT75,Sellos,Parker,AgroRepuestos Orinoquía,Agrícola,No,7701414208312,C-07-6,Unidad,236000,332500,29.0,19,12,4,24,Disponible,,6,2025-07-20,2026-06-10
+0254,SE-3215,Kit de sellos hidráulicos M9540,Sellos,Parker,AgroRepuestos Orinoquía,Agrícola,No,7700892361695,C-01-2,Unidad,266500,417500,36.2,19,10,3,12,Disponible,,6,2024-04-17,2026-09-18
+0255,AM-5001,Amortiguador delantero Sail,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7703010973160,B-02-1,Unidad,120000,195000,38.5,19,7,3,18,Disponible,,6,2024-08-13,2026-09-02
+0256,AM-5002,Amortiguador trasero Hilux,Suspensión,KYB,Suspensiones Ariete,Automotriz,No,7709853971968,A-10-3,Unidad,165000,265000,37.7,19,30,5,20,Disponible,,6,2025-05-19,2026-07-16
+0257,RE-5005,Resorte helicoidal delantero Logan,Suspensión,Eibach,Suspensiones Ariete,Automotriz,No,7708414446236,C-10-1,Unidad,135000,202500,33.3,19,14,4,16,Disponible,,0,2025-03-18,2026-07-21
+0258,RO-5003,Rótula superior Spark,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7709719673568,A-05-6,Unidad,42000,66500,36.8,19,18,8,32,Disponible,,6,2025-02-12,2026-08-13
+0259,SU-3001,Rótula inferior Hilux,Suspensión,Lemförder,Suspensiones Ariete,Automotriz,No,7707827026134,B-02-4,Unidad,46000,76000,39.5,19,12,6,36,Disponible,,3,2025-04-24,2026-09-24
+0260,SU-3008,Rótula inferior Corolla,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7704970638923,A-04-4,Unidad,83500,134000,37.7,19,7,3,12,Disponible,,12,2025-12-12,2026-07-11
+0261,SU-3011,Amortiguador delantero Corolla,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7707765702223,A-04-4,Unidad,161000,234500,31.3,19,18,8,48,Disponible,,0,2024-10-12,2026-07-11
+0262,SU-3016,Amortiguador delantero Fortuner,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7709014181724,D-09-4,Unidad,165500,235500,29.7,19,20,3,15,Disponible,,6,2026-01-09,2026-08-18
+0263,SU-3019,Rótula inferior Fortuner,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7707802214977,B-02-6,Unidad,48500,70500,31.2,19,5,5,30,Stock bajo,,6,2024-06-20,2026-09-24
+0264,SU-3022,Amortiguador delantero Spark GT,Suspensión,Sachs,Suspensiones Ariete,Automotriz,No,7704331815019,B-09-1,Unidad,193000,276000,30.1,19,7,5,30,Disponible,,6,2025-12-30,2026-06-28
+0265,SU-3023,Rótula inferior Spark GT,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7709112974831,A-05-1,Unidad,50500,76500,34.0,19,14,5,30,Disponible,,3,2025-11-29,2026-09-17
+0266,SU-3029,Rótula inferior Aveo,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7705589788488,A-04-6,Unidad,76500,127000,39.8,19,15,5,20,Disponible,,6,2025-05-13,2026-07-16
+0267,SU-3039,Rótula inferior Sail,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7705955247052,C-11-5,Unidad,55500,79500,30.2,19,15,8,40,Disponible,,6,2025-03-03,2026-07-31
+0268,SU-3053,Amortiguador delantero D-Max 3.0L,Suspensión,KYB,Suspensiones Ariete,Automotriz,No,7707938574304,A-09-3,Unidad,154500,253500,39.1,19,10,3,18,Disponible,,6,2024-06-17,2026-08-26
+0269,SU-3059,Amortiguador delantero Logan,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7703956947114,B-02-4,Unidad,186000,267500,30.5,19,18,5,20,Disponible,,0,2025-07-31,2026-08-12
+0270,SU-3062,Rótula inferior Logan,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7707731225825,D-12-5,Unidad,68000,102500,33.7,19,0,3,12,Agotado,,3,2024-10-19,2026-09-02
+0271,SU-3065,Rótula inferior Duster,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7704732777581,B-06-3,Unidad,79000,127000,37.8,19,7,5,30,Disponible,,12,2025-11-12,2026-08-16
+0272,SU-3074,Rótula inferior Sandero,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7708319477164,C-12-1,Unidad,48000,76500,37.3,19,8,5,30,Disponible,,3,2025-04-27,2026-08-17
+0273,SU-3081,Amortiguador delantero Kwid,Suspensión,KYB,Suspensiones Ariete,Automotriz,No,7700802656756,B-02-4,Unidad,143500,232500,38.3,19,5,5,25,Stock bajo,,6,2025-11-07,2026-06-30
+0274,SU-3082,Rótula inferior Kwid,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7701627423553,B-09-2,Unidad,50000,73000,31.5,19,8,3,12,Disponible,,6,2024-06-27,2026-09-26
+0275,SU-3086,Rótula inferior Mazda 2,Suspensión,Lemförder,Suspensiones Ariete,Automotriz,No,7708408575813,D-09-5,Unidad,78000,126000,38.1,19,6,5,30,Disponible,,3,2024-10-23,2026-08-03
+0276,SU-3087,Amortiguador delantero Mazda 2,Suspensión,KYB,Suspensiones Ariete,Automotriz,No,7703781913811,D-03-5,Unidad,167500,274500,39.0,19,15,3,18,Disponible,,6,2025-04-06,2026-06-20
+0277,SU-3096,Rótula inferior Mazda 3,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7705229891533,D-04-5,Unidad,39500,55500,28.8,19,20,8,40,Disponible,,12,2025-08-24,2026-08-03
+0278,SU-3097,Amortiguador delantero Mazda 3,Suspensión,KYB,Suspensiones Ariete,Automotriz,No,7701481017438,D-11-3,Unidad,146500,211000,30.6,19,18,5,30,Disponible,,12,2024-05-19,2026-06-05
+0279,SU-3104,Rótula inferior CX-5,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7705029876261,B-07-1,Unidad,62000,89000,30.3,19,25,5,20,Disponible,,0,2025-04-25,2026-08-15
+0280,SU-3107,Rótula inferior Ranger 3.2L,Suspensión,Lemförder,Suspensiones Ariete,Automotriz,No,7706978667319,B-04-5,Unidad,56500,93500,39.6,19,0,5,20,Agotado,,12,2026-01-27,2026-06-15
+0281,SU-3114,Rótula inferior Escape,Suspensión,Lemförder,Suspensiones Ariete,Automotriz,No,7707438066930,C-03-5,Unidad,51500,76500,32.7,19,10,5,25,Disponible,,0,2026-03-05,2026-06-03
+0282,SU-3130,Amortiguador delantero Sportage,Suspensión,Sachs,Suspensiones Ariete,Automotriz,No,7700983222542,D-09-1,Unidad,136500,206500,33.9,19,4,5,25,Stock bajo,,0,2024-08-05,2026-08-21
+0283,SU-3137,Rótula inferior Frontier,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7709378947703,A-05-6,Unidad,75500,106500,29.1,19,8,5,30,Disponible,,6,2025-04-27,2026-06-12
+0284,SU-3144,Amortiguador delantero Versa,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7700245977964,D-11-4,Unidad,176000,287000,38.7,19,12,3,15,Disponible,,6,2026-01-25,2026-06-15
+0285,SU-3147,Rótula inferior Versa,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7701543248119,B-09-6,Unidad,61500,94500,34.9,19,18,3,18,Disponible,,3,2024-06-06,2026-07-15
+0286,SU-3150,Amortiguador delantero Accent,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7703749923167,D-04-5,Unidad,195000,275500,29.2,19,8,8,32,Stock bajo,,6,2025-06-24,2026-06-25
+0287,SU-3159,Amortiguador delantero Tucson,Suspensión,KYB,Suspensiones Ariete,Automotriz,No,7702945962744,C-08-6,Unidad,162000,244000,33.6,19,14,4,24,Disponible,,6,2024-05-25,2026-07-13
+0288,SU-3166,Rótula inferior L200,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7704986191700,A-02-5,Unidad,58000,90500,35.9,19,10,5,30,Disponible,,6,2025-09-02,2026-07-16
+0289,SU-3175,Rótula inferior Amarok,Suspensión,TRW,Suspensiones Ariete,Automotriz,No,7704992252386,A-10-6,Unidad,45500,73500,38.1,19,25,8,32,Disponible,,0,2024-07-29,2026-08-14
+0290,SU-3176,Amortiguador delantero Amarok,Suspensión,Monroe,Suspensiones Ariete,Automotriz,No,7707264177614,C-10-1,Unidad,172000,285000,39.6,19,6,4,16,Disponible,,6,2024-11-16,2026-06-14
+0291,TE-5004,Terminal de dirección Duster,Suspensión,Moog,Suspensiones Ariete,Automotriz,No,7704593600855,D-01-6,Unidad,38000,61500,38.2,19,18,6,36,Disponible,,12,2024-10-09,2026-08-26
+0292,CA-6004,Cardán trasero tractor,Transmisión,Spicer,AgroRepuestos Orinoquía,Agrícola,No,7700326015573,B-05-5,Unidad,1150000,1635000,29.7,19,0,2,6,Agotado,,3,2025-05-26,2026-08-14
+0293,CV-6003,Junta homocinética Mazda 2,Transmisión,GKN,Transmisiones del Llano,Automotriz,No,7708005717976,D-07-2,Unidad,260000,418000,37.8,19,15,3,15,Disponible,,12,2024-10-19,2026-08-05
+0294,KT-6001,Kit de embrague Chevrolet NHR,Transmisión,Sachs,Transmisiones del Llano,Pesado,No,7700280216168,B-03-3,Unidad,720000,1044500,31.1,19,20,1,6,Disponible,,12,2024-09-21,2026-06-23
+0295,KT-6002,Kit de embrague Hilux 2.7,Transmisión,Luk,Transmisiones del Llano,Automotriz,No,7709658041107,D-06-2,Unidad,840000,1395000,39.8,19,6,1,6,Disponible,,6,2024-09-10,2026-08-13
+0296,TR-3057,Kit de embrague D-Max 3.0L,Transmisión,Sachs,Transmisiones del Llano,Automotriz,No,7708478462157,A-01-2,Unidad,529000,881000,40.0,19,8,1,6,Disponible,,3,2025-12-23,2026-06-07
+0297,TR-3113,Kit de embrague Ranger 3.2L,Transmisión,Valeo,Transmisiones del Llano,Automotriz,No,7702920019170,C-08-3,Unidad,765000,1183500,35.4,19,3,1,6,Disponible,,3,2025-10-15,2026-06-16
+0298,TR-3142,Kit de embrague Frontier,Transmisión,Luk,Transmisiones del Llano,Automotriz,No,7700206819964,A-03-5,Unidad,789000,1128500,30.1,19,4,1,6,Disponible,,6,2025-10-14,2026-08-21
+0299,TR-3171,Kit de embrague L200,Transmisión,Valeo,Transmisiones del Llano,Automotriz,No,7704895552847,C-06-3,Unidad,844500,1312000,35.6,19,8,1,6,Disponible,,6,2026-03-14,2026-07-26
+0300,TR-3179,Kit de embrague Amarok,Transmisión,Sachs,Transmisiones del Llano,Automotriz,No,7703181260080,C-05-1,Unidad,689000,1120500,38.5,19,15,1,6,Disponible,,3,2026-03-16,2026-06-18
+0301,TR-3192,Disco de embrague MF 290,Transmisión,Sachs,AgroRepuestos Orinoquía,Agrícola,No,7709825300152,D-03-3,Unidad,402500,617500,34.8,19,10,2,6,Disponible,,0,2026-01-08,2026-06-10
+0302,TR-3197,Disco de embrague MF 4283,Transmisión,Sachs,AgroRepuestos Orinoquía,Agrícola,No,7703235942198,A-04-3,Unidad,708500,1073500,34.0,19,14,2,6,Disponible,,3,2025-05-20,2026-09-15
+0303,TR-3202,Disco de embrague 5075E,Transmisión,Luk,AgroRepuestos Orinoquía,Agrícola,No,7702168005164,C-07-1,Unidad,600500,908500,33.9,19,8,2,6,Disponible,,0,2025-08-02,2026-06-03
+0304,TR-3207,Disco de embrague 6110J,Transmisión,Sachs,AgroRepuestos Orinoquía,Agrícola,No,7708029701008,A-10-5,Unidad,377500,596500,36.7,19,8,5,30,Disponible,,0,2025-08-17,2026-07-20
+0305,TR-3212,Disco de embrague TT75,Transmisión,Luk,AgroRepuestos Orinoquía,Agrícola,No,7702954337810,B-12-2,Unidad,335500,555000,39.5,19,5,6,24,Stock bajo,,6,2025-02-08,2026-06-01
+0306,TR-3217,Disco de embrague M9540,Transmisión,Luk,AgroRepuestos Orinoquía,Agrícola,No,7706220699072,C-04-2,Unidad,558500,896500,37.7,19,3,2,6,Disponible,,0,2024-05-09,2026-08-10
