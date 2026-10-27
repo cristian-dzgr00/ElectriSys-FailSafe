@@ -31,6 +31,8 @@
 --  * Lo que se pierde de forma inevitable (consultas con intención que no
 --     existe en nlp_intenciones, errores sin coincidencia en el catálogo)
 --     se cuenta y se imprime antes de borrarlo.
+--  * Los montos de ventas y cotizaciones se respaldan en <tabla>_MONTOS_3FN_BAK
+--     antes de eliminar las columnas (el DROP no se puede deshacer).
 --
 -- RE-EJECUTABLE: cada paso comprueba si ya se aplicó. Sobre una base ya
 -- migrada no cambia nada.
@@ -252,6 +254,16 @@ DECLARE
                 || ' + ROUND((NVL(d.s, 0) - ROUND(NVL(d.s, 0) * h.descuento_pct / 100, 2)) * h.iva_pct / 100, 2)');
             DBMS_OUTPUT.PUT_LINE('2. ' || UPPER(p_t) || ': ' || v_difs_n
                 || ' documentos tendran un total distinto con el modelo nuevo (lineas + porcentajes).');
+
+            -- Respaldo de los montos originales: el DROP COLUMN no se puede deshacer.
+            IF NOT existe_tabla(p_t || '_montos_3fn_bak') THEN
+                ddl('CREATE TABLE ' || p_t || '_montos_3fn_bak AS SELECT id, subtotal, descuento, impuesto, total FROM ' || p_t,
+                    '2. ' || UPPER(p_t) || ': montos originales respaldados en ' || UPPER(p_t) || '_MONTOS_3FN_BAK.');
+            END IF;
+            IF v_difs_n > 0 THEN
+                DBMS_OUTPUT.PUT_LINE('2. ' || UPPER(p_t) || ': AVISO, ' || v_difs_n
+                    || ' totales cambian; los originales quedan en ' || UPPER(p_t) || '_MONTOS_3FN_BAK.');
+            END IF;
 
             IF p_ck_total IS NOT NULL AND existe_cons(p_ck_total) THEN
                 ddl('ALTER TABLE ' || p_t || ' DROP CONSTRAINT ' || p_ck_total);
