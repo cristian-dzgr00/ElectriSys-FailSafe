@@ -11,16 +11,17 @@
 --    (1FN): se crean CONSULTA_ENTIDADES y CONSULTA_RECOMENDACIONES.
 --
 -- POR QUÉ ES "FASE 1"
---  El backend PHP todavía lee y escribe vehiculos.marca y vehiculos.modelo
---  (VehiculoModel). Para no romperlo, esas dos columnas SE CONSERVAN y un
---  trigger completa modelo_id solo cuando el backend inserta con texto.
---  La FASE 2 (quitar vehiculos.marca/modelo y las columnas derivadas de las
---  cabeceras, y usar vw_vehiculos y vw_totales_documento) requiere
---  cambiar el backend y se hace en un sprint posterior.
+--  Esta fase es compatible hacia atrás: vehiculos.marca y vehiculos.modelo
+--  SE CONSERVAN y un trigger completa modelo_id cuando se inserta con texto.
+--  La FASE 2 (16_normalizacion_3fn_fase2.sql) quita esas columnas y las
+--  derivadas de las cabeceras; usa vw_vehiculos y vw_totales_documento.
 --
--- RE-EJECUTABLE: cada paso comprueba si ya existe.
--- NO PROBADO en una instancia real de Oracle al escribirse: correr primero
--- en una copia (ver LEEME) y revisar la salida.
+-- ROLES: este script NO otorga privilegios a roles (los roles se crean en
+-- 08_roles_privilegios.sql, que corre después). Los GRANT de las tablas y
+-- vistas nuevas están en 08.
+--
+-- RE-EJECUTABLE: cada paso comprueba si ya existe. Si la fase 2 ya se
+-- aplicó (vehiculos sin marca/modelo) los pasos de la fase 1 se omiten.
 -- ============================================================
 SET SERVEROUTPUT ON
 SET DEFINE OFF
@@ -58,18 +59,31 @@ END;
 /
 
 -- ── 2. Cargar marcas y modelos desde los vehículos existentes ─────
-INSERT INTO marcas (nombre)
-SELECT DISTINCT TRIM(v.marca) FROM vehiculos v
- WHERE v.marca IS NOT NULL
-   AND NOT EXISTS (SELECT 1 FROM marcas m WHERE m.nombre = TRIM(v.marca));
-
-INSERT INTO modelos (marca_id, nombre)
-SELECT DISTINCT m.id, TRIM(v.modelo)
-  FROM vehiculos v
-  JOIN marcas m ON m.nombre = TRIM(v.marca)
- WHERE v.modelo IS NOT NULL
-   AND NOT EXISTS (SELECT 1 FROM modelos mo
-                    WHERE mo.marca_id = m.id AND mo.nombre = TRIM(v.modelo));
+-- Dinámico y condicionado a que vehiculos.marca exista: así el script sigue
+-- siendo válido (y no hace nada) si la fase 2 ya quitó esas columnas.
+DECLARE
+    v NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v FROM user_tab_columns
+     WHERE table_name = 'VEHICULOS' AND column_name = 'MARCA';
+    IF v > 0 THEN
+        EXECUTE IMMEDIATE '
+            INSERT INTO marcas (nombre)
+            SELECT DISTINCT TRIM(v.marca) FROM vehiculos v
+             WHERE v.marca IS NOT NULL
+               AND NOT EXISTS (SELECT 1 FROM marcas m WHERE m.nombre = TRIM(v.marca))';
+        EXECUTE IMMEDIATE '
+            INSERT INTO modelos (marca_id, nombre)
+            SELECT DISTINCT m.id, TRIM(v.modelo)
+              FROM vehiculos v
+              JOIN marcas m ON m.nombre = TRIM(v.marca)
+             WHERE v.modelo IS NOT NULL
+               AND NOT EXISTS (SELECT 1 FROM modelos mo
+                                WHERE mo.marca_id = m.id AND mo.nombre = TRIM(v.modelo))';
+        COMMIT;
+    END IF;
+END;
+/
 
 -- ── 3. VEHICULOS apunta a MODELOS ────────────────────────────────
 DECLARE
@@ -81,15 +95,21 @@ BEGIN
         EXECUTE IMMEDIATE 'ALTER TABLE vehiculos ADD (modelo_id NUMBER)';
         DBMS_OUTPUT.PUT_LINE('Columna VEHICULOS.MODELO_ID agregada.');
     END IF;
+
+    SELECT COUNT(*) INTO v FROM user_tab_columns
+     WHERE table_name = 'VEHICULOS' AND column_name = 'MARCA';
+    IF v > 0 THEN
+        EXECUTE IMMEDIATE '
+            UPDATE vehiculos v
+               SET modelo_id = (SELECT mo.id
+                                  FROM modelos mo
+                                  JOIN marcas m ON m.id = mo.marca_id
+                                 WHERE m.nombre = TRIM(v.marca) AND mo.nombre = TRIM(v.modelo))
+             WHERE v.modelo_id IS NULL';
+        COMMIT;
+    END IF;
 END;
 /
-
-UPDATE vehiculos v
-   SET modelo_id = (SELECT mo.id
-                      FROM modelos mo
-                      JOIN marcas m ON m.id = mo.marca_id
-                     WHERE m.nombre = TRIM(v.marca) AND mo.nombre = TRIM(v.modelo))
- WHERE v.modelo_id IS NULL;
 
 DECLARE
     v NUMBER;
@@ -110,6 +130,15 @@ END;
 -- Si alguien inserta o edita un vehículo con marca/modelo en texto (como
 -- hace VehiculoModel hoy) y no trae modelo_id, se busca o se crea la marca
 -- y el modelo y se completa modelo_id. Así las dos formas conviven.
+-- Se crea solo mientras vehiculos tenga la columna marca (la fase 2 la quita
+-- junto con este trigger).
+DECLARE
+    v NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v FROM user_tab_columns
+     WHERE table_name = 'VEHICULOS' AND column_name = 'MARCA';
+    IF v > 0 THEN
+        EXECUTE IMMEDIATE q'[
 CREATE OR REPLACE TRIGGER trg_vehiculos_modelo_id
     BEFORE INSERT OR UPDATE OF marca, modelo ON vehiculos
     FOR EACH ROW
@@ -136,6 +165,8 @@ BEGIN
             RETURNING id INTO v_modelo_id;
         END;
         :NEW.modelo_id := v_modelo_id;
+    END IF;
+END;]';
     END IF;
 END;
 /
@@ -190,28 +221,28 @@ BEGIN
 END;
 /
 
--- ── 6. Privilegios de los roles sobre lo nuevo ───────────────────
-GRANT SELECT, INSERT, UPDATE, DELETE ON marcas                   TO rol_electrisys_admin;
-GRANT SELECT, INSERT, UPDATE, DELETE ON modelos                  TO rol_electrisys_admin;
-GRANT SELECT, INSERT, UPDATE, DELETE ON consulta_entidades       TO rol_electrisys_admin;
-GRANT SELECT, INSERT, UPDATE, DELETE ON consulta_recomendaciones TO rol_electrisys_admin;
-GRANT SELECT ON vw_vehiculos          TO rol_electrisys_admin;
-GRANT SELECT ON vw_totales_documento  TO rol_electrisys_admin;
-GRANT SELECT ON marcas                TO rol_electrisys_vendedor;
-GRANT SELECT ON modelos               TO rol_electrisys_vendedor;
-GRANT SELECT ON vw_vehiculos          TO rol_electrisys_vendedor;
-GRANT SELECT ON marcas                TO rol_electrisys_dueno;
-GRANT SELECT ON modelos               TO rol_electrisys_dueno;
-GRANT SELECT ON consulta_entidades       TO rol_electrisys_dueno;
-GRANT SELECT ON consulta_recomendaciones TO rol_electrisys_dueno;
-GRANT SELECT ON vw_vehiculos          TO rol_electrisys_dueno;
-GRANT SELECT ON vw_totales_documento  TO rol_electrisys_dueno;
-
--- ── 7. Comprobaciones (deben dar 0 filas / 0) ────────────────────
+-- ── 6. Comprobaciones (deben dar 0) ──────────────────────────────
+-- Los privilegios de los roles sobre MARCAS, MODELOS, CONSULTA_* y
+-- vw_vehiculos se otorgan en 08_roles_privilegios.sql.
 PROMPT Vehiculos sin modelo_id (debe ser 0):
 SELECT COUNT(*) AS sin_modelo FROM vehiculos WHERE modelo_id IS NULL;
-PROMPT Documentos cuyo total no cuadra con sus detalles (debe ser 0):
-SELECT COUNT(*) AS descuadrados FROM vw_totales_documento WHERE diferencia <> 0;
+-- Totales guardados que no cuadran con la suma de sus líneas (columnas de la
+-- fase 1; dinámico para que el script no falle si la fase 2 ya las quitó).
+DECLARE
+    v NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v FROM user_tab_columns
+     WHERE table_name = 'VENTAS' AND column_name = 'SUBTOTAL';
+    IF v > 0 THEN
+        EXECUTE IMMEDIATE '
+            SELECT COUNT(*) FROM ventas h
+              LEFT JOIN (SELECT venta_id, SUM(subtotal) AS s FROM detalle_ventas GROUP BY venta_id) d
+                     ON d.venta_id = h.id
+             WHERE h.total <> NVL(d.s, 0) - h.descuento + h.impuesto' INTO v;
+        DBMS_OUTPUT.PUT_LINE('Ventas cuyo total no cuadra con sus detalles (informativo): ' || v);
+    END IF;
+END;
+/
 -- Revalida objetos que quedaron INVALID por el orden de creacion (p. ej. vistas sobre vehiculos).
 BEGIN DBMS_UTILITY.COMPILE_SCHEMA(USER, FALSE); END;
 /

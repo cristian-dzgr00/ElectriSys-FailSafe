@@ -24,7 +24,7 @@ DECLARE
     v_precio       NUMBER;
     v_cantidad     NUMBER;
     v_num_lineas   NUMBER;
-    v_subtotal     NUMBER;
+    v_inicio       PLS_INTEGER;
     TYPE t_ids IS TABLE OF NUMBER;
     v_clientes  t_ids;
     v_usuarios  t_ids;
@@ -37,27 +37,27 @@ BEGIN
     FOR i IN 1 .. 8000 LOOP
         v_cliente_id := v_clientes(TRUNC(DBMS_RANDOM.VALUE(1, v_clientes.COUNT + 1)));
         v_usuario_id := v_usuarios(TRUNC(DBMS_RANDOM.VALUE(1, v_usuarios.COUNT + 1)));
-        v_subtotal   := 0;
 
-        INSERT INTO ventas (numero, cliente_id, usuario_id, subtotal, total, creado_en)
-        VALUES ('VOL-' || LPAD(i, 7, '0'), v_cliente_id, v_usuario_id, 0, 0,
+        -- La cabecera solo guarda porcentajes (default: 0 % de descuento, 19 % de IVA);
+        -- los montos salen de vw_totales_documento.
+        INSERT INTO ventas (numero, cliente_id, usuario_id, creado_en)
+        VALUES ('VOL-' || LPAD(i, 7, '0'), v_cliente_id, v_usuario_id,
                 SYSTIMESTAMP - DBMS_RANDOM.VALUE(0, 730))
         RETURNING id INTO v_venta_id;
 
         v_num_lineas := TRUNC(DBMS_RANDOM.VALUE(1, 4)); -- 1 a 3 líneas por venta
+        -- Repuestos consecutivos desde un punto al azar: nunca se repite uno en la
+        -- misma venta (la PK de detalle_ventas es (venta_id, repuesto_id)).
+        v_inicio := TRUNC(DBMS_RANDOM.VALUE(0, v_repuestos.COUNT));
 
         FOR j IN 1 .. v_num_lineas LOOP
-            v_repuesto_id := v_repuestos(TRUNC(DBMS_RANDOM.VALUE(1, v_repuestos.COUNT + 1)));
+            v_repuesto_id := v_repuestos(MOD(v_inicio + j - 1, v_repuestos.COUNT) + 1);
             v_cantidad    := TRUNC(DBMS_RANDOM.VALUE(1, 4));
             v_precio      := TRUNC(DBMS_RANDOM.VALUE(10000, 400000));
 
-            INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit, subtotal)
-            VALUES (v_venta_id, v_repuesto_id, v_cantidad, v_precio, v_cantidad * v_precio);
-
-            v_subtotal := v_subtotal + (v_cantidad * v_precio);
+            INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit)
+            VALUES (v_venta_id, v_repuesto_id, v_cantidad, v_precio);
         END LOOP;
-
-        UPDATE ventas SET subtotal = v_subtotal, total = v_subtotal WHERE id = v_venta_id;
 
         IF MOD(i, 1000) = 0 THEN
             COMMIT;

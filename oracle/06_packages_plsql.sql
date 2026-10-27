@@ -1,7 +1,15 @@
 -- ============================================================
 -- ElectriSys — Migración a Oracle 23ai
 -- 06. PL/SQL: secuencia y packages de negocio
--- Ejecutar conectado como ELECTRISYS.
+-- Ejecutar conectado como ELECTRISYS, DESPUÉS de 16_normalizacion_3fn_fase2.sql
+-- (usa ventas.descuento_pct/iva_pct y vw_totales_documento). La vista se crea
+-- en 07_vistas.sql, que necesita fn_fecha_local de este archivo: por eso, en
+-- una carga desde cero, los cuerpos de los packages salen de aquí con
+-- "compilation errors" (falta la vista) y 07 los recompila al terminar.
+--
+-- Fase 2 de la 3FN: la cabecera de la venta ya no guarda subtotal, descuento,
+-- impuesto ni total (son derivados de las líneas). Solo guarda los
+-- porcentajes; los montos salen de vw_totales_documento.
 --
 -- Nota sobre esta versión: registrar_venta() originalmente recibía la
 -- venta completa (cabecera + todas las líneas) en un solo llamado, vía un
@@ -66,26 +74,25 @@ CREATE OR REPLACE PACKAGE pkg_ventas AS
     -- Genera el consecutivo con formato VT-<año>-<secuencia con ceros>
     FUNCTION fn_generar_numero_venta RETURN VARCHAR2;
 
-    -- Crea la cabecera de una venta. subtotal/descuento/impuesto/total
-    -- llegan YA CALCULADOS por PHP (GestorVentas aplica la Strategy de
-    -- descuento — PrecioEstandarStrategy/DescuentoVolumenStrategy/
-    -- ExentoIvaStrategy — antes de llamar acá). Oracle no reimplementa esa
-    -- regla de negocio: solo la persiste. Cada línea se agrega después
-    -- con agregar_item_venta().
+    -- Crea la cabecera de una venta. Solo guarda los PORCENTAJES de descuento
+    -- e IVA (PHP — GestorVentas con la Strategy de descuento: PrecioEstandar/
+    -- DescuentoVolumen/ExentoIva — decide cuáles aplican y los pasa acá).
+    -- Subtotal, descuento, impuesto y total NO se guardan: se calculan desde
+    -- las líneas en vw_totales_documento. Cada línea se agrega después con
+    -- agregar_item_venta().
     FUNCTION registrar_venta(
-        p_cliente_id  IN ventas.cliente_id%TYPE,
-        p_usuario_id  IN ventas.usuario_id%TYPE,
-        p_subtotal    IN ventas.subtotal%TYPE,
-        p_descuento   IN ventas.descuento%TYPE DEFAULT 0,
-        p_impuesto    IN ventas.impuesto%TYPE DEFAULT 0,
-        p_total       IN ventas.total%TYPE,
-        p_metodo_pago IN ventas.metodo_pago%TYPE DEFAULT 'efectivo',
-        p_notas       IN ventas.notas%TYPE DEFAULT NULL
+        p_cliente_id    IN ventas.cliente_id%TYPE,
+        p_usuario_id    IN ventas.usuario_id%TYPE,
+        p_descuento_pct IN ventas.descuento_pct%TYPE DEFAULT 0,
+        p_iva_pct       IN ventas.iva_pct%TYPE       DEFAULT 19,
+        p_metodo_pago   IN ventas.metodo_pago%TYPE   DEFAULT 'efectivo',
+        p_notas         IN ventas.notas%TYPE         DEFAULT NULL
     ) RETURN ventas.id%TYPE;
 
     -- Agrega una línea a una venta ya creada. Solo descuenta stock (vía
-    -- trigger) e inserta el detalle — NO toca subtotal/impuesto/total de
-    -- la cabecera, que ya llegaron correctos desde registrar_venta().
+    -- trigger) e inserta el detalle (p_descuento es el MONTO de descuento de
+    -- la línea). La PK (venta_id, repuesto_id) impide repetir un repuesto en
+    -- la misma venta (ORA-00001): quien llama debe sumar las cantidades.
     PROCEDURE agregar_item_venta(
         p_venta_id    IN detalle_ventas.venta_id%TYPE,
         p_repuesto_id IN detalle_ventas.repuesto_id%TYPE,
@@ -100,7 +107,9 @@ CREATE OR REPLACE PACKAGE pkg_ventas AS
 
     -- Listado paginado + filtros, equivalente a VentaModel::listar().
     -- El cursor incluye la columna total_filas (COUNT(*) OVER()) para que
-    -- el backend no necesite una segunda consulta para el total.
+    -- el backend no necesite una segunda consulta para el total, y los
+    -- montos calculados subtotal/descuento/impuesto/total (de
+    -- vw_totales_documento) al final de cada fila.
     -- p_desde/p_hasta como texto 'YYYY-MM-DD' (no DATE): bindear un DATE
     -- desde PHP vía oci8 depende del NLS_DATE_FORMAT de la sesión, que no
     -- es 'YYYY-MM-DD' por defecto — más simple y predecible convertir con
@@ -115,6 +124,8 @@ CREATE OR REPLACE PACKAGE pkg_ventas AS
     ) RETURN SYS_REFCURSOR;
 
     -- Cabecera + líneas de una venta, equivalente a VentaModel::buscarPorId().
+    -- La cabecera trae los montos calculados (subtotal, descuento, impuesto,
+    -- total) y cada línea su subtotal (cantidad * precio_unit - descuento).
     PROCEDURE buscar_venta_por_id(
         p_id       IN  ventas.id%TYPE,
         p_cabecera OUT SYS_REFCURSOR,
@@ -133,14 +144,12 @@ CREATE OR REPLACE PACKAGE BODY pkg_ventas AS
     END fn_generar_numero_venta;
 
     FUNCTION registrar_venta(
-        p_cliente_id  IN ventas.cliente_id%TYPE,
-        p_usuario_id  IN ventas.usuario_id%TYPE,
-        p_subtotal    IN ventas.subtotal%TYPE,
-        p_descuento   IN ventas.descuento%TYPE DEFAULT 0,
-        p_impuesto    IN ventas.impuesto%TYPE DEFAULT 0,
-        p_total       IN ventas.total%TYPE,
-        p_metodo_pago IN ventas.metodo_pago%TYPE DEFAULT 'efectivo',
-        p_notas       IN ventas.notas%TYPE DEFAULT NULL
+        p_cliente_id    IN ventas.cliente_id%TYPE,
+        p_usuario_id    IN ventas.usuario_id%TYPE,
+        p_descuento_pct IN ventas.descuento_pct%TYPE DEFAULT 0,
+        p_iva_pct       IN ventas.iva_pct%TYPE       DEFAULT 19,
+        p_metodo_pago   IN ventas.metodo_pago%TYPE   DEFAULT 'efectivo',
+        p_notas         IN ventas.notas%TYPE         DEFAULT NULL
     ) RETURN ventas.id%TYPE
     IS
         v_venta_id ventas.id%TYPE;
@@ -148,8 +157,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_ventas AS
     BEGIN
         v_numero := fn_generar_numero_venta();
 
-        INSERT INTO ventas (numero, cliente_id, usuario_id, subtotal, descuento, impuesto, total, metodo_pago, notas)
-        VALUES (v_numero, p_cliente_id, p_usuario_id, p_subtotal, p_descuento, p_impuesto, p_total, p_metodo_pago, p_notas)
+        INSERT INTO ventas (numero, cliente_id, usuario_id, descuento_pct, iva_pct, metodo_pago, notas)
+        VALUES (v_numero, p_cliente_id, p_usuario_id, p_descuento_pct, p_iva_pct, p_metodo_pago, p_notas)
         RETURNING id INTO v_venta_id;
 
         RETURN v_venta_id;
@@ -166,15 +175,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_ventas AS
         p_precio_unit IN detalle_ventas.precio_unit%TYPE,
         p_descuento   IN detalle_ventas.descuento%TYPE DEFAULT 0
     ) IS
-        v_subtotal_linea NUMBER;
     BEGIN
-        v_subtotal_linea := (p_cantidad * p_precio_unit) - p_descuento;
-
         -- trg_detven_descuenta_stock descuenta el stock automáticamente;
         -- si no alcanza, ck_repuestos_stock revierte toda la transacción
-        -- (ORA-02290) y ninguna línea queda a medias.
-        INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit, descuento, subtotal)
-        VALUES (p_venta_id, p_repuesto_id, p_cantidad, p_precio_unit, p_descuento, v_subtotal_linea);
+        -- (ORA-02290) y ninguna línea queda a medias. El subtotal de la línea
+        -- no se guarda: es cantidad * precio_unit - descuento.
+        INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit, descuento)
+        VALUES (p_venta_id, p_repuesto_id, p_cantidad, p_precio_unit, p_descuento);
     EXCEPTION
         WHEN OTHERS THEN
             ROLLBACK;
@@ -206,19 +213,24 @@ CREATE OR REPLACE PACKAGE BODY pkg_ventas AS
     ) RETURN SYS_REFCURSOR IS
         v_cursor SYS_REFCURSOR;
     BEGIN
+        -- Primero se pagina (filtros + orden) y solo a las filas de la página se
+        -- les calculan los totales: así no se agregan todas las líneas de la tabla.
         OPEN v_cursor FOR
-            SELECT v.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre,
-                   COUNT(*) OVER() AS total_filas
-              FROM ventas v
-              LEFT JOIN clientes c ON v.cliente_id = c.id
-              JOIN usuarios u      ON v.usuario_id = u.id
-             WHERE (p_estado IS NULL OR v.estado = p_estado)
-               AND (p_desde  IS NULL OR fn_fecha_local(v.creado_en) >= TO_DATE(p_desde, 'YYYY-MM-DD'))
-               AND (p_hasta  IS NULL OR fn_fecha_local(v.creado_en) <  TO_DATE(p_hasta, 'YYYY-MM-DD') + 1)
-               AND (p_q      IS NULL OR v.numero LIKE '%' || p_q || '%'
-                                      OR c.nombre LIKE '%' || p_q || '%')
-             ORDER BY v.creado_en DESC
-            OFFSET p_offset ROWS FETCH NEXT p_limit ROWS ONLY;
+            SELECT p.*, t.subtotal, t.descuento, t.impuesto, t.total
+              FROM (SELECT v.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre,
+                           COUNT(*) OVER() AS total_filas
+                      FROM ventas v
+                      LEFT JOIN clientes c ON v.cliente_id = c.id
+                      JOIN usuarios u      ON v.usuario_id = u.id
+                     WHERE (p_estado IS NULL OR v.estado = p_estado)
+                       AND (p_desde  IS NULL OR fn_fecha_local(v.creado_en) >= TO_DATE(p_desde, 'YYYY-MM-DD'))
+                       AND (p_hasta  IS NULL OR fn_fecha_local(v.creado_en) <  TO_DATE(p_hasta, 'YYYY-MM-DD') + 1)
+                       AND (p_q      IS NULL OR v.numero LIKE '%' || p_q || '%'
+                                              OR c.nombre LIKE '%' || p_q || '%')
+                     ORDER BY v.creado_en DESC
+                    OFFSET p_offset ROWS FETCH NEXT p_limit ROWS ONLY) p
+              JOIN vw_totales_documento t ON t.tipo = 'venta' AND t.documento_id = p.id
+             ORDER BY p.creado_en DESC;
         RETURN v_cursor;
     END listar_ventas;
 
@@ -229,14 +241,17 @@ CREATE OR REPLACE PACKAGE BODY pkg_ventas AS
     ) IS
     BEGIN
         OPEN p_cabecera FOR
-            SELECT v.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre
+            SELECT v.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre,
+                   t.subtotal, t.descuento, t.impuesto, t.total
               FROM ventas v
               LEFT JOIN clientes c ON v.cliente_id = c.id
               JOIN usuarios u      ON v.usuario_id = u.id
+              JOIN vw_totales_documento t ON t.tipo = 'venta' AND t.documento_id = v.id
              WHERE v.id = p_id;
 
         OPEN p_detalle FOR
-            SELECT dv.*, r.nombre AS producto_nombre, r.codigo
+            SELECT dv.*, dv.cantidad * dv.precio_unit - dv.descuento AS subtotal,
+                   r.nombre AS producto_nombre, r.codigo
               FROM detalle_ventas dv
               JOIN repuestos r ON dv.repuesto_id = r.id
              WHERE dv.venta_id = p_id;
@@ -283,11 +298,12 @@ CREATE OR REPLACE PACKAGE BODY pkg_reportes AS
     ) RETURN NUMBER IS
         v_total NUMBER;
     BEGIN
-        SELECT NVL(SUM(total), 0) INTO v_total
-          FROM ventas
-         WHERE usuario_id = p_usuario_id
-           AND estado != 'anulada'
-           AND creado_en BETWEEN p_desde AND p_hasta;
+        SELECT NVL(SUM(t.total), 0) INTO v_total
+          FROM ventas v
+          JOIN vw_totales_documento t ON t.tipo = 'venta' AND t.documento_id = v.id
+         WHERE v.usuario_id = p_usuario_id
+           AND v.estado != 'anulada'
+           AND v.creado_en BETWEEN p_desde AND p_hasta;
         RETURN v_total;
     END total_vendido;
 
@@ -316,12 +332,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_reportes AS
     PROCEDURE resumen_hoy(p_cursor OUT SYS_REFCURSOR) IS
     BEGIN
         OPEN p_cursor FOR
-            SELECT COUNT(*)         AS total_ventas,
-                   NVL(SUM(total),0) AS ingresos,
-                   NVL(AVG(total),0) AS ticket_promedio
-              FROM ventas
-             WHERE TRUNC(fn_fecha_local(creado_en)) = fn_hoy_local()
-               AND estado = 'completada';
+            SELECT COUNT(*)           AS total_ventas,
+                   NVL(SUM(t.total),0) AS ingresos,
+                   NVL(AVG(t.total),0) AS ticket_promedio
+              FROM ventas v
+              JOIN vw_totales_documento t ON t.tipo = 'venta' AND t.documento_id = v.id
+             WHERE TRUNC(fn_fecha_local(v.creado_en)) = fn_hoy_local()
+               AND v.estado = 'completada';
     END resumen_hoy;
 
 END pkg_reportes;

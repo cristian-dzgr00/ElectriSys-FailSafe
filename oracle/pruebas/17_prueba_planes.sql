@@ -12,16 +12,17 @@ SPOOL evidencia_100k.txt
 PROMPT === 1. Generando 100 000 ventas sintéticas (trg_detven_descuenta_stock desactivado) ===
 ALTER TRIGGER trg_detven_descuenta_stock DISABLE;
 
-INSERT INTO ventas (numero, cliente_id, usuario_id, subtotal, total, creado_en)
+-- Las cabeceras solo guardan porcentajes (defaults 0 % y 19 %); una línea por
+-- venta (la PK de detalle_ventas es (venta_id, repuesto_id)).
+INSERT INTO ventas (numero, cliente_id, usuario_id, creado_en)
 SELECT 'VOL-' || LPAD(n, 7, '0'),
        (SELECT id FROM (SELECT id FROM clientes ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1),
        (SELECT MIN(id) FROM usuarios),
-       50000, 50000,
        SYSTIMESTAMP - DBMS_RANDOM.VALUE(0, 730)
   FROM (SELECT LEVEL AS n FROM dual CONNECT BY LEVEL <= 100000);
 
-INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit, subtotal)
-SELECT v.id, (SELECT MIN(id) FROM repuestos), 1, 50000, 50000
+INSERT INTO detalle_ventas (venta_id, repuesto_id, cantidad, precio_unit)
+SELECT v.id, (SELECT MIN(id) FROM repuestos), 1, 50000
   FROM ventas v WHERE v.numero LIKE 'VOL-%';
 COMMIT;
 
@@ -29,6 +30,7 @@ BEGIN
     DBMS_STATS.GATHER_TABLE_STATS(USER, 'VENTAS', cascade => TRUE);
     DBMS_STATS.GATHER_TABLE_STATS(USER, 'DETALLE_VENTAS', cascade => TRUE);
     DBMS_STATS.GATHER_TABLE_STATS(USER, 'POSIBLES_ERRORES', cascade => TRUE);
+    DBMS_STATS.GATHER_TABLE_STATS(USER, 'MARCAS', cascade => TRUE);
 END;
 /
 SELECT COUNT(*) AS total_ventas FROM ventas;
@@ -53,16 +55,20 @@ PROMPT === 4. Consulta C: detalle de una venta ===
 PROMPT --- SIN índice
 EXPLAIN PLAN FOR SELECT /*+ FULL(d) */ * FROM detalle_ventas d WHERE venta_id = 100;
 SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
-PROMPT --- CON índice idx_detven_venta_repuesto
-EXPLAIN PLAN FOR SELECT /*+ INDEX(d idx_detven_venta_repuesto) */ * FROM detalle_ventas d WHERE venta_id = 100;
+PROMPT --- CON índice de la PK pk_detalle_ventas (venta_id, repuesto_id)
+EXPLAIN PLAN FOR SELECT /*+ INDEX(d pk_detalle_ventas) */ * FROM detalle_ventas d WHERE venta_id = 100;
 SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
 
-PROMPT === 5. Consulta D: búsqueda en posibles_errores (el índice único cubre tipo,error) ===
+PROMPT === 5. Consulta D: búsqueda en posibles_errores (el índice cubre tipo,error; el nombre sale de marcas) ===
 PROMPT --- SIN índice
-EXPLAIN PLAN FOR SELECT /*+ FULL(p) */ correcto FROM posibles_errores p WHERE tipo = 'marca' AND error = 'toyta';
+EXPLAIN PLAN FOR SELECT /*+ FULL(p) */ m.nombre AS correcto FROM posibles_errores p JOIN marcas m ON m.id = p.marca_id WHERE p.tipo = 'marca' AND p.error = 'toyta';
 SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
 PROMPT --- CON índice
-EXPLAIN PLAN FOR SELECT correcto FROM posibles_errores p WHERE tipo = 'marca' AND error = 'toyta';
+EXPLAIN PLAN FOR SELECT m.nombre AS correcto FROM posibles_errores p JOIN marcas m ON m.id = p.marca_id WHERE p.tipo = 'marca' AND p.error = 'toyta';
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+PROMPT === 5b. Consulta E: totales de una venta desde vw_totales_documento ===
+EXPLAIN PLAN FOR SELECT * FROM vw_totales_documento WHERE tipo = 'venta' AND documento_id = 100;
 SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
 
 PROMPT === 6. Tiempo real de la consulta A (Autotrace no requerido) ===

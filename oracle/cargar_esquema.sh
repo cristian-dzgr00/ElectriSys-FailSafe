@@ -56,29 +56,39 @@ sqlplus -S "/ as sysdba" @"${DIR}/01_usuario_y_esquema.sql" "${DB_PASS}" <<'EOF'
 EXIT
 EOF
 
+# Tablas, índices, triggers y datos base (esquema original, previo a la 3FN).
 app 02_ddl_tablas.sql
 app 03_indices.sql
 app 04_triggers.sql
 app 05_seed.sql
-app 06_packages_plsql.sql
 
-# Crear usuarios de base de datos es privilegio de sistema.
-sysdba 09_usuarios_demo_sysdba.sql
-
-# Módulo de pedidos a proveedor (Sprint 2).
+# Módulo de pedidos a proveedor (Sprint 2) y ciclo de cotizaciones.
+# Los 4 GRANT a roles del final de 10 dan ORA-01917 en una base nueva (los roles
+# se crean en 08); 08 los repite, no hace falta hacer nada.
 app 10_pedidos.sql
 app 11_cotizaciones_estados.sql
-# 07 va despues de 10: vw_totales_documento lee pedido_detalle
-app 07_vistas.sql
-app 08_roles_privilegios.sql
 
 # Asistente de lenguaje natural (Sprint 3, tarjeta 3.14): corpus NLP y posibles errores.
 app 12_nlp_dataset.sql
 app 13_posibles_errores.sql
 app 14_seed_posibles_errores.sql
 
-# 3FN fase 1 (Sprint 3, tarjetas 3.1 y 3.2): marcas, modelos, respuestas del asistente.
+# 3FN (Sprint 3): la carga desde cero es la cadena de migraciones.
+#   15 = fase 1 (marcas, modelos, respuestas del asistente en tablas atómicas)
+#   16 = fase 2 (esquema final del modelo ER: sin columnas derivadas, PK compuestas,
+#        porcentajes en las cabeceras, intencion_id, marca_id/modelo_id/categoria_id)
 app 15_normalizacion_3fn.sql
+app 16_normalizacion_3fn_fase2.sql
+
+# Packages, vistas y roles se escriben ya contra el esquema final, por eso van después.
+# 06 define fn_fecha_local (la usa 07); 07 recompila los packages al terminar.
+# 08 crea los roles (los GRANT de 10/15/16 a roles se repiten allí).
+app 06_packages_plsql.sql
+app 07_vistas.sql
+app 08_roles_privilegios.sql
+
+# Crear usuarios de base de datos es privilegio de sistema.
+sysdba 09_usuarios_demo_sysdba.sql
 
 # Backup: el DIRECTORY lo crea SYSDBA; el package corre como la aplicación.
 sysdba backup/10_directorio_backup_sysdba.sql
