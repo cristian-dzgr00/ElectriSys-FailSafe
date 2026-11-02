@@ -31,6 +31,8 @@ Base de datos en Oracle Cloud (Autonomous AI Database, Always Free, us-ashburn-1
 - [x] T12 `docs/despliegue-produccion.md` reescrito (Oracle Cloud, 2 VMs, DuckDNS, límites) y README actualizado. Ruta: inline (solo documentación; el contexto del despliegue ya estaba en la sesión, delegar exigía reexplicarlo todo).
 - [x] T13 Commits convencionales de la migración, sin push y sin `Claude outputs/oracle_cloud.zip` (ver commits abajo).
 
+Pruebas complementarias (2026-11-02, a pedido del usuario): **Clientes** crear/editar/eliminar OK; **Cotizaciones** crear `COT-20261101-82D089` OK (queda Activa, sin acción de borrado en la UI); **Reportes** filtros y descarga PDF OK; **Usuarios** 403 en el sitio normal y OK por túnel SSH (2 usuarios: Administrador y Carlos Vendedor; `dueno@electrisys.com` del README no existe en la base de la nube); **Respaldos** por túnel carga y "Respaldar ahora" genera `electrisys_backup_*_01.dmp` (6,2 MB) y `.log` en `ELECTRISYS_BACKUP_DIR`. Hallazgo: el texto de la pantalla Respaldos describe un servicio `oracle-backup` y un respaldo nocturno propio que no existen en la nube (los respaldos los hace Oracle). Datos de prueba que quedan: venta VT-2026-000001 (Anulada), pedido PED-000001 (Cancelado), cotización COT-20261101-82D089 (Activa) y un `.dmp` de respaldo.
+
 Commits en `feature/normalizacion-3fn-fase2` (sin push): `c514a8a` backend 3FN fase 2, `ec43da4` conexión con wallet, `e16bc6a` scripts de Autonomous Database, `ec25228` despliegue en dos VMs, `a735487` documentación y seguimiento. Los dos primeros y parte del tercero eran trabajo previo del usuario ya presente en el árbol.
 
 ## Criterios de aceptación

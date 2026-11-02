@@ -195,6 +195,24 @@ Comprobaciones automatizadas desde fuera (todas pasan en producción):
 
 ---
 
+## 11.1 Entrar a Usuarios y Respaldos (rutas de administración)
+
+Las pantallas **Usuarios** y **Respaldos** usan rutas (`/api/usuarios`, `/api/admin/backups`) que el backend solo atiende si la petición llega desde la red VPN `10.100.0.0/24` o desde IPs internas (`VpnMiddleware`). Desde internet responden 403: es el comportamiento diseñado, no una falla.
+
+No existe otra dirección web: es **el mismo sitio, el mismo backend y la misma base**. Solo cambia por dónde llega la petición. Como WireGuard no está desplegado, la forma de entrar es un **túnel SSH** hacia la VM web:
+
+```powershell
+ssh -i $env:USERPROFILE\.ssh\electrisys_oracle -N -L 8443:127.0.0.1:443 ubuntu@IP_PUBLICA_VM_WEB
+```
+
+Dejar esa ventana abierta y abrir **https://localhost:8443**. El navegador avisa que el certificado no coincide (es el de `electrisys.duckdns.org`): *Avanzado → Continuar*. Iniciar sesión con un usuario administrador. Todo lo que se cambie ahí queda en la misma base y se ve en el sitio normal.
+
+Verificado en producción: por el túnel, Usuarios lista a los usuarios y Respaldos carga sin errores; "Respaldar ahora" genera un `.dmp` y su `.log` en `ELECTRISYS_BACKUP_DIR` (dentro del servidor de la base, por eso la pantalla muestra el aviso de que no puede listarlos).
+
+Desplegar WireGuard (`vpn/setup-wireguard.sh`) es la alternativa para dar acceso a más personas: exige abrir el puerto UDP 51820 en la security list y en `iptables`, e instalar el cliente WireGuard en cada equipo.
+
+---
+
 ## 12. Límites del nivel gratuito
 
 Según la documentación de Oracle (ver `oracle/docs/despliegue-oracle-cloud.md`):
