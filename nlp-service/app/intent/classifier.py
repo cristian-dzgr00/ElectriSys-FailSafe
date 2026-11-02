@@ -10,7 +10,11 @@ import joblib
 
 from app.intent.train import MODEL_PATH
 
-UMBRAL_CONFIANZA = 0.35
+# Elegido por validación cruzada (barrido en eval/cifras_vigentes.json, sección
+# "umbral_de_confianza"): el menor umbral con el que las frases fuera de dominio que se
+# tratan como negocio quedan en <= 15 % tanto en la validación normal como en la agrupada.
+# Si cambia el modelo o el dataset, vuelva a correr eval/generar_cifras.py: avisa si ya no coincide.
+UMBRAL_CONFIANZA = 0.40
 INTENCION_FALLBACK = "fuera_de_dominio"
 
 _pipeline_cacheado = None

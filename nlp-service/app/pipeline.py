@@ -26,12 +26,31 @@ TOP_K = 3
 _estrategia_similitud = SimilitudTfidfCoseno()
 
 
+def _marca_de_modelo() -> dict[str, list[str]]:
+    """{modelo: [marcas del catálogo que lo tienen]}, armado con las mismas consultas
+    (con caché) que ya usa el diccionario del NER: un modelo por marca.
+
+    Se pide solo cuando hace falta (ver extraer_entidades): un modelo sin marca en el
+    texto. Si el backend no responde queda vacío y simplemente no se infiere nada.
+    """
+    mapa: dict[str, list[str]] = {}
+    for marca in dictionary.obtener_marcas():
+        for modelo in dictionary.obtener_modelos(marca):
+            mapa.setdefault(modelo, []).append(marca)
+    return mapa
+
+
 def _entidades_del_texto(texto: str) -> dict:
+    """Entidades del texto. Si nombra un modelo que el catálogo conoce con UNA sola
+    marca ("hilux" -> Toyota) y no se escribió la marca, se completa: ya no hace
+    falta que el usuario la teclee. Con un modelo repetido en varias marcas la
+    marca queda vacía y el pipeline la pregunta."""
     return extraer_entidades(
         texto,
         marcas_conocidas=dictionary.obtener_marcas(),
         modelos_conocidos=dictionary.obtener_modelos(),
         categorias_conocidas=dictionary.obtener_categorias(),
+        marca_de_modelo=_marca_de_modelo,
     )
 
 

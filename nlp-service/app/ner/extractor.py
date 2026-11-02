@@ -54,9 +54,80 @@ SINONIMOS_CATEGORIA = {
     "correas": "Correas y Bandas",
 }
 
+# Vocabulario de mostrador -> categoría del catálogo. Cada regla es
+# (expresión sobre el texto normalizado, categoría, prioridad):
+#   3 = frase específica ("banda de freno" es Frenos aunque "banda" sola sea
+#       Correas y Bandas; "motor de arranque" no es la categoría Motor);
+#   2 = palabra propia de la categoría;
+#   1 = palabra débil que aparece en otros contextos ("motor", "aceite").
+# Gana la prioridad más alta y, a igual prioridad, lo que se nombra primero.
+# Una regla solo cuenta si su categoría está en el catálogo recibido.
+_REGLAS_CATEGORIA_TEXTO = [
+    # --- Frenos
+    (r"\bbandas?\s+de\s+frenos?\b", "Frenos", 3), (r"\bdiscos?\s+(?:de\s+)?(?:frenos?|ventilados?)\b", "Frenos", 3),
+    (r"\bcilindros?\s+maestros?\b", "Frenos", 3), (r"\bliquido\s+de\s+frenos?\b", "Frenos", 3),
+    (r"\bfrenos?\b", "Frenos", 2), (r"\bpastillas?\b", "Frenos", 2), (r"\bbalatas?\b", "Frenos", 2),
+    (r"\bzapatas?\b", "Frenos", 2), (r"\bcalipers?\b", "Frenos", 2),
+    # --- Baterías
+    (r"\bbaterias?\b", "Baterías", 2), (r"\bacumulador(?:es)?\b", "Baterías", 2),
+    # --- Neumáticos
+    (r"\bllantas?\b", "Neumáticos", 2), (r"\bcauchos?\b", "Neumáticos", 2), (r"\bneumaticos?\b", "Neumáticos", 2),
+    # --- Hidráulica
+    (r"\bfiltros?\s+(?:de\s+\w+\s+)?hidraulic\w*", "Hidráulica", 3), (r"\bhidraulic\w*", "Hidráulica", 2),
+    # --- Enganches y Acoples
+    (r"\brotulas?\s+de\s+enganche\b", "Enganches y Acoples", 3), (r"\btoma\s+de\s+fuerza\b", "Enganches y Acoples", 3),
+    (r"\btres\s+puntos\b", "Enganches y Acoples", 3), (r"\benganch\w*", "Enganches y Acoples", 2),
+    (r"\bacoples?\b", "Enganches y Acoples", 2), (r"\bpto\b", "Enganches y Acoples", 2),
+    # --- Sistema Eléctrico
+    (r"\bmotor(?:es)?\s+de\s+arranque\b", "Sistema Eléctrico", 3), (r"\balternador(?:es)?\b", "Sistema Eléctrico", 2),
+    (r"\barranque\b", "Sistema Eléctrico", 2), (r"\bbombill[oa]s?\b", "Sistema Eléctrico", 2),
+    (r"\breles?\b", "Sistema Eléctrico", 2), (r"\bfusibles?\b", "Sistema Eléctrico", 2),
+    (r"\bhalogen\w*", "Sistema Eléctrico", 2), (r"\bsistema\s+electrico\b", "Sistema Eléctrico", 3),
+    # --- Encendido
+    (r"\bcables?\s+de\s+bujia\b", "Encendido", 3), (r"\bbujias?\b", "Encendido", 2), (r"\bbobinas?\b", "Encendido", 2),
+    (r"\bencendido\b", "Encendido", 2), (r"\bignicion\b", "Encendido", 2),
+    # --- Correas y Bandas
+    (r"\bkit\s+de\s+distribucion\b", "Correas y Bandas", 3), (r"\bcorreas?\b", "Correas y Bandas", 2),
+    (r"\bbandas?\b", "Correas y Bandas", 2), (r"\btensor(?:es)?\b", "Correas y Bandas", 2),
+    (r"\bpoly\s?v\b", "Correas y Bandas", 2),
+    # --- Transmisión
+    (r"\baceite\s+de\s+(?:transmision|caja)\b", "Transmisión", 3), (r"\bembragues?\b", "Transmisión", 2),
+    (r"\b(?:clutch|croche|cloche)\b", "Transmisión", 2), (r"\bhomocinetic\w*", "Transmisión", 2),
+    (r"\btransmision\b", "Transmisión", 2), (r"\bcaja\s+de\s+(?:cambios|velocidades)\b", "Transmisión", 3),
+    (r"\bdiferencial(?:es)?\b", "Transmisión", 2), (r"\batf\b", "Transmisión", 2),
+    # --- Suspensión
+    (r"\bamortiguador(?:es)?\b", "Suspensión", 2), (r"\bsuspension\b", "Suspensión", 2),
+    (r"\bresortes?\b", "Suspensión", 2), (r"\brotulas?\b", "Suspensión", 2),
+    (r"\bterminal(?:es)?\s+de\s+direccion\b", "Suspensión", 3), (r"\bbuje[s]?\b", "Suspensión", 2),
+    (r"\bbarras?\s+estabilizadoras?\b", "Suspensión", 3), (r"\bbieletas?\b", "Suspensión", 2),
+    # --- Filtros
+    (r"\bseparador(?:es)?\s+de\s+agua\b", "Filtros", 3), (r"\bfiltros?\b", "Filtros", 2),
+    # --- Motor (lo más ambiguo, al final)
+    (r"\bbombas?\s+de\s+agua\b", "Motor", 3), (r"\bjuntas?\s+de\s+culata\b", "Motor", 3),
+    (r"\bradiador(?:es)?\b", "Motor", 2), (r"\btermostatos?\b", "Motor", 2), (r"\bempaques?\b", "Motor", 2),
+    (r"\bculatas?\b", "Motor", 2), (r"\bpistones?\b", "Motor", 2),
+    (r"\b(?:sae\s)?\d{1,2} ?w ?\d{2,3}\b", "Motor", 2),
+    (r"\blubricantes?\b", "Motor", 1), (r"\baceites?\b", "Motor", 1), (r"\bmotor(?:es)?\b", "Motor", 1),
+]
+_REGLAS_CATEGORIA = [(re.compile(p), cat, prio) for p, cat, prio in _REGLAS_CATEGORIA_TEXTO]
+# "motor 2.7", "con motor diesel", "motor de 1600cc": el motor del vehículo, no la categoría Motor.
+_RE_MOTOR_DESCRIPTIVO = re.compile(r"\b(?:con\s+)?motor(?:es)?\s+(?:de\s+)?(?:\d+\w*|diesel|gasolina|hibrido|electrico|turbo)\b")
+
+# Cifras que NO son modelo de vehículo ni código de repuesto.
+_RE_VISCOSIDAD = re.compile(r"\b(?:sae\s*)?\d{1,2}\s?w\s?-?\s?\d{2,3}\b", re.IGNORECASE)  # 5W-30, 10W40
 _RE_ANIO = re.compile(r"\b(19[5-9]\d|20[0-4]\d)\b")
-_RE_MOTOR = re.compile(r"\b(\d\.\d)\b|\b(\d{3,4})\s?cc\b", re.IGNORECASE)
-_RE_CODIGO = re.compile(r"\b[A-Za-z0-9]{1,10}-[A-Za-z0-9]{2,10}\b")
+# Cilindrada: "2.7", "2,7", "2.7L", "1600cc". No es motor un decimal pegado a otra magnitud
+# ("1.1 bar", "3.5 mm", "12.5v") ni parte de un número mayor ("18.4-46", "T6.120").
+_RE_MOTOR = re.compile(
+    r"(?<![\w.,])(\d)[.,](\d)(?!\d)(?!\s?(?:bar|mm|cm|kg|psi|ml|hp|nm|amp\w*|volt\w*)\b)(?![vaw]\b)"
+    r"|\b(\d{3,4})\s?cc\b",
+    re.IGNORECASE,
+)
+# Código de repuesto: segmentos separados por guion y sufijo opcional con barra
+# ("90915-YZZD4", "HP-1002", "KN-33-2304", "W-610/3").
+_RE_CODIGO = re.compile(r"(?<![\w-])[A-Za-z0-9]{1,10}(?:-[A-Za-z0-9]{1,10}){1,3}(?:/[A-Za-z0-9]{1,4})?(?![\w-])")
+_RE_MAGNITUD = re.compile(r"^\d+(?:v|ah|a|w|mm|cm|kg|ml|l|lt|hp|nm|psi|bar|amp)$", re.IGNORECASE)
+_RE_GAS_DE_AMORTIGUADOR = re.compile(r"\b(?:amortiguador\w*|resorte\w*|cilindro\w*|gato)\b")
 
 
 UMBRAL_FUZZY_TYPO = 88  # para comparación palabra-por-palabra (ver abajo)
@@ -109,7 +180,9 @@ def _mejor_match(texto_normalizado: str, opciones: list[str]) -> str | None:
     if not opciones:
         return None
     opciones_normalizadas = {normalizar(o): o for o in opciones}
-    claves = list(opciones_normalizadas.keys())
+    # Las más largas primero: con un empate de puntaje gana el nombre más completo
+    # ("Spark GT" antes que "Spark" cuando el texto dice "spark gt").
+    claves = sorted(opciones_normalizadas.keys(), key=lambda k: (-len(k), k))
 
     resultado = process.extractOne(texto_normalizado, claves, scorer=fuzz.token_set_ratio)
     if resultado is not None and resultado[1] >= UMBRAL_FUZZY:
@@ -304,10 +377,88 @@ def _respaldo_similitud(texto_normalizado: str, opciones: list[str]) -> str | No
     return mejor
 
 
+MAX_LETRAS_NOMBRE_CORTO = 4  # "Kia", "Rio", "Ford", "Sail", "Onix", "Aveo"
+# Pares de letras que suenan igual (o casi) y se confunden al escribir.
+_PARES_FONETICOS = frozenset(frozenset(p) for p in ("kq", "kc", "qc", "sz", "sc", "zc", "bv", "gj", "xs"))
+_VOCALES_Y = set("aeiouy")
+
+
+def _es_error_corto(candidato: str, nombre: str) -> bool:
+    """¿`candidato` es una escritura plausible de un nombre CORTO (<= 4 letras)?
+
+    Con nombres tan cortos una distancia de edición genérica da demasiados
+    falsos positivos ("rin" no es "Rio", "kiu" y "roi" tampoco: ver
+    tests/test_ner_errores.py), así que solo valen los errores de oído más
+    corrientes: una vocal INTERNA por otra ("seil" por "sail", "kya" por "kia"),
+    una letra por su par fonético ("qia" por "kia", "onis" por "onix"), una
+    letra repetida ("foord") o una "h" muda de más.
+    """
+    n, c = len(nombre), len(candidato)
+    if c == n:
+        diferentes = [(i, a, b) for i, (a, b) in enumerate(zip(candidato, nombre)) if a != b]
+        if len(diferentes) != 1:
+            return False
+        i, a, b = diferentes[0]
+        vocales_internas = 0 < i < n - 1 and a in _VOCALES_Y and b in _VOCALES_Y
+        return vocales_internas or frozenset((a, b)) in _PARES_FONETICOS
+    if c == n + 1:  # una letra de más: repetida ("foord") o "h" muda
+        for i in range(c):
+            if candidato[:i] + candidato[i + 1:] == nombre:
+                extra = candidato[i]
+                if extra == "h" or (i > 0 and candidato[i - 1] == extra) or (i + 1 < c and candidato[i + 1] == extra):
+                    return True
+    return False
+
+
+def _respaldo_nombres_cortos(texto_normalizado: str, opciones: list[str]) -> str | None:
+    """Errores de nombres de 3-4 letras ("qia", "seil", "onyx") que la tabla no trae."""
+    cortos = {normalizar(o): o for o in opciones if 3 <= len(normalizar(o)) <= MAX_LETRAS_NOMBRE_CORTO
+              and " " not in normalizar(o) and not normalizar(o).isdigit()}
+    if not cortos:
+        return None
+    encontrados = set()
+    for palabra in texto_normalizado.split():
+        if not 3 <= len(palabra) <= MAX_LETRAS_NOMBRE_CORTO + 1 or palabra in cortos or es_palabra_comun(palabra):
+            continue
+        for nombre, original in cortos.items():
+            if _es_error_corto(palabra, nombre):
+                encontrados.add(original)
+    return encontrados.pop() if len(encontrados) == 1 else None  # varios: ambiguo, no adivinar
+
+
+def _respaldo_palabra_distintiva(texto_normalizado: str, opciones: list[str]) -> str | None:
+    """Nombres de varias palabras ("New Holland") cuando solo se escribe la palabra
+    que los distingue ("holland", "holan"): debe ser larga, única entre las
+    opciones y no una palabra común."""
+    distintivas: dict[str, set[str]] = {}
+    for o in opciones:
+        palabras = normalizar(o).split()
+        if len(palabras) < 2:
+            continue
+        for p in palabras:
+            if len(p) >= 6 and not p.isdigit():
+                distintivas.setdefault(p, set()).add(o)
+    unicas = {p: next(iter(v)) for p, v in distintivas.items() if len(v) == 1}
+    if not unicas:
+        return None
+    para_sola = {normalizar(o) for o in opciones}  # una palabra que ya es una opción por sí sola no cuenta
+    for palabra in texto_normalizado.split():
+        if len(palabra) < 6 or palabra in para_sola:
+            continue
+        for distintiva, opcion in unicas.items():
+            # La palabra exacta ("holland") basta; una parecida ("holan") no puede ser
+            # una palabra común.
+            if palabra == distintiva or (
+                    DamerauLevenshtein.normalized_similarity(palabra, distintiva) >= 0.85 and not es_palabra_comun(palabra)):
+                return opcion
+    return None
+
+
 def _extraer_con_tabla(texto_normalizado, tipo, opciones, tabla_errores, logica_actual) -> str | None:
     """Tabla primero; si no hay resultado, la lógica de siempre; al final,
-    los respaldos fonético y de similitud (solo si hay tabla cargada, para
-    que con tabla vacía el resultado sea idéntico al de antes)."""
+    los respaldos fonético, de similitud, de nombres cortos y de palabra
+    distintiva (solo si hay tabla cargada, para que con tabla vacía el
+    resultado sea idéntico al de antes)."""
     tabla = _resolver_tabla(tabla_errores)
     if tabla:
         encontrado = _buscar_en_tabla_errores(texto_normalizado, tipo, opciones, tabla)
@@ -315,7 +466,12 @@ def _extraer_con_tabla(texto_normalizado, tipo, opciones, tabla_errores, logica_
             return encontrado
     resultado = logica_actual()
     if resultado is None and tabla and opciones:
-        resultado = _respaldo_fonetico(texto_normalizado, opciones) or _respaldo_similitud(texto_normalizado, opciones)
+        resultado = (
+            _respaldo_fonetico(texto_normalizado, opciones)
+            or _respaldo_similitud(texto_normalizado, opciones)
+            or _respaldo_nombres_cortos(texto_normalizado, opciones)
+            or (_respaldo_palabra_distintiva(texto_normalizado, opciones) if tipo == "marca" else None)
+        )
     return resultado
 
 
@@ -326,18 +482,111 @@ def extraer_marca(texto_normalizado: str, marcas_conocidas: list[str], tabla_err
     )
 
 
-def extraer_modelo(texto_normalizado: str, modelos_conocidos: list[str], tabla_errores: dict | None = None) -> str | None:
-    return _extraer_con_tabla(
-        texto_normalizado, "modelo", modelos_conocidos, tabla_errores,
-        lambda: _mejor_match(texto_normalizado, modelos_conocidos),
+def _es_modelo_numerico_corto(modelo: str) -> bool:
+    return modelo.isdigit() and len(modelo) <= 2
+
+
+def _es_marca(token: str, marcas_conocidas: list[str], tabla: dict) -> bool:
+    """¿La palabra es una marca conocida, escrita bien o con un error corriente?"""
+    marcas = {normalizar(m).replace(" ", "") for m in marcas_conocidas}
+    if token in marcas:
+        return True
+    correcto = tabla.get("marca", {}).get(token)
+    if correcto is not None and normalizar(correcto).replace(" ", "") in marcas:
+        return True
+    return len(token) >= 5 and any(DamerauLevenshtein.normalized_similarity(token, m) >= 0.8 for m in marcas)
+
+
+def _modelo_numerico_corto(texto_normalizado, cortos, marcas_conocidas, tabla) -> str | None:
+    """Modelos que son solo un número chico ("Mazda 3"): únicamente cuentan pegados a
+    una marca ("mazda 3", "mazda3"). Un "3" suelto es una cantidad o parte de una
+    medida, no un vehículo."""
+    tokens = texto_normalizado.split()
+    for i, t in enumerate(tokens):
+        if t in cortos and i > 0 and _es_marca(tokens[i - 1], marcas_conocidas, tabla):
+            return cortos[t]
+        pegado = re.fullmatch(r"([a-z]{4,})(\d{1,2})", t)
+        if pegado and pegado.group(2) in cortos and _es_marca(pegado.group(1), marcas_conocidas, tabla):
+            return cortos[pegado.group(2)]
+    return None
+
+
+def extraer_modelo(
+    texto_normalizado: str,
+    modelos_conocidos: list[str],
+    tabla_errores: dict | None = None,
+    marcas_conocidas: list[str] | None = None,
+) -> str | None:
+    """Modelo del vehículo. Los modelos que son un número de 1-2 dígitos ("3") solo se
+    reconocen junto a una marca (ver _modelo_numerico_corto)."""
+    cortos = {m: m for m in modelos_conocidos if _es_modelo_numerico_corto(m)}
+    normales = [m for m in modelos_conocidos if m not in cortos]
+    resultado = _extraer_con_tabla(
+        texto_normalizado, "modelo", normales, tabla_errores,
+        lambda: _mejor_match(texto_normalizado, normales),
     )
+    if resultado is None and cortos:
+        resultado = _modelo_numerico_corto(texto_normalizado, cortos, marcas_conocidas or [],
+                                           _resolver_tabla(tabla_errores))
+    return resultado
+
+
+def _categoria_por_reglas(texto_normalizado: str, categorias_conocidas: list[str]) -> str | None:
+    """Mejor categoría según _REGLAS_CATEGORIA (prioridad más alta, luego lo primero que se nombra)."""
+    por_nombre = {normalizar(c): c for c in categorias_conocidas}
+    mejor, mejor_clave = None, None
+    for patron, categoria, prioridad in _REGLAS_CATEGORIA:
+        real = por_nombre.get(normalizar(categoria))
+        if real is None:
+            continue
+        m = patron.search(texto_normalizado)
+        if m is None:
+            continue
+        clave = (prioridad, -m.start())
+        if mejor_clave is None or clave > mejor_clave:
+            mejor, mejor_clave = real, clave
+    return mejor
+
+
+# Palabras de 6+ letras de las reglas contra las que se tolera un error de escritura.
+_PALABRAS_CATEGORIA = {
+    "bateria": "Baterías", "acumulador": "Baterías", "amortiguador": "Suspensión", "suspension": "Suspensión",
+    "rotula": "Suspensión", "alternador": "Sistema Eléctrico", "embrague": "Transmisión",
+    "transmision": "Transmisión", "homocinetica": "Transmisión", "radiador": "Motor",
+    "termostato": "Motor", "empaque": "Motor", "bobina": "Encendido", "llanta": "Neumáticos",
+    "neumatico": "Neumáticos", "balata": "Frenos", "zapata": "Frenos", "pastilla": "Frenos",
+    "hidraulico": "Hidráulica", "enganche": "Enganches y Acoples", "correa": "Correas y Bandas",
+    "filtro": "Filtros", "bombillo": "Sistema Eléctrico",
+}
+
+
+def _categoria_por_palabra_parecida(texto_normalizado: str, categorias_conocidas: list[str]) -> str | None:
+    """Una palabra mal escrita que se parece a un sinónimo ("vateria", "amortigador")."""
+    por_nombre = {normalizar(c): c for c in categorias_conocidas}
+    encontradas = set()
+    for palabra in texto_normalizado.split():
+        if len(palabra) < 6 or palabra in _PALABRAS_CATEGORIA or es_palabra_comun(palabra):
+            continue
+        for sinonimo, categoria in _PALABRAS_CATEGORIA.items():
+            if abs(len(palabra) - len(sinonimo)) > 2:
+                continue
+            raiz = sinonimo.rstrip("s")
+            tolerancia = 1 if len(raiz) <= 8 else 2
+            if (DamerauLevenshtein.distance(palabra.rstrip("s"), raiz) <= tolerancia
+                    and (palabra[0] == sinonimo[0] or frozenset((palabra[0], sinonimo[0])) in _PARES_FONETICOS)):
+                real = por_nombre.get(normalizar(categoria))
+                if real is not None:
+                    encontradas.add(real)
+    return encontradas.pop() if len(encontradas) == 1 else None
 
 
 def _categoria_sin_tabla(texto_normalizado: str, categorias_conocidas: list[str]) -> str | None:
-    for palabra, categoria in SINONIMOS_CATEGORIA.items():
-        if palabra in texto_normalizado and categoria in categorias_conocidas:
-            return categoria
-    return _mejor_match(texto_normalizado, categorias_conocidas)
+    texto_normalizado = _RE_MOTOR_DESCRIPTIVO.sub(" ", texto_normalizado)
+    return (
+        _categoria_por_reglas(texto_normalizado, categorias_conocidas)
+        or _mejor_match(texto_normalizado, categorias_conocidas)
+        or _categoria_por_palabra_parecida(texto_normalizado, categorias_conocidas)
+    )
 
 
 def extraer_categoria(texto_normalizado: str, categorias_conocidas: list[str], tabla_errores: dict | None = None) -> str | None:
@@ -354,29 +603,111 @@ def extraer_categoria(texto_normalizado: str, categorias_conocidas: list[str], t
     )
 
 
+# Después de un año: "2000 pesos", "2018 unidades" no es un año (es un precio o una cantidad).
+_RE_NO_ES_ANIO = re.compile(r"\s?(?:pesos|cop|mil\b|unidades|und\b|km\b|ml\b|cc\b|x\b)", re.IGNORECASE)
+
+
 def extraer_anio(texto_original: str) -> int | None:
-    match = _RE_ANIO.search(texto_original)
-    return int(match.group(1)) if match else None
-
-
-def extraer_motor(texto_original: str) -> str | None:
-    match = _RE_MOTOR.search(texto_original)
-    if not match:
-        return None
-    return match.group(1) or f"{match.group(2)}cc"
-
-
-def extraer_combustible(texto_normalizado: str) -> str | None:
-    for palabra, valor in COMBUSTIBLES_SINONIMOS.items():
-        if palabra in texto_normalizado:
-            return valor
+    for match in _RE_ANIO.finditer(texto_original):
+        despues = texto_original[match.end():match.end() + 10]
+        if "$" in texto_original[max(0, match.start() - 2):match.start()] or _RE_NO_ES_ANIO.match(despues):
+            continue
+        return int(match.group(1))
     return None
 
 
-def extraer_codigo(texto_original: str) -> str | None:
-    """Códigos de repuesto tipo '90915-YZZD4', 'HP-1002', 'M1-102'."""
-    match = _RE_CODIGO.search(texto_original)
+def _buscar_motor(texto_original: str):
+    return _RE_MOTOR.search(texto_original)
+
+
+def extraer_motor(texto_original: str) -> str | None:
+    """Cilindrada: "2.7", "2,7", "2.7L" -> "2.7"; "1600cc" -> "1600cc"."""
+    match = _buscar_motor(texto_original)
+    if not match:
+        return None
+    if match.group(3):
+        return f"{match.group(3)}cc"
+    return f"{match.group(1)}.{match.group(2)}"
+
+
+def extraer_combustible(texto_normalizado: str) -> str | None:
+    """Combustible por palabra completa ("gas" no debe salir de "amortiguador a gas" ni de "gastos")."""
+    for palabra, valor in COMBUSTIBLES_SINONIMOS.items():
+        if not re.search(rf"\b{re.escape(normalizar(palabra))}\b", texto_normalizado):
+            continue
+        if valor == "gas" and _RE_GAS_DE_AMORTIGUADOR.search(texto_normalizado):
+            continue  # "amortiguador a gas": es el tipo de amortiguador, no el combustible
+        return valor
+    return None
+
+
+def _es_codigo_valido(candidato: str, modelos_normalizados: set[str]) -> bool:
+    """Un código real mezcla letras y cifras ("HP-1002") o son dos bloques numéricos largos
+    ("26300-35505"). No lo son: viscosidades (5W-30), rangos de años (2015-2020), magnitudes
+    (12V-60Ah), palabras con guion (poly-V, start-stop) ni el nombre de un modelo (CX-5)."""
+    cuerpo = candidato.split("/")[0]
+    partes = cuerpo.split("-")
+    if len(partes) == 2 and len(partes[1]) < 2:
+        return False
+    if _RE_VISCOSIDAD.fullmatch(cuerpo) or normalizar(candidato) in modelos_normalizados:
+        return False
+    if all(_RE_MAGNITUD.match(p) for p in partes):
+        return False
+    if all(p.isdigit() for p in partes):
+        todos_anios = all(_RE_ANIO.fullmatch(p) for p in partes)
+        return not todos_anios and any(len(p) >= 4 for p in partes) and sum(len(p) for p in partes) >= 6
+    return any(c.isdigit() for c in candidato) and any(c.isalpha() for c in candidato)
+
+
+def _buscar_codigo(texto_original: str, modelos_conocidos: list[str] | None = None):
+    modelos_normalizados = {normalizar(m) for m in (modelos_conocidos or [])}
+    for match in _RE_CODIGO.finditer(texto_original):
+        if _es_codigo_valido(match.group(0), modelos_normalizados):
+            return match
+    return None
+
+
+def extraer_codigo(texto_original: str, modelos_conocidos: list[str] | None = None) -> str | None:
+    """Códigos de repuesto tipo '90915-YZZD4', 'HP-1002', 'M1-102', 'KN-33-2304', 'W-610/3'."""
+    match = _buscar_codigo(texto_original, modelos_conocidos)
     return match.group(0).upper() if match else None
+
+
+def _ocultar_cifras_ajenas(texto: str, codigo) -> str:
+    """El texto sin viscosidades (5W-30), cilindradas (3.2, 2.7L, 1600cc) ni el código.
+
+    Se usa para buscar marca y modelo: de otro modo el "3" de "3.2" o de "W-610/3"
+    se leería como el modelo "Mazda 3".
+    """
+    spans = [m.span() for m in _RE_VISCOSIDAD.finditer(texto)]
+    spans += [m.span() for m in _RE_MOTOR.finditer(texto)]
+    if codigo is not None:
+        spans.append(codigo.span())
+    for inicio, fin in sorted(set(spans), reverse=True):
+        texto = texto[:inicio] + " " + texto[fin:]
+    return texto
+
+
+def _marca_unica_del_modelo(modelo: str, marcas_conocidas: list[str], marca_de_modelo: dict) -> str | None:
+    """La marca de un modelo si el catálogo solo lo conoce con UNA marca.
+
+    Un modelo que existe en dos marcas distintas queda sin resolver: preguntar
+    "¿de qué marca?" es mejor que adivinar y ofrecer un repuesto equivocado.
+    """
+    candidatas = marca_de_modelo.get(modelo)
+    if candidatas is None:
+        por_nombre = {normalizar(k): v for k, v in marca_de_modelo.items()}
+        candidatas = por_nombre.get(normalizar(modelo))
+    if isinstance(candidatas, str):
+        candidatas = [candidatas]
+    distintas = {normalizar(c): c for c in (candidatas or [])}
+    if len(distintas) != 1:
+        return None
+    clave, original = next(iter(distintas.items()))
+    for marca in marcas_conocidas:
+        if normalizar(marca) == clave:
+            return marca
+    return original
 
 
 def extraer_entidades(
@@ -385,19 +716,34 @@ def extraer_entidades(
     modelos_conocidos: list[str] | None = None,
     categorias_conocidas: list[str] | None = None,
     tabla_errores: dict | None = None,
+    marca_de_modelo=None,
 ) -> dict:
     """Extrae marca, modelo, año, motor, combustible, código y categoría de un texto.
 
     tabla_errores: None usa la tabla en memoria; {} la desactiva.
+    marca_de_modelo: {modelo: marca o [marcas]} del catálogo (o una función que lo
+        devuelve, para consultarlo solo si hace falta). Si el texto nombra un
+        modelo sin marca y el catálogo lo conoce con una sola marca, se completa
+        ("hilux" -> Toyota); si es ambiguo la marca queda en None.
     """
     texto_normalizado = normalizar(texto)
     tabla = _resolver_tabla(tabla_errores)
+    marcas, modelos = marcas_conocidas or [], modelos_conocidos or []
+    codigo = _buscar_codigo(texto, modelos)
+    texto_vehiculo = normalizar(_ocultar_cifras_ajenas(texto, codigo))
+
+    marca = extraer_marca(texto_vehiculo, marcas, tabla)
+    modelo = extraer_modelo(texto_vehiculo, modelos, tabla, marcas)
+    if marca is None and modelo is not None and marca_de_modelo:
+        # Puede ser una función: así el catálogo solo se consulta cuando de verdad falta la marca.
+        mapa = marca_de_modelo() if callable(marca_de_modelo) else marca_de_modelo
+        marca = _marca_unica_del_modelo(modelo, marcas, mapa) if mapa else None
     return {
-        "marca": extraer_marca(texto_normalizado, marcas_conocidas or [], tabla),
-        "modelo": extraer_modelo(texto_normalizado, modelos_conocidos or [], tabla),
+        "marca": marca,
+        "modelo": modelo,
         "anio": extraer_anio(texto),
         "motor": extraer_motor(texto),
         "combustible": extraer_combustible(texto_normalizado),
-        "codigo": extraer_codigo(texto),
+        "codigo": codigo.group(0).upper() if codigo else None,
         "categoria": extraer_categoria(texto_normalizado, categorias_conocidas or [], tabla),
     }
