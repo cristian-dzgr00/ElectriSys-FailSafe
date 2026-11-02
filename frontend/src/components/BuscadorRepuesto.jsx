@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { repuestosService } from '../services/ventasService';
+import SugerenciaBusqueda from './SugerenciaBusqueda';
 
 const fmt = n => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
 
@@ -19,23 +20,31 @@ export default function BuscadorRepuesto({ onSeleccionar, campoPrecio = 'precio_
   const [texto, setTexto]           = useState('');
   const [productos, setProductos]   = useState([]);
   const [cargando, setCargando]     = useState(true);
+  const [sugerencia, setSugerencia] = useState(null); // "¿Quisiste decir…?" del corrector
   const inputRef = useRef(null);
 
   useEffect(() => {
     setCargando(true);
+    let vigente = true;   // una respuesta tardía de un texto viejo no pisa a la nueva
     const t = setTimeout(async () => {
       try {
         // Sin texto: catálogo completo (hasta el máximo que permite el
         // backend) para poder elegir a simple vista. Con texto: búsqueda
         // acotada por relevancia contra nombre/código/proveedor.
-        const params = texto.trim() ? { q: texto, limit: 50 } : { limit: 100 };
+        // sugerir=1: si no hay resultados, el backend NO reemplaza la búsqueda
+        // sino que devuelve la corrección aparte, para ofrecerla con un clic.
+        const params = texto.trim() ? { q: texto, limit: 50, sugerir: 1 } : { limit: 100 };
         const r = await repuestosService.listar(params);
+        if (!vigente) return;
         setProductos(r.data.data ?? []);
+        setSugerencia(r.data.sugerencia_busqueda ?? null);
+      } catch {
+        if (vigente) setSugerencia(null);
       } finally {
-        setCargando(false);
+        if (vigente) setCargando(false);
       }
     }, texto.trim() ? 300 : 0);
-    return () => clearTimeout(t);
+    return () => { vigente = false; clearTimeout(t); };
   }, [texto]);
 
   const abrirBusqueda = () => {
@@ -86,7 +95,11 @@ export default function BuscadorRepuesto({ onSeleccionar, campoPrecio = 'precio_
           <div style={{ padding: '10px 12px', fontSize: 12, color: 'var(--text-muted)' }}>Cargando…</div>
         )}
         {!cargando && productos.length === 0 && (
-          <div style={{ padding: '10px 12px', fontSize: 12, color: 'var(--text-muted)' }}>Sin resultados</div>
+          <div style={{ padding: '10px 12px', fontSize: 12, color: 'var(--text-muted)' }}>
+            {sugerencia && sugerencia.buscado === texto.trim()
+              ? <SugerenciaBusqueda sugerencia={sugerencia} textoActual={texto} onAplicar={setTexto} />
+              : 'Sin resultados'}
+          </div>
         )}
         {!cargando && productos.map(r => (
           <button
