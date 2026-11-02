@@ -1,265 +1,207 @@
 # Despliegue en producción — ElectriSys POS
 
-Guía paso a paso para poner el POS en línea en un Droplet de DigitalOcean con
-dominio DuckDNS y HTTPS de Let's Encrypt. Pensada para que cualquiera del
-equipo pueda ejecutarla sin haber participado del desarrollo.
+Guía del despliegue actual: **Oracle Cloud (nivel Always Free) + dominio DuckDNS + HTTPS de Let's Encrypt**. Costo: USD 0.
 
-**Stack desplegado:** Oracle 23ai Free + 2 backends PHP + websocket-server +
-nlp-service + frontend/NGINX, todo con Docker Compose. Kubernetes **no** se
-usa en este despliegue (los manifiestos de `k8s/` quedan para el ejercicio de
-la materia).
+> Esta guía reemplaza a la versión anterior, que describía un Droplet de DigitalOcean con Oracle en un contenedor. La base de datos ya no corre en Docker: es una **Autonomous AI Database** gestionada por Oracle.
+
+Sitio en producción: https://electrisys.duckdns.org
 
 ---
 
-## 0. Antes de empezar
+## 1. Arquitectura
 
-Vas a necesitar:
+```
+Navegador ──▶ electrisys.duckdns.org (DuckDNS) ──▶ IP pública de la VM web
+                                                     │
+        VM web  (E2.1.Micro)                         ▼
+        nginx :80/:443 ──▶ backend-a / backend-b (PHP-FPM) ──mTLS + wallet──▶ Autonomous AI Database
+                      └──▶ websocket-server (Node)                              (ELECTRISYS, us-ashburn-1)
+                                  │
+        VM nlp  (E2.1.Micro)      │ red privada de la VCN (8000 / 8081)
+        nlp-service (FastAPI) ◀───┘
+```
 
-- Una cuenta de DigitalOcean con el crédito del [GitHub Student Developer
-  Pack](https://education.github.com/pack) ya aplicado.
-- Una cuenta de [DuckDNS](https://www.duckdns.org) (login con GitHub).
-- Acceso SSH y el repositorio clonable desde el servidor.
+| Pieza | Dónde | Archivo de Compose |
+|---|---|---|
+| nginx + frontend, 2 backends PHP, WebSocket | VM `electrisys-web` | `docker-compose.yml` + `docker-compose.prod.yml` + `docker-compose.oracle-web.yml` |
+| Microservicio NLP | VM `electrisys-nlp` | `docker-compose.nlp.yml` (independiente) |
+| Base de datos | Autonomous AI Database `ELECTRISYS` | — (se carga con `oracle/cargar_esquema_cloud.ps1`) |
 
-Tiempo estimado: 45–60 minutos la primera vez.
+Por qué dos VMs `VM.Standard.E2.1.Micro` (x86, 1 GB): las instancias Ampere A1 del nivel gratuito respondían `Out of host capacity` en los tres dominios de disponibilidad de Ashburn, y el stack completo no cabe en una sola VM de 1 GB. Si hubiera capacidad A1 (máximo gratuito: 2 OCPU / 12 GB), todo cabe en una VM y el `Dockerfile.backend` ya soporta arm64.
 
 ---
 
-## 1. Crear el Droplet
+## 2. Cuentas y herramientas
 
-En el panel de DigitalOcean: **Create → Droplets**.
-
-| Opción | Valor |
+| Qué | Para qué |
 |---|---|
-| Imagen | Marketplace → **Docker on Ubuntu** (trae Docker + Compose listos) |
-| Plan | Basic, **4 GB RAM / 2 vCPU** mínimo (8 GB si el presupuesto lo permite) |
-| Región | La más cercana al negocio |
-| Autenticación | Clave SSH (no contraseña) |
-
-> **Por qué 4 GB como mínimo:** Oracle 23ai Free solo, en reposo, ronda los
-> 1.5–2 GB. Con 2 GB totales el contenedor de la base arranca y muere por OOM
-> a mitad de la carga inicial de los scripts, y el síntoma —un healthcheck que
-> nunca pasa— no dice que faltó memoria.
-
-Anotá la **IP pública** que te asigna.
+| Cuenta de Oracle Cloud (región home `us-ashburn-1`) | Base, VMs y red. Los recursos Always Free **solo** se crean en la región home |
+| Cuenta de [DuckDNS](https://www.duckdns.org) | Subdominio `electrisys` y su token |
+| Docker Desktop (equipo de desarrollo) | Construir las imágenes `linux/amd64` |
+| OCI CLI (opcional) | Crear la red y las VMs por línea de comandos; también se puede hacer en la consola web |
+| SQL*Plus + el wallet | Cargar y verificar la base |
 
 ---
 
-## 2. Dominio en DuckDNS
+## 3. Base de datos
 
-1. Entrá a duckdns.org, creá el subdominio (ej. `electrisys-pos`) y apuntalo a
-   la IP del Droplet.
-2. Copiá tu **token** del dashboard.
-3. En el Droplet, instalá el actualizador oficial para que el registro no
-   quede desactualizado si DigitalOcean cambia la IP:
+Ver [`oracle/docs/despliegue-oracle-cloud.md`](../oracle/docs/despliegue-oracle-cloud.md): descarga del wallet, `cargar_esquema_cloud.ps1` y notas de conexión. Resumen:
 
-```bash
-mkdir -p ~/duckdns
-cat > ~/duckdns/duck.sh <<'EOF'
-echo url="https://www.duckdns.org/update?domains=TU-SUBDOMINIO&token=TU-TOKEN&ip=" \
-  | curl -k -o ~/duckdns/duck.log -K -
-EOF
-chmod 700 ~/duckdns/duck.sh
-~/duckdns/duck.sh && cat ~/duckdns/duck.log   # debe decir OK
-
-# cada 5 minutos
-(crontab -l 2>/dev/null; echo "*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1") | crontab -
-```
-
-4. **Verificá la resolución antes de seguir.** Si esto no devuelve la IP del
-   Droplet, certbot va a fallar y el error no va a mencionar el DNS:
-
-```bash
-dig +short TU-SUBDOMINIO.duckdns.org
-```
+- Servicio de conexión: `electrisys_tp` (mTLS con wallet).
+- El wallet va en `docker/wallet/` (lo prepara `docker/preparar_wallet.ps1`; está ignorado por Git).
+- `DB_PASS` en `docker/.env` es la clave del usuario `ELECTRISYS`.
 
 ---
 
-## 3. Firewall
+## 4. Red en Oracle Cloud
 
-Desde el panel de DigitalOcean (**Networking → Firewalls**) o con `doctl`:
+Una VCN (`10.0.0.0/16`) con internet gateway, ruta por defecto a ese gateway y una subred pública. En la *security list* de la subred:
 
-| Dirección | Puerto | Origen |
+| Puerto | Origen | Para qué |
 |---|---|---|
-| Entrada | 22 (SSH) | Tu IP, o la red del equipo |
-| Entrada | 80 (HTTP) | Todas — lo necesita Let's Encrypt |
-| Entrada | 443 (HTTPS) | Todas |
+| 22 | `0.0.0.0/0` | SSH |
+| 80, 443 | `0.0.0.0/0` | HTTP (redirección y desafío ACME) y HTTPS |
+| 8000, 8081 | `10.0.0.0/16` | Solo entre las VMs: NLP y retorno del NLP al backend |
 
-**Todo lo demás cerrado.** En particular el **1521/1522 de Oracle**: el backend
-le habla a la base por la red interna de Docker, nunca por la IP pública. El
-override `docker-compose.prod.yml` además deja de publicar esos puertos, así
-que quedan dos capas y no una.
+**Ojo con el firewall del propio Ubuntu:** la imagen de Oracle trae reglas `iptables` que solo dejan pasar el 22, así que abrir la security list no basta. `docker/preparar-vm-oracle.sh` abre los puertos y los persiste.
 
 ---
 
-## 4. Clonar y configurar
+## 5. Preparar las VMs
+
+Crear dos instancias `VM.Standard.E2.1.Micro` con Ubuntu 22.04, IP pública, disco de 50 GB y tu llave SSH. En el dominio de disponibilidad que ofrezca el shape gratuito (en Ashburn, AD-2).
+
+En cada VM (con `scp` del script y luego, por SSH):
 
 ```bash
-git clone <URL-del-repo> electrisys && cd electrisys
-
-cp docker/.env.example  docker/.env
-cp backend/.env.example backend/.env
+# VM web: abre 80 y 443
+bash preparar-vm-oracle.sh "80 443"
+# VM nlp: abre 8000 solo a la red privada
+bash preparar-vm-oracle.sh "8000@10.0.0.0/16"
 ```
 
-Editá `docker/.env` y reemplazá **todos** los valores `CAMBIAR_…` por secretos
-generados de verdad:
-
-```bash
-openssl rand -base64 64   # JWT_SECRET
-openssl rand -hex 32      # WS_NOTIFY_KEY
-openssl rand -hex 32      # NLP_INTERNAL_KEY
-openssl rand -base64 24   # ORACLE_PASSWORD y DB_PASS (uno distinto cada uno)
-openssl rand -base64 24   # GRAFANA_PASSWORD
-```
-
-Y poné tu dominio:
-
-```dotenv
-DOMINIO=TU-SUBDOMINIO.duckdns.org
-```
-
-> `JWT_SECRET` tiene que ser el **mismo** para backend, websocket-server y
-> nlp-service — por eso los tres lo toman de `docker/.env` y no de sus propios
-> archivos. Si divergen, la sesión inicia pero el WebSocket rechaza la conexión
-> y el asistente deja de responder, sin un error que lo explique.
-
-Ninguno de los dos `.env` se sube al repositorio (`.gitignore` los cubre).
-Verificalo antes de commitear cualquier cosa: `git status --short`.
-
-Ajustá el dominio en la config de NGINX de producción:
-
-```bash
-sed -i "s/electrisys-pos.duckdns.org/TU-SUBDOMINIO.duckdns.org/g" nginx/nginx.prod.conf
-```
+El script crea 2 GB de swap (imprescindible con 1 GB de RAM), abre y persiste el firewall e instala Docker.
 
 ---
 
-## 5. Certificado HTTPS
+## 6. Dominio (DuckDNS)
 
-Primera emisión, con el puerto 80 libre (todavía no levantaste el stack):
-
-```bash
-sudo apt-get update && sudo apt-get install -y certbot
-sudo mkdir -p /var/www/certbot
-
-sudo certbot certonly --standalone \
-  -d TU-SUBDOMINIO.duckdns.org \
-  --agree-tos -m TU-CORREO --no-eff-email
-```
-
-Queda en `/etc/letsencrypt/live/TU-SUBDOMINIO.duckdns.org/`, que es lo que monta
-el contenedor de nginx.
-
-**Renovación automática** (los certificados vencen a los 90 días). El paquete de
-Ubuntu ya instala un systemd timer; lo que falta es que nginx recargue el
-certificado nuevo y que la validación no choque con el puerto 80 ocupado:
+1. En duckdns.org, crear el subdominio y apuntarlo a la IP pública de la **VM web**.
+2. La IP pública de Oracle es fija mientras la instancia exista, así que no hace falta el actualizador periódico. Si se recrea la VM, actualizar la IP en el panel o con:
 
 ```bash
-sudo mkdir -p /etc/letsencrypt/renewal-hooks/deploy
-sudo tee /etc/letsencrypt/renewal-hooks/deploy/recargar-nginx.sh >/dev/null <<'EOF'
-#!/bin/sh
-cd /root/electrisys/docker && docker compose exec -T frontend nginx -s reload
-EOF
-sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/recargar-nginx.sh
-
-# renovar en modo webroot: no necesita el puerto 80 libre, lo sirve nginx
-sudo certbot certonly --webroot -w /var/www/certbot \
-  -d TU-SUBDOMINIO.duckdns.org --force-renewal --dry-run
+curl "https://www.duckdns.org/update?domains=SUBDOMINIO&token=TOKEN&ip=NUEVA_IP"   # responde OK
 ```
 
-Ajustá la ruta `/root/electrisys` si clonaste en otro lado. Comprobá el timer
-con `systemctl list-timers | grep certbot`.
+3. Verificar que resuelve antes de pedir el certificado: `dig +short SUBDOMINIO.duckdns.org`.
 
 ---
 
-## 6. Levantar el stack
+## 7. Imágenes y archivos
 
-```bash
+Compilar el frontend dentro de 1 GB de RAM falla por falta de memoria, así que **las imágenes se construyen en el equipo de desarrollo** y se suben ya hechas:
+
+```powershell
 cd docker
-docker compose -f docker-compose.yml \
-               -f docker-compose.backup.yml \
-               -f docker-compose.prod.yml up -d
+$env:DOMINIO="electrisys.duckdns.org"; $env:NLP_HOST="10.0.0.11"; $env:WEB_PRIVATE_IP="10.0.0.32"
+$env:DOCKER_DEFAULT_PLATFORM="linux/amd64"
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.oracle-web.yml build backend-a websocket-server frontend
+docker compose -f docker-compose.nlp.yml build        # requiere BACKEND_URL, NLP_BIND_IP en el entorno
+docker save electrisys/backend:oracle electrisys/websocket:oracle electrisys/frontend:oracle -o img_web.tar
+docker save electrisys/nlp:oracle -o img_nlp.tar
 ```
 
-El **primer arranque de Oracle tarda varios minutos**: la imagen crea la base y
-corre todos los scripts de `oracle/`. Seguilo con:
+Subir cada `.tar` a su VM y cargarlo con `docker load -i`. Luego subir el código (`backend/`, `nginx/`, `tls/stunnel/`, `docker/` con el wallet) a `~/electrisys/`. **No subir** `tls/ca/ca.key` ni otras llaves privadas.
 
-```bash
-docker compose logs -f oracle-db          # esperá "DATABASE IS READY TO USE"
-docker compose ps                          # todos healthy
-```
+Crear `docker/.env` en cada VM (modo `600`), con los secretos del proyecto más:
 
-Si es una instalación desde cero, los scripts `01`–`09` se cargan solos. Los
-dos que **no** están en esa carga automática hay que correrlos a mano una vez:
+| VM | Variables extra |
+|---|---|
+| web | `DB_PASS`, `DOMINIO`, `NLP_HOST` (IP privada del NLP), `WEB_PRIVATE_IP` (IP privada de la web) |
+| nlp | `JWT_SECRET` y `NLP_INTERNAL_KEY` (idénticos a los de la web), `BACKEND_URL=http://<IP privada web>:8081`, `NLP_BIND_IP` |
 
-```bash
-# tablas de pedidos a proveedor (Sprint 2)
-docker compose exec -T oracle-db sqlplus -S \
-  electrisys/"$DB_PASS"@//localhost:1521/freepdb1 < ../oracle/10_pedidos.sql
-
-# DIRECTORY de Data Pump — requiere SYSDBA
-docker compose exec -T oracle-db sqlplus -S / as sysdba \
-  < ../oracle/backup/10_directorio_backup_sysdba.sql
-
-# package de respaldo bajo demanda
-docker compose exec -T oracle-db sqlplus -S \
-  electrisys/"$DB_PASS"@//localhost:1521/freepdb1 < ../oracle/backup/11_pkg_backup_plsql.sql
-```
-
-### Monitoreo
-
-```bash
-docker compose -f docker-compose.yml \
-               -f ../monitoring/docker-compose.monitoring.yml up -d
-```
-
-Grafana no debe quedar expuesto: entrá por un túnel SSH
-(`ssh -L 3000:localhost:3000 root@IP`) en vez de abrir el puerto en el firewall.
+> `JWT_SECRET` debe ser el mismo en backend, WebSocket y NLP. Si divergen, el login funciona pero el WebSocket y el asistente fallan sin un error claro.
 
 ---
 
-## 7. Datos: arrancar limpio o migrar
+## 8. Certificado HTTPS
 
-- **Limpio:** no hagas nada, `oracle/05_seed.sql` ya cargó los datos de ejemplo.
-- **Migrando desde desarrollo:** usá el flujo de respaldo, no copies archivos
-  `.sql` a mano. En la máquina de origen generá el dump con
-  `oracle/backup/backup_logico.sh`, copialo al Droplet con `scp` dentro del
-  volumen de respaldos, y restauralo siguiendo el procedimiento del encabezado
-  de `oracle/backup/restaurar_logico.sh`. Probalo primero contra un esquema de
-  staging.
+Con el dominio ya resolviendo y el puerto 80 libre (antes de levantar nginx):
+
+```bash
+sudo apt-get install -y certbot && sudo mkdir -p /var/www/certbot
+sudo certbot certonly --standalone -d SUBDOMINIO.duckdns.org --agree-tos --register-unsafely-without-email --non-interactive
+```
+
+Para que la renovación funcione con nginx ocupando el puerto 80, pasar el autenticador a `webroot` y agregar el hook que recarga nginx:
+
+```bash
+# /etc/letsencrypt/renewal/SUBDOMINIO.duckdns.org.conf
+authenticator = webroot
+webroot_path = /var/www/certbot,
+[[webroot_map]]
+SUBDOMINIO.duckdns.org = /var/www/certbot
+
+# /etc/letsencrypt/renewal-hooks/deploy/recargar-nginx.sh  (chmod +x)
+cd /home/ubuntu/electrisys/docker && docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.oracle-web.yml exec -T frontend nginx -s reload
+```
+
+Probar con `sudo certbot renew --dry-run --no-random-sleep-on-renew` (sin esa opción espera un retardo aleatorio de unos 4 minutos y parece colgado).
+
+El dominio también debe estar en `nginx/nginx.prod.conf` (`server_name` y rutas del certificado).
 
 ---
 
-## 8. Prueba de humo
+## 9. Levantar los servicios
 
-Con `https://TU-SUBDOMINIO.duckdns.org` ya en línea, verificá **a mano**:
+```bash
+# VM web
+cd ~/electrisys/docker
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.oracle-web.yml \
+  up -d --no-build backend-a backend-b websocket-server frontend
 
-| # | Qué | Cómo |
+# VM nlp
+cd ~/electrisys/docker && docker compose -f docker-compose.nlp.yml up -d --no-build
+```
+
+Todos los servicios tienen `restart: unless-stopped` y Docker arranca con el sistema: tras un reinicio de la VM el sitio vuelve solo (probado: ~90 s la web, ~105 s el NLP).
+
+---
+
+## 10. Verificación
+
+Comprobaciones automatizadas desde fuera (todas pasan en producción):
+
+| # | Qué | Resultado esperado |
 |---|---|---|
-| 1 | Candado válido | El navegador no debe advertir nada; el emisor es Let's Encrypt, no un certificado autofirmado |
-| 2 | Login y venta | Entrá, registrá una venta, comprobá que el stock baja |
-| 3 | **Inventario en vivo** | Dos navegadores distintos con dos usuarios, ambos en *Repuestos*. Registrá una venta en uno: el stock del otro baja en menos de 2 s, sin recargar, y el indicador dice **En vivo** (es `wss://`) |
-| 4 | Anulación | Anulá esa venta: el stock vuelve a subir en ambos |
-| 5 | **Pedidos** | Como admin, creá un pedido a proveedor, marcalo *recibido*: el stock sube y se propaga a *Repuestos* |
-| 6 | **Sugerencias de IA** | Abrí un repuesto: aparecen productos relacionados y la señal de reabastecimiento |
-| 7 | **Respaldo** | Conectado a la VPN, entrá a *Respaldos* → "Respaldar ahora". El `.dmp` aparece en la lista a los pocos segundos |
-| 8 | Respaldo automático | `docker compose logs oracle-backup` debe mostrar el próximo backup programado |
-
-Si el paso 3 falla pero el resto anda, mirá `docker compose logs websocket-server`
-y confirmá que `JWT_SECRET` es idéntico en los tres servicios.
+| 1 | `curl -I https://DOMINIO/` | 200 y certificado válido; `http://` responde 301 a HTTPS |
+| 2 | `GET /api/health` | `status: ok` y `db.status: ok` |
+| 3 | Login como administrador | Devuelve token y entra al dashboard |
+| 4 | Registrar una venta | Stock del repuesto baja en 1 y el IVA (19 %) es correcto |
+| 5 | **Inventario en vivo** | Con dos sesiones abiertas en *Repuestos*, la venta de una baja el stock en la otra **sin recargar**; indicador "En vivo" |
+| 6 | Anular la venta | Estado "Anulada" y el stock vuelve a subir en ambas sesiones |
+| 7 | Crear y cancelar un pedido a proveedor | El stock no cambia hasta marcarlo "recibido" |
+| 8 | Asistente (chat) | Consulta "pastillas de freno para un Chevrolet Spark" devuelve intención, entidades y sugerencias del catálogo |
+| 9 | Reinicio de cada VM | Los servicios vuelven solos |
 
 ---
 
-## 9. Actualizar el sistema desplegado
+## 11. Operación
 
-```bash
-cd ~/electrisys && git pull
-cd docker && docker compose -f docker-compose.yml \
-                            -f docker-compose.backup.yml \
-                            -f docker-compose.prod.yml up -d --build
-```
+- **Vigilante:** `docker/vigilante-oracle.sh`, por cron cada 30 minutos en la VM web (`*/30 * * * * /home/ubuntu/electrisys/docker/vigilante-oracle.sh`). Consulta `/api/health`, reinicia los contenedores si no responde y registra el NLP. Escribe en `~/electrisys/vigilante.log`. Como `/api/health` ejecuta SQL contra la base, también evita que Oracle la detenga por inactividad.
+- **Actualizar:** reconstruir las imágenes en el equipo de desarrollo, subirlas y repetir `docker load` + `docker compose ... up -d --no-build`.
+- **Respaldos:** los hace Oracle automáticamente (Autonomous Database, retención 60 días; se ven en la consola). La pantalla "Respaldos" de la app exige la VPN WireGuard, que **no** está desplegada en la nube.
+- **Monitoreo:** Prometheus y Grafana no se desplegaron (no caben en 1 GB). El vigilante cubre disponibilidad básica; las métricas de la base están en la consola de Oracle (*Performance Hub*).
 
-Antes de una actualización que toque la base, dispará un respaldo manual desde
-la vista *Respaldos*.
+---
+
+## 12. Límites del nivel gratuito
+
+Según la documentación de Oracle (ver `oracle/docs/despliegue-oracle-cloud.md`):
+
+- **Autonomous Database Always Free:** se **detiene sola tras 7 días de inactividad** (sin conexiones SQL ni uso de CPU) conservando los datos; se arranca con *Start* en la consola. Si permanece detenida o inactiva **90 días acumulados**, puede ser eliminada de forma permanente.
+- **VMs Always Free:** Oracle puede reclamar las inactivas. Se consideran inactivas si, durante 7 días, el percentil 95 de CPU y el uso de red son ambos menores al 20 % (en A1 también la memoria). Una VM Micro con poco tráfico puede cumplir ese criterio: conviene revisar el correo de la cuenta de Oracle.
+- Los recursos Always Free solo existen en la región home de la tenancy.
 
 ---
 
@@ -267,9 +209,11 @@ la vista *Respaldos*.
 
 | Síntoma | Causa probable |
 |---|---|
-| certbot: "Challenge failed for domain" | El DNS de DuckDNS todavía no resuelve a la IP, o el puerto 80 está ocupado/cerrado |
-| La página carga pero el indicador dice **Offline** | `JWT_SECRET` distinto entre servicios, o el bloque `/ws` de nginx no quedó incluido |
-| `oracle-db` reiniciándose en bucle | Memoria insuficiente: el Droplet de 2 GB no alcanza |
-| Sin sugerencias en Repuestos | `nlp-service` caído — la vista sigue funcionando; revisá `docker compose logs nlp-service` |
-| *Respaldos* responde 403 | Esa sección exige estar dentro de la VPN WireGuard (ver `vpn/`) |
-| El `.dmp` no aparece nunca | El `DIRECTORY` de Oracle apunta a una ruta que el volumen no monta — revisá el paso 6 |
+| El sitio no responde pero la VM está encendida | `iptables` de la VM sin los puertos 80/443 (la security list sola no alcanza) |
+| certbot: "Challenge failed" | DuckDNS aún no apunta a la IP, o el puerto 80 está ocupado/cerrado |
+| `certbot renew --dry-run` parece colgado | Retardo aleatorio de ~4 min; usar `--no-random-sleep-on-renew` |
+| `/api/health` con `db.status: error` | Base detenida por inactividad (usar *Start* en la consola de Oracle) o wallet/`DB_PASS` incorrectos |
+| Indicador **Offline** en Repuestos | `JWT_SECRET` distinto entre servicios, o el bloque `/ws` de nginx no quedó incluido |
+| El asistente no responde | NLP caído o `NLP_HOST`/`BACKEND_URL` mal puestos; ver `docker logs es_nlp_service` |
+| La VM mata contenedores por falta de memoria | Falta el swap de 2 GB (`preparar-vm-oracle.sh`) |
+| `Out of host capacity` al crear una VM A1 | Sin capacidad ARM en la región; usar `E2.1.Micro` o reintentar más tarde |
