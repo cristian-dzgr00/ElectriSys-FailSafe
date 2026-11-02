@@ -4,10 +4,14 @@
 // agotado, el vendedor pregunta y el asistente sugiere sustitutos reales
 // del inventario (ver nlp-service/, backend /api/asistente/consultar).
 
-import { useEffect, useRef, useState } from 'react';
-import { Loader2, MessageCircle, Plus, Send, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AlertTriangle, HelpCircle, Loader2, MessageCircle, Plus, Send, X } from 'lucide-react';
 import { useToastContext } from '../context/ToastContext';
 import { asistenteService } from '../services/asistenteService';
+import {
+  AVISO_DATOS_PERSONALES, AVISO_NO_CONFIRMADA, agruparSugerencias, contextoPendienteDe, placeholderDe,
+} from '../services/asistenteDialogo';
+import { detectarDatosPersonales, mensajeDatosPersonales } from '../services/datosPersonales';
 
 const MAX_CHARS = 300;
 
@@ -30,8 +34,16 @@ export default function AsistenteFlotante({ onAgregarProducto }) {
   const [texto, setTexto]       = useState('');
   const [enviando, setEnviando] = useState(false);
   const [contextoPendiente, setContextoPendiente] = useState(null); // { entidades } — solo mientras esperando_datos siga siendo true (ver docs/asistente-nlp.md)
+  const [faltanDatos, setFaltanDatos] = useState([]);              // qué campos pidió el asistente (marca, modelo)
   const scrollRef = useRef(null);
   const inputRef  = useRef(null);
+
+  // Aviso (no bloqueante) si lo escrito parece un correo, teléfono o cédula.
+  // El backend además enmascara esos datos antes de guardar el historial.
+  const avisoDatosPersonales = useMemo(
+    () => mensajeDatosPersonales(detectarDatosPersonales(texto)),
+    [texto],
+  );
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -59,10 +71,12 @@ export default function AsistenteFlotante({ onAgregarProducto }) {
         texto: data.respuesta_texto,
         intencion: data.intencion,
         sugerencias: data.sugerencias || [],
+        aclaracion: data.esperando_datos === true,
         consultaId: data.consulta_id ?? null,
         feedback: null,
       }]);
-      setContextoPendiente(data.esperando_datos ? { entidades: data.entidades } : null);
+      setContextoPendiente(contextoPendienteDe(data));
+      setFaltanDatos(data.esperando_datos ? (data.faltan_datos ?? []) : []);
     } catch (e) {
       const msg = e.response?.data?.error || 'El asistente no está disponible en este momento';
       setMensajes(prev => [...prev, { rol: 'asistente', texto: msg, error: true }]);
@@ -170,27 +184,44 @@ export default function AsistenteFlotante({ onAgregarProducto }) {
             )}
           </div>
 
-          <div style={{ padding: 10, borderTop: '1px solid var(--border)', display: 'flex', gap: 8, flexShrink: 0 }}>
-            <input
-              ref={inputRef}
-              className="form-control"
-              placeholder="Escribe tu consulta…"
-              value={texto}
-              maxLength={MAX_CHARS}
-              onChange={e => setTexto(e.target.value)}
-              onKeyDown={onKeyDown}
-              disabled={enviando}
-              style={{ flex: 1 }}
-            />
-            <button
-              className="btn btn-primary"
-              onClick={enviar}
-              disabled={enviando || !texto.trim()}
-              style={{ padding: '0 12px' }}
-              aria-label="Enviar consulta"
-            >
-              <Send size={15} />
-            </button>
+          <div style={{ padding: 10, borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
+            {avisoDatosPersonales && (
+              <div
+                role="alert"
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 8px', borderRadius: 6,
+                  fontSize: 11.5, lineHeight: 1.4, background: 'rgba(240,192,64,.15)', color: 'var(--warning)',
+                }}
+              >
+                <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
+                <span>{avisoDatosPersonales}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                ref={inputRef}
+                className="form-control"
+                placeholder={placeholderDe(contextoPendiente, faltanDatos)}
+                value={texto}
+                maxLength={MAX_CHARS}
+                onChange={e => setTexto(e.target.value)}
+                onKeyDown={onKeyDown}
+                disabled={enviando}
+                style={{ flex: 1 }}
+              />
+              <button
+                className="btn btn-primary"
+                onClick={enviar}
+                disabled={enviando || !texto.trim()}
+                style={{ padding: '0 12px' }}
+                aria-label="Enviar consulta"
+              >
+                <Send size={15} />
+              </button>
+            </div>
+            <div style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.3 }}>
+              {AVISO_DATOS_PERSONALES}
+            </div>
           </div>
         </div>
       )}
@@ -200,8 +231,42 @@ export default function AsistenteFlotante({ onAgregarProducto }) {
   );
 }
 
+function TarjetaSugerencia({ s, onAgregarProducto, sinConfirmar = false }) {
+  return (
+    <div style={{
+      border: `1px solid ${sinConfirmar ? 'var(--warning)' : 'var(--border)'}`, borderRadius: 8, padding: '8px 10px',
+      background: 'var(--bg-secondary)', fontSize: 12,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.codigo}</span>
+        {fmt(s.precio_venta) && <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{fmt(s.precio_venta)}</span>}
+      </div>
+      <div style={{ color: 'var(--text-secondary)', marginTop: 2 }}>{s.nombre}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, color: 'var(--text-muted)', fontSize: 11 }}>
+        <span>{s.proveedor || s.categoria || ''}</span>
+        {s.stock != null && <span>Stock: {s.stock}</span>}
+      </div>
+      {sinConfirmar && (
+        <div style={{ marginTop: 4 }}>
+          <span className="badge badge-warning" style={{ fontSize: 10 }}>Compatibilidad no confirmada</span>
+        </div>
+      )}
+      {onAgregarProducto && (
+        <button
+          className="btn btn-primary"
+          onClick={() => onAgregarProducto(s)}
+          style={{ width: '100%', justifyContent: 'center', marginTop: 6, padding: '4px 8px', fontSize: 11 }}
+        >
+          <Plus size={12} /> Agregar producto
+        </button>
+      )}
+    </div>
+  );
+}
+
 function MensajeBurbuja({ mensaje, onFeedback, onAgregarProducto }) {
   const esUsuario = mensaje.rol === 'usuario';
+  const { confirmadas, noConfirmadas } = agruparSugerencias(mensaje.sugerencias);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: esUsuario ? 'flex-end' : 'flex-start', gap: 5 }}>
       {!esUsuario && mensaje.intencion && (
@@ -213,42 +278,46 @@ function MensajeBurbuja({ mensaje, onFeedback, onAgregarProducto }) {
           {INTENCION_LABEL[mensaje.intencion] || mensaje.intencion}
         </span>
       )}
+      {!esUsuario && mensaje.aclaracion && (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          fontSize: 10.5, fontWeight: 600, color: 'var(--accent)',
+        }}>
+          <HelpCircle size={12} /> Falta un dato para buscar
+        </span>
+      )}
       <div style={{
         maxWidth: '90%', padding: '8px 12px', borderRadius: 12,
         fontSize: 13, lineHeight: 1.5, whiteSpace: 'pre-wrap',
         background: esUsuario ? 'var(--accent)' : (mensaje.error ? 'var(--danger-dim)' : 'var(--bg-hover)'),
         color: esUsuario ? '#1a1305' : (mensaje.error ? 'var(--danger)' : 'var(--text-primary)'),
+        border: !esUsuario && mensaje.aclaracion ? '1px solid var(--accent)' : 'none',
         borderBottomRightRadius: esUsuario ? 2 : 12,
         borderBottomLeftRadius: esUsuario ? 12 : 2,
       }}>
         {mensaje.texto}
       </div>
-      {mensaje.sugerencias?.length > 0 && (
+      {confirmadas.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
-          {mensaje.sugerencias.map((s, i) => (
-            <div key={s.id ?? i} style={{
-              border: '1px solid var(--border)', borderRadius: 8, padding: '8px 10px',
-              background: 'var(--bg-secondary)', fontSize: 12,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{s.codigo}</span>
-                {fmt(s.precio_venta) && <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{fmt(s.precio_venta)}</span>}
-              </div>
-              <div style={{ color: 'var(--text-secondary)', marginTop: 2 }}>{s.nombre}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, color: 'var(--text-muted)', fontSize: 11 }}>
-                <span>{s.proveedor || s.categoria || ''}</span>
-                {s.stock != null && <span>Stock: {s.stock}</span>}
-              </div>
-              {onAgregarProducto && (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => onAgregarProducto(s)}
-                  style={{ width: '100%', justifyContent: 'center', marginTop: 6, padding: '4px 8px', fontSize: 11 }}
-                >
-                  <Plus size={12} /> Agregar producto
-                </button>
-              )}
-            </div>
+          {confirmadas.map((s, i) => (
+            <TarjetaSugerencia key={s.id ?? i} s={s} onAgregarProducto={onAgregarProducto} />
+          ))}
+        </div>
+      )}
+      {noConfirmadas.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
+          <div
+            role="note"
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: 6, padding: '6px 8px', borderRadius: 6,
+              fontSize: 11.5, lineHeight: 1.4, background: 'rgba(240,192,64,.15)', color: 'var(--warning)',
+            }}
+          >
+            <AlertTriangle size={13} style={{ flexShrink: 0, marginTop: 1 }} />
+            <span>{AVISO_NO_CONFIRMADA}</span>
+          </div>
+          {noConfirmadas.map((s, i) => (
+            <TarjetaSugerencia key={s.id ?? `nc-${i}`} s={s} onAgregarProducto={onAgregarProducto} sinConfirmar />
           ))}
         </div>
       )}
