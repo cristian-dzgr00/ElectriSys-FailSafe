@@ -31,6 +31,8 @@ Base de datos en Oracle Cloud (Autonomous AI Database, Always Free, us-ashburn-1
 - [x] T12 `docs/despliegue-produccion.md` reescrito (Oracle Cloud, 2 VMs, DuckDNS, límites) y README actualizado. Ruta: inline (solo documentación; el contexto del despliegue ya estaba en la sesión, delegar exigía reexplicarlo todo).
 - [x] T13 Commits convencionales de la migración, sin push y sin `Claude outputs/oracle_cloud.zip` (ver commits abajo).
 
+Commits en `feature/normalizacion-3fn-fase2` (sin push): `c514a8a` backend 3FN fase 2, `ec43da4` conexión con wallet, `e16bc6a` scripts de Autonomous Database, `ec25228` despliegue en dos VMs, `a735487` documentación y seguimiento. Los dos primeros y parte del tercero eran trabajo previo del usuario ya presente en el árbol.
+
 ## Criterios de aceptación
 Cumplidos: el sitio responde 200, la API autentica y lee de ELECTRISYS en la nube, el NLP responde, HTTPS válido.
 
