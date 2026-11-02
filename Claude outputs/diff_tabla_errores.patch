@@ -1,0 +1,3150 @@
+diff --git a/backend/src/models/VehiculoModel.php b/backend/src/models/VehiculoModel.php
+index 1047e3b..dfd1a1f 100644
+--- a/backend/src/models/VehiculoModel.php
++++ b/backend/src/models/VehiculoModel.php
+@@ -1,15 +1,56 @@
+ <?php
+ namespace App\models;
+ 
+-class VehiculoModel
++use App\patterns\observer\ErroresNlpObserver;
++use App\patterns\observer\VentaObserver;
++use App\patterns\observer\VentaSubject;
++
++/**
++ * También es Subject (patrón Observer): al insertar un vehículo nuevo
++ * notifica 'vehiculo_creado'. Es el único punto por donde entran marcas y
++ * modelos nuevos (POST /api/vehiculos y la alta de compatibilidad de
++ * repuestos.php pasan por buscarOcrear()).
++ */
++class VehiculoModel implements VentaSubject
+ {
+     private const COMBUSTIBLES_VALIDOS = ['gasolina', 'diesel', 'hibrido', 'electrico', 'gas'];
+ 
+     private OciConnection $db;
+ 
++    /** @var VentaObserver[] */
++    private array $observers = [];
++
+     public function __construct()
+     {
+         $this->db = Database::getConnection();
++        // El asistente NLP genera los posibles errores de escritura de cada
++        // marca/modelo nuevo ("geely" -> "yili") para reconocerlos al instante.
++        $this->agregarObserver(new ErroresNlpObserver());
++    }
++
++    public function agregarObserver(VentaObserver $observer): void
++    {
++        $this->observers[] = $observer;
++    }
++
++    public function removerObserver(VentaObserver $observer): void
++    {
++        $this->observers = array_filter($this->observers, fn($o) => $o !== $observer);
++    }
++
++    public function notificarObservers(string $accion, array $contexto): void
++    {
++        foreach ($this->observers as $observer) {
++            try {
++                $observer->actualizar($accion, $contexto);
++            } catch (\Throwable $e) {
++                // El vehículo ya se guardó: un Observer que falla no lo deshace.
++                error_log(
++                    "[ElectriSys][VehiculoModel] Observer " . get_class($observer) .
++                    " falló silenciosamente: " . $e->getMessage()
++                );
++            }
++        }
+     }
+ 
+     public function listar(array $filtros = []): array
+@@ -90,6 +131,7 @@ class VehiculoModel
+             $nuevoId = 0;
+             $stmt->bindOut(':out_id', $nuevoId);
+             $stmt->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible]);
++            $this->notificarObservers('vehiculo_creado', ['marca' => $marca, 'modelo' => $modelo]);
+             return (int) $nuevoId;
+         } catch (\Throwable $e) {
+             if (OciConnection::esViolacionDeUnicidad($e)) {
+diff --git a/backend/src/patterns/observer/ErroresNlpObserver.php b/backend/src/patterns/observer/ErroresNlpObserver.php
+new file mode 100644
+index 0000000..c18768c
+--- /dev/null
++++ b/backend/src/patterns/observer/ErroresNlpObserver.php
+@@ -0,0 +1,52 @@
++<?php
++declare(strict_types=1);
++
++namespace App\patterns\observer;
++
++use App\services\NlpClient;
++
++/**
++ * ErroresNlpObserver — Observer concreto que avisa al microservicio NLP
++ * cuando entra un vehículo nuevo al catálogo.
++ *
++ * El microservicio genera en ese momento todos los posibles errores de
++ * escritura de la marca y el modelo ("geely" -> "yili", "jili"...) y los
++ * deja buscables en el asistente sin reiniciarse (POST /nlp/errores/registrar).
++ *
++ * Se registra en VehiculoModel. Nunca hace fallar el guardado del
++ * vehículo: NlpClient no lanza, y si el microservicio no responde solo
++ * queda el aviso en el log — la sincronización automática del
++ * microservicio (al arrancar y al refrescar su catálogo) lo corrige después.
++ */
++class ErroresNlpObserver implements VentaObserver
++{
++    /** Registrar un nombre tarda poco; no hacer esperar al alta del vehículo. */
++    private const TIMEOUT_SEGUNDOS = 3;
++
++    public function actualizar(string $accion, array $contexto): void
++    {
++        if ($accion !== 'vehiculo_creado') {
++            return;
++        }
++
++        $marca  = trim((string) ($contexto['marca']  ?? ''));
++        $modelo = trim((string) ($contexto['modelo'] ?? ''));
++
++        if ($marca !== '') {
++            $this->registrar(['tipo' => 'marca', 'nombre' => $marca]);
++        }
++        if ($modelo !== '') {
++            $this->registrar(['tipo' => 'modelo', 'nombre' => $modelo, 'marca' => $marca ?: null]);
++        }
++    }
++
++    private function registrar(array $cuerpo): void
++    {
++        if (NlpClient::post('/nlp/errores/registrar', $cuerpo, self::TIMEOUT_SEGUNDOS) === null) {
++            error_log(
++                "[ElectriSys][ErroresNlpObserver] No se pudo avisar al NLP del {$cuerpo['tipo']} " .
++                "'{$cuerpo['nombre']}'; lo registrará la sincronización automática del microservicio."
++            );
++        }
++    }
++}
+diff --git a/backend/tests/ErroresNlpObserverTest.php b/backend/tests/ErroresNlpObserverTest.php
+new file mode 100644
+index 0000000..1676041
+--- /dev/null
++++ b/backend/tests/ErroresNlpObserverTest.php
+@@ -0,0 +1,46 @@
++<?php
++use PHPUnit\Framework\TestCase;
++use App\patterns\observer\ErroresNlpObserver;
++
++/**
++ * El aviso al microservicio NLP nunca debe hacer fallar el alta de un
++ * vehículo: si el servicio no responde, se registra en el log y listo.
++ */
++class ErroresNlpObserverTest extends TestCase
++{
++    private ?string $nlpServiceUrlOriginal;
++
++    protected function setUp(): void
++    {
++        $this->nlpServiceUrlOriginal = $_ENV['NLP_SERVICE_URL'] ?? null;
++    }
++
++    protected function tearDown(): void
++    {
++        if ($this->nlpServiceUrlOriginal === null) {
++            unset($_ENV['NLP_SERVICE_URL']);
++        } else {
++            $_ENV['NLP_SERVICE_URL'] = $this->nlpServiceUrlOriginal;
++        }
++    }
++
++    public function testNoLanzaSiElMicroservicioNoResponde(): void
++    {
++        $_ENV['NLP_SERVICE_URL'] = 'http://127.0.0.1:1'; // puerto que no acepta conexiones
++
++        (new ErroresNlpObserver())->actualizar('vehiculo_creado', ['marca' => 'Geely', 'modelo' => 'Coolray']);
++
++        $this->addToAssertionCount(1); // llegar aquí sin excepción es la prueba
++    }
++
++    public function testIgnoraOtrosEventosYDatosVacios(): void
++    {
++        $_ENV['NLP_SERVICE_URL'] = 'http://127.0.0.1:1';
++        $observer = new ErroresNlpObserver();
++
++        $observer->actualizar('crear_venta', ['marca' => 'Geely']);
++        $observer->actualizar('vehiculo_creado', []);
++
++        $this->addToAssertionCount(1);
++    }
++}
+diff --git a/docker/docker-compose.yml b/docker/docker-compose.yml
+index 98ac44b..c266553 100644
+--- a/docker/docker-compose.yml
++++ b/docker/docker-compose.yml
+@@ -136,6 +136,13 @@ services:
+       BACKEND_URL:      "http://frontend"
+       JWT_SECRET:       "${JWT_SECRET:?falta en docker/.env — copiá docker/.env.example}"
+       NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
++    volumes:
++      # Tabla de posibles errores del NER (la mantiene app/ner/agente_errores.py).
++      # Solo data/errores/ y no data/ entera: un volumen sobre data/ taparía el
++      # intents_dataset.csv de cada imagen nueva. La primera vez Docker copia
++      # la tabla de la imagen al volumen; aunque se borrara, las filas "auto"
++      # se regeneran solas al arrancar (el generador es determinista).
++      - nlp_errores:/app/data/errores
+     networks:
+       - electrisys_net
+     depends_on:
+@@ -172,6 +179,7 @@ services:
+ 
+ volumes:
+   oracle_data:
++  nlp_errores:
+ 
+ networks:
+   electrisys_net:
+diff --git a/nlp-service/app/main.py b/nlp-service/app/main.py
+index de956ee..f9a326e 100644
+--- a/nlp-service/app/main.py
++++ b/nlp-service/app/main.py
+@@ -5,8 +5,11 @@ NLP_INTERNAL_KEY está configurado — evita que cualquiera dentro de la
+ red de Docker pueda usar el microservicio; solo el backend PHP conoce
+ la clave (ver backend/src/patterns/observer/GestorAsistente.php).
+ """
++import logging
++import threading
+ from contextlib import asynccontextmanager
+ from pathlib import Path
++from typing import Literal
+ 
+ from fastapi import Depends, FastAPI, Header, HTTPException
+ from pydantic import BaseModel, Field
+@@ -15,6 +18,7 @@ from app import config
+ from app.demanda.forecast import predecir_demanda, predecir_demanda_lote
+ from app.demanda.reabastecimiento import DIAS_COBERTURA, DIAS_ENTREGA, sugerir_pedido
+ from app.intent.train import MODEL_PATH, entrenar
++from app.ner import agente_errores, dictionary
+ from app.pipeline import procesar_consulta
+ from app.asociacion.reglas import recomendar_complementos
+ from app.busqueda.corrector import corregir
+@@ -26,10 +30,23 @@ from app.recommender.client_backend import (
+ from app.recommender.similares import recomendar_similares
+ 
+ 
++logger = logging.getLogger(__name__)
++
++
++def _sincronizar_tabla_errores() -> None:
++    try:
++        logger.info("Sincronización de la tabla de errores: %s", agente_errores.sincronizar_catalogo())
++    except Exception as e:  # nunca debe tumbar el arranque
++        logger.warning("No se pudo sincronizar la tabla de errores: %s", e)
++
++
+ @asynccontextmanager
+ async def lifespan(app: FastAPI):
+     if not Path(MODEL_PATH).exists():
+         entrenar()
++    # En segundo plano: si el backend no responde, el servicio arranca igual
++    # y la sincronización se repite cada vez que dictionary.py refresca.
++    threading.Thread(target=_sincronizar_tabla_errores, daemon=True).start()
+     yield
+ 
+ 
+@@ -41,6 +58,12 @@ class ConsultaRequest(BaseModel):
+     contexto_previo: dict | None = None
+ 
+ 
++class RegistrarErroresRequest(BaseModel):
++    tipo: Literal["marca", "modelo"]
++    nombre: str = Field(..., min_length=1, max_length=80)
++    marca: str | None = Field(default=None, max_length=80)
++
++
+ class SugerenciaPedidoRequest(BaseModel):
+     repuesto_ids: list[int] = Field(default_factory=list)
+     # Los dos parámetros del modelo de reorden. Se acotan acá y no solo en el
+@@ -66,6 +89,23 @@ def consultar(payload: ConsultaRequest):
+     return procesar_consulta(payload.texto, payload.contexto_previo)
+ 
+ 
++@app.post("/nlp/errores/registrar", dependencies=[Depends(_verificar_clave_interna)])
++def registrar_errores(payload: RegistrarErroresRequest):
++    """Genera los posibles errores de escritura de una marca o modelo nuevo.
++
++    Lo llama el backend PHP al crear un vehículo (ErroresNlpObserver). Al
++    responder, el nombre ya es buscable con sus errores; se invalida la
++    caché del catálogo para que la próxima consulta traiga el nombre nuevo
++    del backend y no lo descarte por "no existe en el catálogo".
++    """
++    try:
++        resumen = agente_errores.registrar_nombre(payload.tipo, payload.nombre, marca=payload.marca)
++    except ValueError as e:
++        raise HTTPException(status_code=422, detail=str(e)) from e
++    dictionary.invalidar_cache()
++    return resumen
++
++
+ @app.get("/recomendaciones/{repuesto_id}", dependencies=[Depends(_verificar_clave_interna)])
+ def recomendaciones(repuesto_id: int, limite: int = 5):
+     """Productos relacionados / sustitutos sugeridos para un repuesto.
+diff --git a/nlp-service/app/ner/agente_errores.py b/nlp-service/app/ner/agente_errores.py
+new file mode 100644
+index 0000000..133ef79
+--- /dev/null
++++ b/nlp-service/app/ner/agente_errores.py
+@@ -0,0 +1,293 @@
++"""Agente que mantiene al día la tabla de posibles errores.
++
++"Agente" = componente automático y determinista (no un LLM): cuando entra
++una marca, un modelo o una categoría nueva al catálogo, genera todos sus
++posibles errores con generador_errores.py, aplica el control de
++colisiones, los agrega al CSV y actualiza la tabla EN MEMORIA del
++extractor, de modo que el nombre nuevo queda buscable de inmediato, sin
++reiniciar el servicio.
++
++Se entera por dos vías:
++1. Aviso directo: POST /nlp/errores/registrar (lo llama el backend PHP al
++   crear un vehículo, ver backend/src/patterns/observer/ErroresNlpObserver.php).
++2. Sincronización: sincronizar_catalogo() al arrancar el servicio y cada vez
++   que dictionary.py refresca su caché, como red de seguridad si el aviso
++   directo falló (backend sin red hacia el microservicio, servicio caído).
++
++Persistencia: data/errores/ se monta como volumen en docker-compose. Aunque
++se perdiera, las filas "auto" se regeneran solas porque el generador es
++determinista; las "manual" vienen versionadas en data/posibles_errores_manuales.csv.
++
++Uso manual (regenerar la tabla del catálogo semilla):
++    python -m app.ner.agente_errores
++"""
++import csv
++import logging
++import os
++import tempfile
++import threading
++import time
++from pathlib import Path
++
++from app.ner import extractor
++from app.ner.generador_errores import (
++    COLUMNAS,
++    COLUMNAS_AVISOS,
++    DATA_DIR,
++    MOTIVO_COLISION,
++    TIPOS,
++    _aviso,
++    cerca_de_nombres,
++    filtrar_errores,
++    generar_errores,
++)
++from app.preprocessing import normalizar
++
++logger = logging.getLogger(__name__)
++
++RUTA_TABLA = extractor.TABLA_ERRORES_PATH
++RUTA_AVISOS = RUTA_TABLA.with_name("posibles_errores_avisos.csv")
++RUTA_MANUALES = DATA_DIR / "posibles_errores_manuales.csv"
++
++# Foto del catálogo semilla (database/seed_vehiculos.sql y /api/categorias),
++# la misma que usan tests/test_ner.py y eval/eval_ner.py.
++CATALOGO_SEMILLA = {
++    "marca": ["Toyota", "Chevrolet", "Mazda", "Nissan", "Hyundai", "Kia", "Renault", "Ford", "Suzuki"],
++    "modelo": [
++        "Hilux", "Corolla", "Fortuner", "Spark", "Spark GT", "Aveo", "3", "CX-5",
++        "Sentra", "Frontier", "Tucson", "Accent", "Rio", "Sportage", "Logan",
++        "Duster", "Escape", "Fiesta", "Swift",
++    ],
++    "categoria": [
++        "Filtros", "Frenos", "Baterías", "Suspensión", "Motor", "Transmisión",
++        "Encendido", "Correas y Bandas",
++    ],
++}
++
++_lock = threading.RLock()
++_estado: dict | None = None  # {"filas": {error: fila}, "avisos": [...], "nombres": {(tipo, norm): original}}
++
++
++def _leer_csv(ruta: Path) -> list[dict]:
++    try:
++        with ruta.open(encoding="utf-8", newline="") as f:
++            return list(csv.DictReader(f))
++    except OSError:
++        return []
++
++
++def _escribir_csv_atomico(ruta: Path, columnas: list[str], filas: list[dict]) -> None:
++    """Escribe a un temporal en la misma carpeta y lo cambia con os.replace.
++
++    os.replace es atómico: quien lea el CSV ve el archivo viejo completo o
++    el nuevo completo, nunca uno a medias. En Windows puede fallar un
++    instante si otro proceso tiene el archivo abierto (antivirus, OneDrive):
++    se reintenta un par de veces antes de rendirse.
++    """
++    ruta.parent.mkdir(parents=True, exist_ok=True)
++    fd, temporal = tempfile.mkstemp(dir=ruta.parent, prefix=f".{ruta.name}.", suffix=".tmp")
++    try:
++        with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
++            escritor = csv.DictWriter(f, fieldnames=columnas, extrasaction="ignore")
++            escritor.writeheader()
++            escritor.writerows(filas)
++            f.flush()
++            os.fsync(f.fileno())
++        for intento in range(5):
++            try:
++                os.replace(temporal, ruta)
++                return
++            except PermissionError:
++                if intento == 4:
++                    raise
++                time.sleep(0.05 * (intento + 1))
++    finally:
++        if os.path.exists(temporal):
++            os.remove(temporal)
++
++
++def _ordenar(filas) -> list[dict]:
++    return sorted(filas, key=lambda f: (f["tipo"], f["correcto"], int(f["nivel"]), f["error"]))
++
++
++def _tabla_para_extractor(filas: dict) -> dict:
++    tabla: dict[str, dict[str, str]] = {}
++    for fila in filas.values():
++        tabla.setdefault(fila["tipo"], {})[fila["error"]] = fila["correcto"]
++    return tabla
++
++
++def _cargar_estado() -> dict:
++    """Estado en memoria a partir del CSV (se lee una sola vez)."""
++    global _estado
++    if _estado is None:
++        filas = {f["error"]: f for f in _leer_csv(RUTA_TABLA) if f.get("tipo") in TIPOS and f.get("error")}
++        avisos = _leer_csv(RUTA_AVISOS)
++        nombres = {(f["tipo"], normalizar(f["correcto"])): f["correcto"] for f in filas.values()}
++        _estado = {"filas": filas, "avisos": avisos, "nombres": nombres}
++    return _estado
++
++
++def _bloqueadas(estado: dict) -> set[str]:
++    return {a["error"] for a in estado["avisos"] if a.get("motivo") == MOTIVO_COLISION}
++
++
++def _guardar_y_publicar(estado: dict) -> None:
++    _escribir_csv_atomico(RUTA_TABLA, COLUMNAS, _ordenar(estado["filas"].values()))
++    _escribir_csv_atomico(RUTA_AVISOS, COLUMNAS_AVISOS, estado["avisos"])
++    extractor.reemplazar_tabla_errores(_tabla_para_extractor(estado["filas"]))
++
++
++def _cambiar_y_guardar(estado: dict, cambio) -> tuple[int, int]:
++    """Aplica `cambio(estado)` y lo persiste; si falla la escritura, deshace
++    el cambio en memoria para que memoria y disco sigan iguales (y un
++    reintento vuelva a intentarlo en vez de decir "ya registrado")."""
++    respaldo = (dict(estado["filas"]), list(estado["avisos"]), dict(estado["nombres"]))
++    try:
++        resultado = cambio(estado)
++        _guardar_y_publicar(estado)
++        return resultado
++    except BaseException:
++        estado["filas"], estado["avisos"], estado["nombres"] = respaldo
++        raise
++
++
++def _agregar_avisos(estado: dict, nuevos: list[dict]) -> None:
++    vistos = {(a["tipo"], a["error"], a["correcto"], a["motivo"]) for a in estado["avisos"]}
++    for a in nuevos:
++        clave = (a["tipo"], a["error"], a["correcto"], a["motivo"])
++        if clave not in vistos:
++            vistos.add(clave)
++            estado["avisos"].append(a)
++
++
++def _incorporar(estado: dict, candidatas: list[dict], nombres_nuevos: list[tuple[str, str]]) -> tuple[int, int]:
++    """Agrega filas nuevas con el control de colisiones. Devuelve (agregadas, descartadas)."""
++    for tipo, nombre in nombres_nuevos:
++        estado["nombres"][(tipo, normalizar(nombre))] = nombre
++    oficiales = list(estado["nombres"].values())
++
++    # Un nombre oficial nuevo puede volver inválidos errores que ya estaban
++    # (ej. modelo nuevo "Hilus": "hilus" dejaba de ser error de Hilux).
++    existentes = list(estado["filas"].values())
++    cercanos = cerca_de_nombres([f["error"] for f in existentes], [n for _, n in nombres_nuevos])
++    quitados = []
++    for fila, nombres in zip(existentes, cercanos):
++        otros = [n for n in nombres if normalizar(n) != normalizar(fila["correcto"])]
++        if otros:
++            quitados.append(_aviso(fila, f"a un paso del nombre oficial nuevo '{otros[0]}'"))
++            del estado["filas"][fila["error"]]
++
++    aceptadas, avisos, quitar = filtrar_errores(
++        candidatas, oficiales, existentes=estado["filas"], bloqueadas=_bloqueadas(estado)
++    )
++    for error in quitar:
++        estado["filas"].pop(error, None)
++    for fila in aceptadas:
++        estado["filas"][fila["error"]] = {k: fila[k] for k in COLUMNAS}
++    _agregar_avisos(estado, quitados + avisos)
++    return len(aceptadas), len(avisos) + len(quitados)
++
++
++def _filas_manuales() -> list[dict]:
++    return [f for f in _leer_csv(RUTA_MANUALES) if f.get("tipo") in TIPOS and f.get("error")]
++
++
++def registrar_nombre(tipo: str, nombre: str, marca: str | None = None) -> dict:
++    """Genera y agrega a la tabla los posibles errores de un nombre nuevo.
++
++    Idempotente (registrar dos veces no duplica nada), seguro con hilos y
++    con escritura atómica. Al terminar, el nombre ya es buscable en el
++    extractor. `marca` es informativa para modelos (se registra en el log).
++    """
++    if tipo not in TIPOS:
++        raise ValueError(f"Tipo inválido: {tipo!r}. Válidos: {', '.join(TIPOS)}")
++    nombre = (nombre or "").strip()
++    if not normalizar(nombre):
++        raise ValueError("El nombre no puede estar vacío")
++
++    inicio = time.perf_counter()
++    with _lock:
++        estado = _cargar_estado()
++        if (tipo, normalizar(nombre)) in estado["nombres"]:
++            return {"tipo": tipo, "nombre": nombre, "ya_registrado": True, "agregadas": 0,
++                    "descartadas": 0, "ms": round((time.perf_counter() - inicio) * 1000, 1)}
++        manuales = [f for f in _filas_manuales()
++                    if f["tipo"] == tipo and normalizar(f["correcto"]) == normalizar(nombre)]
++        agregadas, descartadas = _cambiar_y_guardar(
++            estado, lambda e: _incorporar(e, manuales + generar_errores(nombre, tipo), [(tipo, nombre)])
++        )
++    resumen = {"tipo": tipo, "nombre": nombre, "ya_registrado": False, "agregadas": agregadas,
++               "descartadas": descartadas, "ms": round((time.perf_counter() - inicio) * 1000, 1)}
++    logger.info("Errores registrados para %s %r%s: %s", tipo, nombre, f" (marca {marca})" if marca else "", resumen)
++    return resumen
++
++
++def sincronizar_catalogo(catalogo: dict[str, list[str]] | None = None) -> dict:
++    """Registra los nombres del catálogo que todavía no tienen errores en la tabla.
++
++    Sin argumento pide el catálogo a dictionary.py (al arrancar el servicio).
++    dictionary.py la llama con los valores recién refrescados de su caché.
++    """
++    if catalogo is None:
++        from app.ner import dictionary  # diferido: dictionary.py importa este módulo
++
++        catalogo = {
++            "marca": dictionary.obtener_marcas(),
++            "modelo": dictionary.obtener_modelos(),
++            "categoria": dictionary.obtener_categorias(),
++        }
++    inicio = time.perf_counter()
++    registrados, agregadas, descartadas = [], 0, 0
++    with _lock:
++        estado = _cargar_estado()
++        # Filas manuales agregadas al repo después de crear el volumen.
++        descartados_antes = {(a["error"], normalizar(a["correcto"])) for a in estado["avisos"]}
++        manuales = [f for f in _filas_manuales()
++                    if (f["tipo"], normalizar(f["correcto"])) in estado["nombres"]
++                    and f["error"] not in estado["filas"]
++                    and (f["error"], normalizar(f["correcto"])) not in descartados_antes]
++        if manuales:
++            n, d = _cambiar_y_guardar(estado, lambda e: _incorporar(e, manuales, []))
++            agregadas, descartadas = agregadas + n, descartadas + d
++        for tipo in TIPOS:
++            for nombre in sorted(set(catalogo.get(tipo) or [])):
++                if (tipo, normalizar(nombre)) in estado["nombres"] or not normalizar(nombre):
++                    continue
++                r = registrar_nombre(tipo, nombre)
++                registrados.append(f"{tipo}:{nombre}")
++                agregadas += r["agregadas"]
++                descartadas += r["descartadas"]
++    return {"registrados": registrados, "agregadas": agregadas, "descartadas": descartadas,
++            "ms": round((time.perf_counter() - inicio) * 1000, 1)}
++
++
++def regenerar_tabla(catalogo: dict[str, list[str]] | None = None) -> dict:
++    """Reconstruye la tabla completa desde cero (filas manuales + generadas)."""
++    global _estado
++    catalogo = catalogo or CATALOGO_SEMILLA
++    inicio = time.perf_counter()
++    with _lock:
++        _estado = {"filas": {}, "avisos": [], "nombres": {}}
++        en_catalogo = {(t, normalizar(n)) for t in TIPOS for n in catalogo.get(t, [])}
++        candidatas = [f for f in _filas_manuales() if (f["tipo"], normalizar(f["correcto"])) in en_catalogo]
++        nombres = []
++        for tipo in TIPOS:
++            for nombre in catalogo.get(tipo, []):
++                candidatas += generar_errores(nombre, tipo)
++                nombres.append((tipo, nombre))
++        agregadas, descartadas = _incorporar(_estado, candidatas, nombres)
++        _guardar_y_publicar(_estado)
++    return {"agregadas": agregadas, "descartadas": descartadas,
++            "ms": round((time.perf_counter() - inicio) * 1000, 1)}
++
++
++def _reiniciar_estado() -> None:
++    """Olvida el estado en memoria (lo vuelve a leer del CSV). Para pruebas."""
++    global _estado
++    with _lock:
++        _estado = None
++
++
++if __name__ == "__main__":
++    print(regenerar_tabla())
+diff --git a/nlp-service/app/ner/dictionary.py b/nlp-service/app/ner/dictionary.py
+index 513da60..da57634 100644
+--- a/nlp-service/app/ner/dictionary.py
++++ b/nlp-service/app/ner/dictionary.py
+@@ -12,11 +12,13 @@ año/motor/combustible se siguen extrayendo por regex de todas formas, solo
+ marca/modelo/categoría quedan sin reconocer.
+ """
+ import logging
++import threading
+ import time
+ 
+ import httpx
+ 
+ from app.config import BACKEND_URL, backend_auth_headers
++from app.ner import agente_errores
+ 
+ logger = logging.getLogger(__name__)
+ 
+@@ -42,6 +44,7 @@ def _obtener_con_cache(clave: str, cargar_fn) -> list[str]:
+     try:
+         valores = cargar_fn()
+         _cache[clave] = (ahora + _TTL_SEGUNDOS, valores)
++        _avisar_agente_errores(clave, valores)
+         return valores
+     except Exception as e:
+         logger.warning("No se pudo refrescar '%s' desde el backend: %s", clave, e)
+@@ -50,6 +53,28 @@ def _obtener_con_cache(clave: str, cargar_fn) -> list[str]:
+         return []
+ 
+ 
++def _avisar_agente_errores(clave: str, valores: list[str]) -> None:
++    """Red de seguridad de la tabla de errores: cada refresco del catálogo
++    registra los nombres que todavía no tienen errores generados (por si el
++    aviso directo del backend a /nlp/errores/registrar falló).
++
++    En un hilo aparte para no sumarle latencia a la consulta que disparó el
++    refresco.
++    """
++    if clave == "marcas":
++        tipo = "marca"
++    elif clave == "categorias":
++        tipo = "categoria"
++    elif clave.startswith("modelos:"):
++        tipo = "modelo"
++    else:
++        return
++    if valores:
++        threading.Thread(
++            target=agente_errores.sincronizar_catalogo, args=({tipo: list(valores)},), daemon=True
++        ).start()
++
++
+ def obtener_marcas() -> list[str]:
+     return _obtener_con_cache("marcas", lambda: _get_json("/api/vehiculos/marcas")["data"])
+ 
+diff --git a/nlp-service/app/ner/extractor.py b/nlp-service/app/ner/extractor.py
+index fdafc7e..5a39f98 100644
+--- a/nlp-service/app/ner/extractor.py
++++ b/nlp-service/app/ner/extractor.py
+@@ -10,11 +10,23 @@ normalizado (minúsculas, sin tildes, sin puntuación) porque el fuzzy
+ matching no depende de esos detalles. Para año y motor se usa el texto
+ ORIGINAL: normalizar() quita el punto de "2.7" (queda "2 7"), lo que
+ rompería la regex del motor.
++
++Tabla de posibles errores (data/errores/posibles_errores.csv): antes de la
++lógica fuzzy de siempre, marca/modelo/categoría se buscan en una tabla de
++formas mal escritas ya conocidas ("jilus" -> "Hilux"), generada por
++generador_errores.py y mantenida al día por agente_errores.py. Si la
++tabla está vacía o no existe, el resultado es exactamente el de antes.
+ """
++import csv
++import os
+ import re
++import threading
++from pathlib import Path
+ 
+ from rapidfuzz import fuzz, process
++from rapidfuzz.distance import DamerauLevenshtein
+ 
++from app.ner.generador_errores import TIPOS, clave_fonetica, es_palabra_comun
+ from app.preprocessing import normalizar
+ 
+ UMBRAL_FUZZY = 85  # 0-100; token_set_ratio es permisivo, se exige bastante certeza
+@@ -49,6 +61,22 @@ _RE_CODIGO = re.compile(r"\b[A-Za-z0-9]{1,10}-[A-Za-z0-9]{2,10}\b")
+ 
+ UMBRAL_FUZZY_TYPO = 88  # para comparación palabra-por-palabra (ver abajo)
+ 
++# Ruta calculada desde __file__ (y no desde el directorio actual) para que
++# funcione igual dentro de Docker (/app/data/...) y fuera. La variable de
++# entorno permite apuntarla a otra carpeta (volumen, pruebas).
++TABLA_ERRORES_PATH = Path(
++    os.getenv("NLP_TABLA_ERRORES_PATH")
++    or Path(__file__).resolve().parents[2] / "data" / "errores" / "posibles_errores.csv"
++)
++UMBRAL_TABLA_ERRORES = 90  # fuzz.ratio contra las claves de la tabla
++MIN_LETRAS_FUZZY_TABLA = 5  # en palabras más cortas fuzz.ratio es ruidoso
++# Nivel 4 (más allá de la tabla): ediciones arbitrarias de 2+ letras.
++UMBRAL_RESPALDO_SIMILITUD = 0.75  # DamerauLevenshtein.normalized_similarity
++
++_tabla_en_memoria: dict | None = None
++_lock_tabla = threading.Lock()
++_indices_fuzzy: dict[int, tuple[dict, dict]] = {}
++
+ 
+ def _mejor_match(texto_normalizado: str, opciones: list[str]) -> str | None:
+     """Busca la opción del vocabulario que mejor aparece dentro del texto.
+@@ -96,28 +124,217 @@ def _mejor_match(texto_normalizado: str, opciones: list[str]) -> str | None:
+     return None
+ 
+ 
+-def extraer_marca(texto_normalizado: str, marcas_conocidas: list[str]) -> str | None:
+-    return _mejor_match(texto_normalizado, marcas_conocidas)
++def cargar_tabla_errores(ruta=None) -> dict:
++    """Lee la tabla de posibles errores: {tipo: {error_normalizado: correcto}}.
+ 
++    Si el archivo no existe o está vacío devuelve {} sin lanzar error: el
++    NER sigue funcionando igual que sin tabla.
++    """
++    ruta = Path(ruta) if ruta is not None else TABLA_ERRORES_PATH
++    tabla: dict[str, dict[str, str]] = {}
++    try:
++        with ruta.open(encoding="utf-8", newline="") as f:
++            for fila in csv.DictReader(f):
++                tipo, error, correcto = fila.get("tipo"), fila.get("error"), fila.get("correcto")
++                if tipo in TIPOS and error and correcto:
++                    tabla.setdefault(tipo, {})[error] = correcto
++    except (OSError, csv.Error, UnicodeDecodeError):
++        return {}
++    return tabla
++
++
++def obtener_tabla_errores() -> dict:
++    """La tabla en memoria (se carga del CSV la primera vez)."""
++    global _tabla_en_memoria
++    if _tabla_en_memoria is None:
++        with _lock_tabla:
++            if _tabla_en_memoria is None:
++                _tabla_en_memoria = cargar_tabla_errores()
++    return _tabla_en_memoria
++
++
++def reemplazar_tabla_errores(nueva: dict) -> None:
++    """Recarga en caliente: la próxima consulta ya usa la tabla nueva.
++
++    Asignar la referencia es atómico: una consulta en curso termina con la
++    tabla vieja y la siguiente usa la nueva, sin locks en la búsqueda.
++    """
++    global _tabla_en_memoria
++    with _lock_tabla:
++        _tabla_en_memoria = nueva
++        _indices_fuzzy.clear()
+ 
+-def extraer_modelo(texto_normalizado: str, modelos_conocidos: list[str]) -> str | None:
+-    return _mejor_match(texto_normalizado, modelos_conocidos)
+ 
++def _resolver_tabla(tabla_errores: dict | None) -> dict:
++    return obtener_tabla_errores() if tabla_errores is None else tabla_errores
+ 
+-def extraer_categoria(texto_normalizado: str, categorias_conocidas: list[str]) -> str | None:
+-    """Resuelve categoría por sinónimo directo primero; si no aplica, por
+-    fuzzy matching (_mejor_match).
+ 
+-    El sinónimo solo se usa si la categoría mapeada realmente está en
+-    categorias_conocidas (el catálogo real) — evita devolver una categoría
+-    que no existe en este negocio en particular.
++def _indice_fuzzy(errores: dict) -> dict:
++    """Claves de la tabla agrupadas por (primera letra, longitud).
++
++    Buscar con fuzz.ratio contra TODAS las claves tarda ~185 ms por frase;
++    con este índice solo se compara contra las de misma inicial y longitud
++    parecida (±1), que son las únicas que pueden pasar el umbral de 90.
++    """
++    guardado = _indices_fuzzy.get(id(errores))
++    if guardado is not None and guardado[0] is errores:
++        return guardado[1]
++    indice: dict[tuple[str, int], list[str]] = {}
++    for clave in errores:
++        if len(clave) >= MIN_LETRAS_FUZZY_TABLA - 1:
++            indice.setdefault((clave[0], len(clave)), []).append(clave)
++    if len(_indices_fuzzy) > 16:
++        _indices_fuzzy.clear()
++    _indices_fuzzy[id(errores)] = (errores, indice)
++    return indice
++
++
++def _candidatos(texto_normalizado: str) -> list[tuple[int, str]]:
++    """Cada palabra y cada grupo de 2 a 4 palabras consecutivas: (n, texto).
++
++    Hasta 4 porque un nombre de tres palabras con un espacio de más
++    ("corr eas y bandas") ocupa cuatro.
+     """
++    palabras = texto_normalizado.split()
++    return [
++        (n, " ".join(palabras[i:i + n]))
++        for n in (4, 3, 2, 1)
++        for i in range(len(palabras) - n + 1)
++    ]
++
++
++def _buscar_en_tabla_errores(texto_normalizado: str, tipo: str, opciones: list[str], tabla: dict) -> str | None:
++    """Busca en la frase alguna forma mal escrita conocida de `tipo`.
++
++    Primero coincidencia EXACTA (dict, O(1)); si no hay, fuzz.ratio contra
++    las claves de la tabla (solo candidatos de 5+ letras). Gana el grupo de
++    más palabras ("sprak gt" antes que "sprak") y después el mejor puntaje.
++    Solo devuelve un nombre que exista en `opciones` (el catálogo recibido),
++    con su escritura original, igual que SINONIMOS_CATEGORIA: la tabla no
++    inventa entidades que este negocio no tiene.
++    """
++    errores = tabla.get(tipo)
++    if not errores or not opciones:
++        return None
++    opciones_normalizadas = {normalizar(o): o for o in opciones}
++    candidatos = _candidatos(texto_normalizado)
++
++    for _, candidato in candidatos:
++        correcto = errores.get(candidato)
++        if correcto is not None and normalizar(correcto) in opciones_normalizadas:
++            return opciones_normalizadas[normalizar(correcto)]
++
++    indice = _indice_fuzzy(errores)
++    mejor, mejor_orden = None, None
++    for n, candidato in candidatos:
++        if len(candidato) < MIN_LETRAS_FUZZY_TABLA or es_palabra_comun(candidato):
++            continue
++        claves = [
++            clave
++            for largo in (len(candidato) - 1, len(candidato), len(candidato) + 1)
++            for clave in indice.get((candidato[0], largo), ())
++        ]
++        r = process.extractOne(candidato, claves, scorer=fuzz.ratio, score_cutoff=UMBRAL_TABLA_ERRORES)
++        if r is None:
++            continue
++        correcto = normalizar(errores[r[0]])
++        if correcto in opciones_normalizadas and (mejor_orden is None or (n, r[1]) > mejor_orden):
++            mejor, mejor_orden = opciones_normalizadas[correcto], (n, r[1])
++    return mejor
++
++
++def _candidatos_respaldo(texto_normalizado: str) -> list[tuple[int, str]]:
++    """Palabras y pares (juntos, sin espacio) que no son palabras comunes."""
++    return [
++        (n, candidato.replace(" ", ""))
++        for n, candidato in _candidatos(texto_normalizado)
++        if n <= 2 and len(candidato.replace(" ", "")) >= MIN_LETRAS_FUZZY_TABLA
++        and not es_palabra_comun(candidato)
++    ]
++
++
++def _respaldo_fonetico(texto_normalizado: str, opciones: list[str]) -> str | None:
++    """Misma clave fonética que un nombre del catálogo ("shebrolet")."""
++    claves = {}
++    for o in opciones:
++        junto = normalizar(o).replace(" ", "")
++        if len(junto) >= MIN_LETRAS_FUZZY_TABLA:
++            claves.setdefault(clave_fonetica(junto), o)
++    for _, candidato in _candidatos_respaldo(texto_normalizado):
++        encontrado = claves.get(clave_fonetica(candidato))
++        if encontrado is not None:
++            return encontrado
++    return None
++
++
++def _respaldo_similitud(texto_normalizado: str, opciones: list[str]) -> str | None:
++    """Nivel 4: errores de 2+ letras que la tabla no enumera.
++
++    Damerau-Levenshtein cuenta el intercambio de dos letras como UN error
++    (fuzz.ratio lo cuenta como dos), por eso tolera más sin bajar tanto el
++    umbral.
++    """
++    nombres = {normalizar(o).replace(" ", ""): o for o in opciones}
++    nombres = {k: v for k, v in nombres.items() if len(k) >= MIN_LETRAS_FUZZY_TABLA}
++    mejor, mejor_orden = None, None
++    for n, candidato in _candidatos_respaldo(texto_normalizado):
++        for junto, original in nombres.items():
++            similitud = DamerauLevenshtein.normalized_similarity(candidato, junto)
++            if similitud >= UMBRAL_RESPALDO_SIMILITUD and (mejor_orden is None or (similitud, n) > mejor_orden):
++                mejor, mejor_orden = original, (similitud, n)
++    return mejor
++
++
++def _extraer_con_tabla(texto_normalizado, tipo, opciones, tabla_errores, logica_actual) -> str | None:
++    """Tabla primero; si no hay resultado, la lógica de siempre; al final,
++    los respaldos fonético y de similitud (solo si hay tabla cargada, para
++    que con tabla vacía el resultado sea idéntico al de antes)."""
++    tabla = _resolver_tabla(tabla_errores)
++    if tabla:
++        encontrado = _buscar_en_tabla_errores(texto_normalizado, tipo, opciones, tabla)
++        if encontrado is not None:
++            return encontrado
++    resultado = logica_actual()
++    if resultado is None and tabla and opciones:
++        resultado = _respaldo_fonetico(texto_normalizado, opciones) or _respaldo_similitud(texto_normalizado, opciones)
++    return resultado
++
++
++def extraer_marca(texto_normalizado: str, marcas_conocidas: list[str], tabla_errores: dict | None = None) -> str | None:
++    return _extraer_con_tabla(
++        texto_normalizado, "marca", marcas_conocidas, tabla_errores,
++        lambda: _mejor_match(texto_normalizado, marcas_conocidas),
++    )
++
++
++def extraer_modelo(texto_normalizado: str, modelos_conocidos: list[str], tabla_errores: dict | None = None) -> str | None:
++    return _extraer_con_tabla(
++        texto_normalizado, "modelo", modelos_conocidos, tabla_errores,
++        lambda: _mejor_match(texto_normalizado, modelos_conocidos),
++    )
++
++
++def _categoria_sin_tabla(texto_normalizado: str, categorias_conocidas: list[str]) -> str | None:
+     for palabra, categoria in SINONIMOS_CATEGORIA.items():
+         if palabra in texto_normalizado and categoria in categorias_conocidas:
+             return categoria
+     return _mejor_match(texto_normalizado, categorias_conocidas)
+ 
+ 
++def extraer_categoria(texto_normalizado: str, categorias_conocidas: list[str], tabla_errores: dict | None = None) -> str | None:
++    """Resuelve categoría por la tabla de errores, luego por sinónimo
++    directo y, si no aplica, por fuzzy matching (_mejor_match).
++
++    El sinónimo solo se usa si la categoría mapeada realmente está en
++    categorias_conocidas (el catálogo real) — evita devolver una categoría
++    que no existe en este negocio en particular.
++    """
++    return _extraer_con_tabla(
++        texto_normalizado, "categoria", categorias_conocidas, tabla_errores,
++        lambda: _categoria_sin_tabla(texto_normalizado, categorias_conocidas),
++    )
++
++
+ def extraer_anio(texto_original: str) -> int | None:
+     match = _RE_ANIO.search(texto_original)
+     return int(match.group(1)) if match else None
+@@ -148,15 +365,20 @@ def extraer_entidades(
+     marcas_conocidas: list[str] | None = None,
+     modelos_conocidos: list[str] | None = None,
+     categorias_conocidas: list[str] | None = None,
++    tabla_errores: dict | None = None,
+ ) -> dict:
+-    """Extrae marca, modelo, año, motor, combustible, código y categoría de un texto."""
++    """Extrae marca, modelo, año, motor, combustible, código y categoría de un texto.
++
++    tabla_errores: None usa la tabla en memoria; {} la desactiva.
++    """
+     texto_normalizado = normalizar(texto)
++    tabla = _resolver_tabla(tabla_errores)
+     return {
+-        "marca": extraer_marca(texto_normalizado, marcas_conocidas or []),
+-        "modelo": extraer_modelo(texto_normalizado, modelos_conocidos or []),
++        "marca": extraer_marca(texto_normalizado, marcas_conocidas or [], tabla),
++        "modelo": extraer_modelo(texto_normalizado, modelos_conocidos or [], tabla),
+         "anio": extraer_anio(texto),
+         "motor": extraer_motor(texto),
+         "combustible": extraer_combustible(texto_normalizado),
+         "codigo": extraer_codigo(texto),
+-        "categoria": extraer_categoria(texto_normalizado, categorias_conocidas or []),
++        "categoria": extraer_categoria(texto_normalizado, categorias_conocidas or [], tabla),
+     }
+diff --git a/nlp-service/app/ner/generador_errores.py b/nlp-service/app/ner/generador_errores.py
+new file mode 100644
+index 0000000..0089b23
+--- /dev/null
++++ b/nlp-service/app/ner/generador_errores.py
+@@ -0,0 +1,609 @@
++"""Generador determinista de posibles errores de escritura (tabla de errores).
++
++RapidFuzz compara la palabra del usuario con el nombre oficial y no sabe que
++"jilus" es como se escribe "hilux" de oído: fuzz.ratio le da 60/100. Este
++módulo enumera de antemano las formas mal escritas de cada marca, modelo y
++categoría, para que el NER las encuentre por coincidencia exacta (O(1)).
++
++Niveles (de lo mínimo a lo extremo):
++- Nivel 1: TODAS las ediciones de una sola letra (borrar, repetir,
++  intercambiar contiguas, cambiar por cualquier otra, insertar cualquiera;
++  alfabeto a-z y 0-9, que es todo lo que deja normalizar()) más las
++  variantes de espacio ("sparkgt", "hi lux").
++- Nivel 2: errores fonéticos del español (b/v, c/s/z, ll/y, h muda, k/c/qu,
++  g/j, x/s/ks, w/gu/u, y/i, doble letra), solos y de a dos; transliteración
++  de nombres extranjeros tal como los escribe un hispanohablante
++  ("renault" -> "reno", "geely" -> "yili"); apodos por sílabas ("chevy") y
++  partes/siglas de nombres compuestos ("sgt").
++- Nivel 3: dos errores realistas (letra vecina en el teclado, borrado,
++  repetición, intercambio), un error fonético más un error de tipeo,
++  nombres truncados y letras repetidas de más ("toyotaaa").
++- Nivel 4: ediciones arbitrarias de 2 o más letras. NO se enumeran (más de
++  100 mil variantes por nombre): las cubre el respaldo por similitud del
++  extractor (Damerau-Levenshtein) y la clave fonética de este módulo.
++
++Mínimos de longitud (letras del nombre sin espacios):
++- 3 o menos (Kia, Rio, "3", "CX-5"): casi cualquier edición es una palabra
++  normal ("tia", "dia", "rie") o un código, así que solo se generan letras
++  repetidas y la variante sin separador ("cx5"). El resto queda para las
++  filas manuales. Los nombres solo numéricos no generan nada.
++- 4 letras: niveles 1 y 2.
++- 5 o más: niveles 1, 2 y 3. Apodos desde 6 letras, truncados desde 7.
++
++No usa internet ni ninguna API: mismo nombre, mismas filas.
++"""
++import csv
++import re
++from functools import lru_cache
++from itertools import combinations, product
++from pathlib import Path
++
++import numpy as np
++from rapidfuzz import process
++from rapidfuzz.distance import DamerauLevenshtein
++
++from app.preprocessing import STOPWORDS_ES, normalizar
++
++COLUMNAS = ["tipo", "error", "correcto", "nivel", "origen", "nota"]
++TIPOS = ("marca", "modelo", "categoria")
++
++ALFABETO = "abcdefghijklmnopqrstuvwxyz0123456789"
++VOCALES = "aeiou"
++CONECTORES = {"y", "e", "de", "del", "la", "el"}
++
++MIN_LETRAS_NIVEL_1 = 4
++MIN_LETRAS_NIVEL_3 = 5
++MIN_LETRAS_APODO = 6
++MIN_LETRAS_TRUNCADO = 7
++MIN_LETRAS_ERROR = 3
++MAX_CAMBIOS_TRANSLITERACION = 3
++
++DATA_DIR = Path(__file__).resolve().parents[2] / "data"
++PALABRAS_COMUNES_PATH = DATA_DIR / "palabras_comunes_es.txt"
++# Solo archivos que viajan en la imagen de Docker (data/): si se usara
++# eval/, el mismo nombre daría filas distintas dentro y fuera del contenedor.
++_FUENTES_VOCABULARIO = (DATA_DIR / "intents_dataset.csv", DATA_DIR / "frases_por_categoria.txt")
++
++# Teclado QWERTY español (la ñ no existe tras normalizar()).
++_FILAS_TECLADO = ("qwertyuiop", "asdfghjkl", "zxcvbnm")
++
++
++def _vecinas_teclado() -> dict[str, str]:
++    vecinas = {}
++    for r, fila in enumerate(_FILAS_TECLADO):
++        for i, letra in enumerate(fila):
++            cercanas = {fila[j] for j in (i - 1, i + 1) if 0 <= j < len(fila)}
++            if r > 0:
++                arriba = _FILAS_TECLADO[r - 1]
++                cercanas |= {arriba[j] for j in (i, i + 1) if 0 <= j < len(arriba)}
++            if r < len(_FILAS_TECLADO) - 1:
++                abajo = _FILAS_TECLADO[r + 1]
++                cercanas |= {abajo[j] for j in (i - 1, i) if 0 <= j < len(abajo)}
++            vecinas[letra] = "".join(sorted(cercanas))
++    return vecinas
++
++
++VECINAS_TECLADO = _vecinas_teclado()
++
++# Reglas fonéticas del español: (patrón, reemplazo). Cada aplicación cambia
++# UNA aparición del patrón; el nivel 2 combina hasta dos.
++REGLAS_FONETICAS = [
++    (r"b", "v"), (r"v", "b"),
++    (r"c(?=[ei])", "s"), (r"c(?=[ei])", "z"), (r"s(?=[ei])", "c"), (r"s", "z"),
++    (r"z", "s"), (r"z(?=[ei])", "c"),
++    (r"ll", "y"), (r"y(?=[aeiou])", "ll"),
++    (r"(?<![cs])h", ""), (r"^(?=[aeiou])", "h"), (r"(?<![cs])h", "j"),
++    (r"c(?=[aou]|[^aeiouh]|$)", "k"), (r"k(?=[aou])", "c"), (r"k(?=[ei])", "qu"),
++    (r"qu(?=[ei])", "k"),
++    (r"g(?=[ei])", "j"), (r"j(?=[ei])", "g"),
++    (r"x", "s"), (r"x", "ks"), (r"x", "cs"), (r"ks", "x"), (r"cs", "x"), (r"s", "x"),
++    (r"w", "gu"), (r"w", "u"), (r"gu(?=[aeiou])", "w"), (r"u(?=[aeiou])", "w"),
++    (r"y", "i"), (r"i", "y"),
++    (r"([a-z])\1", r"\1"),
++    (r"sh", "ch"), (r"ch", "sh"),
++]
++_REGLAS_FONETICAS = [(re.compile(p), r) for p, r in REGLAS_FONETICAS]
++
++# Transliteración de nombres extranjeros "como suenan" (inglés, francés,
++# alemán): (patrón, alternativas). El idioma se deduce por los patrones
++# mismos (-ault, eau, ee, oo, w, th...). Se cambian hasta 3 apariciones a
++# la vez porque una lectura extranjera toca varias letras juntas
++# ("geely" -> "yili" son tres cambios).
++REGLAS_EXTRANJERAS = [
++    (r"ee", ("i",)), (r"ea", ("i",)), (r"oo", ("u",)), (r"ou", ("u",)),
++    (r"ay", ("ei", "ai")), (r"ey", ("ei", "i")), (r"ai", ("ei",)),
++    (r"y$", ("i",)), (r"y(?=[^aeiou])", ("i",)),
++    (r"^j", ("y",)), (r"g(?=[eiy])", ("y", "j")),
++    (r"^h", ("j", "")), (r"hy", ("ji", "y", "i")),
++    (r"th", ("t",)), (r"ph", ("f",)), (r"ck", ("k", "c")),
++    (r"w", ("gu", "u", "v")),
++    (r"cc", ("ks", "x", "c")), (r"cs", ("s", "x")),
++    (r"ault$", ("o", "ol")), (r"eau", ("o",)), (r"au", ("o",)), (r"eu", ("e",)),
++    (r"et$", ("e",)), (r"ot$", ("o",)), (r"geo", ("jo", "yo")),
++    (r"ei", ("ai",)), (r"ie", ("i",)), (r"sch", ("sh", "ch")),
++    (r"qu", ("k",)),
++]
++_REGLAS_EXTRANJERAS = [(re.compile(p), alts) for p, alts in REGLAS_EXTRANJERAS]
++
++_INSEPARABLES = {"bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "kl", "kr",
++                 "pl", "pr", "tr", "ch", "ll", "rr", "sh", "th"}
++
++
++def _letras(texto: str) -> int:
++    return len(texto.replace(" ", ""))
++
++
++# ---------------------------------------------------------------- nivel 1
++
++
++def ediciones_una_letra(palabra: str) -> dict[str, str]:
++    """Todas las ediciones de una sola letra, con la nota del tipo de error."""
++    res: dict[str, str] = {}
++
++    def agregar(variante: str, nota: str) -> None:
++        if variante != palabra and variante not in res:
++            res[variante] = nota
++
++    for i in range(len(palabra)):
++        agregar(palabra[:i] + palabra[i + 1:], "falta una letra")
++        agregar(palabra[:i] + palabra[i] + palabra[i:], "letra repetida")
++        if i < len(palabra) - 1:
++            agregar(palabra[:i] + palabra[i + 1] + palabra[i] + palabra[i + 2:], "letras intercambiadas")
++    for i in range(len(palabra)):
++        for c in ALFABETO:
++            agregar(palabra[:i] + c + palabra[i + 1:], "letra cambiada")
++    for i in range(len(palabra) + 1):
++        for c in ALFABETO:
++            agregar(palabra[:i] + c + palabra[i:], "letra de más")
++    return res
++
++
++def _espacios_internos(palabra: str) -> set[str]:
++    """Un espacio de más dentro de la palabra: "hilux" -> "hi lux"."""
++    return {palabra[:i] + " " + palabra[i:] for i in range(2, len(palabra) - 1)}
++
++
++def _repeticiones(palabra: str) -> set[str]:
++    return {palabra[:i] + palabra[i] + palabra[i:] for i in range(len(palabra)) if palabra[i].isalpha()}
++
++
++# ---------------------------------------------------------------- nivel 2
++
++
++def fonetico_una_regla(texto: str) -> set[str]:
++    res = set()
++    for patron, reemplazo in _REGLAS_FONETICAS:
++        for m in patron.finditer(texto):
++            res.add(texto[:m.start()] + m.expand(reemplazo) + texto[m.end():])
++    res.discard(texto)
++    return res
++
++
++def fonetico_dos_reglas(texto: str) -> set[str]:
++    una = fonetico_una_regla(texto)
++    dos = set()
++    for variante in una:
++        dos |= fonetico_una_regla(variante)
++    return (una | dos) - {texto}
++
++
++def transliteraciones(palabra: str) -> set[str]:
++    """Lecturas de un nombre extranjero por un hispanohablante."""
++    apariciones = []
++    for patron, alternativas in _REGLAS_EXTRANJERAS:
++        for m in patron.finditer(palabra):
++            apariciones.append((m.start(), m.end(), alternativas))
++    apariciones.sort()
++    res = set()
++    for k in range(1, MAX_CAMBIOS_TRANSLITERACION + 1):
++        for grupo in combinations(apariciones, k):
++            if any(a[1] > b[0] for a, b in zip(grupo, grupo[1:])):
++                continue  # dos reglas sobre las mismas letras
++            for elegidas in product(*(g[2] for g in grupo)):
++                partes, cursor = [], 0
++                for (inicio, fin, _), alt in zip(grupo, elegidas):
++                    partes += [palabra[cursor:inicio], alt]
++                    cursor = fin
++                partes.append(palabra[cursor:])
++                res.add("".join(partes))
++    res.discard(palabra)
++    return res
++
++
++def silabas(palabra: str) -> list[str]:
++    """Silabeo simple del español (núcleos vocálicos, grupos inseparables)."""
++    es_vocal = [c in VOCALES or (c == "y" and (i == len(palabra) - 1 or palabra[i + 1] not in VOCALES))
++                for i, c in enumerate(palabra)]
++    nucleos, i = [], 0
++    while i < len(palabra):
++        if es_vocal[i]:
++            j = i
++            while j + 1 < len(palabra) and es_vocal[j + 1]:
++                j += 1
++            nucleos.append((i, j))
++            i = j + 1
++        else:
++            i += 1
++    if len(nucleos) <= 1:
++        return [palabra]
++    cortes = []
++    for (_, fin), (inicio, _) in zip(nucleos, nucleos[1:]):
++        grupo = palabra[fin + 1:inicio]
++        if len(grupo) <= 1:
++            cortes.append(fin + 1)
++        elif len(grupo) == 2:
++            cortes.append(fin + 1 if grupo in _INSEPARABLES else fin + 2)
++        else:
++            cortes.append(inicio - 2 if grupo[-2:] in _INSEPARABLES else inicio - 1)
++    trozos, previo = [], 0
++    for c in cortes:
++        trozos.append(palabra[previo:c])
++        previo = c
++    trozos.append(palabra[previo:])
++    return trozos
++
++
++def apodos(palabra: str) -> set[str]:
++    """Acortamientos coloquiales: "chevrolet" -> "chevy", "toyota" -> "toyo"."""
++    if len(palabra) < MIN_LETRAS_APODO:
++        return set()
++    trozos = silabas(palabra)
++    res = set()
++    for k in range(1, len(trozos)):
++        prefijo = "".join(trozos[:k])
++        siguiente = trozos[k]
++        # "chev" (termina en consonante) ya sirve de base; "to" necesita la
++        # consonante que sigue: "toy".
++        bases = {prefijo} if k >= 2 or prefijo[-1] not in VOCALES else set()
++        if prefijo[-1] in VOCALES and siguiente[0] not in VOCALES:
++            bases.add(prefijo + siguiente[0])
++        for base in bases:
++            res.add(base)
++            if base[-1] not in VOCALES:
++                res |= {base + "i"} if base[-1] == "y" else {base + "i", base + "y"}
++    return {a for a in res if len(a) >= MIN_LETRAS_ERROR + 1 and a != palabra and len(a) < len(palabra) - 1}
++
++
++def partes_y_siglas(normalizado: str) -> set[str]:
++    """Partes sueltas y siglas de nombres compuestos ("Spark GT" -> "sgt").
++
++    Las siglas de 2 letras no se generan: sin contexto chocan con cualquier
++    abreviatura ("mb", "cc"); quedan para filas manuales.
++    """
++    palabras = normalizado.split()
++    if len(palabras) < 2:
++        return set()
++    res = {p for p in palabras if len(p) >= MIN_LETRAS_NIVEL_1 and p not in CONECTORES}
++    con_conector = "".join(p[0] for p in palabras)
++    sin_conector = "".join(p[0] for p in palabras if p not in CONECTORES)
++    # Las palabras de 3 letras o menos ("gt") se conservan completas: "sgt".
++    siglas_mixtas = "".join(p[0] if len(p) > 3 else p for p in palabras if p not in CONECTORES)
++    res |= {s for s in (con_conector, sin_conector, siglas_mixtas) if len(s) >= 3}
++    res.discard(normalizado)
++    return res
++
++
++# ---------------------------------------------------------------- nivel 3
++
++
++def ediciones_realistas(palabra: str) -> set[str]:
++    """Errores de tipeo realistas: borrar, repetir, intercambiar, letra vecina."""
++    res = set()
++    for i in range(len(palabra)):
++        res.add(palabra[:i] + palabra[i + 1:])
++        res.add(palabra[:i] + palabra[i] + palabra[i:])
++        if i < len(palabra) - 1:
++            res.add(palabra[:i] + palabra[i + 1] + palabra[i] + palabra[i + 2:])
++        for c in VECINAS_TECLADO.get(palabra[i], ""):
++            res.add(palabra[:i] + c + palabra[i + 1:])
++    res.discard(palabra)
++    return res
++
++
++def _truncados(palabra: str) -> set[str]:
++    if len(palabra) < MIN_LETRAS_TRUNCADO:
++        return set()
++    return {palabra[:n] for n in range(max(5, len(palabra) - 3), len(palabra) - 1)}
++
++
++def _repeticiones_de_mas(palabra: str) -> set[str]:
++    res = {palabra + palabra[-1] * k for k in (2, 3)}
++    res |= {palabra[:i] + palabra[i] * 2 + palabra[i:] for i in range(len(palabra)) if palabra[i].isalpha()}
++    return res
++
++
++# ---------------------------------------------------------------- generador
++
++
++def _variantes_palabra(palabra: str, niveles) -> dict[str, tuple[int, str]]:
++    """Variantes de UNA palabra -> (nivel, nota), respetando los mínimos."""
++    res: dict[str, tuple[int, str]] = {}
++
++    def agregar(variantes, nivel: int, nota) -> None:
++        for v in sorted(variantes):
++            if v != palabra and v not in res:
++                res[v] = (nivel, nota(v) if callable(nota) else nota)
++
++    letras = len(palabra)
++    if palabra.isdigit():
++        return res
++    if letras < MIN_LETRAS_NIVEL_1:
++        if 1 in niveles:
++            agregar(_repeticiones(palabra), 1, "letra repetida")
++        return res
++
++    if 1 in niveles:
++        una = ediciones_una_letra(palabra)
++        agregar(una, 1, una.get)
++        agregar(_espacios_internos(palabra), 1, "espacio")
++    if 2 in niveles:
++        extranjeras = transliteraciones(palabra)
++        agregar(extranjeras, 2, "fonético extranjero")
++        agregar(fonetico_dos_reglas(palabra), 2, "fonético")
++        agregar(apodos(palabra), 2, "apodo")
++    if 3 in niveles and letras >= MIN_LETRAS_NIVEL_3:
++        realistas = ediciones_realistas(palabra)
++        dos_tipeos = set()
++        for v in realistas:
++            dos_tipeos |= ediciones_realistas(v)
++        fonetico_mas_tipeo = set()
++        for v in fonetico_una_regla(palabra) | transliteraciones(palabra):
++            fonetico_mas_tipeo |= ediciones_realistas(v)
++        agregar(dos_tipeos, 3, "dos errores de tipeo")
++        agregar(fonetico_mas_tipeo, 3, "fonético + tipeo")
++        agregar(_truncados(palabra), 3, "truncado")
++        agregar(_repeticiones_de_mas(palabra), 3, "letras repetidas de más")
++    return res
++
++
++def generar_errores(nombre: str, tipo: str, niveles=(1, 2, 3)) -> list[dict]:
++    """Posibles errores de escritura de un nombre del catálogo.
++
++    Trabaja sobre el nombre normalizado pero devuelve "correcto" tal como
++    está en el catálogo. NO aplica el control de colisiones contra otros
++    nombres (depende del catálogo completo): eso lo hace filtrar_errores().
++    Sí descarta lo que no puede ser un error útil (igual al nombre, menos
++    de 3 letras). Determinista: salida ordenada.
++    """
++    if tipo not in TIPOS:
++        raise ValueError(f"Tipo inválido: {tipo!r}. Válidos: {', '.join(TIPOS)}")
++    normalizado = normalizar(nombre)
++    if not normalizado:
++        return []
++    palabras = normalizado.split()
++    niveles = set(niveles)
++    variantes: dict[str, tuple[int, str]] = {}
++
++    def agregar(texto: str, nivel: int, nota: str) -> None:
++        texto = re.sub(r"\s+", " ", texto).strip()
++        if texto and texto != normalizado and (texto not in variantes or variantes[texto][0] > nivel):
++            variantes[texto] = (nivel, nota)
++
++    if len(palabras) > 1 and _letras(normalizado) < MIN_LETRAS_NIVEL_1:
++        # Nombre corto con separador ("CX-5"): solo la forma junta y letras repetidas.
++        if 1 in niveles:
++            agregar("".join(palabras), 1, "espacio")
++            for i, palabra in enumerate(palabras):
++                for v in _repeticiones(palabra):
++                    agregar(" ".join(palabras[:i] + [v] + palabras[i + 1:]), 1, "letra repetida")
++    elif len(palabras) == 1:
++        for v, (nivel, nota) in _variantes_palabra(normalizado, niveles).items():
++            agregar(v, nivel, nota)
++    else:
++        # Palabra por palabra, dejando las demás igual.
++        for i, palabra in enumerate(palabras):
++            for v, (nivel, nota) in _variantes_palabra(palabra, niveles).items():
++                agregar(" ".join(palabras[:i] + [v] + palabras[i + 1:]), nivel, nota)
++        # Del conjunto: espacio de menos, conector omitido, errores sobre la forma junta.
++        junto = "".join(palabras)
++        sin_conector = [p for p in palabras if p not in CONECTORES]
++        if 1 in niveles:
++            agregar(junto, 1, "espacio")
++            agregar(" ".join(sin_conector), 1, "espacio")
++            agregar("".join(sin_conector), 1, "espacio")
++            if len(junto) >= MIN_LETRAS_NIVEL_1 and not junto.isdigit():
++                for v, nota in ediciones_una_letra(junto).items():
++                    agregar(v, 1, nota)
++        if 2 in niveles:
++            for v in fonetico_una_regla(normalizado):
++                agregar(v, 2, "fonético")
++            for v in partes_y_siglas(normalizado):
++                agregar(v, 2, "sigla" if " " not in v and v not in palabras else "parte")
++        if 3 in niveles:
++            # Un error realista en cada una de las dos palabras más largas.
++            largas = sorted((i for i, p in enumerate(palabras) if len(p) >= MIN_LETRAS_NIVEL_3),
++                            key=lambda i: (-len(palabras[i]), i))[:2]
++            if len(largas) == 2:
++                a, b = sorted(largas)
++                for va in sorted(ediciones_realistas(palabras[a])):
++                    for vb in sorted(ediciones_realistas(palabras[b])):
++                        copia = list(palabras)
++                        copia[a], copia[b] = va, vb
++                        agregar(" ".join(copia), 3, "dos errores de tipeo")
++
++    filas = [
++        {"tipo": tipo, "error": error, "correcto": nombre.strip(), "nivel": nivel,
++         "origen": "auto", "nota": nota}
++        for error, (nivel, nota) in variantes.items()
++        if _letras(error) >= MIN_LETRAS_ERROR
++    ]
++    return sorted(filas, key=lambda f: (f["nivel"], f["error"]))
++
++
++# ---------------------------------------------------------------- colisiones
++
++
++@lru_cache(maxsize=1)
++def palabras_comunes() -> frozenset[str]:
++    """Palabras que NO pueden ser un error de marca/modelo/categoría.
++
++    Lista a mano (data/palabras_comunes_es.txt) + stopwords del
++    preprocesamiento + todo el vocabulario de las frases de entrenamiento
++    (data/): si una palabra aparece en consultas reales, es una palabra que
++    la gente usa con su propio significado.
++    """
++    palabras = set(STOPWORDS_ES)
++    if PALABRAS_COMUNES_PATH.exists():
++        for linea in PALABRAS_COMUNES_PATH.read_text(encoding="utf-8").splitlines():
++            linea = linea.split("#", 1)[0].strip()
++            if linea:
++                palabras.add(normalizar(linea))
++    for ruta in _FUENTES_VOCABULARIO:
++        if ruta.exists():
++            with ruta.open(encoding="utf-8", newline="") as f:
++                for fila in csv.reader(f):
++                    for celda in fila[:1]:
++                        palabras.update(normalizar(celda).split())
++    return frozenset(p for p in palabras if p)
++
++
++def formas_de(nombre: str) -> set[str]:
++    """Formas con que un nombre oficial puede aparecer ya normalizado."""
++    n = normalizar(nombre)
++    return {n, n.replace(" ", "")} if n else set()
++
++
++def es_palabra_comun(error: str, comunes=None, nombre_propio: str | None = None) -> bool:
++    """¿El error es (o está hecho solo de) palabras comunes?
++
++    nombre_propio: el nombre del que es error. Su forma junta y sus propias
++    palabras no cuentan como comunes: "ba terias" junto es "baterias", que
++    es el nombre mismo, y "correas bandas" solo usa palabras de "Correas y
++    Bandas".
++    """
++    comunes = palabras_comunes() if comunes is None else comunes
++    tokens = error.split()
++    junto = error.replace(" ", "")
++    if nombre_propio:
++        propio = normalizar(nombre_propio)
++        if junto == propio.replace(" ", "") or (len(tokens) > 1 and set(tokens) <= set(propio.split())):
++            return False
++    return error in comunes or junto in comunes or all(t in comunes for t in tokens)
++
++
++def clave_fonetica(texto: str) -> str:
++    """Clave fonética del español (tipo Soundex, hecha a mano).
++
++    Dos escrituras que suenan igual dan la misma clave: "chebrolet",
++    "shevrolet" y "chevrolet" -> "chebrolet"; "hilux", "ilux" -> "ilus".
++    """
++    t = normalizar(texto).replace(" ", "")
++    for patron, reemplazo in (
++        (r"ee", "i"), (r"oo", "u"), (r"ph", "f"), (r"th", "t"), (r"sh", "ch"), (r"ck", "k"),
++        (r"w", "u"), (r"qu(?=[ei])", "k"), (r"c(?=[ei])", "s"), (r"ch", "\x00"), (r"c", "k"),
++        (r"z", "s"), (r"x", "s"), (r"ks", "s"), (r"g(?=[ei])", "j"), (r"gu(?=[ei])", "g"),
++        (r"ll", "y"), (r"v", "b"), (r"h", ""), (r"\x00", "ch"), (r"y", "i"),
++    ):
++        t = re.sub(patron, reemplazo, t)
++    return re.sub(r"([a-z])\1+", r"\1", t)
++
++
++COLUMNAS_AVISOS = ["tipo", "error", "correcto", "nivel", "motivo"]
++MOTIVO_COLISION = "apunta a dos nombres distintos"
++
++
++def _aviso(fila: dict, motivo: str) -> dict:
++    return {"tipo": fila["tipo"], "error": fila["error"], "correcto": fila["correcto"],
++            "nivel": fila["nivel"], "motivo": motivo}
++
++
++def cerca_de_nombres(errores: list[str], nombres: list[str]) -> list[list[str]]:
++    """Para cada error, los nombres oficiales a distancia 0 o 1 (Damerau-Levenshtein).
++
++    Vectorizado con process.cdist: comparar 50 mil errores contra todo el
++    catálogo en un bucle de Python tardaría varios segundos.
++    """
++    formas = [(forma, nombre) for nombre in nombres for forma in sorted(formas_de(nombre))]
++    resultado: list[list[str]] = [[] for _ in errores]
++    if not errores or not formas:
++        return resultado
++    textos = [f for f, _ in formas]
++    for inicio in range(0, len(errores), 20000):
++        bloque = errores[inicio:inicio + 20000]
++        matriz = process.cdist(bloque, textos, scorer=DamerauLevenshtein.distance,
++                               score_cutoff=1, dtype=np.int32, workers=-1)
++        for fila, col in zip(*np.nonzero(matriz <= 1)):
++            nombre = formas[col][1]
++            if nombre not in resultado[inicio + fila]:
++                resultado[inicio + fila].append(nombre)
++    return resultado
++
++
++def filtrar_errores(candidatas, nombres_oficiales, existentes=None, bloqueadas=frozenset(), comunes=None):
++    """Control de colisiones y falsos positivos antes de aceptar un error.
++
++    Se descarta (y se devuelve como aviso con el motivo) todo error que:
++    1. sea igual a otro nombre oficial del catálogo o esté a un paso de él;
++    2. sea una palabra común del español;
++    3. apunte a dos nombres distintos (con cualquier tipo). Si uno de los
++       dos es una fila manual, gana la manual.
++
++    candidatas: filas nuevas. nombres_oficiales: todos los nombres del
++    catálogo (de cualquier tipo). existentes: {error: fila} ya aceptadas,
++    para detectar la colisión 3 contra lo que ya está en la tabla.
++    bloqueadas: errores que ya colisionaron antes (no se vuelven a aceptar).
++
++    Devuelve (aceptadas, avisos, errores_a_quitar_de_existentes).
++    """
++    existentes = existentes or {}
++    comunes = palabras_comunes() if comunes is None else comunes
++    oficiales = sorted({n.strip() for n in nombres_oficiales if normalizar(n)})
++    avisos: list[dict] = []
++
++    # Deduplicar: mismo error y mismo nombre -> nivel más bajo, manual antes que auto.
++    unicas: dict[tuple, dict] = {}
++    for fila in candidatas:
++        clave = (fila["tipo"], fila["error"], normalizar(fila["correcto"]))
++        previa = unicas.get(clave)
++        orden = (fila["origen"] == "auto", int(fila["nivel"]))
++        if previa is None or orden < (previa["origen"] == "auto", int(previa["nivel"])):
++            unicas[clave] = fila
++    filas = sorted(unicas.values(), key=lambda f: (f["tipo"], f["correcto"], int(f["nivel"]), f["error"]))
++
++    vivas = []
++    cercanos = cerca_de_nombres([f["error"] for f in filas], oficiales)
++    for fila, nombres in zip(filas, cercanos):
++        propio = normalizar(fila["correcto"])
++        if fila["error"] == propio:
++            avisos.append(_aviso(fila, "igual al nombre correcto"))
++            continue
++        otros = [n for n in nombres if normalizar(n) != propio]
++        if otros:
++            iguales = [n for n in otros if fila["error"] in formas_de(n)]
++            motivo = (f"igual al nombre oficial '{iguales[0]}'" if iguales
++                      else f"a un paso del nombre oficial '{otros[0]}'")
++            avisos.append(_aviso(fila, motivo))
++            continue
++        if es_palabra_comun(fila["error"], comunes, fila["correcto"]):
++            avisos.append(_aviso(fila, "palabra común del español"))
++            continue
++        if fila["error"] in bloqueadas:
++            avisos.append(_aviso(fila, MOTIVO_COLISION))
++            continue
++        vivas.append(fila)
++
++    # Colisión 3: el mismo error hacia dos nombres distintos (nuevas + existentes).
++    por_error: dict[str, list[dict]] = {}
++    for fila in vivas:
++        por_error.setdefault(fila["error"], []).append(fila)
++    aceptadas, quitar = [], []
++    for error, grupo in por_error.items():
++        previa = existentes.get(error)
++        todos = grupo + ([previa] if previa is not None else [])
++        destinos = {(f["tipo"], normalizar(f["correcto"])) for f in todos}
++        if len(destinos) == 1:
++            if previa is None:
++                aceptadas.append(grupo[0])
++            continue
++        manuales = {(f["tipo"], normalizar(f["correcto"])) for f in todos if f["origen"] == "manual"}
++        ganadora = next(iter(manuales)) if len(manuales) == 1 else None
++        for f in todos:
++            if ganadora is not None and (f["tipo"], normalizar(f["correcto"])) == ganadora:
++                if f is not previa:
++                    aceptadas.append(f)
++                continue
++            avisos.append(_aviso(f, MOTIVO_COLISION))
++            if f is previa:
++                quitar.append(error)
++    aceptadas.sort(key=lambda f: (f["tipo"], f["correcto"], int(f["nivel"]), f["error"]))
++    return aceptadas, avisos, quitar
+diff --git a/nlp-service/data/palabras_comunes_es.txt b/nlp-service/data/palabras_comunes_es.txt
+new file mode 100644
+index 0000000..f001953
+--- /dev/null
++++ b/nlp-service/data/palabras_comunes_es.txt
+@@ -0,0 +1,720 @@
++# Palabras comunes del español que NO pueden ser un error de escritura de
++# una marca, un modelo o una categoría (control de colisiones de
++# app/ner/generador_errores.py). Una por línea; "#" inicia un comentario.
++# Se normalizan al cargarlas (minúsculas, sin tildes).
++# Se complementa automáticamente con STOPWORDS_ES y con todo el vocabulario
++# de data/intents_dataset.csv y data/frases_por_categoria.txt.
++
++# --- Palabras que se parecen a nombres del catálogo (casos detectados) ---
++centra
++centro
++centros
++centrar
++sentar
++sentir
++siento
++sienta
++serta
++cierta
++cierto
++escapa
++escapo
++escapar
++cape
++capa
++capas
++fiestas
++fiest
++fiel
++fieles
++feria
++lógica
++logia
++lona
++lana
++logo
++lodo
++duro
++dura
++ducha
++buster
++tucán
++tacón
++acento
++acentos
++aceite
++aceites
++acierto
++riel
++rico
++riña
++real
++reales
++ruta
++suiza
++suave
++rotor
++rotores
++motos
++moto
++motor
++motora
++fotos
++foto
++forro
++forros
++foro
++fondo
++fondos
++ford
++fort
++forma
++formas
++fuerte
++lord
++aves
++ave
++avena
++aveno
++atento
++nisa
++nación
++misión
++misiones
++lista
++listo
++kilos
++kilo
++hilo
++hilos
++luz
++lux
++lujo
++lujos
++filos
++filo
++frenar
++freno
++frena
++frenado
++bateria
++batería
++batir
++tensión
++mansión
++pensión
++pasión
++susto
++torno
++trono
++coral
++corral
++colar
++cola
++colas
++rolla
++rollo
++olla
++spar
++parque
++parte
++partes
++parto
++sport
++sporte
++porta
++portar
++portaje
++porte
++aporte
++fortuna
++fortunas
++fortuito
++frontera
++fronteras
++frontal
++frente
++switch
++suif
++tapa
++tapas
++tapón
++mazo
++masa
++tacos
++taco
++arena
++reina
++sedan
++sedán
++trans
++tránsito
++transito
++misión
++ciento
++cientos
++sentido
++sentados
++encender
++encendida
++encendidas
++encendedor
++
++# --- Conversación y comercio ---
++hola
++buenas
++buenos
++buen
++bueno
++dias
++días
++tardes
++noches
++gracias
++favor
++porfa
++por
++favor
++necesito
++necesita
++necesitamos
++busco
++buscar
++buscando
++quiero
++queria
++quería
++quisiera
++tienen
++tiene
++tengo
++hay
++habra
++habrá
++cuanto
++cuánto
++cuanta
++cuesta
++cuestan
++vale
++valen
++precio
++precios
++costo
++costos
++cotizar
++cotizacion
++cotización
++comprar
++compra
++compras
++vender
++venta
++ventas
++vendo
++pedido
++pedidos
++pedir
++llevar
++llego
++llegó
++llega
++llegan
++disponible
++disponibles
++stock
++existencia
++existencias
++inventario
++cliente
++clientes
++tienda
++bodega
++factura
++pago
++pagar
++efectivo
++tarjeta
++descuento
++oferta
++ofertas
++garantia
++garantía
++marca
++marcas
++modelo
++modelos
++referencia
++referencias
++codigo
++código
++numero
++número
++original
++originales
++generico
++genérico
++generica
++nuevo
++nueva
++nuevos
++nuevas
++usado
++usada
++barato
++barata
++caro
++cara
++mejor
++peor
++igual
++similar
++parecido
++otro
++otra
++cambio
++cambiar
++reemplazo
++repuesto
++repuestos
++pieza
++piezas
++parte
++kit
++juego
++par
++pares
++unidad
++unidades
++caja
++cajas
++docena
++algo
++alguno
++alguna
++ninguno
++ninguna
++todo
++todos
++cual
++cuál
++cuales
++que
++qué
++como
++cómo
++cuando
++donde
++dónde
++para
++pero
++porque
++también
++tambien
++ahora
++hoy
++mañana
++manana
++ayer
++semana
++mes
++año
++anio
++anos
++años
++del
++desde
++hasta
++sobre
++entre
++hacia
++según
++sin
++con
++sus
++mis
++tus
++nos
++les
++esto
++esta
++este
++estos
++estas
++eso
++esa
++ese
++aquí
++aqui
++alla
++allá
++sirve
++sirven
++servir
++queda
++quedan
++queda
++puede
++pueden
++podria
++podría
++sabe
++saben
++saber
++decir
++dice
++dicen
++hacer
++hace
++hacen
++dar
++dame
++deme
++mande
++mandar
++enviar
++envio
++envío
++revisar
++revisa
++mirar
++mira
++ver
++vea
++veo
++trae
++traer
++traiga
++viene
++vienen
++sale
++salen
++entra
++entran
++funciona
++funcionan
++falla
++fallas
++fallando
++daño
++daños
++dañado
++dañada
++roto
++rota
++suena
++sonido
++ruido
++ruidos
++vibra
++vibración
++gasta
++pierde
++bota
++botando
++calienta
++recalienta
++prende
++enciende
++apaga
++
++# --- Vehículo en general ---
++carro
++carros
++auto
++autos
++coche
++coches
++camioneta
++camionetas
++camion
++camión
++vehiculo
++vehículo
++vehiculos
++moto
++motos
++taxi
++bus
++buseta
++van
++pickup
++campero
++sedan
++hatchback
++delantero
++delantera
++delanteros
++delanteras
++trasero
++trasera
++traseros
++traseras
++izquierdo
++izquierda
++derecho
++derecha
++superior
++inferior
++lado
++lados
++llanta
++llantas
++rueda
++ruedas
++rin
++rines
++puerta
++puertas
++vidrio
++vidrios
++espejo
++espejos
++luz
++luces
++farola
++farolas
++stop
++bombillo
++bombillos
++pito
++volante
++timon
++timón
++silla
++sillas
++cinturon
++cinturón
++tablero
++radio
++parabrisas
++plumilla
++plumillas
++limpiabrisas
++capo
++capó
++baul
++baúl
++maletero
++guardabarro
++bomper
++parachoques
++chasis
++carroceria
++carrocería
++pintura
++kilometraje
++kilometros
++kilómetros
++gasolina
++diesel
++diésel
++acpm
++gas
++nafta
++hibrido
++híbrido
++electrico
++eléctrico
++tanque
++combustible
++cilindraje
++cilindro
++cilindros
++litros
++litro
++valvula
++válvula
++valvulas
++válvulas
++turbo
++automatico
++automático
++automatica
++mecanico
++mecánico
++mecanica
++mecánica
++manual
++secuencial
++
++# --- Repuestos y sistemas ---
++filtro
++filtros
++aire
++cabina
++polen
++bomba
++bombas
++inyector
++inyectores
++inyeccion
++inyección
++carburador
++bujia
++bujía
++bujias
++bujías
++cable
++cables
++bobina
++bobinas
++alternador
++arranque
++motor
++motores
++culata
++empaque
++empaques
++junta
++juntas
++piston
++pistón
++pistones
++biela
++bielas
++cigueñal
++cigüeñal
++cadena
++cadenas
++correa
++correas
++banda
++bandas
++tensor
++tensores
++polea
++poleas
++rodamiento
++rodamientos
++balinera
++balineras
++retenedor
++retenedores
++freno
++frenos
++pastilla
++pastillas
++balata
++balatas
++disco
++discos
++campana
++campanas
++zapata
++zapatas
++mordaza
++caliper
++liquido
++líquido
++liquidos
++amortiguador
++amortiguadores
++espiral
++espirales
++resorte
++resortes
++muelle
++muelles
++rotula
++rótula
++rotulas
++rótulas
++terminal
++terminales
++axial
++axiales
++buje
++bujes
++tijera
++tijeras
++brazo
++brazos
++barra
++estabilizadora
++suspension
++suspensión
++direccion
++dirección
++cremallera
++radiador
++radiadores
++ventilador
++termostato
++manguera
++mangueras
++refrigerante
++agua
++aceite
++lubricante
++grasa
++embrague
++clutch
++prensa
++volante
++transmision
++transmisión
++caja
++cardan
++cardán
++eje
++ejes
++diferencial
++homocinetica
++homocinética
++bateria
++baterías
++baterias
++borne
++bornes
++fusible
++fusibles
++rele
++relé
++sensor
++sensores
++sonda
++computadora
++encendido
++switch
++llave
++llaves
++bombillo
++exhosto
++exosto
++escape
++silenciador
++catalizador
++tubo
++tubos
++soporte
++soportes
++tornillo
++tornillos
++tuerca
++tuercas
++arandela
++empaquetadura
++
++# --- Números y cantidades escritos ---
++uno
++una
++dos
++tres
++cuatro
++cinco
++seis
++siete
++ocho
++nueve
++diez
++cien
++mil
++medio
++media
++primero
++primera
++segundo
++segunda
++tercero
++tercera
+diff --git a/nlp-service/data/posibles_errores_manuales.csv b/nlp-service/data/posibles_errores_manuales.csv
+new file mode 100644
+index 0000000..b6296a9
+--- /dev/null
++++ b/nlp-service/data/posibles_errores_manuales.csv
+@@ -0,0 +1,17 @@
++tipo,error,correcto,nivel,origen,nota
++marca,chevy,Chevrolet,2,manual,apodo
++marca,cheby,Chevrolet,2,manual,apodo
++marca,kya,Kia,1,manual,tipeo
++marca,kiya,Kia,2,manual,fonético
++marca,quia,Kia,2,manual,fonético
++marca,kia motors,Kia,2,manual,apodo
++marca,reno,Renault,2,manual,fonético extranjero
++marca,renol,Renault,2,manual,fonético extranjero
++marca,yundai,Hyundai,2,manual,fonético extranjero
++marca,jiundai,Hyundai,2,manual,fonético extranjero
++marca,susuki,Suzuki,2,manual,fonético
++modelo,ryo,Rio,2,manual,fonético
++modelo,cx5,CX-5,1,manual,espacio
++modelo,jilux,Hilux,2,manual,fonético
++modelo,jilus,Hilux,2,manual,fonético
++categoria,trasmision,Transmisión,1,manual,fonético
+diff --git a/nlp-service/eval/eval_ner_rapidfuzz.py b/nlp-service/eval/eval_ner_rapidfuzz.py
+new file mode 100644
+index 0000000..24a953c
+--- /dev/null
++++ b/nlp-service/eval/eval_ner_rapidfuzz.py
+@@ -0,0 +1,245 @@
++"""Evaluación del NER y de RapidFuzz (Aplicación de la IA - ElectriSys).
++
++Mide, con "acierto / no acierto":
++  1. NER campo por campo (marca, modelo, año, motor, combustible, código, categoría).
++  2. RapidFuzz: qué tanto acierta cuando la frase está bien escrita y cuando
++     el usuario comete errores de tipeo (0, 1 y 2 errores en la palabra).
++  3. Que el NER no invente entidades cuando la frase no menciona ninguna.
++  4. Efecto de los errores de tipeo sobre la intención (TF-IDF no usa RapidFuzz).
++
++Datos: (a) frases reales (data/intents_dataset.csv + eval/holdout_intent.csv),
++anotadas automáticamente por coincidencia exacta con el catálogo; (b) frases
++generadas con entidades conocidas (la verdad se conoce por construcción).
++Semillas fijas: el resultado es reproducible.
++
++Uso (desde nlp-service/):  python -m eval.eval_ner_rapidfuzz
++"""
++import json, random, re
++from pathlib import Path
++
++import numpy as np
++import pandas as pd
++
++from app.ner.extractor import extraer_entidades
++from app.preprocessing import normalizar
++from eval.eval_ner import MARCAS, MODELOS, CATEGORIAS
++
++BASE = Path(__file__).resolve().parent
++OUT = BASE / "resultados_ner_rapidfuzz.json"
++SEED = 2026
++random.seed(SEED); np.random.seed(SEED)
++
++PARES = {"Toyota": ["Hilux", "Corolla", "Fortuner"], "Chevrolet": ["Spark", "Spark GT", "Aveo"],
++         "Mazda": ["3", "CX-5"], "Nissan": ["Sentra", "Frontier"], "Hyundai": ["Tucson", "Accent"],
++         "Kia": ["Rio", "Sportage"], "Renault": ["Logan", "Duster"], "Ford": ["Escape", "Fiesta"],
++         "Suzuki": ["Swift"]}
++# (frase del usuario, categoría correcta, grupo)
++#  directa: la palabra se parece al nombre de la categoría o hay sinónimo programado
++#  significado: solo se relaciona por significado (sin parecido de letras)
++CATS = [("filtro de aceite", "Filtros", "directa"), ("filtros de aire", "Filtros", "directa"),
++        ("pastillas de freno", "Frenos", "directa"), ("discos de freno", "Frenos", "directa"),
++        ("bateria", "Baterías", "directa"), ("baterias", "Baterías", "directa"),
++        ("suspension delantera", "Suspensión", "directa"), ("caja de transmision", "Transmisión", "directa"),
++        ("bujias", "Encendido", "directa"), ("correa de distribucion", "Correas y Bandas", "directa"),
++        ("amortiguadores", "Suspensión", "significado"), ("kit de embrague", "Transmisión", "significado"),
++        ("balatas", "Frenos", "significado"), ("rotula superior", "Suspensión", "significado")]
++MOTORES = ["1.4", "1.6", "2.0", "2.7", "3.0", "1600cc", "1400cc", "150cc"]
++COMBS = ["gasolina", "diesel", "hibrido", "gas"]
++CODIGOS = ["HP-1002", "M1-102", "90915-YZZD4", "FG-FF5320", "AB-1234", "K2-9001", "FO-3011"]
++INICIOS = ["necesito", "busco", "¿tienen", "¿hay", "quiero cotizar", "¿cuánto cuesta", "me hace falta", "pregunto por"]
++
++def coincide(esp, obt):
++    if esp is None: return obt is None
++    if isinstance(esp, str) and isinstance(obt, str): return esp.strip().lower() == obt.strip().lower()
++    return esp == obt
++
++def extraer(texto):
++    return extraer_entidades(texto, MARCAS, MODELOS, CATEGORIAS)
++
++# ---------------------------------------------------------------- errores de tipeo
++_VEC = {"a": "sq", "e": "wr", "i": "uo", "o": "ip", "u": "yi", "s": "ad", "n": "bm", "r": "et", "t": "ry", "l": "k", "c": "xv", "m": "n"}
++OPS = ["borrar", "duplicar", "sustituir", "transponer"]
++def un_error(p, rng, op=None):
++    if len(p) < 2: return p
++    op = op or rng.choice(OPS)
++    i = rng.randrange(len(p))
++    if op == "borrar": return p[:i] + p[i + 1:]
++    if op == "transponer" and i < len(p) - 1: return p[:i] + p[i + 1] + p[i] + p[i + 2:]
++    if op == "sustituir": return p[:i] + rng.choice(_VEC.get(p[i], "aeiou")) + p[i + 1:]
++    return p[:i] + p[i] + p[i:]
++def con_errores(palabra, k, rng, op=None):
++    q = palabra
++    for _ in range(k):
++        q = un_error(q, rng, op)
++    return q if q != palabra else un_error(palabra, rng, op)
++
++# ---------------------------------------------------------------- frases generadas
++def generar(n, rng):
++    casos = []
++    for _ in range(n):
++        marca = rng.choice(list(PARES)); modelo = rng.choice(PARES[marca])
++        cat, cat_ok, grupo = rng.choice(CATS)
++        verdad, trozos = {}, [rng.choice(INICIOS), cat]
++        verdad["categoria"] = cat_ok
++        veh = [marca.lower(), modelo.lower()]
++        verdad["marca"], verdad["modelo"] = marca, modelo
++        if rng.random() < .6: a = rng.randint(2005, 2024); veh.append(str(a)); verdad["anio"] = a
++        if rng.random() < .35: m = rng.choice(MOTORES); veh.append(m); verdad["motor"] = m
++        if rng.random() < .3: c = rng.choice(COMBS); veh.append(c); verdad["combustible"] = c
++        trozos += ["para", "un" if rng.random() < .4 else "", " ".join(veh)]
++        if rng.random() < .25: k = rng.choice(CODIGOS); trozos.append(f"codigo {k}"); verdad["codigo"] = k
++        texto = " ".join(t for t in trozos if t)
++        casos.append({"texto": texto, "verdad": verdad, "grupo": grupo, "cat_palabra": cat})
++    return casos
++
++def ordenar_valor(campo, v): return v
++
++def evaluar():
++    rng = random.Random(SEED)
++    res = {}
++    # ---------- 1) NER campo por campo (frases generadas, cuando el campo SÍ está)
++    casos = generar(400, rng)
++    por_campo = {}
++    fallos = []
++    for c in casos:
++        ent = extraer(c["texto"])
++        for campo, esp in c["verdad"].items():
++            ok = coincide(esp, ent.get(campo))
++            d = por_campo.setdefault(campo, [0, 0]); d[0 if ok else 1] += 1
++            if not ok: fallos.append({"texto": c["texto"], "campo": campo, "esperado": esp, "obtenido": ent.get(campo)})
++    res["ner_por_campo"] = {k: {"acierto": v[0], "no_acierto": v[1]} for k, v in por_campo.items()}
++    # categoría: por grupo
++    g = {}
++    for c in casos:
++        ok = coincide(c["verdad"]["categoria"], extraer(c["texto"]).get("categoria"))
++        d = g.setdefault(c["grupo"], [0, 0]); d[0 if ok else 1] += 1
++    res["categoria_por_grupo"] = {k: {"acierto": v[0], "no_acierto": v[1]} for k, v in g.items()}
++
++    # ---------- 2) frases reales: marca/modelo por coincidencia exacta
++    reales = pd.concat([pd.read_csv(BASE.parent / "data" / "intents_dataset.csv"),
++                        pd.read_csv(BASE / "holdout_intent.csv")]).drop_duplicates("texto").reset_index(drop=True)
++    def exacto(vocab, tn, especial=None):
++        hallados = []
++        for v in vocab:
++            vn = normalizar(v)
++            if vn == "3":
++                if re.search(r"\bmazda 3\b", tn): hallados.append(v)
++            elif re.search(rf"\b{re.escape(vn)}\b", tn): hallados.append(v)
++        if not hallados: return None
++        return max(hallados, key=len)
++    real, excluidas = [], []
++    for t in reales.texto:
++        tn = normalizar(t)
++        n_mod = sum(1 for v in MODELOS if normalizar(v) != "3" and re.search(rf"\b{re.escape(normalizar(v))}\b", tn))
++        if n_mod > 1 or "toyta" in tn:   # dos modelos a la vez, o ya trae un error de tipeo: verdad ambigua
++            excluidas.append(t); continue
++        real.append({"texto": t, "tn": tn, "marca": exacto(MARCAS, tn), "modelo": exacto(MODELOS, tn)})
++    # 2a) limpias: cuando SÍ hay entidad y cuando NO la hay
++    r = {"marca": {"con_entidad": [0, 0], "sin_entidad": [0, 0]}, "modelo": {"con_entidad": [0, 0], "sin_entidad": [0, 0]}}
++    fallos_real = []
++    for c in real:
++        ent = extraer(c["texto"])
++        for campo in ("marca", "modelo"):
++            esp = c[campo]; ok = coincide(esp, ent.get(campo))
++            r[campo]["con_entidad" if esp else "sin_entidad"][0 if ok else 1] += 1
++            if not ok: fallos_real.append({"texto": c["texto"], "campo": campo, "esperado": esp, "obtenido": ent.get(campo)})
++    res["reales_limpias"] = {c: {k: {"acierto": v[0], "no_acierto": v[1]} for k, v in d.items()} for c, d in r.items()}
++    res["n_frases_reales"] = len(real); res["frases_reales_excluidas"] = excluidas
++
++    # ---------- 3) RapidFuzz con errores de tipeo (0/1/2)
++    def tipeo(texto_norm, entidad_norm, k, rng):
++        palabras = entidad_norm.split()
++        objetivo = max(palabras, key=len)
++        nuevo = con_errores(objetivo, k, rng)
++        return re.sub(rf"\b{re.escape(objetivo)}\b", nuevo, texto_norm, count=1), objetivo, nuevo
++    rf = {c: {n: {"acierto": 0, "no_acierto": 0} for n in (0, 1, 2)} for c in ("marca", "modelo", "categoria")}
++    corto = {n: {"acierto": 0, "no_acierto": 0} for n in ("corto", "largo")}
++    ejemplos_rf = []
++    for rep in range(3):
++        rr = random.Random(SEED + rep)
++        # marca y modelo sobre frases reales
++        for c in real:
++            for campo in ("marca", "modelo"):
++                esp = c[campo]
++                if not esp or normalizar(esp) == "3": continue
++                for k in (0, 1, 2):
++                    if k == 0 and rep > 0: continue
++                    if k == 0: t = c["tn"]
++                    else: t, ob, nv = tipeo(c["tn"], normalizar(esp), k, rr)
++                    ent = extraer(t); ok = coincide(esp, ent.get(campo))
++                    rf[campo][k]["acierto" if ok else "no_acierto"] += 1
++                    if k == 1:
++                        lg = "corto" if len(max(normalizar(esp).split(), key=len)) <= 4 else "largo"
++                        corto[lg]["acierto" if ok else "no_acierto"] += 1
++                    if k and not ok and len(ejemplos_rf) < 400: ejemplos_rf.append({"campo": campo, "errores": k, "texto": t, "esperado": esp, "obtenido": ent.get(campo)})
++        # categoría sobre frases generadas (solo las de grupo "directa" cuya palabra base el sistema entiende)
++        for c in generar(120, rr):
++            if c["grupo"] != "directa": continue
++            base = normalizar(c["texto"])
++            palabra = max(normalizar(c["cat_palabra"]).split(), key=len)
++            for k in (0, 1, 2):
++                if k == 0 and rep > 0: continue
++                if k == 0: t = base
++                else: t = re.sub(rf"\b{re.escape(palabra)}\b", con_errores(palabra, k, rr), base, count=1)
++                ok = coincide(c["verdad"]["categoria"], extraer(t).get("categoria"))
++                rf["categoria"][k]["acierto" if ok else "no_acierto"] += 1
++    res["rapidfuzz"] = rf; res["rapidfuzz_nombre_corto_vs_largo_1_error"] = corto
++    res["ejemplos_fallos_rapidfuzz"] = ejemplos_rf[:40]
++
++
++    # ---------- 3b) RapidFuzz por TIPO de error (1 error)
++    tipos = {op: {"acierto": 0, "no_acierto": 0} for op in OPS}
++    for c in real:
++        for campo in ("marca", "modelo"):
++            esp = c[campo]
++            if not esp or normalizar(esp) == "3": continue
++            obj = max(normalizar(esp).split(), key=len)
++            for op in OPS:
++                for rep in range(3):
++                    rr = random.Random(SEED * 7 + rep)
++                    nv = con_errores(obj, 1, rr, op)
++                    t = re.sub(rf"\b{re.escape(obj)}\b", nv, c["tn"], count=1)
++                    ok = coincide(esp, extraer(t).get(campo))
++                    tipos[op]["acierto" if ok else "no_acierto"] += 1
++    res["rapidfuzz_por_tipo_error"] = tipos
++
++    # ---------- 3c) formatos alternativos (regex): ¿entiende otras formas de escribir lo mismo?
++    ALT = [("motor", "hilux 2.7 gasolina", "2.7"), ("motor", "hilux 2,7 gasolina", "2.7"), ("motor", "hilux 2.7L", "2.7"),
++           ("motor", "hilux 2.7 litros", "2.7"), ("motor", "logan 1,6", "1.6"), ("motor", "logan de 1600 cc", "1600cc"),
++           ("motor", "logan 1600cc", "1600cc"), ("anio", "logan 2018", 2018), ("anio", "logan modelo 2018", 2018),
++           ("anio", "logan del 18", 2018), ("anio", "logan 2018-2021", 2018), ("codigo", "el HP-1002", "HP-1002"),
++           ("codigo", "el hp 1002", "HP-1002"), ("codigo", "el HP1002", "HP-1002"), ("codigo", "el 90915-YZZD4", "90915-YZZD4"),
++           ("combustible", "logan diesel", "diesel"), ("combustible", "logan diésel", "diesel"), ("combustible", "logan a gasolina", "gasolina"),
++           ("combustible", "logan a gas", "gas"), ("combustible", "logan acpm", "diesel")]
++    alt = []
++    for campo, txt, esp in ALT:
++        obt = extraer(txt).get(campo); alt.append({"campo": campo, "texto": txt, "esperado": esp, "obtenido": obt, "acierto": coincide(esp, obt)})
++    res["formatos_alternativos"] = alt
++
++    # ---------- 4) intención con errores de tipeo (validación cruzada, sin fuga)
++    from sklearn.model_selection import StratifiedKFold
++    from app.intent.train import _construir_pipeline
++    df = reales.copy()
++    X, y = df.texto.values, df.intencion.values
++    skf = StratifiedKFold(5, shuffle=True, random_state=42)
++    def sucio(texto, k, rr):
++        pal = texto.split(); idx = [i for i, p in enumerate(pal) if len(re.sub(r"\W", "", p)) >= 4]
++        for i in rr.sample(idx, min(k, len(idx))):
++            core = re.sub(r"\W", "", pal[i]); pal[i] = pal[i].replace(core, con_errores(core, 1, rr)) if core else pal[i]
++        return " ".join(pal)
++    it = {n: {"acierto": 0, "no_acierto": 0} for n in (0, 1, 2)}
++    rr = random.Random(SEED)
++    for tr, te in skf.split(X, y):
++        m = _construir_pipeline().fit(X[tr], y[tr])
++        for k in (0, 1, 2):
++            xt = [t if k == 0 else sucio(t, k, rr) for t in X[te]]
++            pr = m.predict(xt)
++            ok = int((pr == y[te]).sum()); it[k]["acierto"] += ok; it[k]["no_acierto"] += len(te) - ok
++    res["intencion_con_tipeo"] = it
++    res["fallos_generadas"] = fallos[:60]; res["fallos_reales"] = fallos_real[:60]
++    OUT.write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
++    return res
++
++if __name__ == "__main__":
++    r = evaluar()
++    print(json.dumps({k: v for k, v in r.items() if not k.startswith(("fallos", "ejemplos"))}, indent=1, ensure_ascii=False))
+diff --git a/nlp-service/eval/graficar_ner_rapidfuzz.py b/nlp-service/eval/graficar_ner_rapidfuzz.py
+new file mode 100644
+index 0000000..f394b50
+--- /dev/null
++++ b/nlp-service/eval/graficar_ner_rapidfuzz.py
+@@ -0,0 +1,72 @@
++"""Grafica resultados_ner_rapidfuzz.json (acierto vs no acierto). Uso: python -m eval.graficar_ner_rapidfuzz [carpeta_salida]"""
++import json, sys
++from pathlib import Path
++import matplotlib
++matplotlib.use("Agg")
++import matplotlib.pyplot as plt
++
++BASE = Path(__file__).resolve().parent
++R = json.loads((BASE / "resultados_ner_rapidfuzz.json").read_text(encoding="utf-8"))
++OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else BASE / "graficas"
++OUT.mkdir(parents=True, exist_ok=True)
++AZUL, NARANJA, TXT, GRIS = "#1B6FA8", "#E8890C", "#222222", "#5A5A5A"
++plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 11, "axes.edgecolor": "#B8C4D0", "axes.labelcolor": TXT,
++                     "xtick.color": TXT, "ytick.color": GRIS, "axes.spines.top": False, "axes.spines.right": False})
++
++def pct(d): n = d["acierto"] + d["no_acierto"]; return 100 * d["acierto"] / n, 100 * d["no_acierto"] / n, n
++
++def barras(ax, etiquetas, datos, titulo=None):
++    w = 0.38
++    for i, d in enumerate(datos):
++        a, na, n = pct(d)
++        ax.bar(i - w / 2, a, w - 0.04, color=AZUL, label="Acierto" if i == 0 else None)
++        ax.bar(i + w / 2, na, w - 0.04, color=NARANJA, label="No acierto" if i == 0 else None)
++        for x, v, k in ((i - w / 2, a, d["acierto"]), (i + w / 2, na, d["no_acierto"])):
++            ax.text(x, v + 1.5, f"{v:.0f} %", ha="center", va="bottom", fontsize=10, color=TXT, fontweight="bold")
++            if v < 88 and k > 0: ax.text(x, v + 9, f"({k})", ha="center", va="bottom", fontsize=8.5, color=GRIS)
++    ax.set_xticks(range(len(etiquetas))); ax.set_xticklabels(etiquetas)
++    ax.set_ylim(0, 118); ax.set_yticks([0, 25, 50, 75, 100]); ax.set_yticklabels([f"{t} %" for t in (0, 25, 50, 75, 100)])
++    ax.yaxis.grid(True, color="#E3E9F0", linewidth=0.8); ax.set_axisbelow(True)
++    if titulo: ax.set_title(titulo, fontsize=12, fontweight="bold", color=TXT, loc="left")
++
++def guardar(fig, nombre, titulo, sub):
++    fig.suptitle(titulo, x=0.06, ha="left", fontsize=15, fontweight="bold", color=TXT, y=0.99)
++    fig.text(0.06, 0.925, sub, ha="left", fontsize=10, color=GRIS)
++    fig.savefig(OUT / nombre, dpi=170, facecolor="white"); plt.close(fig)
++
++# 1) NER por campo
++c = R["ner_por_campo"]; g = R["categoria_por_grupo"]
++campos = [("Marca", c["marca"]), ("Modelo", c["modelo"]), ("Año", c["anio"]), ("Motor", c["motor"]),
++          ("Combustible", c["combustible"]), ("Código", c["codigo"]),
++          ("Categoría\n(palabra\nparecida)", g["directa"]), ("Categoría\n(solo por\nsignificado)", g["significado"])]
++fig, ax = plt.subplots(figsize=(12, 5.6)); fig.subplots_adjust(top=0.80, bottom=0.14, left=0.07, right=0.98)
++barras(ax, [f"{n}\n(n={sum(d.values())})" for n, d in campos], [d for _, d in campos])
++ax.legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, 1.13))
++guardar(fig, "1_ner_acierto_por_campo.png", "NER: ¿acierta la entidad que pide el usuario?",
++        "Frases generadas con entidad conocida (400). Se cuenta acierto cuando el valor extraído es exactamente el esperado.")
++
++# 2) RapidFuzz por nivel de errores
++rf = R["rapidfuzz"]; niv = ["Bien\nescrito", "1 error de\ntipeo", "2 errores de\ntipeo"]
++fig, axs = plt.subplots(1, 3, figsize=(13, 5.4), sharey=True); fig.subplots_adjust(top=0.78, bottom=0.14, left=0.06, right=0.99, wspace=0.08)
++for ax, campo, tit in zip(axs, ("marca", "modelo", "categoria"), ("Marca", "Modelo", "Categoría")):
++    barras(ax, [f"{n}\n(n={sum(rf[campo][k].values())})" for n, k in zip(niv, ("0", "1", "2"))], [rf[campo][k] for k in ("0", "1", "2")], tit)
++axs[0].legend(frameon=False, loc="upper left", ncol=2, bbox_to_anchor=(0, 1.16))
++guardar(fig, "2_rapidfuzz_acierto_con_errores_de_tipeo.png", "RapidFuzz: ¿asocia bien las palabras mal escritas?",
++        "Marca y modelo: frases reales del dataset. Categoría: frases generadas. El error se aplica a la palabra de la entidad (3 repeticiones).")
++
++# 3) por tipo de error
++t = R["rapidfuzz_por_tipo_error"]; nombres = {"borrar": "Falta una\nletra", "duplicar": "Letra\nrepetida", "sustituir": "Letra\ncambiada", "transponer": "Dos letras\nintercambiadas"}
++fig, ax = plt.subplots(figsize=(11, 5.4)); fig.subplots_adjust(top=0.80, bottom=0.15, left=0.07, right=0.98)
++barras(ax, [f"{nombres[k]}\n(n={sum(t[k].values())})" for k in ("duplicar", "borrar", "transponer", "sustituir")], [t[k] for k in ("duplicar", "borrar", "transponer", "sustituir")])
++ax.legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, 1.13))
++guardar(fig, "3_rapidfuzz_por_tipo_de_error.png", "RapidFuzz: acierto según el tipo de error de escritura",
++        "Un solo error en el nombre de la marca o del modelo, dentro de frases reales del dataset.")
++
++# 4) intención con errores de tipeo
++it = R["intencion_con_tipeo"]
++fig, ax = plt.subplots(figsize=(9, 5.4)); fig.subplots_adjust(top=0.80, bottom=0.15, left=0.09, right=0.98)
++barras(ax, [f"{n}\n(n={sum(it[k].values())})" for n, k in zip(("Sin errores", "1 palabra\ncon error", "2 palabras\ncon error"), ("0", "1", "2"))], [it[k] for k in ("0", "1", "2")])
++ax.legend(frameon=False, loc="upper right", ncol=2, bbox_to_anchor=(1, 1.13))
++guardar(fig, "4_intencion_con_errores_de_tipeo.png", "Clasificador de intención: efecto de los errores de tipeo",
++        "Validación cruzada de 5 partes sobre 401 frases; los errores se aplican solo a las frases de prueba de cada parte.")
++print("listo", OUT)
+diff --git a/nlp-service/tests/conftest.py b/nlp-service/tests/conftest.py
+new file mode 100644
+index 0000000..1ed1bb8
+--- /dev/null
++++ b/nlp-service/tests/conftest.py
+@@ -0,0 +1,27 @@
++import shutil
++
++import pytest
++
++from app.ner import agente_errores
++
++
++@pytest.fixture(autouse=True, scope="session")
++def _tabla_errores_en_carpeta_temporal(tmp_path_factory):
++    """Ningún test escribe en data/errores/ del repo.
++
++    dictionary.py avisa al agente en un hilo cada vez que refresca su caché
++    (también en los tests de dictionary); el agente escribe entonces sobre
++    una copia temporal de la tabla, no sobre la versionada. La lectura del
++    extractor sigue usando la tabla real.
++    """
++    destino = tmp_path_factory.mktemp("errores")
++    originales = (agente_errores.RUTA_TABLA, agente_errores.RUTA_AVISOS)
++    for ruta in originales:
++        if ruta.exists():
++            shutil.copy(ruta, destino / ruta.name)
++    agente_errores.RUTA_TABLA = destino / originales[0].name
++    agente_errores.RUTA_AVISOS = destino / originales[1].name
++    agente_errores._reiniciar_estado()
++    yield
++    agente_errores.RUTA_TABLA, agente_errores.RUTA_AVISOS = originales
++    agente_errores._reiniciar_estado()
+diff --git a/nlp-service/tests/test_agente_errores.py b/nlp-service/tests/test_agente_errores.py
+new file mode 100644
+index 0000000..af632fa
+--- /dev/null
++++ b/nlp-service/tests/test_agente_errores.py
+@@ -0,0 +1,201 @@
++import csv
++import threading
++
++import pytest
++from fastapi.testclient import TestClient
++
++from app import config
++from app.main import app
++from app.ner import agente_errores, dictionary, extractor
++from app.ner.extractor import extraer_entidades
++
++MARCAS = ["Toyota", "Kia"]
++MODELOS = ["Hilux", "Rio"]
++CATEGORIAS = ["Filtros"]
++CATALOGO_MINIMO = {"marca": MARCAS, "modelo": MODELOS, "categoria": CATEGORIAS}
++
++
++@pytest.fixture
++def agente(tmp_path, monkeypatch):
++    """Agente con una tabla pequeña en una carpeta temporal.
++
++    Restaura la tabla en memoria del extractor al terminar, para no
++    contaminar los demás tests.
++    """
++    monkeypatch.setattr(agente_errores, "RUTA_TABLA", tmp_path / "posibles_errores.csv")
++    monkeypatch.setattr(agente_errores, "RUTA_AVISOS", tmp_path / "posibles_errores_avisos.csv")
++    monkeypatch.setattr(extractor, "_tabla_en_memoria", extractor._tabla_en_memoria)
++    agente_errores._reiniciar_estado()
++    agente_errores.regenerar_tabla(CATALOGO_MINIMO)
++    yield agente_errores
++    agente_errores._reiniciar_estado()
++    extractor._indices_fuzzy.clear()
++
++
++def _extraer(texto, marcas=None, modelos=None):
++    return extraer_entidades(texto, marcas or MARCAS, modelos or MODELOS, CATEGORIAS)
++
++
++def _filas(ruta):
++    with ruta.open(encoding="utf-8", newline="") as f:
++        return list(csv.DictReader(f))
++
++
++def test_registrar_marca_nueva_la_hace_buscable_de_inmediato(agente):
++    marcas = MARCAS + ["Geely"]
++    assert _extraer("necesito filtro para un yili 2024", marcas)["marca"] is None
++
++    resumen = agente.registrar_nombre("marca", "Geely")
++
++    assert resumen["agregadas"] > 0 and resumen["ya_registrado"] is False
++    assert _extraer("necesito filtro para un yili 2024", marcas)["marca"] == "Geely"
++    assert _extraer("bujias para jilli", marcas)["marca"] == "Geely"
++
++
++def test_registrar_modelo_nuevo_la_hace_buscable_de_inmediato(agente):
++    modelos = MODELOS + ["Coolray"]
++    assert _extraer("pastillas para culrei", modelos=modelos)["modelo"] is None
++
++    agente.registrar_nombre("modelo", "Coolray", marca="Geely")
++
++    assert _extraer("pastillas para culrei", modelos=modelos)["modelo"] == "Coolray"
++
++
++def test_registrar_es_idempotente(agente):
++    primero = agente.registrar_nombre("marca", "Geely")
++    filas_despues_del_primero = _filas(agente.RUTA_TABLA)
++
++    segundo = agente.registrar_nombre("marca", "geely")
++
++    assert primero["agregadas"] > 0
++    assert segundo["ya_registrado"] is True and segundo["agregadas"] == 0
++    assert _filas(agente.RUTA_TABLA) == filas_despues_del_primero
++
++
++def test_registrar_un_nombre_existente_no_agrega_nada(agente):
++    assert agente.registrar_nombre("modelo", "Hilux")["ya_registrado"] is True
++
++
++def test_registrar_rechaza_tipo_invalido_y_nombre_vacio(agente):
++    with pytest.raises(ValueError):
++        agente.registrar_nombre("motor", "Geely")
++    with pytest.raises(ValueError):
++        agente.registrar_nombre("marca", "   ")
++
++
++def test_dos_hilos_registrando_a_la_vez(agente):
++    errores = []
++
++    def registrar(tipo, nombre):
++        try:
++            agente.registrar_nombre(tipo, nombre)
++        except Exception as e:  # pragma: no cover - solo si falla
++            errores.append(e)
++
++    hilos = [threading.Thread(target=registrar, args=a) for a in (("marca", "Geely"), ("modelo", "Coolray"))]
++    for h in hilos:
++        h.start()
++    for h in hilos:
++        h.join()
++
++    assert errores == []
++    filas = _filas(agente.RUTA_TABLA)
++    correctos = {f["correcto"] for f in filas}
++    assert {"Geely", "Coolray"} <= correctos
++    assert len({f["error"] for f in filas}) == len(filas)
++    # Lo que quedó en disco es lo mismo que quedó en memoria.
++    en_memoria = extractor.obtener_tabla_errores()
++    assert sum(len(v) for v in en_memoria.values()) == len(filas)
++
++
++def test_escritura_atomica_no_deja_el_archivo_a_medias(agente, monkeypatch):
++    antes = agente.RUTA_TABLA.read_bytes()
++    replace_original = agente_errores.os.replace
++
++    def falla(*_):
++        raise OSError("disco lleno")
++
++    monkeypatch.setattr(agente_errores.os, "replace", falla)
++    with pytest.raises(OSError):
++        agente.registrar_nombre("marca", "Geely")
++
++    assert agente.RUTA_TABLA.read_bytes() == antes
++    assert list(agente.RUTA_TABLA.parent.glob("*.tmp")) == []
++    # La memoria se deshizo: al reintentar, se registra de verdad.
++    monkeypatch.setattr(agente_errores.os, "replace", replace_original)
++    assert agente.registrar_nombre("marca", "Geely")["ya_registrado"] is False
++
++
++def test_una_colision_se_descarta_y_se_registra_en_avisos(agente):
++    # "Hilus" es un paso de "hilux": al volverse nombre oficial, los errores de
++    # Hilux que chocan con él salen de la tabla y quedan en los avisos.
++    assert "hilus" in extractor.obtener_tabla_errores()["modelo"]
++
++    agente.registrar_nombre("modelo", "Hilus")
++
++    tabla = extractor.obtener_tabla_errores()
++    assert tabla["modelo"].get("hilus") is None
++    motivos = {a["motivo"] for a in _filas(agente.RUTA_AVISOS) if a["correcto"] == "Hilux"}
++    assert any("Hilus" in m for m in motivos)
++
++
++def test_sincronizar_catalogo_registra_solo_lo_que_falta(agente):
++    catalogo = {"marca": MARCAS + ["Geely"], "modelo": MODELOS, "categoria": CATEGORIAS}
++
++    primero = agente.sincronizar_catalogo(catalogo)
++    segundo = agente.sincronizar_catalogo(catalogo)
++
++    assert primero["registrados"] == ["marca:Geely"]
++    assert segundo["registrados"] == []
++
++
++def test_dictionary_avisa_al_agente_al_refrescar_la_cache(monkeypatch):
++    avisos = []
++    listo = threading.Event()
++
++    def falso_sincronizar(catalogo):
++        avisos.append(catalogo)
++        listo.set()
++
++    monkeypatch.setattr(agente_errores, "sincronizar_catalogo", falso_sincronizar)
++    dictionary.invalidar_cache()
++    dictionary._obtener_con_cache("marcas", lambda: ["Toyota", "Geely"])
++
++    assert listo.wait(timeout=5)
++    assert avisos == [{"marca": ["Toyota", "Geely"]}]
++    dictionary.invalidar_cache()
++
++
++# ---------------------------------------------------------------- endpoint
++
++
++@pytest.fixture
++def cliente(agente, monkeypatch):
++    monkeypatch.setattr(config, "NLP_INTERNAL_KEY", "clave-de-prueba")
++    return TestClient(app)
++
++
++def test_endpoint_exige_la_clave_interna(cliente):
++    r = cliente.post("/nlp/errores/registrar", json={"tipo": "marca", "nombre": "Geely"})
++    assert r.status_code == 401
++
++
++def test_endpoint_rechaza_tipos_invalidos(cliente):
++    headers = {"X-Internal-Key": "clave-de-prueba"}
++    for tipo in ("categoria", "motor", ""):
++        r = cliente.post("/nlp/errores/registrar", json={"tipo": tipo, "nombre": "Geely"}, headers=headers)
++        assert r.status_code == 422, tipo
++
++
++def test_endpoint_registra_y_responde_el_resumen(cliente):
++    headers = {"X-Internal-Key": "clave-de-prueba"}
++    r = cliente.post(
++        "/nlp/errores/registrar",
++        json={"tipo": "modelo", "nombre": "Coolray", "marca": "Geely"},
++        headers=headers,
++    )
++    assert r.status_code == 200
++    cuerpo = r.json()
++    assert cuerpo["nombre"] == "Coolray" and cuerpo["agregadas"] > 0
++    assert {"descartadas", "ms"} <= cuerpo.keys()
++    assert _extraer("pastillas para culrei", modelos=MODELOS + ["Coolray"])["modelo"] == "Coolray"
+diff --git a/nlp-service/tests/test_ner_errores.py b/nlp-service/tests/test_ner_errores.py
+new file mode 100644
+index 0000000..d7f815d
+--- /dev/null
++++ b/nlp-service/tests/test_ner_errores.py
+@@ -0,0 +1,262 @@
++import csv
++import time
++
++import numpy as np
++import pandas as pd
++import pytest
++from rapidfuzz import process
++from rapidfuzz.distance import DamerauLevenshtein
++
++from app.ner import agente_errores, extractor
++from app.ner.extractor import cargar_tabla_errores, extraer_entidades
++from app.ner.generador_errores import (
++    COLUMNAS,
++    COLUMNAS_AVISOS,
++    ediciones_una_letra,
++    formas_de,
++    generar_errores,
++)
++from app.preprocessing import normalizar
++
++MARCAS = ["Toyota", "Chevrolet", "Mazda", "Nissan", "Hyundai", "Kia", "Renault", "Ford", "Suzuki"]
++MODELOS = [
++    "Hilux", "Corolla", "Fortuner", "Spark", "Spark GT", "Aveo", "3", "CX-5",
++    "Sentra", "Frontier", "Tucson", "Accent", "Rio", "Sportage", "Logan",
++    "Duster", "Escape", "Fiesta", "Swift",
++]
++CATEGORIAS = [
++    "Filtros", "Frenos", "Baterías", "Suspensión", "Motor", "Transmisión",
++    "Encendido", "Correas y Bandas",
++]
++
++RUTA_TABLA = extractor.TABLA_ERRORES_PATH
++RUTA_AVISOS = RUTA_TABLA.with_name("posibles_errores_avisos.csv")
++
++# Un error por nombre del catálogo ("3" no tiene: un número suelto no se
++# puede distinguir de una cantidad o un año).
++ERRORES_MARCA = {
++    "Toyota": "toytoa", "Chevrolet": "chebrolet", "Mazda": "masda", "Nissan": "nisan",
++    "Hyundai": "yundai", "Kia": "kya", "Renault": "reno", "Ford": "frod", "Suzuki": "susuki",
++}
++ERRORES_MODELO = {
++    "Hilux": "jilus", "Corolla": "corola", "Fortuner": "fortunr", "Spark": "sprak",
++    "Spark GT": "sprak gt", "Aveo": "abeo", "CX-5": "cx5", "Sentra": "sentrq",
++    "Frontier": "fronteir", "Tucson": "tucsn", "Accent": "acsent", "Rio": "ryo",
++    "Sportage": "sportaje", "Logan": "logna", "Duster": "dusrer", "Escape": "escpae",
++    "Fiesta": "fiezta", "Swift": "suift",
++}
++ERRORES_CATEGORIA = {
++    "Filtros": "filtors", "Frenos": "frenoz", "Baterías": "baterais", "Suspensión": "suspencion",
++    "Motor": "motro", "Transmisión": "trasmision", "Encendido": "ensendido",
++    "Correas y Bandas": "coreas y bandas",
++}
++
++
++def _extraer(texto, **kwargs):
++    return extraer_entidades(texto, MARCAS, MODELOS, CATEGORIAS, **kwargs)
++
++
++def _leer(ruta):
++    with ruta.open(encoding="utf-8", newline="") as f:
++        return list(csv.DictReader(f))
++
++
++def _frases_reales():
++    base = RUTA_TABLA.parents[2]
++    return list(pd.read_csv(base / "data" / "intents_dataset.csv").texto) + list(
++        pd.read_csv(base / "eval" / "holdout_intent.csv").texto
++    )
++
++
++# ---------------------------------------------------------------- búsqueda
++
++
++def test_jilus_se_reconoce_como_hilux():
++    assert _extraer("necesito filtro para jilus 2020")["modelo"] == "Hilux"
++
++
++def test_jilus_no_se_reconocia_sin_tabla():
++    assert _extraer("necesito filtro para jilus 2020", tabla_errores={})["modelo"] is None
++
++
++@pytest.mark.parametrize("correcto,error", ERRORES_MARCA.items())
++def test_error_de_marca_se_reconoce(correcto, error):
++    assert _extraer(f"necesito un repuesto para {error}")["marca"] == correcto
++
++
++@pytest.mark.parametrize("correcto,error", ERRORES_MODELO.items())
++def test_error_de_modelo_se_reconoce(correcto, error):
++    assert _extraer(f"necesito un repuesto para {error}")["modelo"] == correcto
++
++
++@pytest.mark.parametrize("correcto,error", ERRORES_CATEGORIA.items())
++def test_error_de_categoria_se_reconoce(correcto, error):
++    assert _extraer(f"necesito un repuesto de {error}")["categoria"] == correcto
++
++
++def test_error_que_no_esta_en_la_tabla_pero_se_parece_a_una_clave():
++    tabla = {"modelo": {"jilusito": "Hilux"}}
++    assert "jilusitoo" not in tabla["modelo"]
++    assert _extraer("filtro para jilusitoo", tabla_errores=tabla)["modelo"] == "Hilux"
++
++
++def test_error_de_dos_letras_fuera_de_la_tabla_lo_cubre_el_respaldo():
++    tabla = cargar_tabla_errores()
++    assert "sporrtajee" not in tabla["modelo"]
++    assert _extraer("necesito filtro para sporrtajee")["modelo"] == "Sportage"
++
++
++def test_grupo_de_mas_palabras_gana_sprak_gt_sobre_sprak():
++    assert _extraer("pastillas para un sprak gt 2019")["modelo"] == "Spark GT"
++
++
++@pytest.mark.parametrize("frase", [
++    "hola buenas tardes",
++    "cuanto cuesta el envio a la ciudad",
++    "filtro de aceite para el centro de la ciudad",
++    "necesito algo que no tenga nada que ver",
++])
++def test_frase_sin_entidades_devuelve_none(frase):
++    ent = _extraer(frase)
++    assert (ent["marca"], ent["modelo"]) == (None, None)
++
++
++def test_frases_reales_sin_falsos_positivos_nuevos():
++    """En el dataset y el holdout la tabla no cambia ningún resultado: no
++    agrega detecciones que la lógica de siempre no hacía."""
++    for frase in _frases_reales():
++        con_tabla, sin_tabla = _extraer(frase), _extraer(frase, tabla_errores={})
++        for campo in ("marca", "modelo", "categoria"):
++            assert con_tabla[campo] == sin_tabla[campo], (frase, campo)
++
++
++def test_frases_reales_sin_ninguna_entidad_devuelven_none_en_los_tres():
++    revisadas = 0
++    for frase in _frases_reales():
++        sin_tabla = _extraer(frase, tabla_errores={})
++        if (sin_tabla["marca"], sin_tabla["modelo"], sin_tabla["categoria"]) == (None, None, None):
++            ent = _extraer(frase)
++            assert (ent["marca"], ent["modelo"], ent["categoria"]) == (None, None, None), frase
++            revisadas += 1
++    assert revisadas > 0
++
++
++def test_con_tabla_vacia_el_resultado_es_igual_que_hoy():
++    for frase in ["necesito filtro para jilus 2020", "pastillas para chebrolet sprak", "toyta corolla 2017"]:
++        vacia = _extraer(frase, tabla_errores={})
++        assert vacia["marca"] == extractor._mejor_match(normalizar(frase), MARCAS)
++        assert vacia["modelo"] == extractor._mejor_match(normalizar(frase), MODELOS)
++
++
++def test_tabla_inexistente_devuelve_vacio_sin_error(tmp_path):
++    assert cargar_tabla_errores(tmp_path / "no_existe.csv") == {}
++    vacio = tmp_path / "vacio.csv"
++    vacio.write_text("", encoding="utf-8")
++    assert cargar_tabla_errores(vacio) == {}
++
++
++def test_la_tabla_no_inventa_modelos_fuera_del_catalogo():
++    sin_hilux = [m for m in MODELOS if m != "Hilux"]
++    ent = extraer_entidades("necesito filtro para jilus 2020", MARCAS, sin_hilux, CATEGORIAS)
++    assert ent["modelo"] is None
++
++
++def test_un_error_de_modelo_no_se_activa_como_marca():
++    assert _extraer("filtro para jilus")["marca"] is None
++
++
++def test_busqueda_con_tabla_completa_tarda_menos_de_20_ms():
++    frases = _frases_reales()[:100] + ["necesito filtro para jilus 2020"] * 20
++    _extraer(frases[0])  # carga la tabla y arma el índice
++    inicio = time.perf_counter()
++    for frase in frases:
++        _extraer(frase)
++    promedio_ms = (time.perf_counter() - inicio) * 1000 / len(frases)
++    assert promedio_ms < 20
++
++
++# ---------------------------------------------------------------- generador
++
++
++def test_generador_es_determinista():
++    assert generar_errores("Chevrolet", "marca") == generar_errores("Chevrolet", "marca")
++
++
++def test_nivel_1_enumera_todas_las_ediciones_de_una_letra():
++    # "hilux" (5 letras distintas): 5 borrados + 4 intercambios + 5*35 cambios
++    # + 6*36 inserciones, menos 5 inserciones que repiten la misma cadena.
++    assert len(ediciones_una_letra("hilux")) == 5 + 4 + 175 + 216 - 5
++    filas = generar_errores("Hilux", "modelo")
++    nivel_1 = [f for f in filas if f["nivel"] == 1]
++    assert len(nivel_1) == 395 + 2  # + "hi lux" y "hil ux"
++
++
++def test_generador_produce_los_tres_niveles_con_ejemplos_esperados():
++    por_error = {f["error"]: f["nivel"] for f in generar_errores("Hilux", "modelo")}
++    assert por_error["hlux"] == 1
++    assert por_error["jilus"] == 2
++    assert por_error["hlixu"] == 3
++    assert {f["nivel"] for f in generar_errores("Hilux", "modelo")} == {1, 2, 3}
++
++
++def test_generador_transliteracion_y_apodos():
++    marca = {f["error"] for f in generar_errores("Geely", "marca")}
++    assert {"yili", "jili", "jilli"} <= marca
++    modelo = {f["error"] for f in generar_errores("Coolray", "modelo")}
++    assert {"culrei", "coolrei"} <= modelo
++    assert "chevy" in {f["error"] for f in generar_errores("Chevrolet", "marca")}
++
++
++def test_generador_respeta_minimos_de_longitud():
++    assert generar_errores("3", "modelo") == []
++    assert {f["nivel"] for f in generar_errores("Kia", "marca")} == {1}
++    assert {f["nota"] for f in generar_errores("Kia", "marca")} == {"letra repetida"}
++    assert 3 not in {f["nivel"] for f in generar_errores("Ford", "marca")}
++    assert "cx5" in {f["error"] for f in generar_errores("CX-5", "modelo")}
++
++
++def test_generador_devuelve_el_nombre_original_del_catalogo():
++    assert {f["correcto"] for f in generar_errores("Baterías", "categoria")} == {"Baterías"}
++
++
++# ---------------------------------------------------------------- validación del CSV
++
++
++def test_csv_tiene_las_columnas_correctas_y_sin_bom():
++    assert not RUTA_TABLA.read_bytes().startswith(b"\xef\xbb\xbf")
++    with RUTA_TABLA.open(encoding="utf-8", newline="") as f:
++        assert next(csv.reader(f)) == COLUMNAS
++    with RUTA_AVISOS.open(encoding="utf-8", newline="") as f:
++        assert next(csv.reader(f)) == COLUMNAS_AVISOS
++
++
++def test_csv_sin_duplicados_ni_errores_iguales_al_correcto():
++    filas = _leer(RUTA_TABLA)
++    errores = [f["error"] for f in filas]
++    assert len(errores) == len(set(errores))
++    for f in filas:
++        assert f["error"] != normalizar(f["correcto"])
++        assert f["error"] == normalizar(f["error"])  # ya normalizado
++        assert f["nivel"] in {"1", "2", "3", "4"}
++        assert f["origen"] in {"manual", "auto"}
++
++
++def test_todo_correcto_pertenece_al_catalogo():
++    catalogo = {(t, n) for t, nombres in agente_errores.CATALOGO_SEMILLA.items() for n in nombres}
++    for f in _leer(RUTA_TABLA):
++        assert (f["tipo"], f["correcto"]) in catalogo, f
++
++
++def test_csv_sin_colisiones_con_otros_nombres_del_catalogo():
++    oficiales = [n for nombres in agente_errores.CATALOGO_SEMILLA.values() for n in nombres]
++    formas = [(forma, n) for n in oficiales for forma in sorted(formas_de(n))]
++    filas = _leer(RUTA_TABLA)
++    distancias = process.cdist([f["error"] for f in filas], [forma for forma, _ in formas],
++                               scorer=DamerauLevenshtein.distance, score_cutoff=1, workers=-1)
++    for i, j in zip(*np.nonzero(distancias <= 1)):
++        assert normalizar(formas[j][1]) == normalizar(filas[i]["correcto"]), (filas[i], formas[j][1])
++
++
++def test_palabras_comunes_no_son_errores():
++    errores = {f["error"] for f in _leer(RUTA_TABLA)}
++    assert not {"centra", "rotor", "aves", "buster", "cuesta", "motos"} & errores

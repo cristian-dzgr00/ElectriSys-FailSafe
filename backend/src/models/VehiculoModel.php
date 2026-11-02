@@ -74,7 +74,7 @@ class VehiculoModel implements VentaSubject
         }
 
         $stmt = $this->db->prepare("
-            SELECT * FROM vehiculos
+            SELECT * FROM vw_vehiculos
             WHERE " . implode(' AND ', $where) . "
             ORDER BY marca, modelo, anio_desde
         ");
@@ -84,20 +84,20 @@ class VehiculoModel implements VentaSubject
 
     public function marcas(): array
     {
-        return $this->db->query("SELECT DISTINCT marca FROM vehiculos ORDER BY marca")
+        return $this->db->query("SELECT DISTINCT marca FROM vw_vehiculos ORDER BY marca")
             ->fetchColumnAll();
     }
 
     public function modelos(string $marca): array
     {
-        $stmt = $this->db->prepare("SELECT DISTINCT modelo FROM vehiculos WHERE marca = ? ORDER BY modelo");
+        $stmt = $this->db->prepare("SELECT DISTINCT modelo FROM vw_vehiculos WHERE marca = ? ORDER BY modelo");
         $stmt->execute([$marca]);
         return $stmt->fetchColumnAll();
     }
 
     public function buscarPorId(int $id): ?array
     {
-        $stmt = $this->db->prepare("SELECT * FROM vehiculos WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM vw_vehiculos WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
@@ -123,14 +123,17 @@ class VehiculoModel implements VentaSubject
         }
 
         try {
+            // 3FN (fase 2): VEHICULOS solo guarda modelo_id; la marca y el modelo
+            // viven en MARCAS y MODELOS y se buscan o crean antes de insertar.
+            $modeloId = $this->buscarOcrearModelo($marca, $modelo);
             $stmt = $this->db->prepare("
-                INSERT INTO vehiculos (marca, modelo, anio_desde, anio_hasta, motor, combustible)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO vehiculos (modelo_id, anio_desde, anio_hasta, motor, combustible)
+                VALUES (?, ?, ?, ?, ?)
                 RETURNING id INTO :out_id
             ");
             $nuevoId = 0;
             $stmt->bindOut(':out_id', $nuevoId);
-            $stmt->execute([$marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible]);
+            $stmt->execute([$modeloId, $anioDesde, $anioHasta, $motor, $combustible]);
             $this->notificarObservers('vehiculo_creado', ['marca' => $marca, 'modelo' => $modelo]);
             return (int) $nuevoId;
         } catch (\Throwable $e) {
@@ -138,6 +141,64 @@ class VehiculoModel implements VentaSubject
                 $existente = $this->buscarExacto($marca, $modelo, $anioDesde, $anioHasta, $motor, $combustible);
                 if ($existente !== null) {
                     return $existente;
+                }
+            }
+            throw $e;
+        }
+    }
+
+    /** Id de la marca con ese nombre; la crea si no existe (UNIQUE uq_marcas_nombre evita duplicados). */
+    private function buscarOcrearMarca(string $marca): int
+    {
+        $sel = $this->db->prepare("SELECT id FROM marcas WHERE nombre = ?");
+        $sel->execute([$marca]);
+        $id = $sel->fetchColumn();
+        if ($id !== false) {
+            return (int) $id;
+        }
+        try {
+            $ins = $this->db->prepare("INSERT INTO marcas (nombre) VALUES (?) RETURNING id INTO :out_id");
+            $nuevo = 0;
+            $ins->bindOut(':out_id', $nuevo);
+            $ins->execute([$marca]);
+            return (int) $nuevo;
+        } catch (\Throwable $e) {
+            if (OciConnection::esViolacionDeUnicidad($e)) {
+                $sel2 = $this->db->prepare("SELECT id FROM marcas WHERE nombre = ?");
+                $sel2->execute([$marca]);
+                $id = $sel2->fetchColumn();
+                if ($id !== false) {
+                    return (int) $id;
+                }
+            }
+            throw $e;
+        }
+    }
+
+    /** Id del modelo (de esa marca); lo crea si no existe (UNIQUE uq_modelos_marca_nombre). */
+    private function buscarOcrearModelo(string $marca, string $modelo): int
+    {
+        $marcaId = $this->buscarOcrearMarca($marca);
+
+        $sel = $this->db->prepare("SELECT id FROM modelos WHERE marca_id = ? AND nombre = ?");
+        $sel->execute([$marcaId, $modelo]);
+        $id = $sel->fetchColumn();
+        if ($id !== false) {
+            return (int) $id;
+        }
+        try {
+            $ins = $this->db->prepare("INSERT INTO modelos (marca_id, nombre) VALUES (?, ?) RETURNING id INTO :out_id");
+            $nuevo = 0;
+            $ins->bindOut(':out_id', $nuevo);
+            $ins->execute([$marcaId, $modelo]);
+            return (int) $nuevo;
+        } catch (\Throwable $e) {
+            if (OciConnection::esViolacionDeUnicidad($e)) {
+                $sel2 = $this->db->prepare("SELECT id FROM modelos WHERE marca_id = ? AND nombre = ?");
+                $sel2->execute([$marcaId, $modelo]);
+                $id = $sel2->fetchColumn();
+                if ($id !== false) {
+                    return (int) $id;
                 }
             }
             throw $e;
@@ -155,7 +216,7 @@ class VehiculoModel implements VentaSubject
         // Oracle no tiene "<=>" (null-safe equal de MySQL): se resuelve
         // igualando o, si ambos lados son NULL, tratándolo como coincidencia.
         $stmt = $this->db->prepare("
-            SELECT id FROM vehiculos
+            SELECT id FROM vw_vehiculos
             WHERE marca = ? AND modelo = ? AND anio_desde = ? AND anio_hasta = ?
               AND (motor = ? OR (motor IS NULL AND ? IS NULL))
               AND combustible = ?

@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { VpnProvider } from './context/VpnContext';
 import Sidebar from './components/Sidebar';
 import Navbar  from './components/Navbar';
 
@@ -86,11 +87,13 @@ export default function App() {
   const { user, loading } = useAuth();
   if (loading) return <PageFallback />;
   return (
-    <Suspense fallback={<PageFallback />}>
-      <Routes>
-        <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-        <Route path="/*"     element={<PrivateRoute><AppLayout /></PrivateRoute>} />
-      </Routes>
-    </Suspense>
+    <VpnProvider>
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+          <Route path="/*"     element={<PrivateRoute><AppLayout /></PrivateRoute>} />
+        </Routes>
+      </Suspense>
+    </VpnProvider>
   );
 }

@@ -25,16 +25,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Basic Light (runtime) + SDK (headers, necesarios para compilar oci8).
 # Descarga directa de Oracle, sin autenticación (Instant Client es de
 # distribución libre bajo la licencia OTN).
-ENV ORACLE_HOME=/opt/oracle/instantclient_23_4
+#
+# Soporta amd64 (23.4 fijada) y arm64 (VM Ampere A1 de Oracle Cloud, donde el
+# cliente se descarga con la URL generica "latest" porque Oracle no publica la
+# 23.4 para ARM). El cliente se deja siempre en /opt/oracle/instantclient,
+# sin importar el numero de version, y los symlinks se resuelven por glob.
+ENV ORACLE_HOME=/opt/oracle/instantclient
 RUN mkdir -p /opt/oracle && cd /opt/oracle \
-    && wget -nv https://download.oracle.com/otn_software/linux/instantclient/2340000/instantclient-basiclite-linux.x64-23.4.0.24.05.zip \
-    && wget -nv https://download.oracle.com/otn_software/linux/instantclient/2340000/instantclient-sdk-linux.x64-23.4.0.24.05.zip \
-    && unzip -oq instantclient-basiclite-linux.x64-23.4.0.24.05.zip \
-    && unzip -oq instantclient-sdk-linux.x64-23.4.0.24.05.zip \
+    && if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+         BASE=https://download.oracle.com/otn_software/linux/instantclient; \
+         wget -nv $BASE/instantclient-basiclite-linux-arm64.zip -O basiclite.zip; \
+         wget -nv $BASE/instantclient-sdk-linux-arm64.zip -O sdk.zip; \
+       else \
+         BASE=https://download.oracle.com/otn_software/linux/instantclient/2340000; \
+         wget -nv $BASE/instantclient-basiclite-linux.x64-23.4.0.24.05.zip -O basiclite.zip; \
+         wget -nv $BASE/instantclient-sdk-linux.x64-23.4.0.24.05.zip -O sdk.zip; \
+       fi \
+    && unzip -oq basiclite.zip && unzip -oq sdk.zip \
     && rm -f *.zip \
-    && cd instantclient_23_4 \
-    && ln -sf libclntsh.so.23.1 libclntsh.so \
-    && ln -sf libocci.so.23.1 libocci.so \
+    && mv instantclient_* instantclient \
+    && cd instantclient \
+    && ln -sf $(ls libclntsh.so.* | head -n1) libclntsh.so \
+    && ln -sf $(ls libocci.so.* | head -n1) libocci.so \
     && echo "$ORACLE_HOME" > /etc/ld.so.conf.d/oracle-instantclient.conf \
     && ldconfig
 

@@ -1,0 +1,11 @@
+Repuesto de prueba id=2 stock inicial=12                                        
+PASS  1. La venta descuenta stock  (12 -> 9)                                    
+PASS  2. La anulación devuelve el stock  (9 -> 12)                              
+PASS  3. Stock negativo rechazado  (ORA-02290: check constraint                 
+(ELECTRISYS_SC.CK_REPUESTOS_STOCK) violated
+ORA-06512: at                       
+"ELECTRISYS_SC.TRG_DETVEN_DESCUENTA_STOCK", line 2
+ORA-04088: error during      
+execution of trigger 'ELECTRISYS_SC.TRG_DETVEN_DESCUENTA_STOCK')                
+PASS  4. No se anula dos veces  (ORA-20002: La venta 1 ya estaba anulada.)      
+RESULTADO: TODAS LAS PRUEBAS PASARON                                            

@@ -66,13 +66,14 @@ class PedidoModel
         }
 
         $stmt = $this->db->prepare("
-            SELECT p.id, p.numero, p.estado, p.subtotal, p.total, p.fecha_esperada,
+            SELECT p.id, p.numero, p.estado, t.subtotal, t.total, p.fecha_esperada,
                    p.notas, p.creado_en, p.recibido_en, p.proveedor_id,
                    pr.nombre AS proveedor_nombre,
                    u.nombre  AS usuario_nombre,
                    (SELECT COUNT(*) FROM pedido_detalle d WHERE d.pedido_id = p.id) AS lineas,
                    COUNT(*) OVER() AS total_filas
             FROM pedidos p
+            JOIN vw_totales_documento t ON t.tipo = 'pedido' AND t.documento_id = p.id
             JOIN proveedores pr ON pr.id = p.proveedor_id
             JOIN usuarios    u  ON u.id  = p.usuario_id
             WHERE " . implode(' AND ', $where) . "
@@ -92,8 +93,9 @@ class PedidoModel
     public function buscarPorId(int $id): ?array
     {
         $stmt = $this->db->prepare("
-            SELECT p.*, pr.nombre AS proveedor_nombre, u.nombre AS usuario_nombre
+            SELECT p.*, t.subtotal, t.total, pr.nombre AS proveedor_nombre, u.nombre AS usuario_nombre
             FROM pedidos p
+            JOIN vw_totales_documento t ON t.tipo = 'pedido' AND t.documento_id = p.id
             JOIN proveedores pr ON pr.id = p.proveedor_id
             JOIN usuarios    u  ON u.id  = p.usuario_id
             WHERE p.id = ?
@@ -105,12 +107,13 @@ class PedidoModel
         }
 
         $det = $this->db->prepare("
-            SELECT d.id, d.repuesto_id, d.cantidad, d.precio_unit, d.subtotal,
+            SELECT d.repuesto_id AS id, d.repuesto_id, d.cantidad, d.precio_unit,
+                   d.cantidad * d.precio_unit AS subtotal,
                    r.nombre AS producto_nombre, r.codigo, r.stock
             FROM pedido_detalle d
             JOIN repuestos r ON r.id = d.repuesto_id
             WHERE d.pedido_id = ?
-            ORDER BY d.id
+            ORDER BY r.nombre
         ");
         $det->execute([$id]);
         $pedido['detalle'] = $det->fetchAll();
@@ -123,25 +126,36 @@ class PedidoModel
      * El número lo asigna trg_pedidos_numero (secuencia atómica en Oracle),
      * no PHP: dos pedidos creados en el mismo milisegundo no pueden chocar.
      *
-     * subtotal/total se recalculan acá a partir de los items y NO se toman
-     * del body: el cliente no decide cuánto se le debe al proveedor.
-     * total == subtotal a propósito — una orden de compra no lleva el IVA
-     * de venta que sí aplica GestorVentas a través de su Strategy.
+     * subtotal/total ya no se guardan (3FN, fase 2): salen de las líneas en
+     * vw_totales_documento, así que el cliente no decide cuánto se le debe al
+     * proveedor. total == subtotal a propósito — una orden de compra no lleva
+     * el IVA de venta que sí aplica GestorVentas a través de su Strategy.
+     * La PK de pedido_detalle es (pedido_id, repuesto_id): si un repuesto viene
+     * repetido, se suman las cantidades en una sola línea.
      *
      * @return array{id:int, numero:string}
      */
     public function crear(array $data, int $usuarioId): array
     {
-        $subtotal = 0.0;
+        $items = [];
         foreach ($data['items'] as $item) {
-            $subtotal += (int) $item['cantidad'] * (float) $item['precio_unit'];
+            $rid = (int) $item['repuesto_id'];
+            if (isset($items[$rid])) {
+                $items[$rid]['cantidad'] += (int) $item['cantidad'];
+            } else {
+                $items[$rid] = [
+                    'repuesto_id' => $rid,
+                    'cantidad'    => (int) $item['cantidad'],
+                    'precio_unit' => (float) $item['precio_unit'],
+                ];
+            }
         }
 
         $this->db->beginTransaction();
         try {
             $stmt = $this->db->prepare("
-                INSERT INTO pedidos (proveedor_id, usuario_id, subtotal, total, fecha_esperada, notas)
-                VALUES (?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?)
+                INSERT INTO pedidos (proveedor_id, usuario_id, fecha_esperada, notas)
+                VALUES (?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?)
                 RETURNING id INTO :out_id
             ");
             $nuevoId = 0;
@@ -149,25 +163,20 @@ class PedidoModel
             $stmt->execute([
                 (int) $data['proveedor_id'],
                 $usuarioId,
-                $subtotal,
-                $subtotal,
                 !empty($data['fecha_esperada']) ? $data['fecha_esperada'] : null,
                 $data['notas'] ?? null,
             ]);
             $pedidoId = (int) $nuevoId;
 
-            foreach ($data['items'] as $item) {
-                $cantidad   = (int) $item['cantidad'];
-                $precioUnit = (float) $item['precio_unit'];
+            foreach ($items as $item) {
                 $this->db->prepare("
-                    INSERT INTO pedido_detalle (pedido_id, repuesto_id, cantidad, precio_unit, subtotal)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO pedido_detalle (pedido_id, repuesto_id, cantidad, precio_unit)
+                    VALUES (?, ?, ?, ?)
                 ")->execute([
                     $pedidoId,
-                    (int) $item['repuesto_id'],
-                    $cantidad,
-                    $precioUnit,
-                    $cantidad * $precioUnit,
+                    $item['repuesto_id'],
+                    $item['cantidad'],
+                    $item['precio_unit'],
                 ]);
             }
 

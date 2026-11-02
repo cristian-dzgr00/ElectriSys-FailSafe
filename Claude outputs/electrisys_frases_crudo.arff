@@ -1,0 +1,393 @@
+@relation electrisys_frases_crudo
+
+@attribute id string
+@attribute texto string
+@attribute intencion {buscar_repuesto,consultar_stock,consultar_precio,recomendar_sustituto,consultar_compatibilidad,saludo_despedida,fuera_de_dominio}
+@attribute tiene_no {si,no}
+@attribute pal_precio {si,no}
+@attribute pal_stock {si,no}
+@attribute pal_compat {si,no}
+@attribute pal_sustituto {si,no}
+@attribute pal_saludo {si,no}
+@attribute marca_vehiculo {ninguna,mazda,chevrolet,kia,otra_marca,renault,ford,suzuki,volkswagen,nissan,mitsubishi,hyundai,toyota}
+@attribute repuesto_mencionado {ninguno,Electrico,Motor,Filtros,Frenos,Transmision,Suspension,Refrigeracion,Lubricantes}
+@attribute tiene_modelo {si,no}
+@attribute tiene_anio {si,no}
+@attribute signo_pregunta {si,no}
+@attribute n_palabras numeric
+
+@data
+F-0001,'no hay filtro de aceite original de toyota para una hilux 2 7 gasolina 2024 que me recomienda',recomendar_sustituto,si,no,si,no,si,no,toyota,Filtros,si,si,si,18
+F-0002,'se me acabaron las balatas brembo para un mazda 3 2020 hay algo parecido',recomendar_sustituto,no,no,si,no,no,no,mazda,ninguno,si,si,si,14
+F-0003,'el cliente pide una bateria mac original para un chevrolet spark 2019 pero no tenemos que le ofrezco',recomendar_sustituto,si,no,no,no,no,no,chevrolet,Electrico,si,si,si,18
+F-0004,'no tengo en stock la correa de distribucion gates para sentra 2018 deme una alternativa',recomendar_sustituto,si,no,si,no,si,no,otra_marca,Motor,si,si,no,15
+F-0005,'que otro filtro de aire le sirve a un renault logan 1 6 2021 si no hay el original',recomendar_sustituto,si,no,si,si,si,no,renault,Filtros,si,si,si,19
+F-0006,'se agoto el disco de freno delantero para hyundai tucson 2022 sugierame un reemplazo',recomendar_sustituto,no,no,no,no,si,no,hyundai,Frenos,si,si,no,14
+F-0007,'no hay bujias ngk para kia rio 2017 cual puedo ofrecer en su lugar',recomendar_sustituto,si,no,si,no,no,no,kia,Electrico,no,si,si,14
+F-0008,'necesito una opcion distinta al amortiguador monroe para ford escape 2015 porque no hay stock',recomendar_sustituto,si,no,si,no,si,no,ford,Suspension,si,si,no,15
+F-0009,'con que puedo sustituir el kit de embrague original de chevrolet aveo 2016',recomendar_sustituto,no,no,no,no,no,no,chevrolet,Transmision,si,si,si,13
+F-0010,'no queda filtro de combustible bosch para volkswagen gol 2019 deme otro',recomendar_sustituto,si,no,si,no,si,no,volkswagen,Filtros,no,si,no,12
+F-0011,'el repuesto 90915 yzzd4 esta agotado que otro filtro sirve para esa hilux',recomendar_sustituto,no,no,no,si,si,no,ninguna,Filtros,si,no,si,13
+F-0012,'dame una alternativa de banda de accesorios para suzuki swift 2020',recomendar_sustituto,no,no,no,no,si,no,suzuki,Frenos,no,si,no,11
+F-0013,'no hay stock de la bateria para el aveo que le puedo vender al cliente',recomendar_sustituto,si,no,si,no,no,no,ninguna,Electrico,si,no,no,15
+F-0014,'se nos acabo el filtro de aceite k n para la fortuner hay algo similar',recomendar_sustituto,no,no,si,no,si,no,ninguna,Filtros,si,no,no,15
+F-0015,'tienen filtro de aceite para toyota hilux 2 7 2024',buscar_repuesto,no,no,no,no,no,no,toyota,Filtros,si,si,si,10
+F-0016,'busco pastillas de freno para un chevrolet onix 2021',buscar_repuesto,no,no,no,no,no,no,chevrolet,Frenos,no,si,no,9
+F-0017,'hay disponible una bomba de agua para nissan frontier 2018',buscar_repuesto,no,no,si,no,no,no,nissan,Motor,si,si,si,10
+F-0018,'necesito un radiador para mazda cx 5 2019',buscar_repuesto,no,no,no,no,no,no,mazda,Refrigeracion,si,si,no,8
+F-0019,'manejan el repuesto con codigo hp 1002',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0020,'estoy buscando un alternador para hyundai accent 2016',buscar_repuesto,no,no,no,no,no,no,hyundai,Electrico,si,si,no,8
+F-0021,'tienen la correa poly v para un kia sportage 2020',buscar_repuesto,no,no,no,no,no,no,kia,Motor,si,si,si,10
+F-0022,'quiero comprar un filtro de cabina para renault duster 2022',buscar_repuesto,no,no,no,no,no,no,renault,Filtros,si,si,no,10
+F-0023,'hay amortiguadores traseros para ford fiesta 2015',buscar_repuesto,no,no,si,no,no,no,ford,Suspension,no,si,si,7
+F-0024,'busco bujias para un chevrolet spark gt 2018',buscar_repuesto,no,no,no,no,no,no,chevrolet,Electrico,si,si,no,8
+F-0025,'manejan bomba de gasolina para nissan sentra',buscar_repuesto,no,no,no,no,no,no,nissan,Motor,si,no,si,7
+F-0026,'necesito un kit de embrague para aveo 2016',buscar_repuesto,no,no,no,no,no,no,ninguna,Transmision,si,si,no,8
+F-0027,'cuantas unidades hay del filtro 90915 yzzd4',consultar_stock,no,no,si,no,no,no,ninguna,Filtros,no,no,si,7
+F-0028,'que stock queda de las pastillas de freno brembo',consultar_stock,no,no,si,no,no,no,ninguna,Frenos,no,no,si,9
+F-0029,'hay suficiente inventario de baterias mac para esta semana',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,9
+F-0030,'cuantos filtros de aceite k n tienen disponibles',consultar_stock,no,no,si,no,no,no,ninguna,Filtros,no,no,si,8
+F-0031,'verifica el stock del repuesto m1 102',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,no,7
+F-0032,'se esta agotando el filtro de aire para sentra',consultar_stock,no,no,no,no,no,no,otra_marca,Filtros,si,no,si,9
+F-0033,'cuantas correas de distribucion quedan en bodega',consultar_stock,no,no,si,no,no,no,ninguna,Motor,no,no,si,7
+F-0034,'cuanto stock queda de bujias ngk',consultar_stock,no,si,si,no,no,no,ninguna,Electrico,no,no,si,6
+F-0035,'cuanto cuesta el filtro de aceite original de toyota',consultar_precio,no,si,no,no,no,no,toyota,Filtros,no,no,si,9
+F-0036,'que precio tiene el disco de freno para tucson 2022',consultar_precio,no,si,no,no,no,no,ninguna,Frenos,si,si,si,10
+F-0037,'dime el valor de las bujias ngk',consultar_precio,no,si,no,no,no,no,ninguna,Electrico,no,no,no,7
+F-0038,'a como esta el kit de embrague de aveo',consultar_precio,no,no,no,no,no,no,ninguna,Transmision,si,no,si,9
+F-0039,'cual es el precio de venta del repuesto hp 1002',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,10
+F-0040,'cuanto vale la bateria mac para spark',consultar_precio,no,si,no,no,no,no,ninguna,Electrico,si,no,si,7
+F-0041,'que precio tiene la correa de distribucion gates',consultar_precio,no,si,no,no,no,no,ninguna,Motor,no,no,si,8
+F-0042,'este filtro le sirve a una hilux 2 7 gasolina 2024',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Filtros,si,si,si,11
+F-0043,'la pastilla de freno brembo es compatible con mazda 3 2020',consultar_compatibilidad,no,no,no,si,no,no,mazda,Frenos,si,si,si,11
+F-0044,'el repuesto 90915 yzzd4 aplica para otros modelos de toyota',consultar_compatibilidad,no,no,no,si,no,no,toyota,ninguno,no,no,si,10
+F-0045,'a que vehiculos le sirve la correa de distribucion gates',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Motor,no,no,si,10
+F-0046,'esta bateria es compatible con chevrolet spark 2019',consultar_compatibilidad,no,no,no,si,no,no,chevrolet,Electrico,si,si,si,8
+F-0047,'el filtro k n hp 1002 sirve para mas motores',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Filtros,no,no,si,10
+F-0048,'estas bujias ngk aplican para un hyundai accent 2015',consultar_compatibilidad,no,no,no,no,no,no,hyundai,Electrico,si,si,si,9
+F-0049,'hola',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,1
+F-0050,'buenos dias',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,2
+F-0051,'buenas tardes necesito ayuda',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0052,'que mas me puede colaborar',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0053,'hola esta disponible el asistente',saludo_despedida,no,no,si,no,no,si,ninguna,ninguno,no,no,si,5
+F-0054,'gracias eso era todo',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0055,'listo hasta luego',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,3
+F-0056,'muchas gracias por la ayuda',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0057,'nos vemos',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,no,2
+F-0058,'buenas quisiera hacer una consulta',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0059,'cual es el clima hoy',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0060,'a que hora cierra el negocio',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0061,'aceptan pago con tarjeta',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0062,'hacen domicilios',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,2
+F-0063,'cuentame un chiste',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,3
+F-0064,'que opinas del nuevo modelo de carro electrico',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,8
+F-0065,'como llego a la estacion del metro mas cercana',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,9
+F-0066,'esta correa de accesorios sirve para un renault logan 1 6 2021',consultar_compatibilidad,no,no,no,si,no,no,renault,Motor,si,si,si,12
+F-0067,'el amortiguador monroe aplica tambien para el ford escape 2015',consultar_compatibilidad,no,no,no,si,no,no,ford,Suspension,si,si,si,10
+F-0068,'me confirma si esta bomba de agua funciona en un nissan frontier 2018',consultar_compatibilidad,no,no,no,si,no,no,nissan,Motor,si,si,si,13
+F-0069,'sirve esta rotula para suzuki swift 2020',consultar_compatibilidad,no,no,no,si,no,no,suzuki,Suspension,no,si,si,7
+F-0070,'es compatible el radiador con el mazda cx 5 2019 y tambien con el cx 3',consultar_compatibilidad,no,no,no,si,no,no,mazda,Refrigeracion,si,si,si,16
+F-0071,'la bobina de encendido aplica para kia sportage 2020',consultar_compatibilidad,no,no,no,si,no,no,kia,Electrico,si,si,si,9
+F-0072,'funciona este alternador en un hyundai tucson 2022 diesel',consultar_compatibilidad,no,no,no,si,no,no,hyundai,Electrico,si,si,si,9
+F-0073,'sirve pa un chevrolet spark gt 2018 esta caja de direccion',consultar_compatibilidad,no,no,no,si,no,no,chevrolet,Transmision,si,si,si,11
+F-0074,'esta pieza de suspension aplica tambien a otros modelos mitsubishi',consultar_compatibilidad,no,no,no,si,no,no,mitsubishi,ninguno,no,no,si,10
+F-0075,'necesito saber si el sensor de oxigeno es compatible con volkswagen gol 2019',consultar_compatibilidad,no,no,no,si,no,no,volkswagen,Electrico,no,si,no,13
+F-0076,'aplica esta bujia ngk a motores de 1 4 y 1 6 por igual',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Electrico,no,no,si,14
+F-0077,'le sirve esta banda poly v a un kia rio 2017',consultar_compatibilidad,no,no,no,si,no,no,kia,Frenos,no,si,si,11
+F-0078,'es compatible este kit de embrague con la version automatica del aveo',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Transmision,si,no,si,12
+F-0079,'la bomba de gasolina funciona en nissan sentra modelo 2015 en adelante',consultar_compatibilidad,no,no,no,si,no,no,nissan,Motor,si,si,si,12
+F-0080,'profe esta autoparte sirve tambien para el duster 1 6',consultar_compatibilidad,no,no,no,si,no,no,ninguna,ninguno,si,no,si,10
+F-0081,'este disco de freno aplica unicamente al tucson 2022 o tambien a modelos anteriores',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Frenos,si,si,si,14
+F-0082,'sirve este filtro de cabina en mas de un modelo de renault',consultar_compatibilidad,no,no,no,si,no,no,renault,Filtros,no,no,si,12
+F-0083,'me puede confirmar si esta pieza es compatible con motores turbo',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Motor,no,no,si,11
+F-0084,'aplica esta rotula pa un mitsubishi montero 2016',consultar_compatibilidad,no,no,no,si,no,no,mitsubishi,Suspension,no,si,si,8
+F-0085,'este mazo de cables electricos funciona en el spark 2019 con aire acondicionado',consultar_compatibilidad,no,no,no,si,no,no,ninguna,ninguno,si,si,si,13
+F-0086,'es compatible esta caja de cambios con la version manual y automatica',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Transmision,no,no,si,12
+F-0087,'sirve este sensor abs para un ford fiesta 2015',consultar_compatibilidad,no,no,no,si,no,no,ford,Electrico,no,si,si,9
+F-0088,'quisiera confirmar si esta parte aplica a un hyundai accent 2015 con motor 1 6',consultar_compatibilidad,no,no,no,si,no,no,hyundai,ninguno,si,si,no,15
+F-0089,'funciona esta bomba de direccion hidraulica en un suzuki vitara',consultar_compatibilidad,no,no,no,si,no,no,suzuki,Motor,no,no,si,10
+F-0090,'la correa de distribucion gates aplica solo a gasolina o tambien a diesel',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Motor,no,no,si,13
+F-0091,'es compatible este radiador de aire con el motor 2 0 turbo',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Motor,no,no,si,12
+F-0092,'aplica esta bujia para toyta corolla 2017',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Electrico,si,si,si,7
+F-0093,'le sirve este soporte de motor a un chevrolet tracker 2020',consultar_compatibilidad,no,no,no,si,no,no,chevrolet,ninguno,no,si,si,11
+F-0094,'es compatible esta parte electrica con vehiculos hibridos',consultar_compatibilidad,no,no,no,si,no,no,ninguna,ninguno,no,no,si,8
+F-0095,'aplica este kit de suspension a la version 4x4 de la frontier',consultar_compatibilidad,no,no,no,si,no,no,ninguna,ninguno,si,no,si,12
+F-0096,'sirve esta manguera de radiador en un mazda 3 2020 y en el mazda 6',consultar_compatibilidad,no,no,no,si,no,no,mazda,Refrigeracion,si,si,si,15
+F-0097,'funciona este switch de luces en un kia picanto 2019',consultar_compatibilidad,no,no,no,si,no,no,kia,ninguno,si,si,si,10
+F-0098,'es compatible el filtro de aire con motores 1 8 y 2 0',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Filtros,no,no,si,13
+F-0099,'le aplica esta bomba de aceite a un mitsubishi l200 2018',consultar_compatibilidad,no,no,no,si,no,no,mitsubishi,Motor,si,si,si,11
+F-0100,'esta pieza de transmision sirve para versiones anteriores al 2020',consultar_compatibilidad,no,no,no,si,no,no,ninguna,ninguno,no,si,si,10
+F-0101,'sirve esto para un renault logan o solo duster',consultar_compatibilidad,no,no,no,si,no,no,renault,ninguno,si,no,no,9
+F-0102,'aplica este terminal de direccion tanto al lado izquierdo como al derecho',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Suspension,no,no,si,12
+F-0103,'es compatible esta bateria con sistemas start stop',consultar_compatibilidad,no,no,no,si,no,no,ninguna,Electrico,no,no,si,8
+F-0104,'funciona este rele de arranque en un volkswagen polo 2018',consultar_compatibilidad,no,no,no,si,no,no,volkswagen,Electrico,no,si,si,10
+F-0105,'sirve esta pieza para un chevrolet captiva 2016 con motor 2 4',consultar_compatibilidad,no,no,no,si,no,no,chevrolet,ninguno,no,si,si,12
+F-0106,'es compatible el juego de rodamientos con la hilux 4x2 y 4x4',consultar_compatibilidad,no,no,no,si,no,no,ninguna,ninguno,si,no,si,12
+F-0107,'quiero saber si esta parte aplica pa una camioneta ford ranger 2019',consultar_compatibilidad,no,no,no,si,no,no,ford,ninguno,si,si,no,12
+F-0108,'le sirve este actuador de embrague a un suzuki swift automatico',consultar_compatibilidad,no,no,no,si,no,no,suzuki,Transmision,no,no,si,11
+F-0109,'quien gano el partido de anoche',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0110,'recomiendame una receta para hacer arroz con pollo',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,8
+F-0111,'cual es la capital de australia',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0112,'oye y tu sabes bailar salsa',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,6
+F-0113,'que signo del zodiaco es mas compatible con escorpio',fuera_de_dominio,no,no,no,si,no,no,ninguna,ninguno,no,no,si,9
+F-0114,'me puedes recomendar una pelicula de accion',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0115,'asdkjaslkdj',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,1
+F-0116,'eres una persona real o un robot',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0117,'cuanto es 458 multiplicado por 12',fuera_de_dominio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0118,'que opinas de la politica actual del pais',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,8
+F-0119,'necesito el numero de whatsapp del jefe',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,7
+F-0120,'tienen bano para clientes',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0121,'cual es tu color favorito',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0122,'feliz cumpleanos espero que la pases muy bien',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,8
+F-0123,'como esta el trafico en la autopista norte',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,8
+F-0124,'jajaja eso estuvo muy bueno',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,5
+F-0125,'cuantos empleados trabajan en este local',fuera_de_dominio,no,no,si,no,no,no,ninguna,ninguno,no,no,si,6
+F-0126,'que cancion esta sonando ahorita',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0127,'prueba prueba 123',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,3
+F-0128,'cual es el mejor equipo de futbol de colombia',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,9
+F-0129,'ustedes venden comida tambien',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0130,'hola necesito saber si hay wifi aca',fuera_de_dominio,no,no,si,no,no,si,ninguna,ninguno,no,no,no,7
+F-0131,'que hora es en espana ahora mismo',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0132,'cuentame algo interesante sobre el universo',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,6
+F-0133,'vende ropa esta tienda',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0134,'como se dice buenos dias en ingles',fuera_de_dominio,no,no,no,no,no,si,ninguna,ninguno,no,no,si,7
+F-0135,'xxxxxxx',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,1
+F-0136,'tienen parqueadero disponible',fuera_de_dominio,no,no,si,no,no,no,ninguna,ninguno,no,no,si,3
+F-0137,'quien es el presidente de colombia',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,6
+F-0138,'puedes ayudarme con mi tarea de matematicas',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0139,'que serie me recomiendas ver este fin de semana',fuera_de_dominio,no,no,no,no,si,no,ninguna,ninguno,no,no,si,9
+F-0140,'buenas aca vive alguien de apellido gomez',fuera_de_dominio,no,no,no,no,no,si,ninguna,ninguno,no,no,no,7
+F-0141,'cual es el sentido de la vida',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0142,'tienen servicio de domicilio los fines de semana',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,8
+F-0143,'como va el dolar hoy',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0144,'me late que va a llover toda la tarde',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,9
+F-0145,'que opinas de la inteligencia artificial',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0146,'recomiendame musica para trabajar',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,no,4
+F-0147,'cuanto falta para navidad',fuera_de_dominio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0148,'hshshshs no se ni que estoy escribiendo',fuera_de_dominio,si,no,no,no,no,no,ninguna,ninguno,no,no,no,7
+F-0149,'ustedes reparan celulares tambien',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0150,'cual es tu serie favorita de todos los tiempos',fuera_de_dominio,no,no,no,no,no,no,ninguna,ninguno,no,no,si,9
+F-0151,'buenas tardes queria saber si aqui hacen cambio de aceite en el local o solo venden repuestos',fuera_de_dominio,no,no,no,no,si,si,ninguna,Lubricantes,no,no,no,17
+F-0152,'cuanto vale un radiador para mazda cx 5 2019',consultar_precio,no,si,no,no,no,no,mazda,Refrigeracion,si,si,si,9
+F-0153,'que precio maneja la bomba de agua para nissan frontier',consultar_precio,no,si,no,no,no,no,nissan,Motor,si,no,si,10
+F-0154,'deme el valor del kit de suspension para ford fiesta 2015',consultar_precio,no,si,no,no,no,no,ford,ninguno,no,si,no,11
+F-0155,'a como sale el alternador de hyundai accent 2016',consultar_precio,no,si,no,no,no,no,hyundai,Electrico,si,si,si,9
+F-0156,'cual es el costo de las bujias ngk para kia rio',consultar_precio,no,si,no,no,no,no,kia,Electrico,no,no,si,11
+F-0157,'necesito el precio del filtro de cabina pa un duster',consultar_precio,no,si,no,no,no,no,ninguna,Filtros,si,no,no,10
+F-0158,'me puede cotizar un juego de amortiguadores para suzuki swift 2020',consultar_precio,no,si,no,no,no,no,suzuki,Suspension,no,si,si,11
+F-0159,'cuanto sale la correa poly v del sportage 2020',consultar_precio,no,si,no,no,no,no,ninguna,Motor,si,si,si,9
+F-0160,'precio del sensor abs para ford fiesta por favor',consultar_precio,no,si,no,no,no,no,ford,Electrico,no,no,no,9
+F-0161,'en cuanto esta el disco de freno delantero de la tucson',consultar_precio,no,si,no,no,no,no,ninguna,Frenos,si,no,si,11
+F-0162,'que valor tiene el mazo de cables del spark 2019',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,si,si,si,10
+F-0163,'cuanto cuesta la bomba de gasolina del sentra',consultar_precio,no,si,no,no,no,no,otra_marca,Motor,si,no,no,8
+F-0164,'podria indicarme el precio de la caja de direccion para chevrolet tracker',consultar_precio,no,si,no,no,no,no,chevrolet,Transmision,no,no,si,12
+F-0165,'a como esta el soporte de motor para mitsubishi l200',consultar_precio,no,no,no,no,no,no,mitsubishi,ninguno,si,no,si,10
+F-0166,'quiero saber el precio del filtro de aire para renault logan',consultar_precio,no,si,no,no,no,no,renault,Filtros,si,no,no,11
+F-0167,'cuanto cuesta el kit de embrague completo de la aveo automatica',consultar_precio,no,si,no,no,no,no,ninguna,Transmision,si,no,si,11
+F-0168,'valor del terminal de direccion para golf 2018',consultar_precio,no,si,no,no,no,no,ninguna,Suspension,no,si,no,8
+F-0169,'cual es el precio del rodamiento delantero de la hilux 4x4',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,si,no,si,11
+F-0170,'me confirma el precio de la bateria para sistemas start stop',consultar_precio,no,si,no,no,no,no,ninguna,Electrico,no,no,si,11
+F-0171,'cuanto vale una bomba de aceite para l200 2018',consultar_precio,no,si,no,no,no,no,ninguna,Motor,si,si,si,9
+F-0172,'deme el costo de la bobina de encendido del sportage',consultar_precio,no,si,no,no,no,no,ninguna,Electrico,si,no,no,10
+F-0173,'que precio tiene el rele de arranque para polo 2018',consultar_precio,no,si,no,no,no,no,ninguna,Electrico,no,si,si,10
+F-0174,'a cuanto esta el actuador de embrague del swift automatico',consultar_precio,no,si,no,no,no,no,ninguna,Transmision,no,no,si,10
+F-0175,'necesito cotizar dos filtros de aceite para captiva 2016',consultar_precio,no,si,no,no,no,no,ninguna,Filtros,no,si,no,9
+F-0176,'cuanto cuesta la manguera de radiador del mazda 6',consultar_precio,no,si,no,no,no,no,mazda,Refrigeracion,no,no,si,9
+F-0177,'vale mucho el switch de luces del picanto',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,si,no,no,8
+F-0178,'cual es el precio de venta de los rodamientos traseros',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,10
+F-0179,'me indica el valor del radiador de aire para motor 2 0 turbo',consultar_precio,no,si,no,no,no,no,ninguna,Motor,no,no,si,13
+F-0180,'cotizacion del sensor de oxigeno para volkswagen gol',consultar_precio,no,si,no,no,no,no,volkswagen,Electrico,no,no,no,8
+F-0181,'cuanto esta saliendo el kit de suspension completo',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,8
+F-0182,'precio total de cambiar las cuatro bujias',consultar_precio,no,si,no,no,no,no,ninguna,Electrico,no,no,no,7
+F-0183,'a como me deja el juego de pastillas traseras',consultar_precio,no,no,no,no,no,no,ninguna,Frenos,no,no,si,9
+F-0184,'cuanto cuesta una rotula para mitsubishi montero',consultar_precio,no,si,no,no,no,no,mitsubishi,Suspension,no,no,si,7
+F-0185,'buenas el precio de la caja de cambios manual cual es',consultar_precio,no,si,no,no,no,si,ninguna,Transmision,no,no,no,11
+F-0186,'me puede decir cuanto vale el mazo electrico completo',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,9
+F-0187,'que tan caro esta el radiador original comparado con el generico',consultar_precio,no,no,no,no,no,no,ninguna,Refrigeracion,no,no,si,11
+F-0188,'vale del filtro combustible bosch para el gol',consultar_precio,no,si,no,no,no,no,ninguna,Filtros,no,no,no,8
+F-0189,'cuanto cuesta instalar y comprar el kit de distribucion completo',consultar_precio,no,si,no,no,no,no,ninguna,Motor,no,no,si,10
+F-0190,'cual es el precio actual del amortiguador delantero derecho',consultar_precio,no,si,no,no,no,no,ninguna,Suspension,no,no,si,9
+F-0191,'me puede pasar el precio de la bomba hidraulica',consultar_precio,no,si,no,no,no,no,ninguna,Motor,no,no,no,9
+F-0192,'cuanto sale el kit completo de frenos para camioneta',consultar_precio,no,si,no,no,no,no,ninguna,Frenos,no,no,si,9
+F-0193,'que precio tiene esa pieza en efectivo y con tarjeta',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,10
+F-0194,'podria decirme cuanto cuesta la pieza con codigo m1 102',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,10
+F-0195,'cuantas bujias ngk quedan en bodega',consultar_stock,no,no,si,no,no,no,ninguna,Electrico,no,no,si,6
+F-0196,'hay disponibilidad del radiador para cx 5 2019',consultar_stock,no,no,si,no,no,no,ninguna,Refrigeracion,si,si,si,8
+F-0197,'cuantas unidades hay del kit de embrague de aveo',consultar_stock,no,no,si,no,no,no,ninguna,Transmision,si,no,si,9
+F-0198,'verifica cuantas correas poly v quedan',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,no,6
+F-0199,'se esta agotando el filtro de cabina del duster',consultar_stock,no,no,no,no,no,no,ninguna,Filtros,si,no,si,9
+F-0200,'cuanto inventario queda de amortiguadores monroe',consultar_stock,no,si,si,no,no,no,ninguna,Suspension,no,no,si,6
+F-0201,'hay stock suficiente de discos de freno para esta semana',consultar_stock,no,no,si,no,no,no,ninguna,Frenos,no,no,si,10
+F-0202,'revisa existencias del sensor abs m1 102',consultar_stock,no,no,si,no,no,no,ninguna,Electrico,no,no,no,7
+F-0203,'cuantas bombas de agua quedan disponibles',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,6
+F-0204,'se acabaron los filtros de aire del logan',consultar_stock,no,no,no,no,no,no,ninguna,Filtros,si,no,si,8
+F-0205,'que cantidad hay del terminal de direccion para golf',consultar_stock,no,no,si,no,no,no,ninguna,Suspension,no,no,si,9
+F-0206,'hay pocas unidades del alternador o ya no queda',consultar_stock,si,no,si,no,no,no,ninguna,Electrico,no,no,no,9
+F-0207,'cuantos juegos de pastillas traseras hay en bodega',consultar_stock,no,no,si,no,no,no,ninguna,Frenos,no,no,si,8
+F-0208,'confirmame el stock del rodamiento delantero',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,no,6
+F-0209,'cuantas baterias start stop quedan en el local',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,8
+F-0210,'esta por agotarse la correa de distribucion gates',consultar_stock,no,no,no,no,no,no,ninguna,Motor,no,no,si,8
+F-0211,'que stock hay de la bomba de aceite para l200',consultar_stock,no,no,si,no,no,no,ninguna,Motor,si,no,si,10
+F-0212,'cuantas piezas del kit de suspension hay',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,no,7
+F-0213,'hay existencias del rele de arranque para polo',consultar_stock,no,no,si,no,no,no,ninguna,Electrico,no,no,si,8
+F-0214,'cuantos mazos de cables completos quedan',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,6
+F-0215,'todavia hay stock del actuador de embrague',consultar_stock,no,no,si,no,no,no,ninguna,Transmision,no,no,si,7
+F-0216,'revisa si queda inventario del switch de luces',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,no,8
+F-0217,'cuantas unidades del sensor de oxigeno tenemos',consultar_stock,no,no,si,no,no,no,ninguna,Electrico,no,no,si,7
+F-0218,'se esta agotando el radiador de aire 2 0 turbo',consultar_stock,no,no,no,no,no,no,ninguna,Motor,no,no,si,10
+F-0219,'cuanto queda del filtro combustible bosch',consultar_stock,no,si,si,no,no,no,ninguna,Filtros,no,no,no,6
+F-0220,'hay suficientes rotulas para surtir el fin de semana',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,9
+F-0221,'que cantidad de bobinas de encendido hay disponibles',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,8
+F-0222,'verifica el inventario del soporte de motor l200',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,si,no,no,8
+F-0223,'cuantos kits de distribucion quedan en bodega',consultar_stock,no,no,si,no,no,no,ninguna,Motor,no,no,si,7
+F-0224,'se agotaron las bombas de gasolina para sentra',consultar_stock,no,no,no,no,no,no,otra_marca,ninguno,si,no,si,8
+F-0225,'dime cuantas unidades hay del repuesto hp 1002',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,no,8
+F-0226,'cuanto stock queda del disco de freno tucson',consultar_stock,no,si,si,no,no,no,ninguna,Frenos,si,no,si,8
+F-0227,'esta agotado el kit de embrague de la aveo automatica',consultar_stock,no,no,no,no,no,no,ninguna,Transmision,si,no,si,10
+F-0228,'cuantas piezas del mazo electrico hay en existencia',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,8
+F-0229,'revisa disponibilidad del rodamiento trasero',consultar_stock,no,no,no,no,no,no,ninguna,ninguno,no,no,no,5
+F-0230,'ya no queda inventario de la caja de direccion',consultar_stock,si,no,si,no,no,no,ninguna,Transmision,no,no,si,9
+F-0231,'cuantas correas de accesorios hay disponibles ahorita',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,7
+F-0232,'existe stock de la manguera de radiador del mazda 6',consultar_stock,no,no,si,no,no,no,mazda,Refrigeracion,no,no,no,10
+F-0233,'cuantas unidades quedan del filtro k n hp 1002',consultar_stock,no,no,si,no,no,no,ninguna,Filtros,no,no,si,9
+F-0234,'verifica si hay suficientes pastillas delanteras para surtir',consultar_stock,no,no,si,no,no,no,ninguna,Frenos,no,no,no,8
+F-0235,'que tan bajo esta el inventario de baterias mac',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,9
+F-0236,'cuantas piezas del kit de frenos completo hay en bodega',consultar_stock,no,no,si,no,no,no,ninguna,Frenos,no,no,si,10
+F-0237,'tienen radiador para mazda cx 5 2019',buscar_repuesto,no,no,no,no,no,no,mazda,Refrigeracion,si,si,si,7
+F-0238,'busco un kit de suspension para ford fiesta 2015',buscar_repuesto,no,no,no,no,no,no,ford,ninguno,no,si,no,9
+F-0239,'manejan sensor abs codigo m1 102',buscar_repuesto,no,no,no,no,no,no,ninguna,Electrico,no,no,si,6
+F-0240,'necesito una bomba de agua para nissan frontier',buscar_repuesto,no,no,no,no,no,no,nissan,Motor,si,no,no,8
+F-0241,'tienen correa poly v para kia sportage 2020',buscar_repuesto,no,no,no,no,no,no,kia,Motor,si,si,si,8
+F-0242,'estoy buscando bujias ngk para un rio',buscar_repuesto,no,no,no,no,no,no,ninguna,Electrico,no,no,no,7
+F-0243,'hay disponible un mazo de cables para spark 2019',buscar_repuesto,no,no,si,no,no,no,ninguna,ninguno,si,si,si,9
+F-0244,'quiero comprar un terminal de direccion para volkswagen golf',buscar_repuesto,no,no,no,no,no,no,volkswagen,Suspension,no,no,no,9
+F-0245,'manejan rodamientos delanteros para camioneta hilux',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,si,no,si,6
+F-0246,'busco una bateria compatible con sistema start stop',buscar_repuesto,no,no,no,si,no,no,ninguna,Electrico,no,no,no,8
+F-0247,'tienen soporte de motor para mitsubishi l200 2018',buscar_repuesto,no,no,no,no,no,no,mitsubishi,ninguno,si,si,si,8
+F-0248,'necesito un filtro de cabina para duster 2022',buscar_repuesto,no,no,no,no,no,no,ninguna,Filtros,si,si,no,8
+F-0249,'manejan actuador de embrague para suzuki swift',buscar_repuesto,no,no,no,no,no,no,suzuki,Transmision,no,no,si,7
+F-0250,'busco rele de arranque para un volkswagen polo',buscar_repuesto,no,no,no,no,no,no,volkswagen,Electrico,no,no,no,8
+F-0251,'tienen switch de luces para kia picanto 2019',buscar_repuesto,no,no,no,no,no,no,kia,ninguno,si,si,si,8
+F-0252,'estoy buscando un sensor de oxigeno para gol 2019',buscar_repuesto,no,no,no,no,no,no,ninguna,Electrico,no,si,no,9
+F-0253,'hay bomba de aceite para mitsubishi l200',buscar_repuesto,no,no,si,no,no,no,mitsubishi,Motor,si,no,si,7
+F-0254,'necesito una rotula para montero 2016',buscar_repuesto,no,no,no,no,no,no,ninguna,Suspension,no,si,no,6
+F-0255,'manejan bobina de encendido para sportage 2020',buscar_repuesto,no,no,no,no,no,no,ninguna,Electrico,si,si,si,7
+F-0256,'busco kit de distribucion completo para logan 1 6',buscar_repuesto,no,no,no,no,no,no,ninguna,Motor,si,no,no,9
+F-0257,'tienen manguera de radiador para mazda 6',buscar_repuesto,no,no,no,no,no,no,mazda,Refrigeracion,no,no,si,7
+F-0258,'quiero un radiador de aire para motor 2 0 turbo',buscar_repuesto,no,no,no,no,no,no,ninguna,Motor,no,no,no,10
+F-0259,'manejan caja de direccion para chevrolet tracker',buscar_repuesto,no,no,no,no,no,no,chevrolet,Transmision,no,no,si,7
+F-0260,'busco pieza para el sistema electrico de un spark',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,si,no,no,9
+F-0261,'tienen amortiguadores traseros para suzuki vitara',buscar_repuesto,no,no,no,no,no,no,suzuki,Suspension,no,no,si,6
+F-0262,'necesito un kit de embrague completo para aveo automatica',buscar_repuesto,no,no,no,no,no,no,ninguna,Transmision,si,no,no,9
+F-0263,'manejan filtro de aire para motor 1 8',buscar_repuesto,no,no,no,no,no,no,ninguna,Filtros,no,no,si,8
+F-0264,'busco discos de freno traseros para tucson 2022',buscar_repuesto,no,no,no,no,no,no,ninguna,Frenos,si,si,no,8
+F-0265,'hay pastillas delanteras para un captiva 2016',buscar_repuesto,no,no,si,no,no,no,ninguna,Frenos,no,si,si,7
+F-0266,'tienen alguna pieza de transmision para nissan sentra',buscar_repuesto,no,no,no,no,no,no,nissan,ninguno,si,no,no,8
+F-0267,'manejan juego de rodamientos traseros',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0268,'busco una bomba de gasolina para sentra reciente',buscar_repuesto,no,no,no,no,no,no,otra_marca,Motor,si,no,no,8
+F-0269,'tienen el repuesto con codigo hp 1002 en otra presentacion',buscar_repuesto,no,no,no,no,si,no,ninguna,ninguno,no,no,si,10
+F-0270,'quiero comprar un kit de frenos completo pa una camioneta',buscar_repuesto,no,no,no,no,no,no,ninguna,Frenos,no,no,no,10
+F-0271,'manejan piezas electricas para vehiculos hibridos',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0272,'busco filtro de combustible bosch para volkswagen gol',buscar_repuesto,no,no,no,no,no,no,volkswagen,Filtros,no,no,no,8
+F-0273,'tienen banda de accesorios para suzuki swift 2020',buscar_repuesto,no,no,no,no,no,no,suzuki,Frenos,no,si,si,8
+F-0274,'necesito autopartes de suspension para renault duster',buscar_repuesto,no,no,no,no,no,no,renault,ninguno,si,no,no,7
+F-0275,'no hay radiador original para mazda cx 5 2019 que me sugiere',recomendar_sustituto,si,no,si,no,si,no,mazda,Refrigeracion,si,si,si,12
+F-0276,'se acabo el sensor abs m1 102 deme otra opcion que sirva',recomendar_sustituto,no,no,no,no,si,no,ninguna,Electrico,no,no,no,12
+F-0277,'no tenemos el mazo de cables original del spark con que lo reemplazo',recomendar_sustituto,si,no,no,no,si,no,ninguna,ninguno,si,no,si,13
+F-0278,'ya no hay terminal de direccion pa golf que me recomienda',recomendar_sustituto,si,no,si,no,si,no,ninguna,Suspension,no,no,no,11
+F-0279,'se agotaron los rodamientos delanteros de la hilux sugierame un reemplazo',recomendar_sustituto,no,no,no,no,si,no,ninguna,ninguno,si,no,no,11
+F-0280,'no queda bateria start stop original que alternativa hay',recomendar_sustituto,si,no,si,no,si,no,ninguna,Electrico,no,no,si,9
+F-0281,'no hay soporte de motor l200 original deme un equivalente',recomendar_sustituto,si,no,si,no,si,no,ninguna,ninguno,si,no,no,10
+F-0282,'se acabo el filtro de cabina para duster que le puedo ofrecer al cliente',recomendar_sustituto,no,no,no,no,no,no,ninguna,Filtros,si,no,si,14
+F-0283,'no tenemos actuador de embrague original para swift hay algo compatible',recomendar_sustituto,si,no,si,si,no,no,ninguna,Transmision,no,no,si,11
+F-0284,'se agoto el rele de arranque del polo necesito una alternativa',recomendar_sustituto,no,no,no,no,si,no,ninguna,Electrico,no,no,no,11
+F-0285,'no hay switch de luces original para picanto que me recomienda',recomendar_sustituto,si,no,si,no,si,no,ninguna,ninguno,si,no,no,11
+F-0286,'no tengo sensor de oxigeno para el gol deme otra marca',recomendar_sustituto,si,no,no,no,si,no,ninguna,Electrico,no,no,no,11
+F-0287,'se acabo la bomba de aceite para l200 con que la sustituyo',recomendar_sustituto,no,no,no,no,no,no,ninguna,Motor,si,no,si,12
+F-0288,'no hay bobina de encendido original para sportage ofrezcame otra',recomendar_sustituto,si,no,si,no,si,no,ninguna,Electrico,si,no,no,10
+F-0289,'ya no queda kit de distribucion completo para logan deme una opcion similar',recomendar_sustituto,si,no,si,no,si,no,ninguna,Motor,si,no,no,13
+F-0290,'no tenemos manguera de radiador original de mazda 6 que otra sirve',recomendar_sustituto,si,no,no,si,si,no,mazda,Refrigeracion,no,no,si,12
+F-0291,'se agoto el radiador de aire para motor 2 0 turbo sugierame algo',recomendar_sustituto,no,no,no,no,si,no,ninguna,Motor,no,no,no,13
+F-0292,'no hay caja de direccion original para tracker deme otra marca',recomendar_sustituto,si,no,si,no,si,no,ninguna,Transmision,no,no,no,11
+F-0293,'no queda pieza electrica original del spark hay algo parecido',recomendar_sustituto,si,no,si,no,no,no,ninguna,ninguno,si,no,no,10
+F-0294,'se acabaron los amortiguadores originales para vitara que otra marca ofrezco',recomendar_sustituto,no,no,no,no,si,no,ninguna,Suspension,no,no,si,11
+F-0295,'no hay kit de embrague original para aveo automatica deme una alternativa',recomendar_sustituto,si,no,si,no,si,no,ninguna,Transmision,si,no,no,12
+F-0296,'ya no tenemos filtro de aire original para motor 1 8 que recomienda',recomendar_sustituto,si,no,no,no,si,no,ninguna,Filtros,no,no,si,13
+F-0297,'se agotaron los discos de freno traseros de la tucson sugierame otro',recomendar_sustituto,no,no,no,no,si,no,ninguna,Frenos,si,no,no,12
+F-0298,'no hay pastillas delanteras originales para captiva con que las sustituyo',recomendar_sustituto,si,no,si,no,no,no,ninguna,Frenos,no,no,si,11
+F-0299,'no tenemos pieza de transmision para el sentra deme algo similar',recomendar_sustituto,si,no,no,no,si,no,otra_marca,ninguno,si,no,no,11
+F-0300,'se acabo la bomba de gasolina original del sentra que otra marca sirve',recomendar_sustituto,no,no,no,si,si,no,otra_marca,Motor,si,no,si,13
+F-0301,'no hay mas unidades del hp 1002 que otro codigo lo reemplaza',recomendar_sustituto,si,no,si,no,si,no,ninguna,ninguno,no,no,si,12
+F-0302,'ya no tengo kit de frenos completo original que le ofrezco al cliente',recomendar_sustituto,si,no,no,no,no,no,ninguna,Frenos,no,no,si,13
+F-0303,'no hay piezas electricas originales para hibridos deme una opcion',recomendar_sustituto,si,no,si,no,si,no,ninguna,ninguno,no,no,no,10
+F-0304,'se agoto el filtro de combustible bosch para gol sugierame otro',recomendar_sustituto,no,no,no,no,si,no,ninguna,Filtros,no,no,no,11
+F-0305,'no tenemos banda de accesorios original para swift 2020 hay similar',recomendar_sustituto,si,no,si,no,si,no,ninguna,Frenos,no,si,si,11
+F-0306,'ya no queda autoparte de suspension original para duster deme alternativa',recomendar_sustituto,si,no,si,no,si,no,ninguna,ninguno,si,no,no,11
+F-0307,'no hay sensor de oxigeno original cual otro me recomienda',recomendar_sustituto,si,no,si,no,si,no,ninguna,Electrico,no,no,no,10
+F-0308,'se acabaron las rotulas para montero que otra opcion manejamos',recomendar_sustituto,no,no,no,no,si,no,ninguna,ninguno,no,no,si,10
+F-0309,'no hay juego de rodamientos traseros original deme un sustituto confiable',recomendar_sustituto,si,no,si,no,si,no,ninguna,ninguno,no,no,no,11
+F-0310,'ya no tenemos correa de accesorios pa el swift deme otra',recomendar_sustituto,si,no,no,no,si,no,ninguna,Motor,no,no,no,11
+F-0311,'buenas',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,1
+F-0312,'alo hay alguien ahi',saludo_despedida,no,no,si,no,no,no,ninguna,ninguno,no,no,si,4
+F-0313,'buen dia me puede atender',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0314,'hola buenas tardes',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,3
+F-0315,'que tal como va todo',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0316,'buenas como estas',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,3
+F-0317,'mil gracias por la atencion',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0318,'perfecto muchas gracias',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,3
+F-0319,'listo muy amable',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,3
+F-0320,'chao que tenga buen dia',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0321,'nos vemos luego',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,3
+F-0322,'hasta pronto',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,2
+F-0323,'gracias mano eso era todo',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0324,'buenas noches aun estan atendiendo',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,si,5
+F-0325,'hola buenas quisiera un favor',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0326,'ok gracias hasta luego',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0327,'le agradezco mucho la ayuda',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,no,5
+F-0328,'muy amable que tenga buena tarde',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,no,6
+F-0329,'buenas tardes senor necesito ayuda',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0330,'hola me puede colaborar con algo',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,si,6
+F-0331,'gracias por la informacion',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0332,'bueno listo nos hablamos despues',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0333,'hola buenas esta el asistente disponible ahorita',saludo_despedida,no,no,si,no,no,si,ninguna,ninguno,no,no,si,7
+F-0334,'vale gracias por todo',saludo_despedida,no,si,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0335,'un gusto saludarlo',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,no,3
+F-0336,'hasta la proxima entonces',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0337,'ok perfecto hasta manana',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0338,'buenas disculpe la molestia',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0339,'gracias que este muy bien',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0340,'hola buenos dias tengo una consulta',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,6
+F-0341,'estamos en contacto gracias',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0342,'hola alguien me puede ayudar porfa',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,6
+F-0343,'le agradezco la paciencia',saludo_despedida,no,no,no,no,no,no,ninguna,ninguno,no,no,no,4
+F-0344,'feliz dia gracias por todo',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0345,'buenas tardes un gusto',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,4
+F-0346,'ya con eso quedo gracias',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0347,'hasta luego que este bien',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0348,'buenas hay alguien que me pueda atender',saludo_despedida,no,no,si,no,no,si,ninguna,ninguno,no,no,si,7
+F-0349,'muchas gracias eso era todo por hoy',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,7
+F-0350,'hola buen dia para todos',saludo_despedida,no,no,no,no,no,si,ninguna,ninguno,no,no,no,5
+F-0351,'y para un mazda 3 2020',recomendar_sustituto,no,no,no,no,no,no,mazda,ninguno,si,si,no,6
+F-0352,'ok y ese mismo pero para un kia rio',recomendar_sustituto,no,no,no,no,no,si,kia,ninguno,no,no,si,9
+F-0353,'tambien para una hilux diesel',recomendar_sustituto,no,no,no,no,no,no,ninguna,ninguno,si,no,no,5
+F-0354,'y si es para un renault duster',recomendar_sustituto,no,no,no,no,no,no,renault,ninguno,si,no,si,7
+F-0355,'y ese otro que me recomienda para el spark',recomendar_sustituto,no,no,no,no,si,no,ninguna,ninguno,si,no,no,9
+F-0356,'listo y para la version automatica',recomendar_sustituto,no,no,no,no,no,si,ninguna,ninguno,no,no,si,6
+F-0357,'y para un sentra 2019',buscar_repuesto,no,no,no,no,no,no,otra_marca,ninguno,si,si,no,5
+F-0358,'y para el modelo anterior',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,no,no,si,5
+F-0359,'tambien lo necesito para un kia picanto',buscar_repuesto,no,no,no,no,no,no,kia,ninguno,si,no,no,7
+F-0360,'y en otra marca lo manejan',buscar_repuesto,no,no,no,no,si,no,ninguna,ninguno,no,no,si,6
+F-0361,'y ese mismo pero para camioneta',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,no,no,no,6
+F-0362,'tienen tambien para el 2021',buscar_repuesto,no,no,no,no,no,no,ninguna,ninguno,no,si,si,5
+F-0363,'y ese cuanto vale',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,4
+F-0364,'y el otro precio',consultar_precio,no,si,no,no,si,no,ninguna,ninguno,no,no,si,4
+F-0365,'y para el modelo automatico cuanto sale',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0366,'listo y ese otro a como esta',consultar_precio,no,no,no,no,si,si,ninguna,ninguno,no,no,si,7
+F-0367,'y si lo llevo original cuanto sube',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,7
+F-0368,'y con instalacion incluida cuanto seria',consultar_precio,no,si,no,no,no,no,ninguna,ninguno,no,no,si,6
+F-0369,'y de ese cuantos quedan',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,5
+F-0370,'y stock del otro',consultar_stock,no,no,si,no,si,no,ninguna,ninguno,no,no,si,4
+F-0371,'y para el modelo 2021 hay',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,si,si,6
+F-0372,'y en la otra marca cuantas hay',consultar_stock,no,no,si,no,si,no,ninguna,ninguno,no,no,si,7
+F-0373,'todavia queda de ese mismo',consultar_stock,no,no,si,no,no,no,ninguna,ninguno,no,no,si,5
+F-0374,'y cuantas unidades del otro codigo',consultar_stock,no,no,si,no,si,no,ninguna,ninguno,no,no,si,6

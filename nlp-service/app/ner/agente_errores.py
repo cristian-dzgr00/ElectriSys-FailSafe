@@ -29,7 +29,7 @@ import threading
 import time
 from pathlib import Path
 
-from app.ner import extractor
+from app.ner import extractor, repositorio_oracle
 from app.ner.generador_errores import (
     COLUMNAS,
     COLUMNAS_AVISOS,
@@ -127,11 +127,16 @@ def _tabla_para_extractor(filas: dict) -> dict:
 
 
 def _cargar_estado() -> dict:
-    """Estado en memoria a partir del CSV (se lee una sola vez)."""
+    """Estado en memoria desde Oracle (si está configurado) o, si no, del CSV.
+
+    Se lee una sola vez. El CSV es el respaldo: si Oracle no responde o su
+    tabla está vacía, el servicio sigue funcionando igual que antes.
+    """
     global _estado
     if _estado is None:
-        filas = {f["error"]: f for f in _leer_csv(RUTA_TABLA) if f.get("tipo") in TIPOS and f.get("error")}
-        avisos = _leer_csv(RUTA_AVISOS)
+        desde_oracle = repositorio_oracle.leer()
+        filas_leidas, avisos = desde_oracle if desde_oracle else (_leer_csv(RUTA_TABLA), _leer_csv(RUTA_AVISOS))
+        filas = {f["error"]: f for f in filas_leidas if f.get("tipo") in TIPOS and f.get("error")}
         nombres = {(f["tipo"], normalizar(f["correcto"])): f["correcto"] for f in filas.values()}
         _estado = {"filas": filas, "avisos": avisos, "nombres": nombres}
     return _estado
@@ -144,6 +149,7 @@ def _bloqueadas(estado: dict) -> set[str]:
 def _guardar_y_publicar(estado: dict) -> None:
     _escribir_csv_atomico(RUTA_TABLA, COLUMNAS, _ordenar(estado["filas"].values()))
     _escribir_csv_atomico(RUTA_AVISOS, COLUMNAS_AVISOS, estado["avisos"])
+    repositorio_oracle.guardar(_ordenar(estado["filas"].values()), estado["avisos"])
     extractor.reemplazar_tabla_errores(_tabla_para_extractor(estado["filas"]))
 
 

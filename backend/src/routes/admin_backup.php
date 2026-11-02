@@ -10,14 +10,15 @@ use App\patterns\observer\AuditLogObserver;
  *
  * Se registra en el grupo que ya lleva VpnMiddleware + JwtMiddleware (el
  * mismo que usuarios y auditoría): los respaldos contienen TODA la base —
- * clientes, ventas, hashes de contraseñas— así que no deben ser alcanzables
- * desde internet aunque alguien tenga un JWT válido. Encima va
+ * clientes, ventas, hashes de contraseñas— así que disparar uno o exportar
+ * datos solo es posible desde la VPN. Fuera de la VPN, VpnMiddleware deja
+ * pasar únicamente el listado (GET /admin/backups). Encima va
  * RoleMiddleware(['admin','dueno']) por ruta.
  *
- * El backup automático nocturno NO pasa por acá (lo hace el servicio
- * oracle-backup de docker/docker-compose.backup.yml). Estos endpoints son
- * para ver qué respaldos hay y disparar uno manual antes de una operación
- * riesgosa.
+ * Los respaldos automáticos los hace Oracle Autonomous Database (60 días,
+ * visibles en la consola de Oracle Cloud). Estos endpoints sirven para ver
+ * los exports de Data Pump que hay y disparar uno manual antes de una
+ * operación riesgosa.
  */
 
 /** Carpeta donde Data Pump escribe los dumps, vista desde el backend. */
@@ -26,21 +27,79 @@ function backupPath(): string
     return rtrim($_ENV['BACKUP_PATH'] ?? '/opt/oracle/backups/electrisys', '/\\');
 }
 
+/** Formatea un tamaño en bytes igual que el listado del volumen local. */
+function tamanoLegible(int $bytes): string
+{
+    return $bytes >= 1048576
+        ? round($bytes / 1048576, 1) . ' MB'
+        : max(1, (int) round($bytes / 1024)) . ' KB';
+}
+
+/**
+ * Lista los .dmp del directorio Oracle ELECTRISYS_BACKUP_DIR con
+ * DBMS_CLOUD.LIST_FILES. Es lo que se usa cuando el backend no tiene la
+ * carpeta de respaldos montada (Autonomous Database: los archivos viven en el
+ * servidor de la base, no en este contenedor). Requiere
+ * oracle/backup/12_listado_backups_cloud.sql (GRANT EXECUTE ON DBMS_CLOUD).
+ *
+ * @return array<int,array<string,mixed>>
+ */
+function listarBackupsOracle(): array
+{
+    $db = Database::getConnection();
+    $filas = $db->query(
+        "SELECT object_name, bytes, "
+        . "TO_CHAR(SYS_EXTRACT_UTC(last_modified), 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS last_modified "
+        . "FROM DBMS_CLOUD.LIST_FILES('ELECTRISYS_BACKUP_DIR')"
+    )->fetchAll();
+
+    $backups = [];
+    foreach ($filas as $fila) {
+        $nombre = (string) ($fila['object_name'] ?? '');
+        if (!preg_match('/\.dmp$/i', $nombre)) {
+            continue;
+        }
+        $bytes = (int) ($fila['bytes'] ?? 0);
+        $ts    = strtotime((string) ($fila['last_modified'] ?? ''));
+        $backups[] = [
+            'archivo' => $nombre,
+            'bytes'   => $bytes,
+            'tamano'  => tamanoLegible($bytes),
+            'fecha'   => date('c', $ts !== false ? $ts : 0),
+        ];
+    }
+    return $backups;
+}
+
 // GET /api/admin/backups — respaldos disponibles
 $group->get('/admin/backups', function (Request $req, Response $res) {
     $path = backupPath();
 
-    // El volumen se monta de solo lectura en el backend; si el despliegue
-    // todavía no lo montó, se responde 200 con accesible=false en vez de un
-    // error: la vista tiene que poder decir "no veo la carpeta" y seguir
-    // ofreciendo el botón de respaldo manual, que no depende del montaje.
+    // Sin la carpeta montada (caso de Autonomous Database) se lista el
+    // directorio Oracle por SQL. Si eso falla (p. ej. falta el GRANT sobre
+    // DBMS_CLOUD) se responde 200 con lista vacía y un mensaje neutro: la
+    // vista tiene que seguir ofreciendo el botón de respaldo manual, que no
+    // depende del listado.
     if (!is_dir($path) || !is_readable($path)) {
-        $res->getBody()->write(json_encode([
-            'data'      => [],
-            'accesible' => false,
-            'ruta'      => $path,
-            'mensaje'   => 'El volumen de respaldos no está montado en este backend.',
-        ]));
+        $backups = [];
+        $mensaje = null;
+        try {
+            $backups = listarBackupsOracle();
+            usort($backups, fn($a, $b) => strcmp($b['fecha'], $a['fecha']));
+        } catch (\Throwable $e) {
+            error_log('[ElectriSys][Backup] No se pudo listar ELECTRISYS_BACKUP_DIR: ' . $e->getMessage());
+            $mensaje = 'No se pudo leer el listado de respaldos de la base.';
+        }
+
+        $payload = [
+            'data'      => $backups,
+            'accesible' => $mensaje === null,
+            'ruta'      => 'ELECTRISYS_BACKUP_DIR',
+        ];
+        if ($mensaje !== null) {
+            $payload['mensaje'] = $mensaje;
+        }
+        $res->getBody()->write(json_encode($payload));
         return $res->withHeader('Content-Type', 'application/json');
     }
 
@@ -56,9 +115,7 @@ $group->get('/admin/backups', function (Request $req, Response $res) {
         $backups[] = [
             'archivo'  => $archivo,
             'bytes'    => $bytes,
-            'tamano'   => $bytes >= 1048576
-                ? round($bytes / 1048576, 1) . ' MB'
-                : max(1, (int) round($bytes / 1024)) . ' KB',
+            'tamano'   => tamanoLegible($bytes),
             'fecha'    => date('c', (int) @filemtime($completo)),
         ];
     }

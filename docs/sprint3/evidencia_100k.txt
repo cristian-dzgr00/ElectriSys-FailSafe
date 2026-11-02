@@ -1,0 +1,289 @@
+=== 1. Generando 100 000 ventas sintéticas (trg_detven_descuenta_stock desactivado) ===
+
+Trigger altered.
+
+Elapsed: 00:00:00.00
+
+100000 rows created.
+
+Elapsed: 00:00:03.92
+
+100000 rows created.
+
+Elapsed: 00:00:01.49
+
+Commit complete.
+
+Elapsed: 00:00:00.00
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:09.07
+
+TOTAL_VENTAS                                                                                                                                                                                            
+------------                                                                                                                                                                                            
+      100000                                                                                                                                                                                            
+
+1 row selected.
+
+Elapsed: 00:00:00.01
+=== 2. Consulta A: ventas de un cliente ===
+--- SIN índice (FULL)
+
+Explained.
+
+Elapsed: 00:00:00.01
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1286778760                                                                                                                                                                             
+                                                                                                                                                                                                        
+----------------------------------------------------------------------------                                                                                                                            
+| Id  | Operation         | Name   | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                                            
+----------------------------------------------------------------------------                                                                                                                            
+|   0 | SELECT STATEMENT  |        |     1 |    68 |   298   (9)| 00:00:01 |                                                                                                                            
+|*  1 |  TABLE ACCESS FULL| VENTAS |     1 |    68 |   298   (9)| 00:00:01 |                                                                                                                            
+----------------------------------------------------------------------------                                                                                                                            
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - filter("CLIENTE_ID"=5)                                                                                                                                                                           
+
+13 rows selected.
+
+Elapsed: 00:00:00.33
+--- CON índice idx_ventas_cliente
+
+Explained.
+
+Elapsed: 00:00:00.00
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2286334625                                                                                                                                                                             
+                                                                                                                                                                                                        
+----------------------------------------------------------------------------------------------------------                                                                                              
+| Id  | Operation                           | Name               | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                              
+----------------------------------------------------------------------------------------------------------                                                                                              
+|   0 | SELECT STATEMENT                    |                    |     1 |    68 |     2   (0)| 00:00:01 |                                                                                              
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| VENTAS             |     1 |    68 |     2   (0)| 00:00:01 |                                                                                              
+|*  2 |   INDEX RANGE SCAN                  | IDX_VENTAS_CLIENTE |     1 |       |     1   (0)| 00:00:01 |                                                                                              
+----------------------------------------------------------------------------------------------------------                                                                                              
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   2 - access("CLIENTE_ID"=5)                                                                                                                                                                           
+
+14 rows selected.
+
+Elapsed: 00:00:00.10
+=== 3. Consulta B: ventas de los últimos 7 días ===
+--- SIN índice
+
+Explained.
+
+Elapsed: 00:00:00.01
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1286778760                                                                                                                                                                             
+                                                                                                                                                                                                        
+----------------------------------------------------------------------------                                                                                                                            
+| Id  | Operation         | Name   | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                                            
+----------------------------------------------------------------------------                                                                                                                            
+|   0 | SELECT STATEMENT  |        |   960 | 65280 |   435  (38)| 00:00:01 |                                                                                                                            
+|*  1 |  TABLE ACCESS FULL| VENTAS |   960 | 65280 |   435  (38)| 00:00:01 |                                                                                                                            
+----------------------------------------------------------------------------                                                                                                                            
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - filter("CREADO_EN">=SYSTIMESTAMP(6)-7)                                                                                                                                                           
+
+13 rows selected.
+
+Elapsed: 00:00:00.08
+--- CON índice idx_ventas_fecha
+
+Explained.
+
+Elapsed: 00:00:00.01
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2722717900                                                                                                                                                                             
+                                                                                                                                                                                                        
+--------------------------------------------------------------------------------------------------------                                                                                                
+| Id  | Operation                           | Name             | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                
+--------------------------------------------------------------------------------------------------------                                                                                                
+|   0 | SELECT STATEMENT                    |                  |   960 | 65280 |   970   (1)| 00:00:01 |                                                                                                
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| VENTAS           |   960 | 65280 |   970   (1)| 00:00:01 |                                                                                                
+|*  2 |   INDEX RANGE SCAN                  | IDX_VENTAS_FECHA |   960 |       |     5   (0)| 00:00:01 |                                                                                                
+--------------------------------------------------------------------------------------------------------                                                                                                
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   2 - access("CREADO_EN">=SYSTIMESTAMP(6)-7)                                                                                                                                                           
+
+14 rows selected.
+
+Elapsed: 00:00:00.08
+=== 4. Consulta C: detalle de una venta ===
+--- SIN índice
+
+Explained.
+
+Elapsed: 00:00:00.01
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2459313694                                                                                                                                                                             
+                                                                                                                                                                                                        
+------------------------------------------------------------------------------------                                                                                                                    
+| Id  | Operation         | Name           | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                                    
+------------------------------------------------------------------------------------                                                                                                                    
+|   0 | SELECT STATEMENT  |                |     1 |    24 |   157  (14)| 00:00:01 |                                                                                                                    
+|*  1 |  TABLE ACCESS FULL| DETALLE_VENTAS |     1 |    24 |   157  (14)| 00:00:01 |                                                                                                                    
+------------------------------------------------------------------------------------                                                                                                                    
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - filter("VENTA_ID"=100)                                                                                                                                                                           
+
+13 rows selected.
+
+Elapsed: 00:00:00.08
+--- CON índice idx_detven_venta_repuesto
+
+Explained.
+
+Elapsed: 00:00:00.01
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1239980383                                                                                                                                                                             
+                                                                                                                                                                                                        
+-----------------------------------------------------------------------------------------------------------------                                                                                       
+| Id  | Operation                           | Name                      | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                       
+-----------------------------------------------------------------------------------------------------------------                                                                                       
+|   0 | SELECT STATEMENT                    |                           |     1 |    24 |     3   (0)| 00:00:01 |                                                                                       
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| DETALLE_VENTAS            |     1 |    24 |     3   (0)| 00:00:01 |                                                                                       
+|*  2 |   INDEX RANGE SCAN                  | IDX_DETVEN_VENTA_REPUESTO |     1 |       |     2   (0)| 00:00:01 |                                                                                       
+-----------------------------------------------------------------------------------------------------------------                                                                                       
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   2 - access("VENTA_ID"=100)                                                                                                                                                                           
+
+14 rows selected.
+
+Elapsed: 00:00:00.08
+=== 5. Consulta D: búsqueda en posibles_errores (el índice único cubre tipo,error) ===
+--- SIN índice
+
+Explained.
+
+Elapsed: 00:00:00.09
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2410586753                                                                                                                                                                             
+                                                                                                                                                                                                        
+--------------------------------------------------------------------------------------                                                                                                                  
+| Id  | Operation         | Name             | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                                                  
+--------------------------------------------------------------------------------------                                                                                                                  
+|   0 | SELECT STATEMENT  |                  |     1 |    28 |   184   (8)| 00:00:01 |                                                                                                                  
+|*  1 |  TABLE ACCESS FULL| POSIBLES_ERRORES |     1 |    28 |   184   (8)| 00:00:01 |                                                                                                                  
+--------------------------------------------------------------------------------------                                                                                                                  
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   1 - filter("ERROR"='toyta' AND "TIPO"='marca')                                                                                                                                                       
+
+13 rows selected.
+
+Elapsed: 00:00:00.09
+--- CON índice
+
+Explained.
+
+Elapsed: 00:00:00.11
+
+PLAN_TABLE_OUTPUT                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 4249978868                                                                                                                                                                             
+                                                                                                                                                                                                        
+---------------------------------------------------------------------------------------------------------                                                                                               
+| Id  | Operation                           | Name              | Rows  | Bytes | Cost (%CPU)| Time     |                                                                                               
+---------------------------------------------------------------------------------------------------------                                                                                               
+|   0 | SELECT STATEMENT                    |                   |     1 |    28 |     2   (0)| 00:00:01 |                                                                                               
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| POSIBLES_ERRORES  |     1 |    28 |     2   (0)| 00:00:01 |                                                                                               
+|*  2 |   INDEX RANGE SCAN                  | IDX_PE_TIPO_ERROR |     1 |       |     1   (0)| 00:00:01 |                                                                                               
+---------------------------------------------------------------------------------------------------------                                                                                               
+                                                                                                                                                                                                        
+Predicate Information (identified by operation id):                                                                                                                                                     
+---------------------------------------------------                                                                                                                                                     
+                                                                                                                                                                                                        
+   2 - access("TIPO"='marca' AND "ERROR"='toyta')                                                                                                                                                       
+
+14 rows selected.
+
+Elapsed: 00:00:00.05
+=== 6. Tiempo real de la consulta A (Autotrace no requerido) ===
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+
+  COUNT(*)                                                                                                                                                                                              
+----------                                                                                                                                                                                              
+         0                                                                                                                                                                                              
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+Centésimas con FULL: 0                                                                                                                                                                                  
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.01
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+
+  COUNT(*)                                                                                                                                                                                              
+----------                                                                                                                                                                                              
+         0                                                                                                                                                                                              
+
+1 row selected.
+
+Elapsed: 00:00:00.00
+Centésimas con índice: 2                                                                                                                                                                                
+
+PL/SQL procedure successfully completed.
+
+Elapsed: 00:00:00.00
+=== 7. Limpieza del volumen sintético ===
+
+100000 rows deleted.
+
+Elapsed: 00:00:03.24
+
+100000 rows deleted.
+
+Elapsed: 00:00:06.02
+
+Commit complete.
+
+Elapsed: 00:00:00.00
+
+Trigger altered.
+
+Elapsed: 00:00:00.01

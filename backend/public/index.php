@@ -69,7 +69,8 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     require __DIR__ . '/../src/routes/health.php';
 });
 
-// ── Rutas admin: JWT + VPN requeridos ─────────────────────────
+// ── Rutas admin: JWT siempre; VPN para todo salvo la lectura de los
+//    listados de usuarios, respaldos y auditoría (ver VpnMiddleware) ──────
 $app->group('/api', function (RouteCollectorProxy $group) {
     require __DIR__ . '/../src/routes/usuarios.php';
     require __DIR__ . '/../src/routes/auditlog.php';
@@ -81,6 +82,7 @@ $app->group('/api', function (RouteCollectorProxy $group) {
 // ── Rutas protegidas: JWT únicamente ──────────────────────────
 $app->group('/api', function (RouteCollectorProxy $group) {
     require __DIR__ . '/../src/routes/auth_protected.php';
+    require __DIR__ . '/../src/routes/vpn_estado.php';
     require __DIR__ . '/../src/routes/ventas.php';
     require __DIR__ . '/../src/routes/vehiculos.php';
     require __DIR__ . '/../src/routes/repuestos.php';

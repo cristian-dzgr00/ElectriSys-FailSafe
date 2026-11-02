@@ -1,0 +1,42 @@
+# ============================================================
+# ElectriSys POS — VM "nlp" de Oracle Cloud (E2.1.Micro, 1 GB)
+#
+# Corre SOLO el microservicio NLP, en un archivo independiente (no se combina
+# con docker-compose.yml). Uso en la VM:
+#   docker compose -f docker-compose.nlp.yml up -d --no-build
+#
+# El backend (VM web) lo llama por la IP privada, y el NLP llama de vuelta al
+# puerto 8081 interno de nginx en la VM web.
+#
+# Variables (docker/.env): BACKEND_URL (http://<IP privada web>:8081),
+# NLP_BIND_IP (IP privada de esta VM), JWT_SECRET y NLP_INTERNAL_KEY (los
+# mismos valores que usa la VM web).
+# ============================================================
+
+services:
+
+  nlp-service:
+    build:
+      context: ../nlp-service
+      dockerfile: Dockerfile
+    image: electrisys/nlp:oracle
+    container_name: es_nlp_service
+    restart: unless-stopped
+    environment:
+      BACKEND_URL:      "${BACKEND_URL:?falta BACKEND_URL en docker/.env}"
+      JWT_SECRET:       "${JWT_SECRET:?falta JWT_SECRET en docker/.env}"
+      NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta NLP_INTERNAL_KEY en docker/.env}"
+    ports:
+      # Solo la IP privada: el NLP nunca se expone a internet.
+      - "${NLP_BIND_IP:?falta NLP_BIND_IP en docker/.env}:8000:8000"
+    volumes:
+      - nlp_errores:/app/data/errores
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  nlp_errores:

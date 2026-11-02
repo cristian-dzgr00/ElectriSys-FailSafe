@@ -1,10 +1,9 @@
 // frontend/src/services/backupsService.js
 // Respaldos de la base (Oracle Data Pump).
 //
-// Estos endpoints están detrás de la VPN además del JWT (ver
-// backend/public/index.php): desde fuera de la red WireGuard responden 403
-// aunque la sesión sea válida. La vista lo explica en pantalla para que un
-// 403 acá no se confunda con "no tienes permiso".
+// El listado solo necesita JWT. Crear un respaldo y exportar el CSV además
+// exigen VPN (ver VpnMiddleware): fuera de la VPN responden 403 con
+// code 'VPN_REQUIRED', que la vista traduce en el aviso de VPN.
 
 import api from './api';
 

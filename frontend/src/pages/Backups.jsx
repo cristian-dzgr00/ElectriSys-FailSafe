@@ -5,40 +5,44 @@
 // coinciden: Auditoría es solo del dueño, y los respaldos los manejan
 // admin y dueño. Ver App.jsx.
 //
+// El listado se ve sin VPN (con sesión válida); "Respaldar ahora" y la
+// descarga del CSV exigen VPN: antes de ejecutarlas se muestra el aviso de
+// VpnRequiredModal (ver context/VpnContext.jsx).
+//
 // El .dmp en sí NO se descarga ni se borra a propósito: contiene la base
 // entera (incluidos los hashes de contraseñas), así que sale del servidor
-// solo por SSH y de forma deliberada, nunca por el navegador. Lo que sí se
+// solo de forma deliberada, nunca por el navegador. Lo que sí se
 // puede bajar desde acá es un .zip con un .csv por tabla de negocio (sin
 // la columna password ni login_attempts) — ver GET /admin/backups/exportar-csv
 // en admin_backup.php. Por eso el nombre del archivo en la tabla es un
 // botón: dispara esa exportación, no una descarga del .dmp real.
 
 import { useCallback, useEffect, useState } from 'react';
-import { DatabaseBackup, Download, RefreshCw, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { DatabaseBackup, Download, RefreshCw, ShieldCheck, AlertTriangle, Info } from 'lucide-react';
 import Table from '../components/Table';
 import { useToastContext } from '../context/ToastContext';
+import { useVpn } from '../context/VpnContext';
 import { backupsService } from '../services/backupsService';
 
 const fmtFechaHora = v => (v ? new Date(v).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' }) : '—');
 
 export default function Backups() {
   const toast = useToastContext();
+  const { exigirVpn, manejarErrorVpn } = useVpn();
 
   const [data,      setData]      = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [creando,   setCreando]   = useState(false);
   const [exportando, setExportando] = useState(false);
-  const [accesible, setAccesible] = useState(true);
-  const [ruta,      setRuta]      = useState('');
-  const [sinAcceso, setSinAcceso] = useState(false);   // 403: fuera de la VPN
+  const [mensaje,   setMensaje]   = useState('');
+  const [sinAcceso, setSinAcceso] = useState(false);   // 403: el rol no puede ver los respaldos
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const r = await backupsService.listar();
       setData(r.data.data ?? []);
-      setAccesible(r.data.accesible !== false);
-      setRuta(r.data.ruta ?? '');
+      setMensaje(r.data.mensaje ?? '');
       setSinAcceso(false);
     } catch (e) {
       if (e.response?.status === 403) setSinAcceso(true);
@@ -52,6 +56,7 @@ export default function Backups() {
 
   const respaldarAhora = async () => {
     if (creando) return;
+    if (!exigirVpn()) return;
     setCreando(true);
     try {
       const r = await backupsService.crear();
@@ -62,12 +67,9 @@ export default function Backups() {
       // queda el botón "Actualizar".
       setTimeout(load, 3000);
     } catch (e) {
-      toast(
-        e.response?.status === 403
-          ? 'Necesitas estar conectado a la VPN para disparar un respaldo'
-          : (e.response?.data?.error || 'No se pudo iniciar el respaldo'),
-        { type: 'error' },
-      );
+      if (!(await manejarErrorVpn(e))) {
+        toast(e.response?.data?.error || 'No se pudo iniciar el respaldo', { type: 'error' });
+      }
     } finally {
       setCreando(false);
     }
@@ -79,6 +81,7 @@ export default function Backups() {
   // se clickeó, porque las filas viejas no tienen un CSV propio guardado.
   const exportarDatos = async () => {
     if (exportando) return;
+    if (!exigirVpn()) return;
     setExportando(true);
     try {
       const r = await backupsService.exportarCsv();
@@ -93,12 +96,9 @@ export default function Backups() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (e) {
-      toast(
-        e.response?.status === 403
-          ? 'Necesitas estar conectado a la VPN para exportar los datos'
-          : 'No se pudo generar el archivo de exportación',
-        { type: 'error' },
-      );
+      if (!(await manejarErrorVpn(e))) {
+        toast('No se pudo generar el archivo de exportación', { type: 'error' });
+      }
     } finally {
       setExportando(false);
     }
@@ -130,7 +130,7 @@ export default function Backups() {
         <div>
           <div className="page-title">Respaldos</div>
           <div className="page-subtitle">
-            {sinAcceso ? 'Acceso restringido' : `${data.length} respaldo(s) disponibles`}
+            {sinAcceso ? 'Sin permiso' : `${data.length} respaldo(s) disponibles`}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -146,17 +146,14 @@ export default function Backups() {
       {sinAcceso && (
         <div className="alert alert-error" style={{ marginBottom: 16 }}>
           <AlertTriangle size={15} style={{ verticalAlign: -2, marginRight: 6 }} />
-          Esta sección solo es accesible desde la VPN del negocio. Conéctate a WireGuard
-          y vuelve a intentarlo.
+          No tienes permiso para ver los respaldos.
         </div>
       )}
 
-      {!sinAcceso && !accesible && (
-        <div className="alert alert-error" style={{ marginBottom: 16 }}>
-          <AlertTriangle size={15} style={{ verticalAlign: -2, marginRight: 6 }} />
-          El volumen de respaldos no está montado en este backend, así que no se pueden
-          listar los archivos. El respaldo automático nocturno puede estar funcionando
-          igual — revísalo con <code>docker compose logs oracle-backup</code>.
+      {!sinAcceso && mensaje && (
+        <div className="card" style={{ marginBottom: 16, fontSize: 12, color: 'var(--text-secondary)' }}>
+          <Info size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
+          {mensaje}
         </div>
       )}
 
@@ -167,19 +164,20 @@ export default function Backups() {
               <ShieldCheck size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
               Cómo funciona
             </div>
-            El respaldo automático corre todas las noches a las 2:00 y conserva los últimos
-            14 días. "Respaldar ahora" dispara uno extra — hazlo antes de una operación
-            riesgosa (una carga masiva, un cambio de precios en bloque).
-            {ruta && <> Los archivos quedan en <code>{ruta}</code>, dentro del servidor.</>}
+            La base de datos es una Oracle Autonomous Database en Oracle Cloud, que hace
+            respaldos automáticos y los conserva 60 días (se ven en la consola de Oracle Cloud).
+            "Respaldar ahora" crea un respaldo extra con Data Pump (archivos <code>.dmp</code> y{' '}
+            <code>.log</code>) en el directorio de respaldos del servidor de la base,{' '}
+            <code>ELECTRISYS_BACKUP_DIR</code> — hazlo antes de una operación riesgosa (una
+            carga masiva, un cambio de precios en bloque).
             <br />
-            Para <strong>restaurar</strong> un respaldo hace falta entrar por SSH: el
-            procedimiento paso a paso está en <code>oracle/backup/restaurar_logico.sh</code>.
-            No se hace desde acá porque una restauración reemplaza los datos actuales.
+            Para <strong>restaurar</strong> un respaldo hace falta acceso al administrador de la
+            base de datos: no se hace desde esta pantalla porque una restauración reemplaza los
+            datos actuales.
             <br />
             Haciendo clic en el nombre del archivo se descarga un <strong>.zip con los datos
             actuales en CSV</strong> (uno por tabla) para revisarlos en Excel — no es el .dmp
-            real: ese contiene los hashes de contraseñas y nunca sale del servidor por el
-            navegador.
+            real: ese contiene los hashes de contraseñas y nunca sale del servidor.
           </div>
 
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>

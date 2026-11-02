@@ -5,6 +5,7 @@ import { StatusBadge } from '../components/Tooltip';
 import { useToastContext } from '../context/ToastContext';
 import { usuariosService } from '../services/ventasService';
 import { useAuth } from '../context/AuthContext';
+import { useVpn } from '../context/VpnContext';
 
 const EMPTY = { nombre:'', email:'', password:'', rol:'vendedor', activo:1 };
 const rolBadge = r => ({ admin:'badge-accent', dueno:'badge-warning', vendedor:'badge-neutral' }[r]||'badge-neutral');
@@ -13,6 +14,7 @@ const rolLabel = r => ({ admin:'Administrador', dueno:'Dueño', vendedor:'Vended
 export default function Usuarios() {
   const toast = useToastContext();
   const { user: me } = useAuth();
+  const { exigirVpn, manejarErrorVpn } = useVpn();
 
   const [data,       setData]       = useState([]);
   const [loading,    setLoading]    = useState(true);
@@ -34,8 +36,9 @@ export default function Usuarios() {
 
   useEffect(() => { load(); }, []);
 
-  const openNew  = () => { setForm(EMPTY); setEditing(null); setError(''); setModal(true); };
-  const openEdit = r => { setForm({...r, password:''}); setEditing(r.id); setError(''); setModal(true); };
+  // Crear, editar y desactivar exigen VPN: se avisa antes de abrir el formulario.
+  const openNew  = () => { if (!exigirVpn()) return; setForm(EMPTY); setEditing(null); setError(''); setModal(true); };
+  const openEdit = r => { if (!exigirVpn()) return; setForm({...r, password:''}); setEditing(r.id); setError(''); setModal(true); };
   const close    = () => { setModal(false); setError(''); };
 
   const save = async () => {
@@ -55,6 +58,7 @@ export default function Usuarios() {
       }
       close(); load();
     } catch(e) {
+      if (await manejarErrorVpn(e)) { close(); return; }
       setError(e.response?.data?.error || 'Error al guardar el usuario');
     } finally { setSaving(false); }
   };
@@ -68,6 +72,7 @@ export default function Usuarios() {
   );
 
   const del = async (id, nombre) => {
+    if (!exigirVpn()) return;
     if (id === me?.id) { toast('No puedes desactivarte a ti mismo', { type:'warning' }); return; }
     const ok = await askConfirm(`¿Desactivar al usuario "${nombre}"? No podrá ingresar al sistema.`);
     if (!ok) return;
@@ -75,7 +80,10 @@ export default function Usuarios() {
       await usuariosService.eliminar(id);
       load();
       toast(`Usuario "${nombre}" desactivado`, { type:'warning' });
-    } catch { toast('No se pudo desactivar el usuario', { type:'error' }); }
+    } catch (e) {
+      if (await manejarErrorVpn(e)) return;
+      toast('No se pudo desactivar el usuario', { type:'error' });
+    }
   };
 
   const f = (k,v) => setForm(p => ({...p, [k]:v}));
