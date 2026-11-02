@@ -38,8 +38,15 @@ Incluye: puntos 1, 2 y 3 del análisis previo.
 - Suite de pruebas del NLP y del backend en verde; el CI de GitHub en verde.
 - Las funciones prometidas visibles en el sitio y probadas en el navegador.
 
-## Progreso
-- 2026-11-02: plan creado, rama creada.
+## Progreso (estado final, 2026-11-02)
+- [x] IA-1 Modelo: LR C=15 conservada (la capa oculta MLP quedó ~2 puntos de F1 peor en CV normal y agrupada, 30-100 veces más lenta), marcador `<vehiculo>` (+0,01 F1, p≈0,02), umbral 0,40 elegido por CV, tests ya no pisan el modelo, `eval/generar_cifras.py` produce `eval/cifras_vigentes.json` (fuente única).
+- [x] IA-2 Conjuntos congelados (huellas en `eval/CONGELADO.txt`, comprobadas intactas) y "después" medido una sola vez (NER diagnóstico adicional: 2 veces). Intención 0,802 → 0,912; NER categoría 0,608 → 0,984; recomendador completo P@1 0,537 → 0,927; errores fuera de tabla 0,739 → 0,939. NER `marca` 1,000 → 0,896 por la inferencia de marca (decisión del usuario pendiente).
+- [x] IA-3 Backtests: demanda (iguala al promedio histórico, mejor que ingenuo y promedio de 4 semanas) y asociación (supera al azar; no supera a «más vendidos»). Datos sintéticos de 16 semanas.
+- [x] IA-4 Funciones del sitio: RF-11, RF-12, «¿Quisiste decir…?», aclaración sin marca, respaldo por categoría con aviso, advertencia y enmascarado de datos personales; probadas en navegador salvo el botón «Usar cantidad sugerida» (no apareció para el producto probado).
+- [x] IA-5 Redespliegue en las 2 VMs (tabla de errores nueva en el volumen `nlp_errores`: 109.277 filas). Defectos hallados en producción y corregidos: búsqueda de repuestos sensible a mayúsculas/tildes (Oracle) y registro del asistente roto por la fase 2 de 3FN (`ORA-00904`; ahora 150→152 consultas guardadas, texto enmascarado, feedback OK).
+- Datos: `intents_dataset.csv` 374 → 2.551 frases; tabla de errores 58.833 → 109.277 filas (nada eliminado).
+- Pendiente: criterio C3 (recall `recomendar_sustituto` 0,75 frente a 0,90) no se cumple; C4 cumple sin margen en CV agrupada; informe y presentaciones (fuera de alcance de esta etapa); prueba de uso con vendedores reales; frases reales para el conjunto de prueba; `vitest` en el CI.
+- 2026-11-02 (inicio): plan creado, rama creada.
 
 ## Dudas abiertas para el usuario
 - Frases de vendedores reales para el conjunto de prueba (si no hay, las redacto yo y se declara en el informe que no son reales).
