@@ -78,10 +78,14 @@ class HealthTest extends TestCase
         $this->assertStringContainsString('AsistenteLogObserver', $ruta);
     }
 
-    /** Valida que el .env define las variables del microservicio NLP */
+    /**
+     * Valida que la plantilla .env.example define las variables del microservicio NLP.
+     * Se lee .env.example y no .env: .env está ignorado por git, así que no existe
+     * en CI y el test fallaba allí aunque pasara en un equipo con el archivo local.
+     */
     public function testEnvDefineVariablesNlp(): void
     {
-        $env = file_get_contents(__DIR__ . '/../.env');
+        $env = file_get_contents(__DIR__ . '/../.env.example');
         $this->assertStringContainsString('NLP_SERVICE_URL', $env);
         $this->assertStringContainsString('NLP_INTERNAL_KEY', $env);
     }
