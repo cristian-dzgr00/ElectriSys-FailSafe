@@ -73,6 +73,43 @@ PARES_SEMILLA = {
     "Suzuki": ["Swift"],
 }
 
+# Catálogo actual de la tienda (exportado en eval/datos_demo/{marcas,modelos,categorias}.csv):
+# 14 marcas, 35 modelos y 12 categorías. La tabla data/errores/posibles_errores.csv cubre
+# todos estos nombres (salvo los modelos solo numéricos: ver generador_errores.py). No
+# reemplaza a CATALOGO_SEMILLA, que sigue siendo la foto mínima usada por regenerar_tabla().
+CATALOGO_COMPLETO = {
+    "marca": [
+        "Case IH", "Chevrolet", "Ford", "Hyundai", "John Deere", "Kia", "Massey Ferguson",
+        "Mazda", "New Holland", "Nissan", "Renault", "Suzuki", "Toyota", "Mitsubishi",
+    ],
+    "modelo": [
+        "Farmall 75C", "Puma 165", "Aveo", "Spark", "Spark GT", "Escape", "Fiesta", "Accent",
+        "Tucson", "5075E", "6110M", "Rio", "Sportage", "4707", "6713", "3", "CX-5", "T6.120",
+        "Frontier", "Sentra", "Duster", "Logan", "Swift", "Corolla", "Fortuner", "Hilux",
+        "Onix", "Sail", "Sandero", "Picanto", "L200", "Ranger", "Yaris", "TL90", "290",
+    ],
+    "categoria": [
+        "Filtros", "Frenos", "Baterías", "Suspensión", "Motor", "Transmisión", "Encendido",
+        "Correas y Bandas", "Sistema Eléctrico", "Hidráulica", "Enganches y Acoples", "Neumáticos",
+    ],
+}
+PARES_COMPLETO = {
+    "Case IH": ["Farmall 75C", "Puma 165"],
+    "Chevrolet": ["Aveo", "Spark", "Spark GT", "Onix", "Sail"],
+    "Ford": ["Escape", "Fiesta", "Ranger"],
+    "Hyundai": ["Accent", "Tucson"],
+    "John Deere": ["5075E", "6110M"],
+    "Kia": ["Rio", "Sportage", "Picanto"],
+    "Massey Ferguson": ["4707", "6713", "290"],
+    "Mazda": ["3", "CX-5"],
+    "Mitsubishi": ["L200"],
+    "New Holland": ["T6.120", "TL90"],
+    "Nissan": ["Frontier", "Sentra"],
+    "Renault": ["Duster", "Logan", "Sandero"],
+    "Suzuki": ["Swift"],
+    "Toyota": ["Corolla", "Fortuner", "Hilux", "Yaris"],
+}
+
 _lock = threading.RLock()
 _estado: dict | None = None  # {"filas": {error: fila}, "avisos": [...], "nombres": {(tipo, norm): original}}
 

@@ -1,9 +1,9 @@
 FRASES DEL DATASET POR CATEGORÍA (intención)
 Fuente: nlp-service/data/intents_dataset.csv
-Total: 374 frases en 7 categorías
+Total: 2551 frases en 7 categorías
 ======================================================================
 
-RECOMENDAR_SUSTITUTO  (56 frases)
+RECOMENDAR_SUSTITUTO  (319 frases)
 ----------------------------------------------------------------------
 1. No hay filtro de aceite original de Toyota para una Hilux 2.7 gasolina 2024, ¿qué me recomienda?
 2. Se me acabaron las balatas Brembo para un Mazda 3 2020, ¿hay algo parecido?
@@ -61,8 +61,271 @@ RECOMENDAR_SUSTITUTO  (56 frases)
 54. ¿y si es para un Renault Duster?
 55. y ese otro que me recomienda para el Spark
 56. listo, ¿y para la versión automática?
+57. se acabaron las pastillas de la hilux, que le meto
+58. ya no hay bujias pal spark, algo parecido
+59. sin existencias el filtro del logan, otra marca
+60. agotado el filtro de aceite del sail, alternativa
+61. la bateria del sentra se agotó, que otra le sirve
+62. acabé las pastillas brembo, que le ofrezco al cliente
+63. el cliente no quiere la marca china, otra opcion
+64. muy cara la bateria mac, hay una mas economica
+65. esa pastilla esta muy cara, tiene otra mas barata
+66. el amortiguador monroe sale muy caro, que otro hay
+67. algo mas economico que el original pal onix
+68. una alternativa al filtro k&n pa la fortuner
+69. equivalente del filtro 90915-YZZD4
+70. equivalente a la pastilla BRM-FD204
+71. que equivalente hay de la bujia BKR6E
+72. que reemplaza al HP-1002
+73. con que cambio el M1-110A
+74. cambio el GAT-T295 por cual
+75. en vez de la ngk que otra le sirve al aveo
+76. en lugar de la bosch que le pongo al rio
+77. en vez de brembo cual marca recomienda
+78. en lugar del original, algo generico pal sandero
+79. generico del filtro de aire pal duster
+80. genérico de pastillas pal yaris
+81. hay version generica del alternador pal fiesta
+82. otra marca de bateria pal tractor
+83. otra marca de llantas pal l200
+84. otra marca de aceite que no sea mobil
+85. otra marca de bujias pa el corolla
+86. otra marca de radiador pal sail
+87. otra que le sirva al onix, esa no la hay
+88. otra opción pal kit de embrague del accent
+89. otra opcion de correa pal swift
+90. otro filtro pal picanto, el de siempre no hay
+91. otro disco pal sentra, ese se acabó
+92. otro amortiguador, el monroe ya no llega
+93. dame otro radiador pa la sportage
+94. deme otra batería, esa no hay
+95. me da otra pastilla, la de siempre no hay
+96. algo similar al amortiguador del escape
+97. algo parecido a la bomba de agua bosch
+98. algo semejante a la correa gates
+99. algo que haga el mismo trabajo que el filtro fram
+100. algo que reemplace la bobina del spark gt
+101. algo que sirva en vez del termostato original
+102. algo de menor precio que la bujia iridium
+103. algo que no sea tan caro pa la hilux
+104. que le ofrezco a un cliente que quiere pastillas y no hay
+105. que le vendo a uno que pidio filtro de la frontier y se acabó
+106. que le ofrezco si no hay llantas de esa medida
+107. que le doy si no hay la batería 48D
+108. que le recomiendo si no hay discos pal rio
+109. que le puedo meter al carro en vez del alternador original
+110. que me recomienda ya que no hay aceite 5w30
+111. que le pongo a un aveo sin pastillas
+112. qué más le sirve al logan en lugar del kit de distribución
+113. qué sirve en lugar de la bomba de gasolina del sandero
+114. que mas le sirve a la ranger, el repuesto se agotó
+115. con qué lo reemplazo, ya no llegan los del yaris
+116. con que reemplazo la rotula de la duster
+117. con que lo sustituyo, el original se acabó
+118. cual me recomienda de sustituto pal filtro de combustible
+119. sustituto del relé de 40a
+120. sustituto para el sensor del onix
+121. sustituto de la correa poly v del corolla
+122. reemplazo del radiador de la fortuner
+123. reemplazo de bujias NGK pal accent
+124. reemplazo de la bobina que ya no hay
+125. algun reemplazo pal filtro de cabina del spark
+126. algún sustituto para el disco brembo
+127. alguna alternativa pa la llanta michelin
+128. alguna alternativa de bateria pa el tractor 5075E
+129. alguna alternativa pa el filtro hidraulico john deere
+130. alguna alternativa del disco de embrague massey
+131. hay alternativa pal filtro fleetguard
+132. hay algo parecido a la correa del ventilador john deere
+133. hay algo igual de bueno pero mas barato
+134. hay otro igual al amortiguador trasero monroe
+135. hay otra pastilla que sirva igual pa la hilux
+136. hay otra que le sirva al sail 1.4
+137. hay otro que reemplace el empaque de culata
+138. tiene otro tipo de bujia pal swift
+139. tiene otra clase de filtro pa la sportage
+140. tiene otra batería parecida a la mac 34HI
+141. no hay la N120, tiene otra parecida
+142. no llegó el filtro, mande otro
+143. no llegaron las pastillas del onix, otra cosa
+144. no me llegó el pedido de bujias, otra marca
+145. esa referencia ya no la fabrican, que la reemplaza
+146. descontinuaron el filtro del aveo, que otro sirve
+147. ya salio de linea el repuesto del sail
+148. fuera de catalogo el kit del rio, cual otro le sirve
+149. sin stock el termostato, otro igual
+150. no queda ni una pastilla de brembo, otra marca
+151. cero stock de bujias, que otra hay
+152. la bateria que pidio no hay, ofrezca otra
+153. el que pide el cliente ya no llega, qué le ofrezco
+154. mi proveedor no tiene el filtro, que otro hay
+155. mi proveedor se quedó sin discos, algo parecido
+156. el distribuidor no tiene bujias ngk, qué otra marca
+157. al proveedor se le acabó el radiador, sustituto
+158. no tengo en bodega el amortiguador, que otro le pongo
+159. el repuesto original sale a 3 semanas, hay algo ya
+160. el original demora, algo disponible ya
+161. no esperan el original, que hay disponible
+162. el cliente tiene afán, algo parecido que ya tenga
+163. el cliente quiere algo mas barato que el original
+164. el cliente dice que esta muy caro, otra opcion
+165. el señor no quiere marca original, que mas hay
+166. el cliente prefiere no llevar china, que otra hay
+167. no quiere la usada, hay una nueva parecida
+168. no quiere remanufacturado, otro motor de arranque
+169. el reconstruido no le gusta, otra opcion
+170. sin presupuesto pa el original, alternativa
+171. el presupuesto no alcanza, opcion mas barata
+172. con menos plata que le ofrezco
+173. algo de gama media que reemplace el original
+174. una de gama baja que sirva pal tractor
+175. una de calidad intermedia pa la hilux
+176. una calidad parecida a la bosch pero mas barata
+177. la mejor alternativa a la bujia iridium
+178. cual es la mejor alternativa al aceite mobil 1
+179. cual es el mejor sustituto del filtro k&n
+180. cual remplaza la bomba hidraulica massey
+181. cual otro disco le sirve al tucson
+182. cual otra rotula pal fiesta
+183. cual otro alternador pal sentra
+184. cual otro aceite pal motor diesel
+185. y si no hay la delvac, cual otro aceite
+186. si no hay la michelin que otra llanta
+187. si el original no esta, qué le doy
+188. si se acabó el 5w30, cuál le sirve
+189. si la bateria bosch no esta, cual le sirve al l200
+190. se le puede poner otro filtro al rio
+191. le puedo poner otra marca de pastillas a la ranger
+192. le puedo poner generico al yaris
+193. puedo cambiar esa bujia por otra
+194. puedo reemplazar el filtro por otro parecido
+195. se puede cambiar la correa por otra marca
+196. que otro termostato le puedo poner al logan
+197. que otra bomba de agua se le puede poner al picanto
+198. que otra pastilla se puede usar en la sportage
+199. que otras llantas le puedo ofrecer al cliente
+200. que otro filtro sirve pa reemplazar el fram
+201. que otro disco puede usar un corolla
+202. que otro embrague le sirve al swift
+203. que otra marca de bateria me recomienda pa un duster
+204. que marca de pastillas me recomienda en lugar de brembo
+205. que marca de amortiguador recomienda en vez de monroe
+206. que me recomienda en vez de la correa gates
+207. que me sugiere cuando se acaba el filtro de aceite
+208. que me sugiere pal cliente si no hay bujias ngk
+209. recomiendeme un sustituto pal filtro de aire del logan
+210. recomiendeme otra bateria pal sentra
+211. recomiendeme otra opcion de llantas
+212. sugiera otro filtro pa la fortuner
+213. sugiera otra pastilla del onix
+214. sugiera una alternativa de amortiguador pal escape
+215. ofrezcame algo parecido al alternador de la hilux
+216. ofrezcame una bateria equivalente a la mac 27HI
+217. ofrezcame otra bobina pal yaris
+218. dame un equivalente de la bujia ngk pa el sail
+219. dame un sustituto pal filtro del rio
+220. dame algo similar a la rotula del sandero
+221. dame una alternativa barata pal radiador
+222. dame otra pa ese carro, esa se agotó
+223. muestreme otras opciones, esa no hay
+224. muestreme alternativas de pastillas pal spark gt
+225. enseñeme otra marca de filtros pal aveo
+226. enseñeme algo parecido a la llanta hankook
+227. cámbieme esa pastilla por otra, no hay
+228. cambiemela por una de otra marca
+229. ya no llega la marca de siempre, que otra manejo
+230. la marca que usaba ya no la traen, cual cambio
+231. ya no traen el filtro mann, qué otro uso
+232. ya no hay motor de arranque bosch, otro
+233. se terminó el aceite 15w40 pal tractor, que otro
+234. se terminaron los filtros de aire del tractor, alternativa
+235. se terminó la llanta agricola, otra opcion
+236. se nos fue la bateria del tractor, que otra
+237. se agotó el empaque de culata, que otro le sirve
+238. agotadas las bujias del swift, otras
+239. agotados los amortiguadores, qué otro hay
+240. agotado el liquido de frenos dot 4, otro igual
+241. agotada la correa k060, cual otra le sirve
+242. se acabó el filtro y el cliente no puede esperar
+243. se me acabó la unica pastilla que servía pal l200
+244. se acabó el aceite sintético, qué otro le sirve
+245. no quedan mas bujias, algo igual
+246. no quedan baterias de esa, otra similar
+247. no quedaron discos de ese tipo, otros
+248. no queda de esa medida, otra llanta parecida
+249. no hay 205/55 r16, qué otra medida sirve
+250. no hay de ese amperaje, una de mas amperios sirve
+251. no hay de 120 amperios, puedo darle una de 95
+252. pastillas de la hilux 2017 agotadas, otra marca
+253. no hay pastillas del spark, que mas le sirve
+254. ya no hay filtro pa el logan 2018, uno parecido
+255. sin bujias pal sail, algo igual
+256. sin llantas pa la fortuner, que otra medida
+257. agotó el kit de embrague del yaris, otro
+258. amortiguador del rio 2016 no hay, otra opcion
+259. el alternador del onix se acabó, un sustituto
+260. batería de la ranger se acabó, que le ofrezco
+261. rotula de la sandero no hay, otra cosa
+262. la correa del picanto no esta, algo parecido
+263. discos del accent no hay, que mas le sirve
+264. bomba de agua de la sportage agotada, otra
+265. ya no hay el radiador del swift, alternativa
+266. sin termostato pal corolla, otro que sirva
+267. se acabaron las bujias del aveo 1.6, otras iguales
+268. acabaron los filtros de aceite del escape, otro
+269. la l200 pide pastillas, no hay, que le ofrezco
+270. al tractor 5075E le falta filtro y no hay, otro
+271. pal massey 290 no hay filtro hidraulico, qué otro
+272. no llegó el disco del case farmall, otro
+273. el new holland TL90 necesita bateria, se acabó, otra
+274. para el puma 165 no hay filtro de combustible, alternativa
+275. la T6.120 necesita llanta, no hay, otra
+276. la mac 48D no hay, que otra le sirve al sentra
+277. el filtro w-610/3 se acabó, cual lo reemplaza
+278. la llanta 185/65R15 no esta, que otra le sirve
+279. sin aceite 5w30, qué otro viscosidad le sirve
+280. no hay 10w30, un 10w40 sirve o qué recomienda
+281. el h4 no hay, que otro bombillo
+282. el led h7 se acabó, otro parecido
+283. ya no hay ngk bkr6e, cual la reemplaza
+284. se agotó la ILFR6B, que otra iridium hay
+285. agotada la referencia PD512, otra similar
+286. no existe la BZ220, otra zapata
+287. los de brembo se acabaron, que hay en vez
+288. lo de bosch ya no llega, otra marca
+289. nada de mann, qué más hay
+290. nada de fram, que otra marca de filtros
+291. ya no hay gates, que otra marca de correas
+292. no hay k&n lavable, otro filtro de aire
+293. no hay de michelin, que otra llanta agricola
+294. el de mobil ya no esta, recomiende otro aceite
+295. lo de john deere esta agotado, otra marca compatible
+296. repuestos de massey agotados, hay algo alterno
+297. algo alterno pal filtro de la hilux
+298. algo alterno al kit de la frontier
+299. opcion B para el filtro de aire del sail
+300. opcion b pal amortiguador del onix
+301. plan b pal repuesto del spark
+302. plan b si no esta la bateria
+303. otra salida pal cliente que quiere batería mac y no hay
+304. un parecido pal radiador del aveo
+305. uno parecido a la bateria del duster
+306. uno similar a las pastillas del yaris
+307. uno equivalente al alternador de la ranger
+308. unas equivalentes a las bujias del sail
+309. una pareja de amortiguadores iguales a los monroe
+310. cambio de marca, que me da pa el rio
+311. si cambio de marca cual sale mejor
+312. me puede cambiar la marca por otra mas barata
+313. mejor otra marca, esa no me convence
+314. no me convence esa marca, otra
+315. no me gusta esa pastilla, otra
+316. no le gusta al cliente esa batería, otra
+317. el cliente no la quiere china, otra
+318. el cliente quiere otra, esa no
+319. no sirve esa, otra por favor
 
-BUSCAR_REPUESTO  (56 frases)
+BUSCAR_REPUESTO  (331 frases)
 ----------------------------------------------------------------------
 1. ¿Tienen filtro de aceite para Toyota Hilux 2.7 2024?
 2. Busco pastillas de freno para un Chevrolet Onix 2021
@@ -120,8 +383,283 @@ BUSCAR_REPUESTO  (56 frases)
 54. ¿y en otra marca lo manejan?
 55. y ese mismo pero para camioneta
 56. ¿tienen también para el 2021?
+57. pastillas pa la hilux
+58. bujias del spark 2014
+59. la bateria del logan
+60. tiene filtro de aire pal sandero
+61. me regala un filtro de aceite pal aveo
+62. necesito amortiguadores del onix
+63. cadena o correa de distribucion pal sail
+64. busco un alternador pa una ranger 3.2
+65. el kit de embrague de la l200
+66. balatas traseras pa el rio 2018
+67. llantas 205/55 r16
+68. tienen aceite 5w30 sintetico?
+69. filtro W-610/3
+70. aceite 15w40 pal tractor
+71. tiene bujias ngk pal swift
+72. me colabora con un radiador pa la fortuner
+73. bomba de agua para un picanto 2019
+74. necesito el filtro de cabina de la sportage
+75. discos delanteros del accent
+76. tiene la rotula inferior pa la duster
+77. bateria N120 para el tractor
+78. manejan bombillos led h7?
+79. busco farolas pal spark gt
+80. me consigue un termostato pal logan 1.6
+81. pastillas brembo para mazda 3 2019
+82. bujes de brazo pa la frontier
+83. parce necesito un motor de arranque pal sentra
+84. q tiene en filtros pal corolla 2020
+85. hay amortiguador trasero monroe pa la ranger
+86. ando buscando una bobina para el yaris
+87. filtro hidraulico del john deere 5075E
+88. tienen filtro de combustible pal massey 290
+89. llanta agricola 18.4-46
+90. busco rele de 12v 40a
+91. correa del ventilador pal 6110M
+92. disculpe tiene empaque de culata para aveo 1.6
+93. me hace falta un resorte delantero pa la hilux
+94. xfa unas pastillas pal sail
+95. terminal de direccion del fiesta
+96. homocinetica delantera pa la duster 2.0
+97. tiene liquido de frenos dot 4
+98. quiero un cilindro maestro pal logan
+99. alternador bosch 120a
+100. necesito el kit de distribucion gates pa el rio
+101. la tapa del radiador del spark
+102. me regala dos bujias NGK BKR6E
+103. tiene cables de bujia para el aveo
+104. tienen manguera hidraulica de 3/8
+105. busco el pasador de enganche del john deere
+106. disco de embrague pal case farmall 75C
+107. llantas pal tractor new holland TL90
+108. ando buscando filtro de aire pa el T6.120
+109. una bomba hidraulica pal 6713
+110. tienen el eje PTO del puma 165
+111. necesito zapatas traseras pal accent 2016
+112. bombillo h4 12v
+113. me da unas pastillas bosch pa el tucson
+114. pastilla delantera de la sportage 2.0
+115. tiene sensor de oxigeno para el yaris
+116. q hay de bateria pal sentra 1.8
+117. una llanta michelin 185/65R15
+118. busco gato hidraulico pa carro
+119. quiero comprar un filtro de aceite fram PH5796
+120. tienen el filtro mann C25114
+121. disculpe, manejan filtro k&n lavable
+122. el de cabina fram CA10242 lo tiene
+123. necesito el motor del limpiaparabrisas pal onix
+124. bobina bosch 0221 pa el spark
+125. tiene aceite atf dexron vi
+126. busco galon de aceite mobil delvac
+127. una correa poly v k060
+128. correa del alternador pal tractor john deere
+129. amortiguadores delanteros del corolla
+130. buenas, tiene pastillas pa un spark gt 2016
+131. buenas tardes, estoy buscando bateria para hilux diesel
+132. hola, me ayuda con un filtro de aire pal duster
+133. la camioneta es una ranger 2019, necesito pastillas
+134. pa un sandero 2017 que tiene de frenos
+135. algo de suspension para la frontier 2018
+136. busco repuestos de encendido pa mazda 3
+137. tienen cosas de frenos pa chevrolet onix
+138. tiene la caja de la direccion del sail
+139. repuesto pa la picanto, el filtro de aire
+140. sin marca no importa, un filtro de aceite pa un aveo
+141. filtro de aceite pa un spark 1.0
+142. necesito aceite 10w40 mineral
+143. algo de transmision pal rio
+144. balatas pal sentra b13
+145. ocupo unas pastillas pal yaris
+146. necesito unas llantas rin 15
+147. neumaticos 185/65r15 hay?
+148. manejan la banda de los accesorios del swift
+149. si tiene bujias para un fiesta 1.6
+150. quiero unos amortiguadores pa mi camioneta
+151. tengo un l200 diesel, busco filtro de combustible
+152. necesito el filtro separador de agua fleetguard FS19532
+153. fleetguard LF3970 lo manejan?
+154. disco de freno ventilado brembo 09.A729
+155. pastillas P85020 brembo
+156. el bombillo led h7 par
+157. me ayuda con el cable del acelerador del aveo
+158. tienen espejos laterales pa el spark?
+159. manejan escobillas limpiabrisas
+160. una rotula de enganche categoria II pal massey
+161. juego de bujes pal rio 2017
+162. la junta homocinetica del accent
+163. embrague completo pal sentra 2015
+164. busco kit de arrastre pal tractor
+165. bateria pal case farmall 75C
+166. alternador case IH 95A
+167. filtro de combustible case ih FF7000
+168. filtro hidraulico case ih
+169. disco de embrague massey ferguson
+170. llanta pirelli scorpion 265/65R17
+171. hankook 215/60R17 tiene
+172. bateria bosch S4 005
+173. una mac 27HI
+174. quiero un par de bombillos h4
+175. aceite de caja pa la hilux
+176. necesito el filtro de gasolina de un sail 2015
+177. sensor de temperatura pal onix
+178. tienen empaques pa un motor 1.6
+179. pastillas de ceramica pal corolla
+180. necesito disco y pastillas del rio 2020
+181. me hace el favor y me busca el termostato del aveo
+182. tiene el filtro de aire del tractor massey 4707
+183. repuestos pa un john deere 6110M
+184. busco partes del cilindro hidraulico
+185. tienen resortes helicoidales
+186. el amortiguador del escape
+187. un par de amortiguadores traseros pal fiesta 2016
+188. unas bujias iridium pa el mazda cx-5
+189. rodamiento de rueda pal logan
+190. rodamiento delantero de la hilux 4x4
+191. necesito mangueras de radiador pal spark
+192. filtro de aceite sail
+193. pastillas onix 2022
+194. amortiguadores spark
+195. batería mac pal picanto
+196. bujías aveo 1.4
+197. radiador fortuner
+198. kit embrague duster 2.0
+199. correa de repartición yaris
+200. bomba de agua l200 2.4
+201. discos de freno sandero
+202. alternador fiesta 1.6
+203. buenas, tiene el filtro de combustible pa una hilux diesel?
+204. ando por un par de amortiguadores pa el frontier
+205. estoy necesitando bujias, el carro es un rio 2015
+206. me urge un alternador pa una hilux 2012
+207. mire, necesito una bateria pa un sentra viejito
+208. vengo por unas pastillas pa un mazda 2
+209. el cliente quiere unos discos pal accent 2018
+210. pregunta un señor por el filtro del tractor
+211. traigo la placa, necesito las pastillas, es un spark
+212. me cuenta si maneja amortiguadores pa camioneta
+213. tiene la batería 48D
+214. 48D de mac la tiene
+215. busco un 34HI
+216. tiene una N120 pal tractor
+217. el filtro HP-1002 lo tiene
+218. manejan M1-110A
+219. mobil 1 M1-110A hay
+220. la pastilla BSH-0281 tiene
+221. el BRM-FD204 lo manejan
+222. código NGK-BKR5E tiene
+223. necesito el GAT-K060
+224. traiga un GAT-T295 pa mañana
+225. tiene el repuesto JD-RE504836
+226. CIH-FF7000 lo maneja
+227. buscando MFR-DISC-EM
+228. referencia MI-AGR1846 para el tractor
+229. una de las FRP-PD512 tiene
+230. CMT-TER-DIR hay
+231. la ref IEC-REL-40
+232. ando buscando el FG-FF5320
+233. en que filtros tiene pal logan
+234. que bujias maneja pal spark
+235. que baterias tiene pa un accent
+236. que llantas maneja pa camioneta 4x4
+237. que aceites tiene pa motor diesel
+238. que tiene de embrague pa un aveo
+239. q manejan pal tractor 5075E
+240. muestreme los filtros pa la hilux
+241. muestreme las pastillas pal onix
+242. enseñeme baterias pa un sentra
+243. revise si tiene pastillas pal sail
+244. revise si tiene bomba de agua pal accent 2012
+245. mire a ver si le llegó el filtro del rio
+246. a ver si consigue la rotula del sandero
+247. mire si le queda la correa del onix
+248. consigame un termostato pal duster
+249. consigame unas bujias pal yaris
+250. si me consigue el filtro de la fortuner
+251. cuando me consigue un radiador pal escape
+252. tendra pastillas pa un spark
+253. tendra el filtro pa la sportage
+254. por casualidad tiene bujias iridium
+255. por casualidad maneja filtros k&n
+256. por casualidad tiene bomba de gasolina del fiesta
+257. me interesa un kit de distribucion para el tucson
+258. me interesan unas llantas pa la hilux
+259. me interesa el radiador de aluminio bosch
+260. quisiera unas pastillas para mi aveo 2014
+261. quisiera cambiar el aceite, tiene 5w-30
+262. quisiera ver bombillos led
+263. quiero el filtro de aire de un logan 1.6 pero de los buenos
+264. quiero unas pastillas buenas pa el corolla
+265. quiero algo de suspension pa mi camioneta frontier
+266. quiero ver los discos que tiene pal rio
+267. quiero un acumulador pa la hilux
+268. necesito un acumulador pal sail
+269. tiene acumuladores
+270. un acumulador de 12 voltios
+271. una pila pal carro, de las grandes
+272. pila pal tractor
+273. necesito una pila 12v pa el spark
+274. unos cauchos pa la ranger
+275. tiene cauchos pa tractor
+276. cauchos 205/55 r16
+277. cauchos rin 17 pa camioneta
+278. tiene llantas rin 14
+279. llantas 175/65 r14
+280. llanta pal spark
+281. las llantas del sandero
+282. cuatro llantas para el duster
+283. repuesto del freno de mano pal logan
+284. cable del freno de mano
+285. el cable del clutch pal spark
+286. tiene guaya de acelerador
+287. guayas para el aveo
+288. fuelle de la homocinetica
+289. tiene la crucetas de la camioneta
+290. pastilla pa la fortuner 2.7
+291. filtro del aire acondicionado pal rio
+292. filtro polen pal onix
+293. el filtro del polen del spark
+294. filtro de aire de motor del sandero
+295. filtro de la gasolina pal aveo
+296. filtro de acpm pal l200
+297. filtro de acpm pal tractor
+298. acpm con separador de agua pal 6713
+299. bomba de inyeccion pal tractor 290
+300. inyectores pa la hilux diesel
+301. tiene turbo pal l200
+302. me busca un empaque pal tapa valvulas del aveo
+303. tapa de aceite pal spark
+304. varilla de aceite del logan
+305. aceite pal motor, de lo mas barato que tenga
+306. aceite sintetico 5w30 galon
+307. el aceite 5w-30 mobil 1 sale pal corolla
+308. aceite 15w-40 delvac
+309. aceite atf pa caja automatica
+310. liquido de frenos
+311. liquido refrigerante pal radiador
+312. refrigerante verde
+313. necesito agua pal radiador, refrigerante
+314. coolant pal sentra
+315. bulbos H4 pa la hilux
+316. fusibles pa el sandero
+317. fusibles de 15 amp
+318. tiene relevos de 12 voltios
+319. sensor de oxigeno 4 cables
+320. sensor abs pal accent
+321. sensor de cigueñal pal logan
+322. bobina individual pal onix
+323. platinos pal sail?
+324. condensador pa un carro viejo
+325. cables de bateria
+326. bornes pa bateria
+327. terminales de bateria
+328. tiene correas varias
+329. una correa 6pk1000
+330. correa 5pk 1070
+331. filtro de aire w-610/3 mann
 
-CONSULTAR_STOCK  (56 frases)
+CONSULTAR_STOCK  (367 frases)
 ----------------------------------------------------------------------
 1. ¿Cuántas unidades hay del filtro 90915-YZZD4?
 2. ¿Qué stock queda de las pastillas de freno Brembo?
@@ -179,8 +717,319 @@ CONSULTAR_STOCK  (56 frases)
 54. ¿y en la otra marca cuántas hay?
 55. ¿todavía queda de ese mismo?
 56. ¿y cuántas unidades del otro código?
+57. cuantas pastillas del spark quedan
+58. quedan bujias ngk
+59. queda bateria mac 48D
+60. cuantas hay de la 34HI
+61. stock de pastillas de la hilux
+62. stock de filtros del logan
+63. existencias de bujias pa el aveo
+64. inventario de llantas 205/55 r16
+65. inventario de aceite 5w30
+66. cuantos galones de 15w40 quedan
+67. cuantos galones de delvac hay
+68. cuantas llantas agricolas hay
+69. cuantos filtros hidraulicos john deere tiene
+70. tiene unidades del HP-1002
+71. unidades disponibles del M1-102
+72. cuantas M1-110A quedan
+73. en bodega hay amortiguadores monroe
+74. en bodega quedan discos del sentra
+75. en bodega cuantas baterias quedan
+76. en bodega el filtro del sandero
+77. en el local hay radiadores
+78. en el local quedan pastillas brembo
+79. en el almacen cuantas correas hay
+80. tenemos stock del kit de distribucion gates
+81. tenemos alternadores bosch
+82. tenemos bombillos h4
+83. nos quedan baterias mac
+84. nos quedan filtros fram
+85. nos queda aceite sintetico
+86. nos quedan pastillas pa la hilux
+87. cuantos relés de 12v quedan
+88. cuantos fusibles tiene
+89. cuantas bujias BKR5E hay
+90. cuantas ILFR6B quedan
+91. cuantas bobinas bosch quedan
+92. cuantas rotulas inferiores hay
+93. cuantos terminales de direccion quedan
+94. cuantos bujes de brazo hay
+95. cuantos juegos de bujes
+96. cuantos kits de embrague hay
+97. cuantas homocineticas delanteras quedan
+98. cuantos enganches de tres puntos hay
+99. cuantos pasadores de enganche john deere
+100. cuantas mangueras hidraulicas quedan
+101. cuantos sellos de cilindro hay
+102. cuantas llantas hankook hay
+103. cuantas pirelli scorpion quedan
+104. la michelin 185/65R15 queda alguna
+105. queda alguna FRP-DOT4
+106. queda liquido de frenos
+107. queda refrigerante
+108. queda aceite atf
+109. queda algo de atf dexron
+110. quedará un filtro mann C25114
+111. quedara alguna mac N120
+112. a ver cuantas quedan de las pastillas del onix
+113. a ver si quedan de las bujias del sail
+114. a ver cuantas baterias hay pal tractor
+115. mire cuantos alternadores tiene
+116. mire cuanto stock hay de filtros
+117. mire si hay existencias de las llantas
+118. mire a ver cuantos quedan
+119. revise cuantas pastillas hay
+120. revise el stock del filtro del rio
+121. revise si queda bateria de 12v
+122. revise inventario de la bomba de agua
+123. reviseme existencia del radiador de la fortuner
+124. verifique si hay en bodega el kit de embrague del yaris
+125. verifique cuantas bujias hay
+126. confirme si tiene existencias del alternador
+127. confirmeme cuantas llantas hay
+128. confirmeme el stock del amortiguador monroe
+129. confirmeme si quedan pastillas del accent
+130. cuantos hay de esos
+131. cuantos hay en total
+132. cuantos quedan en el estante
+133. cuantos quedan en el deposito
+134. cuantos hay ahorita
+135. cuantos hay en el sistema
+136. cuantas hay disponibles
+137. cuantas unidades quedan
+138. cuantas unidades tenemos de eso
+139. cuantas unidades de bateria
+140. cuantas piezas quedan
+141. cuantas piezas hay del sensor abs
+142. cuantos pares de bujias hay
+143. cuantos juegos de pastillas quedan
+144. cuantos juegos de pastillas brembo hay
+145. todavia queda del filtro del sail
+146. todavia hay pastillas del spark gt
+147. todavia tiene bujias pal swift
+148. todavia queda mac 27HI
+149. todavia le queda el alternador
+150. todavia hay aceite 5w30
+151. aun queda de la correa K060
+152. aun hay stock del filtro de cabina
+153. ya llegaron los filtros del logan
+154. ya llegó la batería que pidieron
+155. ya llego el pedido de pastillas
+156. ya entró el pedido de bujias
+157. ya entraron las llantas
+158. ya hay de nuevo el filtro del aveo
+159. volvió a entrar el filtro de la hilux
+160. volvieron a llegar las pastillas
+161. reabastecieron bujias
+162. reponer stock de filtros
+163. cuando llega mercancia de baterias
+164. que tanto hay de llantas rin 15
+165. que tanto queda de aceite 15w40
+166. que tanto stock hay de pastillas
+167. que cantidad de baterias hay
+168. que cantidad de filtros hay del logan
+169. que cantidad de bujias tienen
+170. hay mucha existencia de aceite
+171. hay pocas pastillas pal onix?
+172. hay poquitas baterias?
+173. casi no quedan bujias ngk
+174. quedan solo dos filtros del rio
+175. solo queda una bateria 48D?
+176. queda una sola pastilla del spark?
+177. queda uno o dos del alternador
+178. quedan 4 bujias pal spark?
+179. hay 4 bujias del aveo
+180. alcanzan 4 pastillas para la hilux
+181. alcanza para 6 bujias
+182. alcanzan las pastillas pa dos carros
+183. tienen 10 unidades de filtro de aceite
+184. tiene 20 de esos filtros
+185. tienen 2 llantas de esa medida
+186. tienen mas de 5 baterias
+187. tienen al menos 3 amortiguadores
+188. me quedan baterias en bodega?
+189. me quedan discos pal sail?
+190. me hace el favor y revisa cuantas bujias quedan
+191. me regala el stock de filtros por favor
+192. me da el inventario del tractor
+193. me puede decir cuantas unidades hay del radiador
+194. me puede decir si queda el filtro
+195. dígame cuántas pastillas hay
+196. dígame si hay existencias de la correa
+197. dígame cuántas baterías quedan
+198. cuénteme cuántos filtros hay
+199. cuénteme si hay llantas
+200. inventario del filtro w-610/3
+201. inventario total de baterias
+202. inventario de bujias por marca
+203. existencias hoy de bujias
+204. existencias de amortiguadores monroe
+205. existencias del repuesto CMT-TER-DIR
+206. existencia de MI-P205
+207. existencia de la llanta MI-AGR1428
+208. stock MAC-48D
+209. stock BSH-0281
+210. stock NGK-BKR5E
+211. stock de GAT-K060
+212. stock FRP-KIT-EMB
+213. que stock hay de CIH-ALT-95
+214. se acabó el filtro del tractor
+215. se acabaron las baterias
+216. se acabó el aceite sintetico
+217. se acabaron las llantas
+218. se acabaron las pastillas del yaris?
+219. se acabo el HP-1002?
+220. ya no quedan bujias?
+221. ya no hay pastillas del onix?
+222. ya se acabó el filtro de la sportage
+223. ya no hay del rio?
+224. no hay baterias o si?
+225. no queda aceite 15w40
+226. esta agotada la bateria 34HI
+227. esta agotado el aceite
+228. estan agotadas las pastillas
+229. estan agotados los filtros del logan?
+230. ya vendieron todas las llantas?
+231. vendieron las ultimas bujias?
+232. quedan de las de iridium?
+233. quedan de las lavables?
+234. quedan de las pequeñas?
+235. quedan de las grandes?
+236. quedan de las originales?
+237. queda de todo o falta algo
+238. queda inventario del filtro de cabina del duster
+239. hay saldo de baterias
+240. saldo de bujias
+241. cuanto saldo de filtros hay
+242. cuanto hay de saldo de la pastilla
+243. hay disponibilidad de las llantas rin 16?
+244. disponibilidad de pastillas
+245. disponibilidad inmediata de la bateria
+246. disponibilidad del kit para la ranger
+247. disponible el alternador de la hilux
+248. disponibles los amortiguadores de la frontier
+249. disponible hoy el filtro del aveo
+250. hay para entrega inmediata
+251. para entrega inmediata hay llantas
+252. cuantas pastillas de la hilux 2.7 quedan
+253. quedan filtros de aceite del spark 2016
+254. stock de bujias del sandero 1.6
+255. hay existencias de pastillas del onix 2021
+256. cuantos amortiguadores del frontier hay
+257. cuantos discos del accent 2018 quedan
+258. queda bateria pa la fortuner
+259. quedan correas de distribucion del rio
+260. cuantas bombas de agua del yaris hay en bodega
+261. stock del radiador de la sportage
+262. inventario del alternador de la ranger 3.2
+263. en bodega queda el kit de embrague del sentra
+264. cuantas unidades del filtro de aire del duster 2.0
+265. existencias de pastillas del corolla 1.8
+266. quedan rotulas del swift
+267. cuantas bujias del aveo 1.4 hay
+268. tiene unidades del filtro de la l200 2.4
+269. stock de baterias pa tractor john deere
+270. cuantos filtros de combustible del 5075E quedan
+271. cuantas llantas del 6110M hay
+272. quedan filtros hidraulicos del massey 4707
+273. existencias del disco de embrague pal 290
+274. stock de baterias del new holland TL90
+275. inventario del filtro de aire pal T6.120
+276. quedan repuestos del case puma 165
+277. cuantos filtros del farmall 75C tiene
+278. y de las pastillas cuantas quedan
+279. y bujias queda
+280. y baterías, hay existencias?
+281. cuantas quedan de las otras
+282. de las pastillas del sail cuantas quedan
+283. de las baterias mac cuantas hay
+284. de bujias ngk hay existencias
+285. de filtros fram queda algo
+286. de llantas michelin cuantas hay
+287. de aceite mobil cuanto queda
+288. del tractor john deere queda algo de filtros
+289. de bosch cuantas cosas hay
+290. quedan existencias de bosch en frenos
+291. cuantas pastillas bosch hay
+292. cuantas brembo hay
+293. cuantos gates hay
+294. cuantos NGK hay
+295. cuantos filtros k&n hay
+296. cuantos fleetguard hay
+297. cuantas mac hay
+298. hay stock de la marca monroe
+299. hay existencias de gates
+300. hay stock de michelin
+301. hay inventario de mobil 1
+302. le queda stock de bosch
+303. alguien sabe cuantas bujias quedan
+304. alguien sabe si hay bateria pal sail
+305. alguien revisó el stock de pastillas
+306. alguien sabe si quedan llantas
+307. quien sabe cuantos filtros hay
+308. quien revisó cuantas baterias hay
+309. hay mercancia del filtro
+310. hay mercancia de bateria
+311. hay mercancía de llantas?
+312. cuanta mercancia hay de pastillas
+313. cuanto hay de pastillas
+314. cuanto queda de aceite sintetico
+315. cuanto queda de ese filtro
+316. cuanto hay de ese repuesto
+317. cuanto hay de eso en bodega
+318. cuanto hay en total de bujias
+319. total de baterias en bodega
+320. total de filtros en inventario
+321. total en stock de pastillas
+322. conteo de bujias
+323. conteo de baterias mac
+324. recuento de llantas
+325. cuadre de inventario de filtros
+326. el sistema dice cuantas pastillas hay
+327. el sistema marca stock de la bateria
+328. en el sistema aparece el filtro con stock
+329. en el sistema sale agotado el alternador
+330. sale agotado el kit en el sistema
+331. sale cero en el sistema de ese filtro
+332. aparece sin stock la bateria
+333. aparece disponible la bomba de agua
+334. figura con existencias el disco
+335. figura agotado el amortiguador
+336. esta en bodega el alternador
+337. esta en el estante la bateria
+338. estará en bodega el radiador
+339. reservaron el alternador? queda alguno
+340. queda alguno sin apartar
+341. hay alguno sin apartar de pastillas
+342. hay del filtro apartado
+343. quedan sin apartar baterias
+344. cuantas pastillas hay sin apartar
+345. cuantas baterias hay apartadas
+346. cuantas quedan despues de este pedido
+347. cuantas quedarían si vendo estas
+348. cuantas llegaron en el pedido
+349. cuantas llegaron de baterias
+350. llegaron las llantas del pedido
+351. llegó mercancia de filtros
+352. llegaron filtros fram
+353. llegaron bujias iridium
+354. llegó aceite
+355. llego el aceite mobil que pedí
+356. llegó el pedido del tractor
+357. llegaron las piezas del tractor
+358. llegó algo de john deere
+359. llegó algo de massey ferguson
+360. llego algo de new holland
+361. llegó algo de case ih
+362. llegó algo de brembo
+363. llegó bosch
+364. llegó el pedido de gates
+365. llegó el pedido de ngk
+366. llegó el pedido de michelin
+367. llegó el pedido de monroe
 
-CONSULTAR_PRECIO  (56 frases)
+CONSULTAR_PRECIO  (347 frases)
 ----------------------------------------------------------------------
 1. ¿Cuánto cuesta el filtro de aceite original de Toyota?
 2. ¿Qué precio tiene el disco de freno para Tucson 2022?
@@ -238,8 +1087,299 @@ CONSULTAR_PRECIO  (56 frases)
 54. listo, ¿y ese otro a cómo está?
 55. ¿y si lo llevo original, cuánto sube?
 56. ¿y con instalación incluida cuánto sería?
+57. cuanto vale la bateria del logan
+58. a como las pastillas de la hilux
+59. precio de las bujias del spark
+60. cuanto cuestan las pastillas pa el onix
+61. a como esta el filtro de aceite pal sail
+62. a como sale el kit de embrague del rio
+63. cuanto sale el alternador de la ranger
+64. valor del radiador de la fortuner
+65. cuanto me cobra por las pastillas del aveo
+66. cuanto es el filtro de aire del duster
+67. que vale el amortiguador del sandero
+68. cuanto vale la llanta 205/55 r16
+69. cuanto cuesta el aceite 5w30
+70. a como el galon de 15w40
+71. a como el galon de delvac
+72. precio del galon de aceite mobil 1
+73. cuanto cuesta el filtro HP-1002
+74. a como la mac 48D
+75. valor de la 34HI
+76. precio N120 mac
+77. cuanto la bateria bosch S4 005
+78. cuanto cuesta la ngk BKR6E
+79. precio bujia iridium ILFR6B
+80. cuanto vale el BRM-FD204
+81. precio de las brembo P85020
+82. valor del disco brembo 09.A729
+83. cuanto la correa K060
+84. cuanto cuesta el gates T295
+85. precio del kit de distribucion gates con bomba
+86. cuanto sale la bomba de agua bosch
+87. valor de la tapa del radiador
+88. precio del termostato gates TH192
+89. cuanto vale el cilindro maestro del logan
+90. a como esta la llanta michelin 185/65R15
+91. a como la hankook 215/60R17
+92. precio llanta pirelli scorpion
+93. cuanto vale la llanta agricola 14.9-28
+94. precio de la llanta michelin 18.4-46
+95. cuanto la manguera hidraulica john deere por metro
+96. cuanto cuesta el filtro hidraulico case ih
+97. precio filtro de combustible massey ferguson
+98. valor del eje de toma de fuerza case ih
+99. cuanto vale la rotula de enganche del massey
+100. cuanto cuesta el motor de arranque bosch reconstruido
+101. valor de los bombillos led h7
+102. cuanto el par de bombillos h4
+103. a como el rele de 12v 40a
+104. precio relé automotriz
+105. cuanto me deja las pastillas en 100 mil
+106. me las deja en 80 mil las pastillas
+107. en cuanto me deja la bateria
+108. en cuanto me deja el juego de amortiguadores
+109. en cuanto me lo deja si me llevo dos
+110. en cuanto queda si pago en efectivo
+111. en cuanto queda el kit completo
+112. cuanto queda llevando las cuatro llantas
+113. cuanto por las cuatro bujias
+114. cuanto por el par de amortiguadores
+115. cuanto por las dos pastillas
+116. cuanto por todo el combo de frenos
+117. cuanto por el cambio de aceite completo, aceite y filtro
+118. cuanto me sale el filtro y el aceite
+119. cuanto me vale el aceite mas el filtro
+120. cuanto el aceite con filtro pal logan
+121. cuanto el filtro y aceite pal aveo
+122. precio de aceite y filtro pal spark
+123. cuanto cuesta un cambio de pastillas
+124. precio por mayor de las bujias
+125. precio mayorista de filtros
+126. precio al por mayor de las llantas
+127. x mayor a como las baterias
+128. por docena a como las bujias
+129. por caja cuanto sale el aceite
+130. por cuatro cuanto sale la bujia
+131. si llevo 10 filtros cuanto me hace
+132. si llevo dos baterias hay descuento
+133. si llevo dos pastillas me rebaja
+134. hay descuento en las llantas
+135. hay descuento por cantidad
+136. hay rebaja si pago de contado
+137. hay descuento pa taller
+138. me hace descuento si compro dos
+139. me hace descuento en la bateria
+140. me hace precio pa mecanico
+141. precio pa mecanico de las pastillas
+142. precio de taller de las bujias
+143. precio especial pa taller del filtro
+144. precio cliente fijo de las llantas
+145. cual es el mejor precio de la bateria
+146. cual es el mejor precio de las pastillas
+147. cual es su ultimo precio por el alternador
+148. ultimo precio del radiador
+149. ultimo precio de la bomba de agua
+150. ultimo precio de las bujias
+151. lo menos que me deja el amortiguador
+152. lo menos de la bateria
+153. lo menos que me deja la llanta
+154. rebaja la bateria un poquito
+155. rebajame las pastillas
+156. no me deja mas barato el alternador
+157. cuanto cuesta el original y el generico
+158. cuanto vale el original
+159. original o generico cuanto cambia el precio de las pastillas
+160. cuanto cuesta la diferencia entre brembo y bosch
+161. que diferencia de precio hay entre mac y bosch
+162. cual es mas barata la mac o la bosch
+163. cual cuesta mas la brembo o la bosch
+164. cual sale mas barata la ngk o la bosch
+165. mas barato el monroe o el otro
+166. cual es el precio mas bajo de la bateria
+167. cual es el mas barato de los filtros
+168. cual es el filtro mas barato pal logan
+169. cual es la bateria mas barata pal spark
+170. cual es la pastilla mas economica pal onix
+171. cuanto cuesta lo mas economico en bujias
+172. con iva cuanto sale el alternador
+173. con iva a como la bateria
+174. sin iva cuanto vale la llanta
+175. precio con iva de las pastillas
+176. iva incluido la bateria
+177. el precio incluye iva
+178. precio de lista del kit de embrague
+179. precio de lista de las pastillas
+180. lista de precios de filtros
+181. lista de precios de baterias
+182. lista de precios del tractor
+183. lista de precios de llantas
+184. necesito la lista de precios de bujias
+185. tiene lista de precios de aceites
+186. me pasa precios de frenos
+187. me pasa el precio del filtro
+188. me pasa precio de la bateria mac
+189. me da el precio de las pastillas pal yaris
+190. me da el precio del kit
+191. me dice el precio de la llanta
+192. me dice cuanto vale la bateria
+193. me dice cuanto cuesta la bomba de agua del picanto
+194. me regala el precio del filtro de aire
+195. me regala precios de amortiguadores
+196. me colabora con el precio de la correa
+197. me colabora con la cotizacion de las pastillas
+198. me colabora con la cotizacion del tractor
+199. me cotiza unas pastillas pal sail
+200. me cotiza la bateria de la fortuner
+201. me cotiza el kit de distribucion del rio
+202. me cotiza llantas pa camioneta
+203. cotizeme unas bujias
+204. cotizeme el alternador del sentra
+205. cotizeme el filtro de aceite
+206. cotizacion de pastillas del accent
+207. cotizacion de filtros pal tractor
+208. cotizacion de llantas rin 16
+209. cotizacion de amortiguadores de la ranger
+210. cotizacion de bateria para l200
+211. cotizacion de frenos completo pal spark
+212. necesito cotizar pastillas y discos del sandero
+213. necesito cotizar el kit de embrague pal swift
+214. necesito cotizar baterias
+215. necesito cotizar mangueras hidraulicas
+216. necesito el valor del aceite
+217. necesito el precio del filtro 90915-YZZD4
+218. necesito saber el precio de la llanta
+219. necesito saber cuanto cuesta el radiador
+220. quisiera saber el valor de las pastillas
+221. quisiera saber a como esta el alternador
+222. quiero saber cuanto vale el filtro
+223. quiero saber que precio tiene la bateria
+224. quiero el precio de las bujias
+225. quiero ver a como sale el kit
+226. queria saber el precio de la bateria 12v
+227. queria saber cuanto vale esa llanta
+228. cuanto vale el filtro de aire del sail 2016
+229. a como los amortiguadores del frontier
+230. precio de pastillas para yaris 2019
+231. valor de las bujias del swift
+232. cuanto sale el radiador de la l200 2.4
+233. a como la bomba de agua del picanto
+234. cuanto cuesta la correa de la fortuner 2.7
+235. precio del alternador del corolla 1.8
+236. cuanto vale la bateria del 5075E
+237. a como los filtros del massey 290
+238. precio de las llantas del tractor 6713
+239. valor del filtro hidraulico del T6.120
+240. a como el filtro de aire del TL90
+241. precio de repuestos del puma 165
+242. valor de la cadena de repartición del onix
+243. cuanto vale cambiar las pastillas del escape
+244. precio de las pastillas delanteras del fiesta 2017
+245. cuanto vale el cable del embrague del aveo
+246. precio del sensor de oxigeno del sandero
+247. a como el empaque de culata del logan
+248. cuanto vale la junta de culata multicapa
+249. cuanto cuestan los bujes del brazo de la hilux
+250. a como el resorte delantero de la ranger
+251. precio de la rotula inferior del accent
+252. a como esta la bobina del spark gt
+253. precio de los cables de bujia ngk
+254. cuanto vale el kit de sellos de cilindro massey
+255. valor de la bomba hidraulica del 6713
+256. cuanto sale el bombillo
+257. a como esta el aceite del tractor
+258. precio de la grasa
+259. cuanto el cuarto de aceite 20w50
+260. cuanto sale el litro de refrigerante
+261. precio liquido de frenos 500 ml
+262. cuanto vale un filtro de aceite pal logan 1.6
+263. precio de bateria 12v 45 amperios
+264. precio de la bateria de 75 amp
+265. cuanto una bateria de 100 amperios
+266. cuanto una bateria de camioneta
+267. cuanto una bateria de carro pequeño
+268. cuanto cuesta una bateria pa tractor
+269. cuanto vale una llanta pa camioneta
+270. cuanto cuesta una llanta rin 13
+271. cuanto una llanta de tractor delantera
+272. cuanto una llanta de tractor trasera
+273. que precio tiene el juego de pastillas
+274. que precio tiene el kit de distribucion
+275. que precio tiene la llanta
+276. que precio maneja en bujias
+277. que precio maneja en pastillas
+278. que precio tiene el alternador de la ranger
+279. que valor tiene el filtro
+280. que valor tiene la bateria mac
+281. que vale una pastilla de esas
+282. que vale un filtro de esos
+283. qué precio sale la bateria con garantia
+284. cuanto la bateria si dejo la vieja
+285. cuanto me reciben por la bateria vieja
+286. cuanto me descuenta la bateria vieja
+287. a como esta el mismo pero marca bosch
+288. y el valor de la bosch
+289. y la brembo a como esta
+290. cuanto sale ese mismo filtro pero mann
+291. cuanto vale ese mismo en mac
+292. a cuanto lo deja
+293. cuanto vale eso
+294. cuanto cuesta eso
+295. cuanto valen
+296. cuanto cuestan
+297. cuanto sería
+298. cuánto sería por todo
+299. cuanto seria el total de los dos filtros
+300. cuanto seria el total del pedido
+301. valor total de las pastillas y el disco
+302. valor total del cambio de bujias
+303. total de la cotizacion del tractor
+304. precio unitario de la bujia
+305. precio por unidad del filtro
+306. precio por par de las pastillas
+307. precio por juego de los amortiguadores
+308. precio por metro de la manguera
+309. precio por galon del aceite
+310. precio por litro de la gasolina del tractor
+311. precio de fabrica de la llanta
+312. precio publico de la bateria
+313. precio al publico de las pastillas
+314. precio neto del alternador
+315. precio con descuento de las bujias
+316. precio normal de las llantas
+317. precio actual de la mac 48D
+318. precio de hoy de la bateria
+319. precio nuevo de las bujias
+320. subió el precio de las pastillas
+321. bajo el precio de la bateria
+322. cambio el precio del aceite
+323. cuanto subió la bateria
+324. cuanto subieron las llantas
+325. cuanto subió el filtro
+326. cuanto esta de caro el radiador
+327. esta muy caro el alternador
+328. ta caro el filtro
+329. muy cara esa llanta
+330. muy caro esa bujia
+331. está barata la bateria
+332. esta barato el kit de embrague
+333. esta en promocion la bateria
+334. hay promocion en llantas
+335. hay promo en aceite
+336. hay oferta en pastillas
+337. oferta de bujias
+338. ofertas de baterias
+339. ofertas de la semana
+340. que ofertas hay en filtros
+341. que promociones hay
+342. cuanto me sale con la promo
+343. cuanto cuesta con la oferta
+344. con la oferta a como queda
+345. en efectivo a como la bateria
+346. precio en efectivo de las llantas
+347. precio con tarjeta de las llantas
 
-CONSULTAR_COMPATIBILIDAD  (50 frases)
+CONSULTAR_COMPATIBILIDAD  (347 frases)
 ----------------------------------------------------------------------
 1. ¿Este filtro le sirve a una Hilux 2.7 gasolina 2024?
 2. ¿La pastilla de freno Brembo es compatible con Mazda 3 2020?
@@ -291,8 +1431,305 @@ CONSULTAR_COMPATIBILIDAD  (50 frases)
 48. ¿Es compatible el juego de rodamientos con la Hilux 4x2 y 4x4?
 49. quiero saber si esta parte aplica pa una camioneta ford ranger 2019
 50. ¿Le sirve este actuador de embrague a un Suzuki Swift automático?
+51. esta bujia le sirve al spark
+52. sirve pa la hilux esta pastilla
+53. le entra este filtro al logan
+54. le queda esta bateria al onix
+55. esa llanta le sirve a la ranger
+56. el filtro HP-1002 sirve pal spark
+57. la 48D le sirve a un sail
+58. la bateria 34HI sirve para una hilux
+59. sirve la N120 en el 5075E
+60. pastillas BRM-FD204 pa que carros sirven
+61. el BSH-0281 le sirve al aveo
+62. la bujia BKR5E sirve en el yaris
+63. las NGK BKR6E son pal rio
+64. la correa K060 sirve para el sandero
+65. el kit GAT-KIT-DIS es pal duster
+66. GAT-T295 aplica para la sportage
+67. sirve el M1-110A en el picanto
+68. el CMT-ROT-INF le entra a la fortuner
+69. la bobina bosch 0221 le sirve al corolla
+70. la llanta MI-P205 sirve pal accent
+71. la michelin 205/55R16 le queda al sentra
+72. llanta 185/65R15 aplica pal swift
+73. llantas 265/65R17 son pa camioneta, le sirven a la hilux
+74. el amortiguador monroe AM3500 es para la ranger
+75. el AM204 le sirve a la frontier
+76. aplica el filtro mann C25114 pal corolla
+77. aplica el filtro fram PH5796 pal tucson
+78. aplica el bsh F026400 al accent
+79. a cual carro le sirve el filtro w-610/3
+80. a que carros les sirve la 48D
+81. a que modelos le entra esta pastilla
+82. a que camionetas aplica este amortiguador
+83. a que tractores le sirve este filtro
+84. a que motores sirve esta bujia
+85. que carros usan este filtro
+86. que carros usan esta bateria
+87. que modelos usan esta correa
+88. que vehiculos usan la 34HI
+89. que tractor usa este filtro hidraulico
+90. en que carros va esta pastilla
+91. en que carros se puede poner este disco
+92. en que modelos se monta esta rotula
+93. en que tractores se monta este enganche
+94. donde sirve este filtro
+95. donde se puede usar esta bateria
+96. con que carros es compatible esta correa
+97. con que marcas es compatible este aceite
+98. con que motores es compatible esta bobina
+99. para que vehiculos es esta llanta
+100. para que carros es este radiador
+101. para que modelo es esta pieza
+102. para que ano es esta pastilla
+103. para que tractor es esta bateria
+104. para que motor es este filtro
+105. para que carro es este repuesto
+106. de que carro es esta pieza
+107. de cual tractor es este filtro
+108. de que marca es esta correa, a cual sirve
+109. de que modelo es esta bujia
+110. me sirve esta pastilla en una frontier
+111. me sirve el filtro del aveo en un spark
+112. me sirve esta bateria pa un tractor
+113. me sirve este aceite pa diesel
+114. me sirve esta bujia en un motor 1.4
+115. me sirve esta correa pa un 1.6
+116. me sirve este filtro pa un 2.7
+117. me sirve este disco pa 4x4
+118. este filtro sirve para diesel
+119. este aceite sirve para gasolina y diesel
+120. este aceite sirve pal tractor
+121. este aceite 15w40 sirve pa carro de gasolina
+122. este aceite 5w30 sirve para motor diesel
+123. este liquido de frenos sirve pa cualquier carro
+124. este refrigerante sirve para todos
+125. este relé sirve pa cualquier carro
+126. el bombillo h4 sirve en todos los carros
+127. esa bujía sirve para cualquier motor
+128. el filtro de aire sirve pa varios modelos
+129. esa correa sirve para todos los 1.6
+130. esa bateria sirve pa toyota y nissan
+131. esta llanta sirve tanto en la hilux como en la frontier
+132. este amortiguador sirve en la hilux y la fortuner
+133. este filtro sirve en el spark y en el spark gt
+134. la misma pastilla sirve pa el rio y el accent
+135. la misma bateria sirve pa sail y aveo
+136. la misma bujia sirve pal onix y el spark
+137. es el mismo filtro del aveo y el sail
+138. es la misma correa del logan y el sandero
+139. es la misma bomba del duster y el logan
+140. es el mismo disco de la hilux y la fortuner
+141. son iguales las pastillas del corolla y el yaris
+142. es igual el amortiguador del rio y el picanto
+143. es igual la bateria de la ranger y la l200
+144. sirven los mismos filtros pa 5075E y 6110M
+145. los filtros del 4707 sirven en el 6713
+146. el filtro del 290 le sirve a un 4707
+147. las llantas del TL90 sirven pal T6.120
+148. la bateria del case farmall le sirve al puma
+149. la serie 5000 de john deere usa este filtro
+150. este enganche es para new holland, sirve en massey
+151. este pasador sirve pa john deere y case
+152. este eje pto sirve pal puma 165
+153. esta rotula categoria II sirve para los dos tractores
+154. esta manguera hidraulica es para john deere o sirve en otro
+155. funciona en el sandero este alternador
+156. funciona la bateria del logan en un duster
+157. funciona este termostato en el aveo 1.4
+158. funciona esta bomba en un l200
+159. funciona en diesel esta bobina
+160. funciona esta correa en el accent
+161. funciona en un tractor este bombillo
+162. funciona en 24 voltios esta bateria
+163. sirve en 24v
+164. es de 12 voltios o sirve en tractor de 24
+165. alcanza para la hilux este amortiguador
+166. queda bien en la sportage esta pastilla
+167. queda en el yaris esta bateria
+168. queda justo en el onix este filtro
+169. cabe esta bateria en el spark
+170. cabe esta llanta en el rin del sail
+171. cabe esta bateria en el logan, el tamaño
+172. entra esta bateria en la caja del aveo
+173. entra esta llanta en el rin 14
+174. entra la rotula del fiesta en el escape
+175. entra esta bujia en la culata del accent
+176. entra este filtro en la carcaza del rio
+177. este filtro entra en el porta filtro del spark
+178. este tornillo entra en el sail
+179. rosca igual la bujia del aveo y del sail
+180. la rosca del filtro es la misma del logan
+181. el diametro de esta llanta es el del tractor 5075E
+182. la medida de esta bateria es la del sentra
+183. la medida de este filtro es la misma
+184. la medida es la misma del spark
+185. tiene la misma medida de la hilux
+186. trae la misma medida del original
+187. trae el mismo conector del original
+188. conecta igual al original este sensor
+189. el conector es el mismo de la ranger
+190. el conector de este alternador es igual al del corolla
+191. es compatible con el onix 2020
+192. compatible con spark gt?
+193. compatibilidad con hilux 2.7
+194. compatibilidad para el logan 1.6, el filtro de aire
+195. compatible con sandero 2016 la bateria
+196. esta bujia es compatible con sail 1.4?
+197. compatible con tractor 5075E el filtro
+198. compatible con la fortuner 2018 esta llanta
+199. compatible con yaris 2017 este amortiguador
+200. ese filtro es compatible con motores diesel 2.4
+201. la bateria mac 48D es compatible con la ranger
+202. el kit de embrague sirve pa la ranger 2019 3.2 diesel
+203. la pastilla sirve pal rio 2018 1.6
+204. el radiador del tucson 2.0 sirve en el 2022
+205. la rotula del corolla 2015 sirve en el 2012
+206. el alternador del sentra 2016 sirve en el b13
+207. la correa del swift 2020 sirve en el 2018
+208. bateria de hilux 2016 sirve en la 2023
+209. esa pastilla sirve en un picanto 2019 y en un 2022
+210. aplica pa carros desde el 2015 en adelante
+211. aplica solo pa 2020 o tambien 2019
+212. aplica para el 2014 al 2018
+213. aplica a motores 1.2 y 1.4
+214. aplica a motor 2.4 diesel
+215. aplica para versiones diesel y gasolina
+216. aplica pa todas las versiones del duster
+217. aplica pa la duster 4x4
+218. aplica para el logan 1.0 y 1.6
+219. aplica en la l200 sportero
+220. sirve pa la hilux 4x2 y 4x4
+221. sirve pa la hilux sr y srv
+222. sirve para el rio sedan y hatchback
+223. sirve para el aveo emotion y gt
+224. sirve para el spark life
+225. sirve pa la spark gt de 5 puertas
+226. sirve pa los modelos automaticos y mecanicos
+227. sirve pa caja mecanica y automatica
+228. sirve en el yaris sedan y en el hatch
+229. sirve en el sandero stepway
+230. sirve en cualquier versión de la frontier
+231. sirve a motores turbo
+232. sirve a un motor atmosferico
+233. sirve en motor 2.7L
+234. sirve en motor 1.6L
+235. sirve pa tractores de 90 caballos
+236. sirve pa tractores de mas de 100 hp
+237. sirve pal 4x4 del tractor
+238. la 6110M usa el mismo filtro de aire que la 5075E
+239. el filtro de combustible del 5075E sirve en el 6110M
+240. la manguera del 4707 sirve en el 6713
+241. el disco de embrague del farmall sirve en el puma
+242. el filtro hidraulico del T6.120 sirve en el TL90
+243. a la TL90 le sirve la bateria del 290
+244. mi hilux es modelo 2017, le sirve ese filtro
+245. mi spark es 2015 y es el 1.0, le sirve
+246. mi aveo es 2012, esa bateria le sirve
+247. mi logan es 2020, esta pastilla le sirve
+248. mi sandero es el 1.6, esa correa le sirve
+249. mi l200 es 2.5, le sirve el filtro
+250. mi tractor es john deere, esta bateria sirve
+251. mi tractor es un massey, le sirve este filtro
+252. el carro es un onix 2019, aplica esta bujia
+253. el carro es hyundai accent 2016, sirve esa pastilla
+254. el carro del cliente es un picanto, sirve este filtro
+255. la camioneta es ranger 2020, le sirve este amortiguador
+256. la camioneta del cliente es frontier, le sirve esta llanta
+257. el cliente tiene un mazda 3 2019, aplica la correa
+258. el cliente tiene una sportage 2.0, le sirve ese filtro
+259. el cliente tiene tractor new holland, le sirve ese aceite
+260. el cliente tiene un fiesta, le sirve la bateria
+261. quiero saber si el filtro del spark sirve en el sail
+262. quiero saber si esa llanta le sirve al tractor
+263. quiero saber si aplica pal 2018
+264. quiero saber si cabe en mi carro
+265. necesito saber si esto le sirve al sandero
+266. necesito saber si es compatible con diesel
+267. necesito saber a que carros sirve esta correa
+268. necesito saber en cuales motores sirve esta bujia
+269. necesito confirmar si la pastilla sirve pal onix
+270. necesito confirmar si el filtro es el del logan
+271. confirme si esta bateria es pal sail
+272. confirmeme si le sirve esta llanta a la duster
+273. confirmeme si esa pieza es de la hilux
+274. confirmeme si esto es del tractor
+275. confirmeme si es original de la sportage
+276. confirmeme la compatibilidad con yaris
+277. confirmeme la compatibilidad del filtro
+278. revise si este filtro le sirve al aveo
+279. revise si esta pastilla es pal onix
+280. revise si aplica en el sandero
+281. revise compatibilidad de la bateria
+282. me puede decir si le sirve esto al sail
+283. me puede decir en que carros sirve este filtro
+284. me puede decir a que modelo pertenece esta pieza
+285. me puede confirmar si aplica pa el 2021
+286. me ayuda a saber si sirve en la duster
+287. me ayuda a ver si esto le sirve a la fortuner
+288. ayudeme a ver si esto sirve en el rio
+289. ayudeme a saber de que carro es esta pieza
+290. fijese si sirve la pastilla del aveo en el spark
+291. fijese si le sirve la bateria al sail
+292. mire si esta correa sirve en el yaris
+293. mire a ver si esta llanta le queda al swift
+294. mire si le sirve al tractor
+295. mire a que carros les sirve esta rotula
+296. mire a ver si es compatible
+297. a ver si sirve en el accent
+298. a ver si le sirve al picanto
+299. a ver si le entra a la hilux
+300. a ver si encaja en la ranger
+301. a ver si encaja en el logan
+302. encaja en el tucson este radiador
+303. encaja bien en la sportage
+304. no se si esto sirve en el aveo
+305. no se si esta pastilla es del sail
+306. no se si esta bateria le sirve a la l200
+307. no estoy seguro si aplica pa mi carro
+308. no estoy seguro si es el filtro de la duster
+309. dudo que sirva en la hilux, confirme
+310. duda: sirve este aceite pa diesel
+311. duda: el filtro sirve en gasolina y diesel
+312. duda con la bujia, sirve pal 1.4
+313. duda con las pastillas, aplican pal spark
+314. duda con la bateria, sirve para camioneta
+315. duda con la llanta, sirve en el rin 16
+316. duda con la medida, sirve la 205/55
+317. una duda, esta pastilla va en el onix
+318. una pregunta, sirve el filtro del logan en el sandero
+319. una consulta, esta bateria sirve en el sentra
+320. consulta de compatibilidad del filtro w-610/3
+321. consulta: sirve la ngk en el swift
+322. pregunta: sirve la 48D en un tractor
+323. sirve o no sirve en la hilux
+324. sirve o no esta pieza en la fortuner
+325. sirve o no la bateria pal rio
+326. sirve o no
+327. si sirve o no el filtro del accent
+328. si aplica o no pal 2020
+329. esa bujia es la del aveo o la del sail
+330. esa pastilla es la del spark o la del onix
+331. este filtro es para gasolina o diesel
+332. este aceite es para diesel o gasolina
+333. esta bateria es pa carro o camioneta
+334. esta llanta es pa carro o camioneta
+335. esta pieza es del lado izquierdo o derecho
+336. este amortiguador es delantero o trasero
+337. este disco es delantero o trasero
+338. este filtro es de aire o de cabina
+339. este filtro es hidraulico o de aceite
+340. esta correa es de alternador o de ventilador
+341. es original de toyota o sirve de otra marca
+342. es de chevrolet o sirve para otras marcas
+343. es de mazda o aplica pa kia
+344. es de renault o sirve en nissan
+345. es de john deere o sirve pa massey
+346. es para john deere esta llanta
+347. el repuesto 90915-YZZD4 es solo pa toyota
 
-SALUDO_DESPEDIDA  (50 frases)
+SALUDO_DESPEDIDA  (390 frases)
 ----------------------------------------------------------------------
 1. Hola
 2. Buenos días
@@ -344,8 +1781,348 @@ SALUDO_DESPEDIDA  (50 frases)
 48. Buenas, ¿hay alguien que me pueda atender?
 49. Muchas gracias, eso era todo por hoy
 50. Hola, buen día para todos
+51. buenas buenas
+52. buenasss
+53. holi
+54. hola hola
+55. hey
+56. epa
+57. quihubo
+58. quiubo pues
+59. que mas pues
+60. que mas, como vamos
+61. que hubo, como va todo
+62. como vamos hoy
+63. como esta
+64. como amaneciste
+65. como amanecio
+66. como anda
+67. como le ha ido
+68. todo bien por aca
+69. bien o que
+70. buen dia
+71. buen dia a todos
+72. buenos dias, como esta
+73. buenos dias, ya llegue
+74. buenos dias a todos por aca
+75. buenas tardes, un saludo
+76. buenas tardes, como va el dia
+77. buenas tardes, ya estoy por aca
+78. buenas noches, como les fue hoy
+79. buenas noches a todos
+80. bueno dias
+81. saludos
+82. un saludo
+83. saludos a todos
+84. saludos, soy de la tienda
+85. hola, habla pedro del taller
+86. hola, soy el mecanico de al lado
+87. hola buenas, soy yo otra vez
+88. hola otra vez
+89. buenas de nuevo
+90. ya estoy de vuelta
+91. ya regrese
+92. aqui estoy
+93. presente
+94. en que le puedo ayudar
+95. a la orden
+96. a la orden, buenas
+97. mande
+98. digame
+99. listo para ayudarle
+100. hola asistente
+101. buenas asistente
+102. buenas bot, como estas
+103. hola, quien me atiende
+104. hola, me escuchas
+105. hay alguien ahi
+106. alguien que me ayude
+107. alguien me ayuda
+108. me colabora
+109. me puede colaborar un momento
+110. me hace un favor
+111. me hace un favorcito
+112. una pregunta
+113. una consulta
+114. oiga una pregunta
+115. oiga, una consulta
+116. oye, una duda
+117. disculpe la molestia
+118. disculpe, buenas
+119. perdon la molestia
+120. con permiso
+121. permiso
+122. buenas, con permiso
+123. buenas, me puede atender
+124. buenas, quien me atiende
+125. buenas, quien atiende
+126. buenas, me ayuda con una duda
+127. buenas, una duda
+128. buenas, en que me puede ayudar
+129. buenas, quisiera consultar algo
+130. buenas, vengo a preguntar
+131. buenas, estoy consultando
+132. buenas, estoy buscando ayuda
+133. hola buenos dias, necesito una mano
+134. hola buenas noches, me ayuda
+135. hola, buenas, tengo una pregunta
+136. hola, tengo una duda
+137. hola, tengo una consulta
+138. hola, una pregunta rapida
+139. hola, rapidito
+140. hola, buenas, una cosita
+141. hola, me puedes ayudar
+142. hola, ayudame porfa
+143. hola, ayudeme porfa
+144. holaaa, ayuda
+145. hola necesito ayuda urgente
+146. hola, ayuda por favor
+147. buenas, ayuda
+148. buenas, necesito ayuda
+149. buenas, es urgente
+150. buenas, ando de afan
+151. hola, estoy de afan
+152. que pena molestar
+153. que pena la molestia
+154. muchas gracias
+155. muchas gracias, que Dios lo bendiga
+156. muchisimas gracias
+157. muchisimas gracias por todo
+158. muchas gracias por su ayuda
+159. muchas gracias por su tiempo
+160. muchas gracias, quedo atento
+161. muchas gracias, estamos hablando
+162. mil gracias
+163. mil gracias por la ayuda
+164. mil gracias por todo
+165. mil gracias, hasta luego
+166. gracias
+167. gracias, perfecto
+168. gracias, super
+169. gracias, todo claro
+170. gracias, ya con eso
+171. gracias, ya con eso estoy
+172. gracias, eso es todo por ahora
+173. gracias, nada mas
+174. gracias, por ahora es todo
+175. gracias, luego le aviso
+176. gracias, luego me comunico
+177. gracias, mañana le escribo
+178. gracias, mañana vuelvo
+179. gracias, ahi nos vemos
+180. gracias, chao
+181. gracias, hasta luego
+182. gracias, hasta pronto
+183. gracias, buena tarde
+184. gracias, que este bien
+185. gracias, que le vaya bien
+186. gracias, igualmente
+187. gracias por todo
+188. gracias por su colaboracion
+189. gracias por la colaboracion
+190. gracias por la paciencia
+191. gracias por la rapidez
+192. gracias por la respuesta
+193. gracias por contestar
+194. buenas, gracias por la ayuda
+195. buenas tardes, gracias
+196. buenas noches, gracias por todo
+197. buen dia, gracias por todo
+198. dios le pague
+199. dios le pague, hasta luego
+200. bendiciones
+201. bendiciones, chao
+202. que Dios los bendiga
+203. que dios lo bendiga mucho
+204. que le rinda el dia
+205. que tenga una buena jornada
+206. que tengan buen dia
+207. que tengan buenas noches
+208. que tenga una buena noche
+209. que pase un buen fin de semana
+210. feliz fin de semana
+211. buen puente festivo
+212. feliz noche
+213. feliz año
+214. felices fiestas
+215. feliz semana
+216. buen lunes
+217. buena semana
+218. excelente dia
+219. excelente tarde
+220. excelente servicio, gracias
+221. excelente, gracias
+222. excelente, listo
+223. muy buen servicio
+224. muy amable
+225. muy amables
+226. muy amable por la ayuda
+227. muy atento
+228. muy atento, gracias
+229. muy agradecida
+230. agradecido por la ayuda
+231. agradezco la ayuda
+232. agradezco su tiempo
+233. le agradezco
+234. se lo agradezco mucho
+235. mucho gusto
+236. un placer
+237. fue un placer
+238. un gusto
+239. con gusto
+240. con mucho gusto
+241. no hay de que
+242. ya me voy
+243. ya me voy, gracias
+244. ya me voy, hasta luego
+245. ya me retiro
+246. me retiro, hasta luego
+247. me despido
+248. me despido, hasta mañana
+249. voy de salida, gracias
+250. voy de salida, chao
+251. ya cierro
+252. ya termino, gracias
+253. ya termine por hoy
+254. termine por hoy, gracias
+255. terminamos, gracias
+256. listo, terminamos
+257. listo, ya
+258. listo, ya quedo
+259. listo, ya entendi
+260. listo, perfecto
+261. listo, de una
+262. listo, gracias
+263. listo, nos vemos
+264. listo, hasta mañana
+265. listo pues
+266. listo, quedamos asi
+267. listo, quedo atento
+268. listo, yo le aviso
+269. listo, yo me comunico
+270. ok
+271. ok listo
+272. ok listo, gracias
+273. ok, entendido, gracias
+274. ok, perfecto
+275. ok, dale
+276. ok, vale, gracias
+277. ok gracias
+278. ok chao
+279. ok, nos vemos
+280. ok, hasta mañana
+281. okey
+282. okey, listo
+283. vale
+284. vale, gracias
+285. vale, chao
+286. vale, perfecto
+287. dale
+288. dale, gracias
+289. dale pues
+290. dale pues, gracias
+291. de una
+292. perfecto
+293. perfecto, gracias
+294. perfecto, hasta luego
+295. perfecto, entonces nos vemos
+296. perfecto, quedo atento
+297. super
+298. super, chao
+299. chevere, chao
+300. bacano
+301. bacano, chao
+302. entendido
+303. claro, gracias
+304. claro que si, gracias
+305. ya veo, gracias
+306. ahh listo, gracias
+307. ahh ok, gracias
+308. ah bueno, gracias
+309. ah bueno, listo
+310. ah bueno, chao
+311. bueno, gracias
+312. bueno, hasta luego
+313. bueno, hasta mañana
+314. bueno pues
+315. bueno pues, chao
+316. bueno pues, nos vemos
+317. chao chao
+318. chao, gracias
+319. chao, hasta luego
+320. chao, hasta mañana
+321. chao pues
+322. chaito
+323. chaito, gracias
+324. adios
+325. adios, hasta luego
+326. adios, hasta pronto
+327. adiós, que tenga buen día
+328. hasta luego, gracias
+329. hasta luego, buen dia
+330. hasta mañana
+331. hasta mañana, buenas noches
+332. hasta el lunes
+333. hasta la proxima
+334. hasta la proxima, gracias
+335. hasta pronto, que este bien
+336. hasta luego pues
+337. nos vemos mañana
+338. nos vemos pronto
+339. nos vemos luego, gracias
+340. nos vemos, cuidese
+341. nos hablamos
+342. nos hablamos mañana
+343. nos hablamos pronto
+344. nos escribimos luego
+345. hablamos mañana
+346. hablamos pronto
+347. nos pillamos
+348. nos pillamos luego
+349. ahi nos hablamos
+350. ahi nos pillamos
+351. ahi hablamos
+352. ahi le aviso
+353. ahi le cuento
+354. luego le escribo
+355. luego le cuento
+356. luego nos vemos
+357. luego vuelvo
+358. mañana vuelvo
+359. mañana paso
+360. mañana le escribo
+361. mas tarde vuelvo
+362. mas tarde le aviso
+363. mas tarde hablamos
+364. en un rato vuelvo
+365. ya vuelvo
+366. ya vengo
+367. ya le aviso
+368. cuidese
+369. cuidese mucho
+370. cuidate
+371. cuidate mucho
+372. que descanse, hasta mañana
+373. que descanses
+374. un abrazo
+375. un abrazo, gracias
+376. un abrazo grande
+377. un fuerte abrazo
+378. un saludo, hasta luego
+379. saludos, que este bien
+380. saludos, gracias
+381. saludos y hasta luego
+382. salude a todos
+383. mis saludos a todos
+384. un saludo a la familia
+385. gracias y saludos
+386. gracias y hasta luego
+387. gracias y chao
+388. gracias y buenas tardes
+389. gracias y buenas noches
+390. gracias y feliz tarde
 
-FUERA_DE_DOMINIO  (50 frases)
+FUERA_DE_DOMINIO  (450 frases)
 ----------------------------------------------------------------------
 1. ¿Cuál es el clima hoy?
 2. ¿A qué hora cierra el negocio?
@@ -397,3 +2174,403 @@ FUERA_DE_DOMINIO  (50 frases)
 48. ¿Ustedes reparan celulares también?
 49. ¿Cuál es tu serie favorita de todos los tiempos?
 50. buenas tardes queria saber si aqui hacen cambio de aceite en el local o solo venden repuestos
+51. hacen domicilio a la finca
+52. mandan los repuestos a otra ciudad
+53. envian a medellin
+54. envian por coordinadora
+55. despachan a todo el pais
+56. cuanto cobran por el domicilio
+57. el domicilio tiene costo
+58. hacen entregas el sabado
+59. tienen mensajero
+60. pueden llevarlo hasta mi taller
+61. llevan pedidos a la vereda
+62. a que hora abren
+63. a que hora abren los sabados
+64. a que hora cierran el sabado
+65. hasta que hora atienden
+66. abren los domingos
+67. abren el lunes festivo
+68. abren en festivos
+69. estan abiertos ahorita
+70. esta abierto hoy
+71. horario de la tienda
+72. horario del almacen
+73. horario de atencion al cliente
+74. donde queda la tienda
+75. donde estan ubicados
+76. como llego a la tienda desde el centro
+77. queda cerca del terminal
+78. queda por la avenida principal
+79. tienen sucursal en pereira
+80. tienen sucursal en bogota
+81. en que barrio queda
+82. cual es el telefono del almacen
+83. me da el numero del local
+84. tienen pagina web
+85. tienen instagram
+86. tienen tienda virtual
+87. cual es el whatsapp de ventas
+88. cual es el numero del gerente
+89. quien es el dueño del almacen
+90. quien es el gerente
+91. quiero hablar con un asesor humano
+92. me pasa con un asesor
+93. me pasa con el administrador
+94. quiero poner una queja
+95. quiero poner un reclamo
+96. hay buzon de sugerencias
+97. tienen libro de reclamos
+98. aceptan tarjeta debito
+99. aceptan nequi
+100. aceptan daviplata
+101. reciben transferencias
+102. reciben cheques
+103. se puede pagar con bancolombia
+104. se puede pagar por pse
+105. se puede pagar con tarjeta
+106. dan credito
+107. fian a clientes
+108. me fia hasta fin de mes
+109. manejan credito para talleres
+110. manejan cuenta corriente
+111. dan factura
+112. dan factura electronica
+113. facturan a nombre de empresa
+114. me hace la factura con nit
+115. me envia la factura al correo
+116. necesito la factura de una compra anterior
+117. perdi la factura
+118. necesito certificado de retencion
+119. necesito cotizacion formal en pdf
+120. tienen garantia
+121. cuanto dura la garantia de la bateria
+122. que cubre la garantia
+123. donde reclamo la garantia
+124. la garantia cubre el montaje
+125. hacen garantia de las llantas
+126. aceptan cambios
+127. puedo devolver una pieza
+128. puedo cambiar una pieza que no use
+129. hasta cuando puedo devolver
+130. cuantos dias tengo para cambiar
+131. me devuelven la plata
+132. me devuelven el dinero si no sirve
+133. hacen instalacion de baterias
+134. hacen montaje de llantas
+135. hacen alineacion
+136. hacen alineacion y balanceo
+137. hacen cambio de aceite
+138. cambian pastillas en el local
+139. tienen taller propio
+140. tienen mecanico de turno
+141. tienen mecanico que revise el carro
+142. revisan el carro gratis
+143. hacen la tecnomecanica
+144. hacen scanner
+145. hacen diagnostico con scanner
+146. hacen soldadura
+147. hacen latoneria y pintura
+148. rectifican cabezotes
+149. reparan alternadores
+150. reparan radiadores
+151. reparan celulares
+152. reparan computadores
+153. reparan pinchazos
+154. montan llantas
+155. prestan el gato
+156. venden herramientas
+157. venden gasolina
+158. venden gas
+159. venden pinturas
+160. venden carros
+161. venden carros usados
+162. compran carros usados
+163. compran chatarra
+164. compran repuestos usados
+165. reciben aceite usado
+166. reciben llantas usadas
+167. reciclan aceite
+168. donde parqueo
+169. hay donde parquear
+170. cuanto cobran por el parqueadero
+171. tienen baño
+172. cual es la clave del wifi
+173. hay cajero cerca
+174. hay cajero automatico
+175. hay restaurante cerca
+176. donde almorzar por aqui
+177. donde puedo tomar un tinto
+178. tienen tinto
+179. tienen cafe
+180. hay vacantes
+181. hay trabajo
+182. estan buscando vendedor
+183. necesitan mecanico
+184. necesitan un auxiliar de bodega
+185. a donde envio la hoja de vida
+186. cuanto pagan a un vendedor
+187. quiero trabajar con ustedes
+188. quiero ser proveedor
+189. quiero venderles mis repuestos
+190. como me hago distribuidor
+191. hacen franquicias
+192. que dia tengo pico y placa con placa terminada en 5
+193. cuanto esta la gasolina hoy
+194. cuanto esta el galon de acpm
+195. donde saco el soat
+196. donde renuevo el soat
+197. donde hacen la revision tecnomecanica
+198. como se renueva la licencia de conduccion
+199. cuanto vale un carro nuevo
+200. que carro me recomienda comprar
+201. que camioneta me conviene comprar
+202. cuanto cuesta un tractor nuevo
+203. como se maneja un tractor
+204. como aprendo a manejar
+205. como saco una multa del runt
+206. como pago los impuestos del carro
+207. cuanto cuesta un traspaso
+208. donde venden carros baratos
+209. que significa el testigo del motor
+210. como se cambia una llanta
+211. como se cambia el aceite del carro
+212. como se pasa corriente a una bateria
+213. como se hace para que el carro no se recaliente
+214. por que se me apaga el carro
+215. por que el carro vibra al frenar
+216. por que me suena la suspension
+217. cada cuanto debo cambiar las llantas
+218. cada cuanto se cambia la correa de repartición
+219. quien gano el partido de ayer
+220. quien gano el clasico
+221. cuando juega colombia
+222. a que hora juega nacional
+223. a que hora juega millonarios
+224. quien gano el mundial
+225. cuando es el proximo mundial
+226. como quedo el partido
+227. resultado del partido de hoy
+228. resultados de la loteria
+229. cuanto salio el baloto
+230. vas a jugar baloto
+231. va a llover hoy
+232. que clima hace en medellin
+233. como esta el clima en bogota
+234. esta haciendo mucho frio
+235. va a hacer sol mañana
+236. pronostico del clima
+237. que fecha es hoy
+238. que hora es
+239. cuantos dias faltan para el viernes
+240. cuando es el proximo festivo
+241. es festivo el lunes
+242. cuando es el dia de la madre
+243. cuando es el dia del padre
+244. cual es la capital de brasil
+245. cual es la capital de peru
+246. cual es la montaña mas alta
+247. cuantos departamentos tiene colombia
+248. quien descubrio america
+249. en que año se independizo colombia
+250. quien escribio cien años de soledad
+251. quien invento el telefono
+252. quien invento el bombillo
+253. que es la inteligencia artificial
+254. que es un algoritmo
+255. que es el bitcoin
+256. cuanto esta el euro
+257. a como esta el dolar hoy
+258. como va la bolsa
+259. cuanto es la raiz cuadrada de 144
+260. cuanto es 1000 dividido en 8
+261. ayudame con una operacion de matematicas
+262. ayudame con mi tarea
+263. ayudame a hacer un trabajo del colegio
+264. ayudame a escribir un correo
+265. escribe un poema
+266. escribe una cancion
+267. escribe un cuento
+268. escribeme un chiste
+269. dime un chiste
+270. dime un acertijo
+271. dime algo gracioso
+272. dime un dato curioso
+273. dime una frase motivadora
+274. cuentame algo
+275. canta algo
+276. ponme musica
+277. que musica me recomienda
+278. quien canta esa cancion
+279. tiene radio
+280. sube el volumen
+281. que serie me recomienda
+282. que libro me recomienda
+283. que videojuego me recomienda
+284. que computador me recomienda
+285. como se escribe hola en ingles
+286. como se dice carro en ingles
+287. como se dice buenos dias en frances
+288. traduceme esto al ingles
+289. que significa la palabra parce
+290. que significa ñapa
+291. que es un chicharron
+292. como se hace el sancocho
+293. como se hace una bandeja paisa
+294. dame una receta de arepas
+295. que como hoy
+296. que cocino hoy
+297. que cena me recomienda
+298. donde venden empanadas
+299. donde venden buen cafe
+300. tengo hambre
+301. tengo frio
+302. tengo calor
+303. me duele la espalda
+304. me duele el estomago
+305. estoy enfermo
+306. estoy cansado
+307. estoy triste
+308. estoy enamorado
+309. me siento solo
+310. me siento mal
+311. que hago si me siento mal
+312. que medicina me tomo para la gripa
+313. donde queda el hospital
+314. donde queda la policia
+315. donde queda el cai
+316. como llamo a la ambulancia
+317. numero de la policia
+318. que hago si me roban
+319. como te llamas
+320. cual es tu nombre
+321. quien te creo
+322. quien te programo
+323. eres un robot
+324. eres inteligente
+325. eres hombre o mujer
+326. donde vives
+327. tienes familia
+328. tienes amigos
+329. tienes hambre
+330. tienes sentimientos
+331. te gusta tu trabajo
+332. de que equipo eres
+333. cual es tu pelicula favorita
+334. cual es tu cancion favorita
+335. que hiciste el fin de semana
+336. que vas a hacer hoy
+337. duermes
+338. sabes cantar
+339. sabes bailar
+340. sabes manejar
+341. sabes jugar ajedrez
+342. sabes jugar play
+343. hablas ingles
+344. puedes pensar
+345. puedes ayudarme con mi tarea
+346. puedes hacerme el almuerzo
+347. puedes llamar a mi esposa
+348. puedes pedirme un domicilio de comida
+349. puedes mandar un mensaje
+350. puedes recordarme una cita
+351. puedes abrir youtube
+352. puedes buscar en google
+353. busca en internet
+354. busca una direccion en el mapa
+355. cuentame de ti
+356. hablame de ti
+357. hablemos de otra cosa
+358. quiero charlar
+359. quiero que me escuches
+360. tengo un problema personal
+361. tengo un problema con mi novia
+362. tengo problemas con mi jefe
+363. mi suegra me tiene cansado
+364. mi jefe me regaño
+365. mi perro esta enfermo
+366. mi gato se perdio
+367. mi vecino hace mucho ruido
+368. mi computador no prende
+369. mi internet esta lento
+370. mi mama esta enferma
+371. mi hermano se casa mañana
+372. hoy es mi aniversario
+373. mañana es mi cumpleaños
+374. cumplo años mañana
+375. feliz cumpleaños a mi jefe
+376. feliz dia de la madre
+377. felicitaciones por el premio
+378. jajaja
+379. jajajaja que bueno
+380. jaja buen chiste
+381. jaja eso estuvo bueno
+382. lol
+383. lol que risa
+384. que risa
+385. que gracioso
+386. que pereza
+387. que sueño
+388. que calor tan hijueputa
+389. uf que calor
+390. uy que frio
+391. ay que dolor
+392. ay no
+393. no lo puedo creer
+394. no puede ser
+395. no entendi
+396. no entiendo lo que dices
+397. no me gusta tu respuesta
+398. no me caes bien
+399. no me sirves
+400. eres un tonto
+401. eres malisimo
+402. estas loco
+403. callate
+404. callate ya
+405. dejame quieto
+406. vete
+407. largate
+408. no quiero hablar contigo
+409. no quiero hablar con un robot
+410. pasame con una persona
+411. pasame con alguien de verdad
+412. hablame en frances
+413. habla mas despacio
+414. repite eso
+415. que dijiste
+416. como dijiste
+417. que dios me bendiga
+418. vamos a rezar
+419. crees en dios
+420. crees en los extraterrestres
+421. crees en el horoscopo
+422. que dice mi horoscopo
+423. que dice mi horoscopo de hoy
+424. me voy a ganar la loteria
+425. va a pasar algo hoy
+426. quien va a ganar las elecciones
+427. que opina del presidente
+428. que opina de la reforma
+429. que opina de los impuestos
+430. que opina de la inflacion
+431. que pasa en el mundo
+432. cuales son las noticias de hoy
+433. hay noticias nuevas
+434. hubo un accidente en la via
+435. hay trancon por la autopista
+436. hay derrumbe en la via a manizales
+437. como esta la via al llano
+438. como esta el transito en bogota
+439. como llego al centro
+440. como llego a la terminal
+441. como llego a la plaza de mercado
+442. cuanto vale un taxi al aeropuerto
+443. cuanto sale una pizza
+444. cuanto vale un tinto
+445. cuanto vale un celular
+446. cuanto vale una casa en cali
+447. cuanto cuesta un corte de pelo
+448. cuanto cuesta una consulta medica
+449. cuanto cuesta una moto nueva
+450. cuanto cuesta una bicicleta
