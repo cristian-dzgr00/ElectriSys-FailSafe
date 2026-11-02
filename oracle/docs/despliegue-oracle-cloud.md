@@ -28,6 +28,7 @@ La aplicación corre en dos VMs `VM.Standard.E2.1.Micro` (x86, 1 GB, gratis) de 
 - **DuckDNS:** `electrisys.duckdns.org` apunta a la IP pública de `electrisys-web` (fija mientras la instancia exista).
 - **Vigilante:** `docker/vigilante-oracle.sh` corre por cron cada 30 min en la VM web. Consulta `/api/health` (ejecuta `SELECT 1` en la base, lo que evita la parada por inactividad), reinicia los contenedores si caen y deja el registro en `~/electrisys/vigilante.log`.
 - **Guía completa del despliegue:** `docs/despliegue-produccion.md`.
+- **Datos de demostración:** `oracle/17_datos_demo.sql` (ver `oracle/docs/datos-demo.md`) simula unos 3,5 meses de uso. Tiene una guarda de idempotencia y termina en `ROLLBACK` salvo que se le pase `COMMIT`. Ya se cargó en esta base.
 
 Reiniciar el servicio en la VM web:
 ```bash

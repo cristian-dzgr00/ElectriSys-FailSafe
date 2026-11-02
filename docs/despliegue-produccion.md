@@ -197,7 +197,7 @@ Comprobaciones automatizadas desde fuera (todas pasan en producción):
 
 ## 11.1 Entrar a Usuarios y Respaldos (rutas de administración)
 
-Las pantallas **Usuarios** y **Respaldos** usan rutas (`/api/usuarios`, `/api/admin/backups`) que el backend solo atiende si la petición llega desde la red VPN `10.100.0.0/24` o desde IPs internas (`VpnMiddleware`). Desde internet responden 403: es el comportamiento diseñado, no una falla.
+Las pantallas **Usuarios**, **Respaldos** y **Auditoría** se pueden **ver** sin VPN: el backend permite únicamente los `GET` de sus listados, siempre con la sesión iniciada. Cualquier acción que modifique algo (crear, editar o desactivar usuarios, «Respaldar ahora», descargar la exportación CSV) exige que la petición llegue desde la red VPN `10.100.0.0/24` o desde una IP interna (`VpnMiddleware`). Fuera de ella la interfaz muestra la ventana «Acceso por VPN requerido» y la API responde 403 con `code: VPN_REQUIRED`. Es el comportamiento diseñado, no una falla. El frontend sabe si está en la VPN consultando `GET /api/vpn/estado`.
 
 No existe otra dirección web: es **el mismo sitio, el mismo backend y la misma base**. Solo cambia por dónde llega la petición. Como WireGuard no está desplegado, la forma de entrar es un **túnel SSH** hacia la VM web:
 
@@ -207,7 +207,7 @@ ssh -i $env:USERPROFILE\.ssh\electrisys_oracle -N -L 8443:127.0.0.1:443 ubuntu@I
 
 Dejar esa ventana abierta y abrir **https://localhost:8443**. El navegador avisa que el certificado no coincide (es el de `electrisys.duckdns.org`): *Avanzado → Continuar*. Iniciar sesión con un usuario administrador. Todo lo que se cambie ahí queda en la misma base y se ve en el sitio normal.
 
-Verificado en producción: por el túnel, Usuarios lista a los usuarios y Respaldos carga sin errores; "Respaldar ahora" genera un `.dmp` y su `.log` en `ELECTRISYS_BACKUP_DIR` (dentro del servidor de la base, por eso la pantalla muestra el aviso de que no puede listarlos).
+Verificado en producción: por el túnel, Usuarios lista a los usuarios y Respaldos carga sin errores; "Respaldar ahora" genera un `.dmp` y su `.log` en `ELECTRISYS_BACKUP_DIR` (dentro del servidor de la base). La pantalla Respaldos los lista leyendo ese directorio con `DBMS_CLOUD.LIST_FILES`, lo que requiere una sola vez `GRANT EXECUTE ON DBMS_CLOUD TO electrisys` (script `oracle/backup/12_listado_backups_cloud.sql`, lo corre `ADMIN`). Los `.dmp` no se descargan desde la web: contienen hashes de contraseñas.
 
 Desplegar WireGuard (`vpn/setup-wireguard.sh`) es la alternativa para dar acceso a más personas: exige abrir el puerto UDP 51820 en la security list y en `iptables`, e instalar el cliente WireGuard en cada equipo.
 
