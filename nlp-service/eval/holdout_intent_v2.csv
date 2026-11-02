@@ -1,0 +1,218 @@
+texto,intencion
+"se me acabaron las pastillas de freno de la Corolla, qué otra marca le puedo dar",recomendar_sustituto
+"no queda el filtro de aire del Sandero, tiene algo que lo reemplace",recomendar_sustituto
+"el cliente quiere batería para la Ranger pero no hay, qué le ofrezco",recomendar_sustituto
+"sin existencias del amortiguador delantero para Logan 2020, qué sirve en su lugar",recomendar_sustituto
+"se agotó el kit de embrague del Rio, hay otra referencia que le sirva",recomendar_sustituto
+"ya no tenemos bujías NGK pa el Swift, qué le pongo",recomendar_sustituto
+"me quedé sin bobina de encendido para Yaris 2018, cuál le puedo recomendar",recomendar_sustituto
+"no hay llantas Michelin 205 para el Hyundai Accent, ¿hay un equivalente?",recomendar_sustituto
+"la correa poly-v Gates ya no está, qué otra me sirve para el Picanto",recomendar_sustituto
+"dame algo parecido al alternador Bosch que se agotó, es para un Mazda 3",recomendar_sustituto
+"cuál puedo ofrecerle de reemplazo al disco de freno Brembo, no hay en bodega",recomendar_sustituto
+"agotado el termostato Gates, necesito una opción equivalente",recomendar_sustituto
+"no encuentro el filtro de combustible Fleetguard del tractor, qué otro puedo dar",recomendar_sustituto
+"el cliente no quiere esperar y la batería Mac 48D no hay, qué le recomiendo en su lugar",recomendar_sustituto
+"si no hay la rótula inferior para Onix, qué puedo ofrecer",recomendar_sustituto
+"se terminó el aceite Mobil 5W-30, tienes otro que lo sustituya",recomendar_sustituto
+"no hay cables de bujía NGK, qué alternativa le doy al cliente",recomendar_sustituto
+"cambio de marca: ya no hay pastillas Bosch para la Sportage, qué ofrezco",recomendar_sustituto
+"se agotó la bomba de agua de la Fortuner, qué le puedo vender en cambio",recomendar_sustituto
+"oiga, ya no quedan los bombillos LED H7, ¿hay algo similar?",recomendar_sustituto
+"necesito un reemplazo para el filtro de aceite que pide el señor, el original se acabó",recomendar_sustituto
+"me piden un radiador y no tengo, qué otra opción le saco",recomendar_sustituto
+"se acabaron las zapatas traseras pa Logan, con qué las reemplazo",recomendar_sustituto
+"sustituto del filtro de cabina Fram, que no hay",recomendar_sustituto
+"no hay disco de embrague Case IH, ¿hay otro que sirva para el Puma?",recomendar_sustituto
+"qué alternativa le doy si no hay llanta Pirelli 265 para la Hilux",recomendar_sustituto
+"ya no tengo el resorte delantero del Aveo, ofrézcale otra cosa al cliente",recomendar_sustituto
+"no hay terminal de dirección pa Frontier, qué equivalente hay",recomendar_sustituto
+"se me acabó el líquido de frenos DOT 4, ¿algún sustituto?",recomendar_sustituto
+"xfa una opción diferente a la que pidió, la del Mobil 1 no hay",recomendar_sustituto
+"buenas tardes, tienen pastillas para Kia Picanto 2019",buscar_repuesto
+"necesito un filtro de aire pa una Renault Sandero",buscar_repuesto
+"consigo bujías de iridio para Mazda CX-5",buscar_repuesto
+"me regala una batería para Hilux diésel",buscar_repuesto
+"manejan llantas 205/55 R16",buscar_repuesto
+"tienen el alternador de la Ranger 2018",buscar_repuesto
+"busco amortiguadores traseros para Chevrolet Sail",buscar_repuesto
+"ando buscando un termostato para Logan",buscar_repuesto
+"tiene bombillos H4 para carro",buscar_repuesto
+"necesito correa de distribución pa Yaris 2016",buscar_repuesto
+"quiero una bomba de agua para Corolla 2021",buscar_repuesto
+"hay discos de freno pa Sportage 2020",buscar_repuesto
+"me consigue un kit de embrague para Logan 1.6",buscar_repuesto
+"busco un filtro hidráulico para John Deere 5075E",buscar_repuesto
+"estoy buscando llanta agrícola 18.4-46 para tractor",buscar_repuesto
+"necesito el motor de arranque de la Fortuner",buscar_repuesto
+"alguien que tenga relé de 40 amperios",buscar_repuesto
+"tienen aceite para caja automática",buscar_repuesto
+"buenas, tienen cables de bujía pa Ford Escape",buscar_repuesto
+"necesito juntas de culata para Aveo",buscar_repuesto
+"tiene bobina para Onix 2020",buscar_repuesto
+"quisiera ver cauchos para camioneta 265",buscar_repuesto
+"busco el cilindro maestro de freno para L200",buscar_repuesto
+"tienen enganche de tres puntos pa tractor",buscar_repuesto
+"necesito balatas traseras pa Nissan Sentra 2017",buscar_repuesto
+"consigo homocinética delantera para Mazda 3",buscar_repuesto
+"manejan pasadores de enganche",buscar_repuesto
+"busco un acumulador para Duster",buscar_repuesto
+"tiene el repuesto KN-33-2304",buscar_repuesto
+"tengo una Frontier 2019 y necesito pastillas",buscar_repuesto
+"tienen sellos para cilindro hidráulico Massey",buscar_repuesto
+"me interesa una batería Bosch para Tucson",buscar_repuesto
+"cuántas baterías Mac quedan en el almacén",consultar_stock
+"queda algo de aceite 15W-40 en bodega",consultar_stock
+"revísame el inventario de las pastillas Brembo",consultar_stock
+"cuántas unidades hay de la bobina Bosch 0221",consultar_stock
+"cuántos termostatos Gates nos quedan",consultar_stock
+"ya casi no hay bombillos H4, cuántos quedan",consultar_stock
+"cuántas llantas 185/65R15 tenemos en stock",consultar_stock
+"existencias de la correa K060",consultar_stock
+"dime cuántos filtros Fram PH5796 hay disponibles",consultar_stock
+"cuántos discos de embrague Massey quedan",consultar_stock
+"me puede decir el stock del motor de arranque Bosch",consultar_stock
+"tenemos suficientes bujías BKR5E para este mes",consultar_stock
+"cuántos pares de LED H7 hay",consultar_stock
+"cuántas juntas de culata hay",consultar_stock
+"cuántos galones de ATF nos quedan",consultar_stock
+"stock de rótulas inferiores",consultar_stock
+"queda inventario del alternador Case IH",consultar_stock
+"verifica cuántas unidades del cilindro maestro de freno hay en el sistema",consultar_stock
+"cuánto hay de líquido de frenos",consultar_stock
+"estamos cortos de zapatas traseras, cuántas hay",consultar_stock
+"revisa la existencia del código BSH-0281",consultar_stock
+"cuántos separadores de agua Fleetguard hay",consultar_stock
+"me confirma la cantidad de relés de 40A que hay",consultar_stock
+"cuántas bombas hidráulicas Massey Ferguson quedan",consultar_stock
+"falta mucho para que se agote la batería JD-BAT31",consultar_stock
+"hay muchas baterías Bosch o quedan pocas",consultar_stock
+"unidades disponibles del resorte delantero",consultar_stock
+"cuántas bombas de agua Bosch tenemos en bodega ahorita",consultar_stock
+"dame el inventario de mangueras hidráulicas",consultar_stock
+"cuántos kits de distribución Gates quedan para despachar",consultar_stock
+"revisa si todavía queda filtro de cabina",consultar_stock
+"cuánto vale la bomba de agua de la Fortuner",consultar_precio
+"a cómo está la batería Mac 27HI",consultar_precio
+"precio del kit de embrague de la Logan xfa",consultar_precio
+"cuánto me sale un juego de pastillas para Corolla",consultar_precio
+"cotíceme las llantas 205/55R16 por favor",consultar_precio
+"qué valor tiene el alternador para Tucson",consultar_precio
+"cuánto cuesta el motor de arranque de la Hilux",consultar_precio
+"precio de la bobina Bosch",consultar_precio
+"me regala el precio de unos bombillos LED",consultar_precio
+"cuánto es lo del termostato",consultar_precio
+"valor de la correa poly-v K060",consultar_precio
+"a cuánto vende el aceite Mobil 5W-30 el galón",consultar_precio
+"cuánto cuesta el filtro de aire Mann para Logan",consultar_precio
+"cuál es el precio de la llanta agrícola 14.9-28",consultar_precio
+"ey cuánto vale ese radiador de aluminio",consultar_precio
+"necesito saber el precio del cilindro maestro",consultar_precio
+"qué precio tiene el disco Brembo 09.A729",consultar_precio
+"cuánto me cobra por el juego de cables de bujía NGK",consultar_precio
+"cuánto sale el enganche de tres puntos John Deere",consultar_precio
+"me da el valor de las zapatas traseras pa Sandero",consultar_precio
+"a cómo tiene los amortiguadores traseros Monroe",consultar_precio
+"precio de las bujías de iridio por unidad",consultar_precio
+"cuánto vale la junta de culata del Aveo",consultar_precio
+"cuánto me cuesta una batería para camioneta",consultar_precio
+"valor total de 4 llantas 215/60R17",consultar_precio
+"me puede cotizar el kit de distribución para Yaris",consultar_precio
+"cuánto cuesta el eje de toma de fuerza Case IH",consultar_precio
+"a cuánto el líquido de frenos DOT 4",consultar_precio
+"precio del código FRAM-CA10242",consultar_precio
+"xfa el precio del relé automotriz de 40 amperios",consultar_precio
+"la bujía BKR6E le entra a un Suzuki Swift",consultar_compatibilidad
+"este filtro de aceite Fram sirve para Spark GT",consultar_compatibilidad
+"las pastillas Bosch 0281 le sirven a la CX-5",consultar_compatibilidad
+"esta batería aplica para Kia Rio 2020",consultar_compatibilidad
+"sirve el alternador Bosch en una Corolla 2021",consultar_compatibilidad
+"con cuáles carros es compatible la correa K060",consultar_compatibilidad
+"la llanta 205/55R16 es para Mazda 3",consultar_compatibilidad
+"el amortiguador Monroe AM204 va en un Sandero",consultar_compatibilidad
+"esta bomba de agua es compatible con Toyota Yaris",consultar_compatibilidad
+"a qué tractores le sirve el filtro Fleetguard LF3970",consultar_compatibilidad
+"este kit de embrague sirve pa Hyundai Accent 2018",consultar_compatibilidad
+"el termostato Gates TH192 le funciona a la Logan",consultar_compatibilidad
+"me confirma si las pastillas Brembo P85020 son para Kia Picanto",consultar_compatibilidad
+"el disco de embrague Case IH sirve en tractor Puma o solo Farmall",consultar_compatibilidad
+"este relé de 40A lo puedo usar en una Ranger",consultar_compatibilidad
+"sirve la batería JD-BAT31 en un New Holland",consultar_compatibilidad
+"para qué vehículos aplica el filtro de aire Mann C25114",consultar_compatibilidad
+"las bujías de iridio van en motor 1.2 o solo en 2.0",consultar_compatibilidad
+"este aceite ATF lo usa la Sportage automática",consultar_compatibilidad
+"el filtro K&N de aire lavable aplica en una Hilux",consultar_compatibilidad
+"la junta de culata sirve para Aveo 1.6 y para Sail 1.4",consultar_compatibilidad
+"esta manguera hidráulica sirve para John Deere 6110M",consultar_compatibilidad
+"es compatible el bombillo H4 con un Chevrolet Onix",consultar_compatibilidad
+"le sirve el motor de arranque a una Frontier diésel",consultar_compatibilidad
+"este líquido de frenos sirve para cualquier carro o solo para ciertos modelos",consultar_compatibilidad
+"el cilindro maestro es para una L200 o para la Ranger",consultar_compatibilidad
+"esta rótula de enganche sirve en Massey Ferguson 290",consultar_compatibilidad
+"la llanta agrícola Michelin va en el tractor John Deere 5075E",consultar_compatibilidad
+"esta bobina es solo para motores a gasolina",consultar_compatibilidad
+"funciona el resorte delantero en un Logan 2019",consultar_compatibilidad
+"quihubo, buenas",saludo_despedida
+"buenos días parce",saludo_despedida
+"buenas noches, ya me despido",saludo_despedida
+"ahí quedamos entonces, gracias",saludo_despedida
+"muchas gracias por la colaboración",saludo_despedida
+"hola, muy buenas, ¿cómo amaneció?",saludo_despedida
+"qué hubo, ¿cómo vamos?",saludo_despedida
+"bueno chao",saludo_despedida
+"gracias, hasta mañana",saludo_despedida
+"que tenga linda tarde",saludo_despedida
+"saludos desde el taller",saludo_despedida
+"buenas, ¿cómo le va?",saludo_despedida
+"mil gracias, quedó todo claro",saludo_despedida
+"listo mano, quedamos pendientes",saludo_despedida
+"hasta luego, me voy a almorzar",saludo_despedida
+"buenas tardes, ¿cómo ha estado?",saludo_despedida
+"un saludo y gracias",saludo_despedida
+"que le vaya bien",saludo_despedida
+"feliz tarde",saludo_despedida
+"ok chévere, gracias",saludo_despedida
+"hola, buen día, ¿qué tal?",saludo_despedida
+"buenos días, bienvenido",saludo_despedida
+"adiós, gracias por todo",saludo_despedida
+"perfecto, de nada. hasta la próxima",saludo_despedida
+"muy amable, nos vemos",saludo_despedida
+"sumercé, buenas tardes",saludo_despedida
+"epa, buenas",saludo_despedida
+"gracias totales",saludo_despedida
+"hola, ¿en qué me puede ayudar?",saludo_despedida
+"buenas noches, que descanse",saludo_despedida
+"qué día es hoy",fuera_de_dominio
+"cuéntame un chiste de Pepito",fuera_de_dominio
+"cómo se prepara un buen sancocho",fuera_de_dominio
+"quién ganó el clásico de ayer, Millonarios o Nacional",fuera_de_dominio
+"cuál es la mejor app para pedir comida",fuera_de_dominio
+"cuánto es 17 por 23",fuera_de_dominio
+"qué significa la palabra efímero",fuera_de_dominio
+"dónde queda la Plaza de Bolívar",fuera_de_dominio
+"cómo está el pronóstico del tiempo para mañana en Bogotá",fuera_de_dominio
+"puedes ayudarme a escribir una carta de renuncia",fuera_de_dominio
+"cuál es el celular más bueno para comprar ahora",fuera_de_dominio
+"ponme una canción de vallenato",fuera_de_dominio
+"explícame qué es un agujero negro",fuera_de_dominio
+"cómo se llama el presidente de Argentina",fuera_de_dominio
+"traduce hello how are you al español",fuera_de_dominio
+"qué película estrenaron esta semana",fuera_de_dominio
+"dame un consejo para estudiar mejor",fuera_de_dominio
+"tienes novia o novio",fuera_de_dominio
+"hasta qué hora atienden los sábados",fuera_de_dominio
+"reciben Nequi o Daviplata",fuera_de_dominio
+"pueden enviarme el pedido a mi casa en Medellín",fuera_de_dominio
+"tienen dónde dejar la moto mientras entro",fuera_de_dominio
+"cuál es la dirección del local",fuera_de_dominio
+"me pueden dar factura electrónica a nombre de mi empresa",fuera_de_dominio
+"cuánto tiempo de garantía tiene lo que compro",fuera_de_dominio
+"aceptan devoluciones si la pieza no sirve",fuera_de_dominio
+"hacen instalación de los repuestos en el taller",fuera_de_dominio
+"me recomienda un buen mecánico por aquí cerca",fuera_de_dominio
+"abren los domingos y festivos",fuera_de_dominio
+"el jefe está o no ha llegado",fuera_de_dominio
+"pagan por reciclar baterías viejas",fuera_de_dominio
+"pueden fiarme hasta el viernes",fuera_de_dominio
+"tienen crédito para talleres",fuera_de_dominio
+"cuál es el número del almacén para llamar",fuera_de_dominio

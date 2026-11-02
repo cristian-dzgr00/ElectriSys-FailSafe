@@ -1,0 +1,627 @@
+[
+  {
+    "texto": "necesito pastillas de freno para toyota corolla 2021",
+    "grupo": "normal",
+    "esperado": {"marca": "Toyota", "modelo": "Corolla", "anio": 2021, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "tienen balatas para un chevrolet aveo 2016",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Aveo", "anio": 2016, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "busco bateria para mazda cx-5 2.5 gasolina",
+    "grupo": "normal",
+    "esperado": {"marca": "Mazda", "modelo": "CX-5", "anio": null, "motor": "2.5", "combustible": "gasolina", "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "amortiguadores traseros para nissan sentra 2018",
+    "grupo": "normal",
+    "esperado": {"marca": "Nissan", "modelo": "Sentra", "anio": 2018, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "kit de distribucion para renault logan 1.6",
+    "grupo": "normal",
+    "esperado": {"marca": "Renault", "modelo": "Logan", "anio": null, "motor": "1.6", "combustible": null, "categoria": "Correas y Bandas", "codigo": null}
+  },
+  {
+    "texto": "llantas para kia picanto 2019",
+    "grupo": "normal",
+    "esperado": {"marca": "Kia", "modelo": "Picanto", "anio": 2019, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "alternador para ford ranger diesel 3.2",
+    "grupo": "normal",
+    "esperado": {"marca": "Ford", "modelo": "Ranger", "anio": null, "motor": "3.2", "combustible": "diesel", "categoria": "Sistema Eléctrico", "codigo": null}
+  },
+  {
+    "texto": "filtro de aire para suzuki swift",
+    "grupo": "normal",
+    "esperado": {"marca": "Suzuki", "modelo": "Swift", "anio": null, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "bujias para hyundai accent 2017",
+    "grupo": "normal",
+    "esperado": {"marca": "Hyundai", "modelo": "Accent", "anio": 2017, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "pastillas para mitsubishi l200 diesel",
+    "grupo": "normal",
+    "esperado": {"marca": "Mitsubishi", "modelo": "L200", "anio": null, "motor": null, "combustible": "diesel", "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "bombillos led para chevrolet onix 2022",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Onix", "anio": 2022, "motor": null, "combustible": null, "categoria": "Sistema Eléctrico", "codigo": null}
+  },
+  {
+    "texto": "rotula inferior para chevrolet sail 2015",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Sail", "anio": 2015, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "termostato para renault sandero",
+    "grupo": "normal",
+    "esperado": {"marca": "Renault", "modelo": "Sandero", "anio": null, "motor": null, "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "liquido de frenos para ford fiesta",
+    "grupo": "normal",
+    "esperado": {"marca": "Ford", "modelo": "Fiesta", "anio": null, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "junta de culata para ford escape 2.5 2014",
+    "grupo": "normal",
+    "esperado": {"marca": "Ford", "modelo": "Escape", "anio": 2014, "motor": "2.5", "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "bujias para chevrolet spark gt 2016",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Spark GT", "anio": 2016, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "bateria para chevrolet spark 1.2",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Spark", "anio": null, "motor": "1.2", "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "amortiguador monroe para kia rio 2018",
+    "grupo": "normal",
+    "esperado": {"marca": "Kia", "modelo": "Rio", "anio": 2018, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "filtro de cabina para hyundai tucson 2020",
+    "grupo": "normal",
+    "esperado": {"marca": "Hyundai", "modelo": "Tucson", "anio": 2020, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "disco de freno para kia sportage 2019 gasolina",
+    "grupo": "normal",
+    "esperado": {"marca": "Kia", "modelo": "Sportage", "anio": 2019, "motor": null, "combustible": "gasolina", "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "motor de arranque para toyota hilux 2.7",
+    "grupo": "normal",
+    "esperado": {"marca": "Toyota", "modelo": "Hilux", "anio": null, "motor": "2.7", "combustible": null, "categoria": "Sistema Eléctrico", "codigo": null}
+  },
+  {
+    "texto": "filtro de aceite para toyota fortuner 2020",
+    "grupo": "normal",
+    "esperado": {"marca": "Toyota", "modelo": "Fortuner", "anio": 2020, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "correa poly v para toyota yaris 2017",
+    "grupo": "normal",
+    "esperado": {"marca": "Toyota", "modelo": "Yaris", "anio": 2017, "motor": null, "combustible": null, "categoria": "Correas y Bandas", "codigo": null}
+  },
+  {
+    "texto": "pastillas de freno para nissan frontier diesel 2019",
+    "grupo": "normal",
+    "esperado": {"marca": "Nissan", "modelo": "Frontier", "anio": 2019, "motor": null, "combustible": "diesel", "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "radiador para renault duster 2.0",
+    "grupo": "normal",
+    "esperado": {"marca": "Renault", "modelo": "Duster", "anio": null, "motor": "2.0", "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "juego de cables de bujia para suzuki swift 1.2",
+    "grupo": "normal",
+    "esperado": {"marca": "Suzuki", "modelo": "Swift", "anio": null, "motor": "1.2", "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "necesito algo pal mazda 3 del 2019, a gasolina",
+    "grupo": "normal",
+    "esperado": {"marca": "Mazda", "modelo": "3", "anio": 2019, "motor": null, "combustible": "gasolina", "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "para la hilux 2022 con motor 2.7L necesito el filtro de aceite",
+    "grupo": "normal",
+    "esperado": {"marca": null, "modelo": "Hilux", "anio": 2022, "motor": "2.7", "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "aceite de motor para la sportage 2.0",
+    "grupo": "normal",
+    "esperado": {"marca": null, "modelo": "Sportage", "anio": null, "motor": "2.0", "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "kia rio 1600cc necesito correa",
+    "grupo": "normal",
+    "esperado": {"marca": "Kia", "modelo": "Rio", "anio": null, "motor": "1600cc", "combustible": null, "categoria": "Correas y Bandas", "codigo": null}
+  },
+  {
+    "texto": "nissan sentra 2020 frenos",
+    "grupo": "normal",
+    "esperado": {"marca": "Nissan", "modelo": "Sentra", "anio": 2020, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "tienen cauchos para toyota hilux",
+    "grupo": "normal",
+    "esperado": {"marca": "Toyota", "modelo": "Hilux", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "clutch para chevrolet spark 2018",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Spark", "anio": 2018, "motor": null, "combustible": null, "categoria": "Transmisión", "codigo": null}
+  },
+  {
+    "texto": "homocinetica delantera para mazda 3 2.0",
+    "grupo": "normal",
+    "esperado": {"marca": "Mazda", "modelo": "3", "anio": null, "motor": "2.0", "combustible": null, "categoria": "Transmisión", "codigo": null}
+  },
+  {
+    "texto": "empaque de culata para chevrolet aveo",
+    "grupo": "normal",
+    "esperado": {"marca": "Chevrolet", "modelo": "Aveo", "anio": null, "motor": null, "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "bombillos para renault logan 2019",
+    "grupo": "normal",
+    "esperado": {"marca": "Renault", "modelo": "Logan", "anio": 2019, "motor": null, "combustible": null, "categoria": "Sistema Eléctrico", "codigo": null}
+  },
+  {
+    "texto": "acumulador para kia sportage a diesel",
+    "grupo": "normal",
+    "esperado": {"marca": "Kia", "modelo": "Sportage", "anio": null, "motor": null, "combustible": "diesel", "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "llantas 205/55R16 para mazda 3",
+    "grupo": "normal",
+    "esperado": {"marca": "Mazda", "modelo": "3", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "bomba de agua para toyota yaris 1.5",
+    "grupo": "normal",
+    "esperado": {"marca": "Toyota", "modelo": "Yaris", "anio": null, "motor": "1.5", "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "ford ranger acpm 2018 llantas",
+    "grupo": "normal",
+    "esperado": {"marca": "Ford", "modelo": "Ranger", "anio": 2018, "motor": null, "combustible": "diesel", "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "manguera hidraulica para john deere 5075E",
+    "grupo": "normal",
+    "esperado": {"marca": "John Deere", "modelo": "5075E", "anio": null, "motor": null, "combustible": null, "categoria": "Hidráulica", "codigo": null}
+  },
+  {
+    "texto": "enganche de tres puntos para massey ferguson 4707",
+    "grupo": "normal",
+    "esperado": {"marca": "Massey Ferguson", "modelo": "4707", "anio": null, "motor": null, "combustible": null, "categoria": "Enganches y Acoples", "codigo": null}
+  },
+  {
+    "texto": "filtro de combustible para case ih puma 165",
+    "grupo": "normal",
+    "esperado": {"marca": "Case IH", "modelo": "Puma 165", "anio": null, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "bomba hidraulica new holland t6.120",
+    "grupo": "normal",
+    "esperado": {"marca": "New Holland", "modelo": "T6.120", "anio": null, "motor": null, "combustible": null, "categoria": "Hidráulica", "codigo": null}
+  },
+  {
+    "texto": "baterias para new holland tl90",
+    "grupo": "normal",
+    "esperado": {"marca": "New Holland", "modelo": "TL90", "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "disco de embrague massey ferguson 6713",
+    "grupo": "normal",
+    "esperado": {"marca": "Massey Ferguson", "modelo": "6713", "anio": null, "motor": null, "combustible": null, "categoria": "Transmisión", "codigo": null}
+  },
+  {
+    "texto": "llanta agricola 18.4-46 para john deere 6110M",
+    "grupo": "normal",
+    "esperado": {"marca": "John Deere", "modelo": "6110M", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "eje de toma de fuerza case ih farmall 75C",
+    "grupo": "normal",
+    "esperado": {"marca": "Case IH", "modelo": "Farmall 75C", "anio": null, "motor": null, "combustible": null, "categoria": "Enganches y Acoples", "codigo": null}
+  },
+  {
+    "texto": "correa del ventilador para tractor massey ferguson 290",
+    "grupo": "normal",
+    "esperado": {"marca": "Massey Ferguson", "modelo": "290", "anio": null, "motor": null, "combustible": null, "categoria": "Correas y Bandas", "codigo": null}
+  },
+  {
+    "texto": "john deere 5075E diesel 2018 correa de alternador",
+    "grupo": "normal",
+    "esperado": {"marca": "John Deere", "modelo": "5075E", "anio": 2018, "motor": null, "combustible": "diesel", "categoria": "Correas y Bandas", "codigo": null}
+  },
+  {
+    "texto": "mangueras hidraulicas pa tractor new holland tl90 2020",
+    "grupo": "normal",
+    "esperado": {"marca": "New Holland", "modelo": "TL90", "anio": 2020, "motor": null, "combustible": null, "categoria": "Hidráulica", "codigo": null}
+  },
+  {
+    "texto": "sistema electrico del case ih puma 165 6.7",
+    "grupo": "normal",
+    "esperado": {"marca": "Case IH", "modelo": "Puma 165", "anio": null, "motor": "6.7", "combustible": null, "categoria": "Sistema Eléctrico", "codigo": null}
+  },
+  {
+    "texto": "necesito neumaticos traseros para massey ferguson 4707 diesel",
+    "grupo": "normal",
+    "esperado": {"marca": "Massey Ferguson", "modelo": "4707", "anio": null, "motor": null, "combustible": "diesel", "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "pastillas para el spark",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": "Spark", "anio": null, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "necesito un amortiguador para la duster",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": "Duster", "anio": null, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "tienen llantas rin 15",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "quiero ver precios de bateria",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "hay frenos",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "tractor con enganche",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": "Enganches y Acoples", "codigo": null}
+  },
+  {
+    "texto": "bujías nuevas para mi carro",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "kit de embrague para el logan",
+    "grupo": "sinonimo",
+    "esperado": {"marca": null, "modelo": "Logan", "anio": null, "motor": null, "combustible": null, "categoria": "Transmisión", "codigo": null}
+  },
+  {
+    "texto": "cuanto vale el BSH-0281",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "BSH-0281"}
+  },
+  {
+    "texto": "hay stock del hp-1002",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "HP-1002"}
+  },
+  {
+    "texto": "precio del repuesto M1-102 por favor",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "M1-102"}
+  },
+  {
+    "texto": "el 90915-YZZD4 sirve para la hilux 2022",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": "Hilux", "anio": 2022, "motor": null, "combustible": null, "categoria": null, "codigo": "90915-YZZD4"}
+  },
+  {
+    "texto": "dame el FRAM-PH5796 para spark",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": "Spark", "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "FRAM-PH5796"}
+  },
+  {
+    "texto": "tienen el NGK-BKR6E en stock",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "NGK-BKR6E"}
+  },
+  {
+    "texto": "cuanto cuesta el KN-33-2304 para hilux",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": "Hilux", "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "KN-33-2304"}
+  },
+  {
+    "texto": "MAC-48D para chevrolet onix",
+    "grupo": "codigo",
+    "esperado": {"marca": "Chevrolet", "modelo": "Onix", "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "MAC-48D"}
+  },
+  {
+    "texto": "necesito el GAT-T295 para sentra 2017",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": "Sentra", "anio": 2017, "motor": null, "combustible": null, "categoria": null, "codigo": "GAT-T295"}
+  },
+  {
+    "texto": "codigo CMT-TER-DIR terminal de direccion",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": "CMT-TER-DIR"}
+  },
+  {
+    "texto": "el JD-RE504836 es para el 6110M",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": "6110M", "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "JD-RE504836"}
+  },
+  {
+    "texto": "revisen el MOB-5W30 en bodega",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": "MOB-5W30"}
+  },
+  {
+    "texto": "llanta MI-P205 para accent",
+    "grupo": "codigo",
+    "esperado": {"marca": null, "modelo": "Accent", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": "MI-P205"}
+  },
+  {
+    "texto": "bsh-alt120 para toyota corolla 2.0",
+    "grupo": "codigo",
+    "esperado": {"marca": "Toyota", "modelo": "Corolla", "anio": null, "motor": "2.0", "combustible": null, "categoria": null, "codigo": "BSH-ALT120"}
+  },
+  {
+    "texto": "aceite 5W-30 para mazda 3 2019",
+    "grupo": "trampa",
+    "esperado": {"marca": "Mazda", "modelo": "3", "anio": 2019, "motor": null, "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "aceite 15W-40 para ford ranger diesel",
+    "grupo": "trampa",
+    "esperado": {"marca": "Ford", "modelo": "Ranger", "anio": null, "motor": null, "combustible": "diesel", "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "bateria start-stop para renault duster",
+    "grupo": "trampa",
+    "esperado": {"marca": "Renault", "modelo": "Duster", "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "necesito 4 bujias para suzuki swift 2020",
+    "grupo": "trampa",
+    "esperado": {"marca": "Suzuki", "modelo": "Swift", "anio": 2020, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "llantas 185/65R15 para renault sandero",
+    "grupo": "trampa",
+    "esperado": {"marca": "Renault", "modelo": "Sandero", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "buenas tardes necesito ayuda con un repuesto",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "cuanto cuesta eso",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "tienen cosas para el carro",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "quiero algo para mi camioneta",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "cuantas unidades quedan en bodega",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "necesito una pieza para un carro 2018",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": 2018, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "algo para motor 1.4",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": "1.4", "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "para carros a diesel",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": "diesel", "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "necesito un repuesto de 1600cc",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": "1600cc", "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "cual es el horario de atencion",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "gracias hasta luego",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "algo para una camioneta 4x4",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "necesito ayuda con mi toyota",
+    "grupo": "negativo",
+    "esperado": {"marca": "Toyota", "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "busco algo para mazda",
+    "grupo": "negativo",
+    "esperado": {"marca": "Mazda", "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "me sirve pa kia",
+    "grupo": "negativo",
+    "esperado": {"marca": "Kia", "modelo": null, "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "tienen para la sportage",
+    "grupo": "negativo",
+    "esperado": {"marca": null, "modelo": "Sportage", "anio": null, "motor": null, "combustible": null, "categoria": null, "codigo": null}
+  },
+  {
+    "texto": "pastillas de fremo para toyta corolla 2020",
+    "grupo": "typo",
+    "esperado": {"marca": "Toyota", "modelo": "Corolla", "anio": 2020, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "bateria para shevrolet spark",
+    "grupo": "typo",
+    "esperado": {"marca": "Chevrolet", "modelo": "Spark", "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "filtro de aciete para nisan sentra",
+    "grupo": "typo",
+    "esperado": {"marca": "Nissan", "modelo": "Sentra", "anio": null, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "bujias para mazada 3 2019",
+    "grupo": "typo",
+    "esperado": {"marca": "Mazda", "modelo": "3", "anio": 2019, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "amortiguadores para hiunday tucson",
+    "grupo": "typo",
+    "esperado": {"marca": "Hyundai", "modelo": "Tucson", "anio": null, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "correa de distribucion pa susuki swift",
+    "grupo": "typo",
+    "esperado": {"marca": "Suzuki", "modelo": "Swift", "anio": null, "motor": null, "combustible": null, "categoria": "Correas y Bandas", "codigo": null}
+  },
+  {
+    "texto": "llantas para renol logan 2021",
+    "grupo": "typo",
+    "esperado": {"marca": "Renault", "modelo": "Logan", "anio": 2021, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "disco de freno para kya sportage",
+    "grupo": "typo",
+    "esperado": {"marca": "Kia", "modelo": "Sportage", "anio": null, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "pastillas para toyota ilux 2019",
+    "grupo": "typo",
+    "esperado": {"marca": "Toyota", "modelo": "Hilux", "anio": 2019, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "bateria para toyota fortuener",
+    "grupo": "typo",
+    "esperado": {"marca": "Toyota", "modelo": "Fortuner", "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "filtro de aire pa toyota corola 2018",
+    "grupo": "typo",
+    "esperado": {"marca": "Toyota", "modelo": "Corolla", "anio": 2018, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "bujias para kia sportaje",
+    "grupo": "typo",
+    "esperado": {"marca": "Kia", "modelo": "Sportage", "anio": null, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "pastillas para nissan setra 2017",
+    "grupo": "typo",
+    "esperado": {"marca": "Nissan", "modelo": "Sentra", "anio": 2017, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "amortiguador para kia pikanto",
+    "grupo": "typo",
+    "esperado": {"marca": "Kia", "modelo": "Picanto", "anio": null, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "llantas para hyundai tuczon",
+    "grupo": "typo",
+    "esperado": {"marca": "Hyundai", "modelo": "Tucson", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "alternador para ford fiesra 2015",
+    "grupo": "typo",
+    "esperado": {"marca": "Ford", "modelo": "Fiesta", "anio": 2015, "motor": null, "combustible": null, "categoria": "Sistema Eléctrico", "codigo": null}
+  },
+  {
+    "texto": "bomba de agua para chevrolet abeo",
+    "grupo": "typo",
+    "esperado": {"marca": "Chevrolet", "modelo": "Aveo", "anio": null, "motor": null, "combustible": null, "categoria": "Motor", "codigo": null}
+  },
+  {
+    "texto": "kit de embriage para renault logann",
+    "grupo": "typo",
+    "esperado": {"marca": "Renault", "modelo": "Logan", "anio": null, "motor": null, "combustible": null, "categoria": "Transmisión", "codigo": null}
+  },
+  {
+    "texto": "frenos para nisan frontier 2018",
+    "grupo": "typo",
+    "esperado": {"marca": "Nissan", "modelo": "Frontier", "anio": 2018, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "suspencion para ford escape 2013",
+    "grupo": "typo",
+    "esperado": {"marca": "Ford", "modelo": "Escape", "anio": 2013, "motor": null, "combustible": null, "categoria": "Suspensión", "codigo": null}
+  },
+  {
+    "texto": "baterria para mazda cx5",
+    "grupo": "typo",
+    "esperado": {"marca": "Mazda", "modelo": "CX-5", "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "transmicion para suzuki swift",
+    "grupo": "typo",
+    "esperado": {"marca": "Suzuki", "modelo": "Swift", "anio": null, "motor": null, "combustible": null, "categoria": "Transmisión", "codigo": null}
+  },
+  {
+    "texto": "bujias ngk para chevrolet sprak 2018",
+    "grupo": "typo",
+    "esperado": {"marca": "Chevrolet", "modelo": "Spark", "anio": 2018, "motor": null, "combustible": null, "categoria": "Encendido", "codigo": null}
+  },
+  {
+    "texto": "pastillas pa dusterr 2.0",
+    "grupo": "typo",
+    "esperado": {"marca": null, "modelo": "Duster", "anio": null, "motor": "2.0", "combustible": null, "categoria": "Frenos", "codigo": null}
+  },
+  {
+    "texto": "llantas para mitsubishi l200 diezel",
+    "grupo": "typo",
+    "esperado": {"marca": "Mitsubishi", "modelo": "L200", "anio": null, "motor": null, "combustible": "diesel", "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "bateria pa john dere 5075E",
+    "grupo": "typo",
+    "esperado": {"marca": "John Deere", "modelo": "5075E", "anio": null, "motor": null, "combustible": null, "categoria": "Baterías", "codigo": null}
+  },
+  {
+    "texto": "filtros para masey ferguson 4707",
+    "grupo": "typo",
+    "esperado": {"marca": "Massey Ferguson", "modelo": "4707", "anio": null, "motor": null, "combustible": null, "categoria": "Filtros", "codigo": null}
+  },
+  {
+    "texto": "neumaticos para new holand tl90",
+    "grupo": "typo",
+    "esperado": {"marca": "New Holland", "modelo": "TL90", "anio": null, "motor": null, "combustible": null, "categoria": "Neumáticos", "codigo": null}
+  },
+  {
+    "texto": "ferenos para mitsubishi l200 2018",
+    "grupo": "typo",
+    "esperado": {"marca": "Mitsubishi", "modelo": "L200", "anio": 2018, "motor": null, "combustible": null, "categoria": "Frenos", "codigo": null}
+  }
+]

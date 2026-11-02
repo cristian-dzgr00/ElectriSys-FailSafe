@@ -1,0 +1,81 @@
+"ID","CODIGO","NOMBRE","DESCRIPCION","CATEGORIA","PROVEEDOR","PRECIO_COMPRA","PRECIO_VENTA","STOCK","STOCK_MINIMO","ACTIVO"
+1,"90915-YZZD4","Filtro de aceite original Toyota","Filtro de aceite original para motores Toyota 2.7 gasolina","Filtros","Toyota Original Parts",28000,42000,0,5,1
+2,"HP-1002","Filtro de aceite K&N HP-1002","Filtro de aceite de alto flujo, compatible con motores 2.7L gasolina","Filtros","K&N Filtros",23300,37100,22,5,1
+3,"M1-102","Filtro de aceite Mobil 1 M1-102","Filtro de aceite sintético de larga duración para motores 2.7L gasolina","Filtros","Mobil 1 Distribuidora",24000,38000,38,5,1
+4,"BRM-FD204","Pastillas de freno delanteras Brembo","Juego de pastillas de freno delanteras cerámicas","Frenos","Brembo Colombia",68500,100000,4,5,1
+5,"BSH-0281","Pastillas de freno delanteras Bosch","Juego de pastillas de freno delanteras semi-metálicas","Frenos","Bosch Autopartes",61000,88000,11,5,1
+6,"NGK-BKR6E","Bujía NGK BKR6E","Bujía de níquel estándar para motores a gasolina","Encendido","NGK Bujías",9700,16200,60,10,1
+7,"MAC-48D","Batería Mac 48D","Batería de 12V 60Ah para vehículos livianos y pickups","Baterías","Mac Baterías",191000,275500,10,3,1
+8,"GAT-T295","Correa de distribución Gates T295","Correa de distribución reforzada","Correas y Bandas","Gates Correas",47700,72000,18,3,1
+9,"BSH-ALT120","Alternador Bosch 120A","Alternador reconstruido 12V 120A para vehículos livianos","Sistema Eléctrico","Bosch Autopartes",210000,310000,11,3,1
+10,"MNR-AM204","Amortiguador delantero Monroe","Amortiguador a gas para suspensión delantera","Suspensión","Bosch Autopartes",95000,140000,21,4,1
+11,"BSH-RAD330","Radiador de aluminio Bosch","Radiador de aluminio para sistema de enfriamiento","Motor","Bosch Autopartes",280000,395000,9,2,1
+12,"MI-P205","Llanta Michelin 205/55R16","Neumático radial para automóvil","Neumáticos","Michelin Agro",222500,339000,19,6,1
+13,"JD-RE504836","Filtro de aceite hidráulico John Deere","Filtro de aceite hidráulico para tractores serie 5000/6000","Hidráulica","John Deere Partes",65000,98000,16,3,1
+14,"FG-LF3970","Filtro de aceite de motor Fleetguard","Filtro de aceite para motores diésel de tractores e implementos","Filtros","Fleetguard Filtros Industriales",44500,67000,22,5,1
+15,"FG-FF5320","Filtro de combustible Fleetguard","Filtro de combustible diésel para tractores agrícolas","Filtros","Fleetguard Filtros Industriales",38000,57000,0,5,1
+16,"CIH-FF7000","Filtro de combustible Case IH","Filtro de combustible diésel equivalente para tractores serie Puma","Filtros","Case IH Repuestos",40000,60000,15,4,1
+17,"MF-FF6800","Filtro de combustible Massey Ferguson","Filtro de combustible diésel equivalente para tractores serie 4700","Filtros","Massey Ferguson Repuestos",39000,58000,9,4,1
+18,"JD-BAT31","Batería John Deere 31","Batería de 12V 100Ah para tractores y maquinaria pesada","Baterías","John Deere Partes",320000,460000,5,2,1
+19,"CIH-DISC88","Disco de embrague Case IH","Disco de embrague para tractores serie Puma","Transmisión","Case IH Repuestos",480000,690000,4,2,1
+20,"JD-ENG3PT","Enganche de tres puntos John Deere","Kit de enganche de tres puntos categoría II","Enganches y Acoples","John Deere Partes",850000,1250000,3,1,1
+21,"MF-BOMHID","Bomba hidráulica Massey Ferguson","Bomba hidráulica de repuesto para tractores serie 4700/6700","Hidráulica","Massey Ferguson Repuestos",620000,890000,4,2,1
+22,"MI-AGR1846","Llanta agrícola Michelin 18.4-46","Neumático trasero de tractor, uso agrícola","Neumáticos","Michelin Agro",1522500,2205000,8,2,1
+23,"JD-CORREA112","Correa de alternador John Deere","Correa de accesorios para tractores serie 5000","Correas y Bandas","John Deere Partes",55000,82000,18,3,1
+1535,"FRAM-PH5796","Filtro de aceite Fram PH5796","Filtro de aceite roscado para motores 1.0 a 1.6 gasolina","Filtros","Lubricantes y Filtros Andina",15500,24100,57,10,1
+1536,"MANN-C25114","Filtro de aire Mann C25114","Filtro de aire de panel para motores Renault 1.6","Filtros","Distribuidora Autopartes Colmotores",32000,46500,22,5,1
+1537,"BSH-F026400","Filtro de aire Bosch F026400","Filtro de aire de papel de alta eficiencia para Toyota 1.5 y 1.8","Filtros","Bosch Autopartes",29500,43000,33,5,1
+1538,"KN-33-2304","Filtro de aire K&N 33-2304 lavable","Filtro de aire de alto flujo, lavable y reutilizable","Filtros","K&N Filtros",185000,265000,5,2,1
+1539,"FG-FS19532","Separador de agua Fleetguard FS19532","Filtro separador de agua y combustible para motores diésel","Filtros","Fleetguard Filtros Industriales",76000,112000,16,4,1
+1540,"FG-AF25550","Filtro de aire primario Fleetguard AF25550","Filtro de aire primario para tractores de 100 a 180 HP","Filtros","Fleetguard Filtros Industriales",88000,129000,10,3,1
+1541,"MOB-M1-110A","Filtro de aceite Mobil 1 M1-110A","Filtro de aceite sintético de larga duración para motores 2.0 y 2.5","Filtros","Mobil 1 Distribuidora",25000,39000,44,6,1
+1542,"FRAM-CA10242","Filtro de cabina Fram CA10242","Filtro de cabina antipolen con carbón activado","Filtros","Lubricantes y Filtros Andina",21000,33500,42,5,1
+1543,"BSH-0986AB","Disco de freno delantero Bosch 0986AB","Disco de freno ventilado delantero (par)","Frenos","Bosch Autopartes",138000,198000,9,3,1
+1544,"BRM-09A729","Disco de freno ventilado Brembo 09.A729","Disco de freno delantero de alto rendimiento (par)","Frenos","Brembo Colombia",245000,355000,9,2,1
+1545,"FRP-PD512","Pastillas de freno traseras PD512","Juego de pastillas de freno traseras semi-metálicas","Frenos","Frenos y Embragues del Pacífico",42000,66000,17,6,1
+1546,"FRP-BZ220","Bandas de freno traseras (zapatas) BZ220","Juego de zapatas de freno de tambor trasero","Frenos","Frenos y Embragues del Pacífico",38000,59000,10,5,1
+1547,"BRM-P85020","Pastillas de freno delanteras Brembo P85020","Juego de pastillas de freno delanteras cerámicas","Frenos","Brembo Colombia",88000,128000,21,4,1
+1548,"FRP-DOT4","Líquido de frenos DOT 4 (500 ml)","Líquido de frenos sintético DOT 4","Frenos","Frenos y Embragues del Pacífico",11700,18600,11,12,1
+1549,"FRP-CIL-MAE","Cilindro maestro de freno FRP-CIL-MAE","Cilindro maestro de freno con depósito","Frenos","Frenos y Embragues del Pacífico",135000,195000,10,2,1
+1550,"MAC-34HI","Batería Mac 34HI","Batería de 12V 45Ah libre de mantenimiento para autos pequeños","Baterías","Mac Baterías",150000,215000,19,3,1
+1551,"MAC-27HI","Batería Mac 27HI","Batería de 12V 85Ah para camperos y pickups","Baterías","Mac Baterías",240000,345000,13,3,1
+1552,"BSH-S4005","Batería Bosch S4 005","Batería de 12V 60Ah sellada de larga duración","Baterías","Bosch Autopartes",205000,290000,13,3,1
+1553,"MAC-N120","Batería Mac N120","Batería de 12V 120Ah para tractores y maquinaria","Baterías","Mac Baterías",380000,540000,4,2,1
+1554,"MNR-AM3500","Amortiguador trasero Monroe AM3500","Amortiguador a gas para suspensión trasera","Suspensión","Bosch Autopartes",88000,132000,10,4,1
+1555,"CMT-ROT-INF","Rótula de suspensión inferior","Rótula de suspensión inferior reforzada","Suspensión","Distribuidora Autopartes Colmotores",52000,79000,12,5,1
+1556,"CMT-TER-DIR","Terminal de dirección exterior","Terminal de dirección con rótula exterior","Suspensión","Distribuidora Autopartes Colmotores",28000,41000,42,6,1
+1557,"CMT-BUJ-BRZ","Bujes de brazo de suspensión (juego)","Juego de bujes de caucho para brazo de suspensión","Suspensión","Distribuidora Autopartes Colmotores",45000,68000,19,4,1
+1558,"CMT-RES-DEL","Resorte helicoidal delantero","Resorte helicoidal de suspensión delantera","Suspensión","Distribuidora Autopartes Colmotores",98000,148000,8,2,1
+1559,"CMT-JUN-CUL","Junta de culata (empaque) multicapa","Junta de culata multicapa de acero","Motor","Distribuidora Autopartes Colmotores",120000,178000,11,2,1
+1560,"GAT-TH192","Termostato con carcasa Gates TH192","Termostato de 82 °C con carcasa","Motor","Gates Correas",36000,56000,17,4,1
+1561,"BSH-BOM-AGU","Bomba de agua Bosch","Bomba de agua con empaque incluido","Motor","Bosch Autopartes",78000,118000,11,3,1
+1562,"CMT-TAP-RAD","Tapa de radiador 1.1 bar","Tapa de radiador de presión 1.1 bar","Motor","Distribuidora Autopartes Colmotores",12000,19000,22,8,1
+1563,"MOB-5W30","Aceite Mobil 1 5W-30 sintético (galón)","Aceite sintético 5W-30 para motores a gasolina, presentación de un galón","Motor","Mobil 1 Distribuidora",180000,251500,32,6,1
+1564,"MOB-15W40","Aceite Mobil Delvac 15W-40 (galón)","Aceite mineral 15W-40 para motores diésel, presentación de un galón","Motor","Mobil 1 Distribuidora",97500,146500,38,8,1
+1565,"FRP-KIT-EMB","Kit de embrague completo","Disco, plato y balinera de embrague","Transmisión","Frenos y Embragues del Pacífico",385000,545000,5,2,1
+1566,"FRP-HOM-DEL","Junta homocinética delantera","Junta homocinética lado rueda con fuelle","Transmisión","Frenos y Embragues del Pacífico",110000,165000,11,2,1
+1567,"MFR-DISC-EM","Disco de embrague Massey Ferguson","Disco de embrague para tractores serie 4700","Transmisión","Massey Ferguson Repuestos",520000,740000,2,1,1
+1568,"MOB-ATF-VI","Aceite de transmisión ATF Dexron VI (galón)","Fluido ATF para cajas automáticas, presentación de un galón","Transmisión","Mobil 1 Distribuidora",98000,145000,18,4,1
+1569,"NGK-ILFR6B","Bujía NGK Laser Iridium ILFR6B","Bujía de iridio de larga duración","Encendido","NGK Bujías",28000,44000,80,12,1
+1570,"NGK-BKR5E","Bujía NGK BKR5E","Bujía de níquel estándar","Encendido","NGK Bujías",9200,14600,120,20,1
+1571,"BSH-BOB-ENC","Bobina de encendido Bosch 0221","Bobina de encendido tipo lápiz","Encendido","Bosch Autopartes",98000,145000,12,3,1
+1572,"NGK-CAB-6","Cables de bujía NGK (juego)","Juego de cables de bujía de alta tensión","Encendido","NGK Bujías",62000,94000,7,3,1
+1573,"GAT-K060","Correa poly-V Gates K060","Correa de accesorios poly-V","Correas y Bandas","Gates Correas",32000,49000,37,6,1
+1574,"GAT-KIT-DIS","Kit de distribución Gates con bomba","Kit de correa de distribución, tensor y bomba de agua","Correas y Bandas","Gates Correas",295000,420000,6,2,1
+1575,"JD-CORREA-VEN","Correa del ventilador John Deere","Correa de ventilador para tractores serie 5000 y 6000","Correas y Bandas","John Deere Partes",62000,93000,6,3,1
+1576,"BSH-MOT-ARR","Motor de arranque Bosch reconstruido","Motor de arranque 12V reconstruido","Sistema Eléctrico","Bosch Autopartes",245000,355000,3,2,1
+1577,"IEC-H4-60","Bombillo halógeno H4 12V 60/55W (par)","Par de bombillos halógenos H4","Sistema Eléctrico","Importadora Eléctrica Cafetera",14000,20500,48,10,1
+1578,"IEC-LED-H7","Bombillos LED H7 6000K (par)","Par de bombillos LED H7 de luz blanca","Sistema Eléctrico","Importadora Eléctrica Cafetera",58000,89000,11,4,1
+1579,"IEC-REL-40","Relé automotriz 12V 40A","Relé de 5 pines 12V 40A","Sistema Eléctrico","Importadora Eléctrica Cafetera",6500,9500,57,10,1
+1580,"CIH-ALT-95","Alternador Case IH 95A","Alternador 12V 95A para tractores serie Puma y Farmall","Sistema Eléctrico","Case IH Repuestos",520000,745000,4,1,1
+1581,"JD-MANG-HID","Manguera hidráulica 3/8 pulgada John Deere (metro)","Manguera hidráulica de alta presión, se vende por metro","Hidráulica","John Deere Partes",38000,58000,13,8,1
+1582,"MFR-SELL-HID","Kit de sellos de cilindro hidráulico Massey Ferguson","Kit de sellos para el cilindro hidráulico del levante","Hidráulica","Massey Ferguson Repuestos",72000,110000,11,2,1
+1583,"CIH-FILT-HID","Filtro hidráulico Case IH","Filtro de aceite hidráulico y de transmisión","Hidráulica","Case IH Repuestos",71000,105000,13,3,1
+1584,"FG-HF6177","Filtro hidráulico Fleetguard HF6177","Filtro de aceite hidráulico","Hidráulica","Fleetguard Filtros Industriales",54000,82000,4,3,1
+1585,"MFR-ROT-ENG","Rótula de enganche categoría II Massey Ferguson","Rótula de enganche para brazos inferiores categoría II","Enganches y Acoples","Massey Ferguson Repuestos",85000,130000,10,2,1
+1586,"CIH-EJE-PTO","Eje de toma de fuerza (PTO) Case IH","Eje de toma de fuerza de 540 rpm","Enganches y Acoples","Case IH Repuestos",410000,590000,3,1,1
+1587,"JD-PIN-ENG","Pasador de enganche John Deere (par)","Par de pasadores de enganche categoría II con clip","Enganches y Acoples","John Deere Partes",24000,37000,7,6,1
+1588,"MI-P185","Llanta Michelin Energy 185/65R15","Neumático radial para automóvil","Neumáticos","Michelin Agro",175000,265000,7,6,1
+1589,"LLC-P215","Llanta Hankook 215/60R17","Neumático radial para camioneta","Neumáticos","Llantas y Rines Centro Sur",235000,345000,9,4,1
+1590,"LLC-P265","Llanta Pirelli Scorpion 265/65R17","Neumático radial para pickup y camperos","Neumáticos","Llantas y Rines Centro Sur",410000,585000,7,3,1
+1591,"MI-AGR1428","Llanta agrícola Michelin 14.9-28","Neumático trasero agrícola de tractor","Neumáticos","Michelin Agro",980000,1420000,3,2,1
