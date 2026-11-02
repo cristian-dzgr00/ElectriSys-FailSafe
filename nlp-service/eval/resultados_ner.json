@@ -1,13 +1,13 @@
 {
   "n_casos": 12,
-  "precision_global": 0.95,
+  "precision_global": 1.0,
   "precision_por_campo": {
     "marca": 1.0,
     "modelo": 1.0,
     "anio": 1.0,
     "motor": 1.0,
     "combustible": 1.0,
-    "categoria": 0.6666666666666666,
+    "categoria": 1.0,
     "codigo": 1.0
   },
   "total_por_campo": {
@@ -19,18 +19,312 @@
     "categoria": 6,
     "codigo": 2
   },
-  "errores": [
-    {
-      "texto": "correa de distribucion gates para nissan sentra",
-      "campo": "categoria",
-      "esperado": "Correas y Bandas",
-      "obtenido": null
+  "errores": [],
+  "dev_ner": {
+    "n_casos": 122,
+    "vocabulario": {
+      "marcas": 14,
+      "modelos": 35,
+      "categorias": 12
     },
-    {
-      "texto": "bujias ngk para un hyundai accent 2016",
-      "campo": "categoria",
-      "esperado": "Encendido",
-      "obtenido": null
-    }
-  ]
+    "tabla_errores": "posibles_errores.csv",
+    "exactitud_global_campos": {
+      "n": 854,
+      "correctos": 854,
+      "exactitud": 1.0,
+      "ic95": [
+        0.9955,
+        1.0
+      ]
+    },
+    "por_campo": {
+      "marca": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "marca",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 64,
+          "correctos": 64,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9434,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 58,
+          "correctos": 58,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9379,
+            1.0
+          ]
+        }
+      },
+      "modelo": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "modelo",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 62,
+          "correctos": 62,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9417,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 60,
+          "correctos": 60,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9398,
+            1.0
+          ]
+        }
+      },
+      "categoria": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "categoria",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 108,
+          "correctos": 108,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9657,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 14,
+          "correctos": 14,
+          "exactitud": 1.0,
+          "ic95": [
+            0.7847,
+            1.0
+          ]
+        }
+      },
+      "anio": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "anio",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 22,
+          "correctos": 22,
+          "exactitud": 1.0,
+          "ic95": [
+            0.8513,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 100,
+          "correctos": 100,
+          "exactitud": 1.0,
+          "ic95": [
+            0.963,
+            1.0
+          ]
+        }
+      },
+      "motor": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "motor",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 14,
+          "correctos": 14,
+          "exactitud": 1.0,
+          "ic95": [
+            0.7847,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 108,
+          "correctos": 108,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9657,
+            1.0
+          ]
+        }
+      },
+      "combustible": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "combustible",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 9,
+          "correctos": 9,
+          "exactitud": 1.0,
+          "ic95": [
+            0.7009,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 113,
+          "correctos": 113,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9671,
+            1.0
+          ]
+        }
+      },
+      "codigo": {
+        "correctos": 122,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9695,
+          1.0
+        ],
+        "campo": "codigo",
+        "evaluados": 122,
+        "con_valor_esperado": {
+          "n": 7,
+          "correctos": 7,
+          "exactitud": 1.0,
+          "ic95": [
+            0.6457,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 115,
+          "correctos": 115,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9677,
+            1.0
+          ]
+        }
+      }
+    },
+    "por_grupo": {
+      "codigo": {
+        "campos_ok": 63,
+        "campos_n": 63,
+        "casos_exactos": 9,
+        "casos": 9,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "combustible": {
+        "campos_ok": 28,
+        "campos_n": 28,
+        "casos_exactos": 4,
+        "casos": 4,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "completo": {
+        "campos_ok": 84,
+        "campos_n": 84,
+        "casos_exactos": 12,
+        "casos": 12,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "marca_inferida": {
+        "campos_ok": 161,
+        "campos_n": 161,
+        "casos_exactos": 23,
+        "casos": 23,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "motor_litros": {
+        "campos_ok": 63,
+        "campos_n": 63,
+        "casos_exactos": 9,
+        "casos": 9,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "negativo": {
+        "campos_ok": 42,
+        "campos_n": 42,
+        "casos_exactos": 6,
+        "casos": 6,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "numero_suelto": {
+        "campos_ok": 42,
+        "campos_n": 42,
+        "casos_exactos": 6,
+        "casos": 6,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "sin_vehiculo": {
+        "campos_ok": 28,
+        "campos_n": 28,
+        "casos_exactos": 4,
+        "casos": 4,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "sinonimo_categoria": {
+        "campos_ok": 245,
+        "campos_n": 245,
+        "casos_exactos": 35,
+        "casos": 35,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "typo": {
+        "campos_ok": 35,
+        "campos_n": 35,
+        "casos_exactos": 5,
+        "casos": 5,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "viscosidad": {
+        "campos_ok": 63,
+        "campos_n": 63,
+        "casos_exactos": 9,
+        "casos": 9,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      }
+    },
+    "errores": []
+  }
 }

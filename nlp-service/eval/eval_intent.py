@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 
-from app.intent.classifier import predecir_intencion
+from app.intent.classifier import UMBRAL_CONFIANZA, predecir_intencion
 from app.intent.train import MODEL_PATH, entrenar
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -25,14 +25,30 @@ def evaluar() -> dict:
         entrenar()
 
     df = pd.read_csv(HOLDOUT_PATH)
-    predicciones = [predecir_intencion(t)[0] for t in df["texto"]]
-    confianzas = [predecir_intencion(t)[1] for t in df["texto"]]
+    # Una sola llamada por frase: devuelve (intención con umbral, confianza).
+    predichos = [predecir_intencion(t) for t in df["texto"]]
+    predicciones = [p[0] for p in predichos]
+    confianzas = [p[1] for p in predichos]
+
+    esperado = df["intencion"]
+    es_sustituto = esperado == "recomendar_sustituto"
+    es_fuera = esperado == "fuera_de_dominio"
+    negocio = {"recomendar_sustituto", "buscar_repuesto", "consultar_stock", "consultar_precio",
+               "consultar_compatibilidad"}
+    pred = pd.Series(predicciones, index=df.index)
 
     resultado = {
+        "descripcion": "Conjunto de desarrollo (dev) chico: holdout_intent.csv. Las cifras con más respaldo estadístico "
+                       "están en cifras_vigentes.json (validación cruzada) y resultados_despues.json (congelados).",
         "n_ejemplos": len(df),
         "accuracy": accuracy_score(df["intencion"], predicciones),
         "f1_macro": f1_score(df["intencion"], predicciones, average="macro"),
         "confianza_promedio": sum(confianzas) / len(confianzas),
+        "umbral_confianza": UMBRAL_CONFIANZA,
+        "recall_recomendar_sustituto": {"n": int(es_sustituto.sum()),
+                                        "valor": float((pred[es_sustituto] == "recomendar_sustituto").mean())},
+        "fuera_de_dominio_tratado_como_negocio": {"n": int(es_fuera.sum()),
+                                                  "valor": float(pred[es_fuera].isin(negocio).mean())},
         "reporte_por_clase": classification_report(
             df["intencion"], predicciones, output_dict=True, zero_division=0
         ),

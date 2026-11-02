@@ -1,19 +1,29 @@
 {
+  "descripcion": "Conjunto de desarrollo (dev) chico: holdout_intent.csv. Las cifras con más respaldo estadístico están en cifras_vigentes.json (validación cruzada) y resultados_despues.json (congelados).",
   "n_ejemplos": 28,
-  "accuracy": 0.8214285714285714,
-  "f1_macro": 0.8126984126984127,
-  "confianza_promedio": 0.5504794555471326,
+  "accuracy": 0.8928571428571429,
+  "f1_macro": 0.8843537414965985,
+  "confianza_promedio": 0.8437808931703247,
+  "umbral_confianza": 0.4,
+  "recall_recomendar_sustituto": {
+    "n": 4,
+    "valor": 1.0
+  },
+  "fuera_de_dominio_tratado_como_negocio": {
+    "n": 4,
+    "valor": 0.0
+  },
   "reporte_por_clase": {
     "buscar_repuesto": {
-      "precision": 0.6666666666666666,
-      "recall": 1.0,
-      "f1-score": 0.8,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
       "support": 4.0
     },
     "consultar_compatibilidad": {
       "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
       "support": 4.0
     },
     "consultar_precio": {
@@ -23,15 +33,15 @@
       "support": 4.0
     },
     "consultar_stock": {
-      "precision": 1.0,
-      "recall": 0.5,
-      "f1-score": 0.6666666666666666,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
       "support": 4.0
     },
     "fuera_de_dominio": {
-      "precision": 0.6,
-      "recall": 0.75,
-      "f1-score": 0.6666666666666666,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
       "support": 4.0
     },
     "recomendar_sustituto": {
@@ -42,49 +52,39 @@
     },
     "saludo_despedida": {
       "precision": 1.0,
-      "recall": 0.5,
-      "f1-score": 0.6666666666666666,
+      "recall": 1.0,
+      "f1-score": 1.0,
       "support": 4.0
     },
-    "accuracy": 0.8214285714285714,
+    "accuracy": 0.8928571428571429,
     "macro avg": {
-      "precision": 0.8666666666666666,
-      "recall": 0.8214285714285714,
-      "f1-score": 0.8126984126984127,
+      "precision": 0.9142857142857143,
+      "recall": 0.8928571428571429,
+      "f1-score": 0.8843537414965985,
       "support": 28.0
     },
     "weighted avg": {
-      "precision": 0.8666666666666666,
-      "recall": 0.8214285714285714,
-      "f1-score": 0.8126984126984127,
+      "precision": 0.9142857142857143,
+      "recall": 0.8928571428571429,
+      "f1-score": 0.8843537414965985,
       "support": 28.0
     }
   },
   "errores": [
     {
-      "texto": "Dime si hay suficientes bujías Bosch en bodega",
-      "esperado": "consultar_stock",
-      "predicho": "fuera_de_dominio"
-    },
-    {
-      "texto": "¿Está por agotarse el disco de embrague Sachs?",
-      "esperado": "consultar_stock",
+      "texto": "Necesito cotizar un alternador para Kia Sportage",
+      "esperado": "buscar_repuesto",
       "predicho": "consultar_precio"
     },
     {
-      "texto": "Qué tal, necesito una mano con un cliente",
-      "esperado": "saludo_despedida",
-      "predicho": "buscar_repuesto"
+      "texto": "¿Está disponible el kit de distribución para Nissan Frontier?",
+      "esperado": "buscar_repuesto",
+      "predicho": "consultar_stock"
     },
     {
-      "texto": "Chao, que estés bien",
-      "esperado": "saludo_despedida",
+      "texto": "¿Estas bujías Bosch aplican también para un Hyundai Accent?",
+      "esperado": "consultar_compatibilidad",
       "predicho": "fuera_de_dominio"
-    },
-    {
-      "texto": "¿Tienen wifi para clientes?",
-      "esperado": "fuera_de_dominio",
-      "predicho": "buscar_repuesto"
     }
   ]
 }

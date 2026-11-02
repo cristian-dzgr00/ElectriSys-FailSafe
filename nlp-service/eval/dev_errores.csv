@@ -1,0 +1,268 @@
+tipo,error,correcto,en_tabla
+marca,toiota,Toyota,1
+marca,tollota,Toyota,1
+marca,toyotta,Toyota,1
+marca,tyota,Toyota,1
+marca,toyoda,Toyota,1
+marca,toyotaa,Toyota,1
+marca,totota,Toyota,1
+marca,toiyota,Toyota,1
+marca,toyta,Toyota,0
+marca,chebrole,Chevrolet,1
+marca,chevrolé,Chevrolet,1
+marca,shevrolet,Chevrolet,1
+marca,chevrolt,Chevrolet,1
+marca,chevrolete,Chevrolet,1
+marca,chebrolet,Chevrolet,1
+marca,chevorlet,Chevrolet,1
+marca,chvrolet,Chevrolet,1
+marca,masda,Mazda,1
+marca,mazdda,Mazda,1
+marca,mazta,Mazda,1
+marca,mazdaa,Mazda,1
+marca,nisan,Nissan,1
+marca,nissam,Nissan,1
+marca,nisssan,Nissan,1
+marca,nissn,Nissan,1
+marca,niisan,Nissan,1
+marca,hundai,Hyundai,1
+marca,hyunday,Hyundai,1
+marca,yundai,Hyundai,1
+marca,hiundai,Hyundai,1
+marca,jundai,Hyundai,1
+marca,hyundia,Hyundai,1
+marca,hyudai,Hyundai,1
+marca,kya,Kia,1
+marca,kiaa,Kia,1
+marca,qia,Kia,0
+marca,kiya,Kia,1
+marca,renol,Renault,1
+marca,reno,Renault,1
+marca,renaul,Renault,1
+marca,renaut,Renault,1
+marca,rrenault,Renault,1
+marca,renolt,Renault,1
+marca,fordd,Ford,1
+marca,frod,Ford,1
+marca,foord,Ford,1
+marca,susuki,Suzuki,1
+marca,suzuky,Suzuki,1
+marca,sizuki,Suzuki,1
+marca,suzki,Suzuki,1
+marca,suzukii,Suzuki,1
+marca,zuzuki,Suzuki,1
+marca,mitsubichi,Mitsubishi,0
+marca,mitsubisi,Mitsubishi,0
+marca,mitzubishi,Mitsubishi,0
+marca,misubishi,Mitsubishi,0
+marca,mitsubishy,Mitsubishi,0
+marca,mitsubishii,Mitsubishi,0
+marca,jhon deer,John Deere,1
+marca,john dere,John Deere,0
+marca,yon deer,John Deere,1
+marca,jon deere,John Deere,0
+marca,johndeere,John Deere,0
+marca,jon dir,John Deere,0
+marca,jhon deere,John Deere,0
+marca,john deer,John Deere,0
+marca,masey ferguson,Massey Ferguson,0
+marca,massey fergusson,Massey Ferguson,0
+marca,maseyferguson,Massey Ferguson,0
+marca,mazey fergueson,Massey Ferguson,0
+marca,massey ferguzon,Massey Ferguson,0
+marca,masi ferguson,Massey Ferguson,1
+marca,niu holand,New Holland,0
+marca,new holan,New Holland,0
+marca,newholland,New Holland,0
+marca,nw holland,New Holland,0
+marca,nuevo holland,New Holland,0
+marca,niu holland,New Holland,1
+marca,kase ih,Case IH,0
+marca,case ig,Case IH,0
+marca,caseih,Case IH,1
+marca,keis ih,Case IH,0
+modelo,hilus,Hilux,1
+modelo,ilux,Hilux,1
+modelo,hylux,Hilux,1
+modelo,jilux,Hilux,1
+modelo,hailux,Hilux,1
+modelo,hiluz,Hilux,1
+modelo,hiluxs,Hilux,1
+modelo,corola,Corolla,1
+modelo,corolaa,Corolla,1
+modelo,korolla,Corolla,1
+modelo,corrola,Corolla,1
+modelo,corolia,Corolla,1
+modelo,corollla,Corolla,1
+modelo,fortuer,Fortuner,1
+modelo,fourtuner,Fortuner,1
+modelo,fortunner,Fortuner,1
+modelo,fortunar,Fortuner,1
+modelo,fortuher,Fortuner,1
+modelo,spak,Spark,1
+modelo,sparc,Spark,1
+modelo,espark,Spark,1
+modelo,sprak,Spark,1
+modelo,sparck,Spark,1
+modelo,sparkk,Spark,1
+modelo,abeo,Aveo,1
+modelo,aveeo,Aveo,1
+modelo,avvo,Aveo,1
+modelo,aveu,Aveo,1
+modelo,avio,Aveo,1
+modelo,seil,Sail,0
+modelo,sayl,Sail,0
+modelo,sael,Sail,1
+modelo,sal,Sail,1
+modelo,onics,Onix,1
+modelo,onyx,Onix,0
+modelo,onis,Onix,0
+modelo,honix,Onix,0
+modelo,onixx,Onix,0
+modelo,rrio,Rio,1
+modelo,ryo,Rio,1
+modelo,rioo,Rio,1
+modelo,sportaje,Sportage,1
+modelo,esportage,Sportage,1
+modelo,spotage,Sportage,1
+modelo,sportague,Sportage,1
+modelo,sportege,Sportage,1
+modelo,pikanto,Picanto,0
+modelo,picantto,Picanto,0
+modelo,picanro,Picanto,0
+modelo,picantoo,Picanto,0
+modelo,bicanto,Picanto,1
+modelo,logam,Logan,1
+modelo,lojan,Logan,1
+modelo,logann,Logan,1
+modelo,loghan,Logan,1
+modelo,logna,Logan,1
+modelo,dauster,Duster,1
+modelo,daster,Duster,1
+modelo,dustr,Duster,1
+modelo,dusterr,Duster,1
+modelo,dusteer,Duster,1
+modelo,sandro,Sandero,0
+modelo,sanderoo,Sandero,0
+modelo,zandero,Sandero,0
+modelo,sandeero,Sandero,0
+modelo,sandeo,Sandero,0
+modelo,tuson,Tucson,1
+modelo,tuckson,Tucson,1
+modelo,tuczon,Tucson,1
+modelo,tucsson,Tucson,1
+modelo,tucsom,Tucson,1
+modelo,acent,Accent,1
+modelo,axent,Accent,1
+modelo,acsent,Accent,1
+modelo,accen,Accent,1
+modelo,acsen,Accent,1
+modelo,escap,Escape,1
+modelo,eskape,Escape,1
+modelo,escpae,Escape,1
+modelo,escapee,Escape,1
+modelo,fiesa,Fiesta,1
+modelo,fiezta,Fiesta,1
+modelo,fisesta,Fiesta,1
+modelo,fiesata,Fiesta,1
+modelo,fiestaa,Fiesta,1
+modelo,ranguer,Ranger,0
+modelo,rangger,Ranger,0
+modelo,ranjer,Ranger,0
+modelo,rainger,Ranger,1
+modelo,rangr,Ranger,0
+modelo,yaaris,Yaris,0
+modelo,iaris,Yaris,1
+modelo,yarys,Yaris,0
+modelo,yariz,Yaris,0
+modelo,sentrra,Sentra,1
+modelo,zentra,Sentra,1
+modelo,sentraa,Sentra,1
+modelo,sentr,Sentra,1
+modelo,frontir,Frontier,1
+modelo,frontiere,Frontier,1
+modelo,frotier,Frontier,1
+modelo,frontiers,Frontier,1
+modelo,fronter,Frontier,1
+modelo,suift,Swift,1
+modelo,swit,Swift,1
+modelo,sweft,Swift,1
+modelo,suuift,Swift,1
+modelo,swiftt,Swift,1
+modelo,l 200,L200,1
+modelo,el200,L200,1
+modelo,l2oo,L200,1
+modelo,cx5,CX-5,1
+modelo,spark jt,Spark GT,1
+modelo,sparkgt,Spark GT,1
+modelo,spak gt,Spark GT,1
+modelo,spark gtt,Spark GT,1
+modelo,tl 90,TL90,1
+modelo,tl9o,TL90,1
+modelo,t6120,T6.120,1
+modelo,farmal 75c,Farmall 75C,0
+modelo,farmal 75 c,Farmall 75C,1
+modelo,farmall75c,Farmall 75C,0
+modelo,puma165,Puma 165,0
+modelo,pumma 165,Puma 165,0
+modelo,5075 e,5075E,1
+modelo,5075ee,5075E,1
+modelo,6110 m,6110M,1
+modelo,6110mm,6110M,1
+categoria,filtors,Filtros,1
+categoria,filtross,Filtros,1
+categoria,fltros,Filtros,1
+categoria,filtos,Filtros,1
+categoria,filtrso,Filtros,1
+categoria,frenoz,Frenos,1
+categoria,fernos,Frenos,1
+categoria,frenosz,Frenos,1
+categoria,frneos,Frenos,1
+categoria,frenoss,Frenos,1
+categoria,vaterias,Baterías,1
+categoria,baterais,Baterías,1
+categoria,bateriass,Baterías,1
+categoria,batrerias,Baterías,1
+categoria,baterisa,Baterías,1
+categoria,suspencion,Suspensión,1
+categoria,sospension,Suspensión,1
+categoria,suspesion,Suspensión,1
+categoria,susoension,Suspensión,1
+categoria,suspensio,Suspensión,1
+categoria,motorr,Motor,1
+categoria,motr,Motor,1
+categoria,mootor,Motor,1
+categoria,transmicion,Transmisión,1
+categoria,tranmision,Transmisión,1
+categoria,trasmision,Transmisión,1
+categoria,transmisón,Transmisión,1
+categoria,transmisio,Transmisión,1
+categoria,encendio,Encendido,1
+categoria,ensendido,Encendido,1
+categoria,encendidoo,Encendido,1
+categoria,encedido,Encendido,1
+categoria,encendidp,Encendido,1
+categoria,coreas y bandas,Correas y Bandas,1
+categoria,correas i bandas,Correas y Bandas,1
+categoria,correas y vandas,Correas y Bandas,1
+categoria,correaz y bandas,Correas y Bandas,1
+categoria,correas y bnadas,Correas y Bandas,1
+categoria,sistema electrco,Sistema Eléctrico,0
+categoria,sitema eléctrico,Sistema Eléctrico,0
+categoria,sistema elctrico,Sistema Eléctrico,0
+categoria,sistema elétrico,Sistema Eléctrico,0
+categoria,sistemaelectrico,Sistema Eléctrico,1
+categoria,idraulica,Hidráulica,0
+categoria,hidraulika,Hidráulica,0
+categoria,hidrualica,Hidráulica,0
+categoria,hidraulca,Hidráulica,0
+categoria,hidáulica,Hidráulica,1
+categoria,enganches y acoplez,Enganches y Acoples,0
+categoria,engaches y acoples,Enganches y Acoples,1
+categoria,inganches y acoples,Enganches y Acoples,1
+categoria,enganches y acopes,Enganches y Acoples,0
+categoria,numaticos,Neumáticos,0
+categoria,neumatico,Neumáticos,1
+categoria,neumaticoz,Neumáticos,0
+categoria,neumáticoss,Neumáticos,0
+categoria,neumaticis,Neumáticos,1

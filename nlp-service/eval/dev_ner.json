@@ -1,0 +1,1014 @@
+[
+  {
+    "texto": "pastillas de freno para la hilux 2019",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "anio": 2019,
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "tienen filtro de aire para sandero",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Sandero",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "bateria para el spark 2018",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Spark",
+      "anio": 2018,
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "necesito amortiguadores para la fortuner",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Fortuner",
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "bujias para un sail 2016 gasolina",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Sail",
+      "anio": 2016,
+      "combustible": "gasolina",
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "correa de distribucion del logan",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Logan",
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "discos de freno para yaris 2020",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Yaris",
+      "anio": 2020,
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "alternador para sportage diesel",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Kia",
+      "modelo": "Sportage",
+      "combustible": "diesel",
+      "categoria": "Sistema Eléctrico"
+    }
+  },
+  {
+    "texto": "filtro de aceite pal picanto",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Kia",
+      "modelo": "Picanto",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "llantas para la l200",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Mitsubishi",
+      "modelo": "L200",
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "embrague para ranger 2.2 diesel",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Ford",
+      "modelo": "Ranger",
+      "motor": "2.2",
+      "combustible": "diesel",
+      "categoria": "Transmisión"
+    }
+  },
+  {
+    "texto": "radiador de la duster 2021",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Duster",
+      "anio": 2021,
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "bomba de agua para el aveo",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Aveo",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "termostato corolla 2015",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Corolla",
+      "anio": 2015,
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "rotulas para sentra b13",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Nissan",
+      "modelo": "Sentra",
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "bobina de encendido para accent 2012",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Hyundai",
+      "modelo": "Accent",
+      "anio": 2012,
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "pastillas traseras onix 2022",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Onix",
+      "anio": 2022,
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "filtro de cabina frontier",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Nissan",
+      "modelo": "Frontier",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "cauchos para la tucson 2017",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Hyundai",
+      "modelo": "Tucson",
+      "anio": 2017,
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "kit de distribucion swift 1.3",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Suzuki",
+      "modelo": "Swift",
+      "motor": "1.3",
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "filtro de combustible para tractor 5075e",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "John Deere",
+      "modelo": "5075E",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "embrague del tl90",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "New Holland",
+      "modelo": "TL90",
+      "categoria": "Transmisión"
+    }
+  },
+  {
+    "texto": "manguera hidraulica para el 6713",
+    "grupo": "marca_inferida",
+    "esperado": {
+      "marca": "Massey Ferguson",
+      "modelo": "6713",
+      "categoria": "Hidráulica"
+    }
+  },
+  {
+    "texto": "necesito pastillas de freno",
+    "grupo": "sin_vehiculo",
+    "esperado": {
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "hay bateria disponible",
+    "grupo": "sin_vehiculo",
+    "esperado": {
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "cuanto vale un filtro de aire",
+    "grupo": "sin_vehiculo",
+    "esperado": {
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "tienen amortiguadores traseros",
+    "grupo": "sin_vehiculo",
+    "esperado": {
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "filtro de aceite para toyota hilux 2.7 gasolina 2024",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "anio": 2024,
+      "motor": "2.7",
+      "combustible": "gasolina",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "pastillas delanteras para chevrolet aveo 2014",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Aveo",
+      "anio": 2014,
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "bateria para kia rio 2019",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Kia",
+      "modelo": "Rio",
+      "anio": 2019,
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "bujias para mazda 3 2.0 2016",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Mazda",
+      "modelo": "3",
+      "anio": 2016,
+      "motor": "2.0",
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "amortiguador trasero para ford fiesta 2013",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Ford",
+      "modelo": "Fiesta",
+      "anio": 2013,
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "mazda cx-5 2018 disco de freno",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Mazda",
+      "modelo": "CX-5",
+      "anio": 2018,
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "chevrolet spark gt 2015 correa",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Spark GT",
+      "anio": 2015,
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "filtro hidraulico john deere 6110m",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "John Deere",
+      "modelo": "6110M",
+      "categoria": "Hidráulica"
+    }
+  },
+  {
+    "texto": "batería para massey ferguson 290",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Massey Ferguson",
+      "modelo": "290",
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "toma de fuerza case ih puma 165",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Case IH",
+      "modelo": "Puma 165",
+      "categoria": "Enganches y Acoples"
+    }
+  },
+  {
+    "texto": "mitsubishi l200 diesel 2.5 filtro de combustible",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Mitsubishi",
+      "modelo": "L200",
+      "motor": "2.5",
+      "combustible": "diesel",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "llantas para suzuki swift 2017",
+    "grupo": "completo",
+    "esperado": {
+      "marca": "Suzuki",
+      "modelo": "Swift",
+      "anio": 2017,
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "aceite 5W-30 para hilux",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "aceite 15W-40 mobil delvac para tractor john deere",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "John Deere",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "necesito aceite 10W40 para el logan 1.6",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Logan",
+      "motor": "1.6",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "aceite sintetico 0W-20 para toyota yaris",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Yaris",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "galon de aceite 20W-50 para chevrolet sail",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Sail",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "aceite sae 5w 30 para kia picanto",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "Kia",
+      "modelo": "Picanto",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "aceite de transmision 75W-90 para la ranger",
+    "grupo": "viscosidad",
+    "esperado": {
+      "marca": "Ford",
+      "modelo": "Ranger",
+      "categoria": "Transmisión"
+    }
+  },
+  {
+    "texto": "cuanto vale el aceite 5W-30 mobil 1",
+    "grupo": "viscosidad",
+    "esperado": {
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "tienen 15W40 mineral",
+    "grupo": "viscosidad",
+    "esperado": {
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "filtro de aire para hilux 3.2",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "motor": "3.2",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "bujias para fortuner 2.7L",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Fortuner",
+      "motor": "2.7",
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "pastillas para tucson 2.0 2018",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Hyundai",
+      "modelo": "Tucson",
+      "anio": 2018,
+      "motor": "2.0",
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "correa para chevrolet spark 1.0 litros",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Spark",
+      "motor": "1.0",
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "filtro para nissan sentra 1,8",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Nissan",
+      "modelo": "Sentra",
+      "motor": "1.8",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "motor de 1400cc para renault sandero",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Sandero",
+      "motor": "1400cc"
+    }
+  },
+  {
+    "texto": "amortiguador para mazda 3 con motor 2.5",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Mazda",
+      "modelo": "3",
+      "motor": "2.5",
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "bomba de agua para mitsubishi montero 3.2 diesel",
+    "grupo": "motor_litros",
+    "esperado": {
+      "marca": "Mitsubishi",
+      "motor": "3.2",
+      "combustible": "diesel",
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "tapa de radiador 1.1 bar",
+    "grupo": "motor_litros",
+    "esperado": {
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "necesito 3 filtros de aceite",
+    "grupo": "numero_suelto",
+    "esperado": {
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "dame 2 pastillas de freno",
+    "grupo": "numero_suelto",
+    "esperado": {
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "me quedan 3 baterias",
+    "grupo": "numero_suelto",
+    "esperado": {
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "cuanto vale 3 amortiguadores",
+    "grupo": "numero_suelto",
+    "esperado": {
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "apartame 3 bujias para el spark",
+    "grupo": "numero_suelto",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Spark",
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "hay 3 llantas 205/55R16",
+    "grupo": "numero_suelto",
+    "esperado": {
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "cuanto vale el W-610/3",
+    "grupo": "codigo",
+    "esperado": {
+      "codigo": "W-610/3"
+    }
+  },
+  {
+    "texto": "tienes el KN-33-2304",
+    "grupo": "codigo",
+    "esperado": {
+      "codigo": "KN-33-2304"
+    }
+  },
+  {
+    "texto": "el repuesto 90915-YZZD4 sirve para hilux",
+    "grupo": "codigo",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "codigo": "90915-YZZD4"
+    }
+  },
+  {
+    "texto": "precio del HP-1002",
+    "grupo": "codigo",
+    "esperado": {
+      "codigo": "HP-1002"
+    }
+  },
+  {
+    "texto": "hay stock del M1-102",
+    "grupo": "codigo",
+    "esperado": {
+      "codigo": "M1-102"
+    }
+  },
+  {
+    "texto": "filtro de aceite 26300-35505 para accent",
+    "grupo": "codigo",
+    "esperado": {
+      "marca": "Hyundai",
+      "modelo": "Accent",
+      "codigo": "26300-35505",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "disponibilidad del FG-FF5320 para tractor",
+    "grupo": "codigo",
+    "esperado": {
+      "codigo": "FG-FF5320"
+    }
+  },
+  {
+    "texto": "pastillas para swift 2015-2020",
+    "grupo": "codigo",
+    "esperado": {
+      "marca": "Suzuki",
+      "modelo": "Swift",
+      "anio": 2015,
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "bateria 12V-60Ah para spark",
+    "grupo": "codigo",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Spark",
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "balatas delanteras",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "zapatas traseras para el logan",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Logan",
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "bandas de freno traseras",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "liquido de frenos dot 4",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "acumulador para camioneta",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "cauchos para el carro",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "llanta 215/60R17",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "neumaticos agricolas",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Neumáticos"
+    }
+  },
+  {
+    "texto": "suspension delantera completa",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "terminal de direccion exterior",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "bujes de brazo",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "resortes delanteros para ranger",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "marca": "Ford",
+      "modelo": "Ranger",
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "filtro de aire",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "filtro de combustible",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "separador de agua fleetguard",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "bobina de ignicion",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "juego de cables de bujia",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "banda del ventilador",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "correa poly-v",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "tensor de la banda",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Correas y Bandas"
+    }
+  },
+  {
+    "texto": "motor de arranque reconstruido",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Sistema Eléctrico"
+    }
+  },
+  {
+    "texto": "alternador de 95 amperios",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Sistema Eléctrico"
+    }
+  },
+  {
+    "texto": "bombillos led h7",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Sistema Eléctrico"
+    }
+  },
+  {
+    "texto": "rele de 12v",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Sistema Eléctrico"
+    }
+  },
+  {
+    "texto": "kit de embrague completo",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Transmisión"
+    }
+  },
+  {
+    "texto": "junta homocinetica delantera",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Transmisión"
+    }
+  },
+  {
+    "texto": "aceite de transmision atf dexron",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Transmisión"
+    }
+  },
+  {
+    "texto": "radiador de aluminio",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "empaque de culata",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Motor"
+    }
+  },
+  {
+    "texto": "bomba hidraulica",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Hidráulica"
+    }
+  },
+  {
+    "texto": "filtro hidraulico para tractor",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Hidráulica"
+    }
+  },
+  {
+    "texto": "kit de sellos de cilindro hidraulico",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Hidráulica"
+    }
+  },
+  {
+    "texto": "pasador de enganche",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Enganches y Acoples"
+    }
+  },
+  {
+    "texto": "enganche de tres puntos",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Enganches y Acoples"
+    }
+  },
+  {
+    "texto": "acople rapido",
+    "grupo": "sinonimo_categoria",
+    "esperado": {
+      "categoria": "Enganches y Acoples"
+    }
+  },
+  {
+    "texto": "amortiguador a gas para fiesta",
+    "grupo": "combustible",
+    "esperado": {
+      "marca": "Ford",
+      "modelo": "Fiesta",
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "filtro para camioneta a gasolina",
+    "grupo": "combustible",
+    "esperado": {
+      "combustible": "gasolina",
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "bujias para carro hibrido",
+    "grupo": "combustible",
+    "esperado": {
+      "combustible": "hibrido",
+      "categoria": "Encendido"
+    }
+  },
+  {
+    "texto": "bomba de combustible diesel para hilux",
+    "grupo": "combustible",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "combustible": "diesel"
+    }
+  },
+  {
+    "texto": "muchas gracias por la ayuda",
+    "grupo": "negativo",
+    "esperado": {}
+  },
+  {
+    "texto": "a que hora abren el sabado",
+    "grupo": "negativo",
+    "esperado": {}
+  },
+  {
+    "texto": "me puede dar un descuento",
+    "grupo": "negativo",
+    "esperado": {}
+  },
+  {
+    "texto": "hola buenas tardes",
+    "grupo": "negativo",
+    "esperado": {}
+  },
+  {
+    "texto": "ok listo gracias",
+    "grupo": "negativo",
+    "esperado": {}
+  },
+  {
+    "texto": "pago con tarjeta de credito",
+    "grupo": "negativo",
+    "esperado": {}
+  },
+  {
+    "texto": "filtro para toyta hilux 2020",
+    "grupo": "typo",
+    "esperado": {
+      "marca": "Toyota",
+      "modelo": "Hilux",
+      "anio": 2020,
+      "categoria": "Filtros"
+    }
+  },
+  {
+    "texto": "pastillas para una chebrolet spark",
+    "grupo": "typo",
+    "esperado": {
+      "marca": "Chevrolet",
+      "modelo": "Spark",
+      "categoria": "Frenos"
+    }
+  },
+  {
+    "texto": "vateria para kia rio",
+    "grupo": "typo",
+    "esperado": {
+      "marca": "Kia",
+      "modelo": "Rio",
+      "categoria": "Baterías"
+    }
+  },
+  {
+    "texto": "amortiguadores del renaul logan 2017",
+    "grupo": "typo",
+    "esperado": {
+      "marca": "Renault",
+      "modelo": "Logan",
+      "anio": 2017,
+      "categoria": "Suspensión"
+    }
+  },
+  {
+    "texto": "bujias para mazda3 2019",
+    "grupo": "typo",
+    "esperado": {
+      "marca": "Mazda",
+      "modelo": "3",
+      "anio": 2019,
+      "categoria": "Encendido"
+    }
+  }
+]

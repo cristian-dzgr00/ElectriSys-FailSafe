@@ -1,134 +1,785 @@
 {
-  "n_casos": 6,
-  "precision_top1": 1.0,
-  "precision_top3": 1.0,
-  "detalle": [
-    {
-      "texto": "No hay filtro de aceite original de Toyota para Hilux 2.7 gasolina 2024, que recomiendo",
-      "entidades_extraidas": {
-        "marca": "Toyota",
-        "modelo": "Hilux",
-        "anio": 2024,
-        "motor": "2.7",
-        "combustible": "gasolina",
-        "codigo": null,
-        "categoria": "Filtros"
-      },
-      "codigos_correctos": [
-        "HP-1002",
-        "M1-102"
-      ],
-      "codigos_rankeados": [
-        "HP-1002",
-        "M1-102"
-      ],
-      "top1_ok": true,
-      "top3_ok": true
+  "modo": "offline: catálogo de eval/datos_demo (sin backend), conjuntos de DESARROLLO",
+  "nota": "Reemplaza los resultados del 2026-09-05 contra Oracle, que además no discriminaban (<= 3 candidatos). Las cifras con conjuntos congelados están en resultados_despues.json.",
+  "conjuntos": {
+    "holdout_recomendador.json (desarrollo, 6 casos)": {
+      "n_casos": 6,
+      "precision_top1": 1.0,
+      "precision_top3": 1.0,
+      "casos_sin_marca_o_modelo": 0,
+      "detalle": [
+        {
+          "texto": "No hay filtro de aceite original de Toyota para Hilux 2.7 gasolina 2024, que recomiendo",
+          "entidades_extraidas": {
+            "marca": "Toyota",
+            "modelo": "Hilux",
+            "anio": 2024,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "HP-1002",
+            "M1-102"
+          ],
+          "codigos_rankeados": [
+            "HP-1002",
+            "M1-102",
+            "KN-33-2304"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "tienen pastillas de freno para mazda 3 2020",
+          "entidades_extraidas": {
+            "marca": "Mazda",
+            "modelo": "3",
+            "anio": 2020,
+            "categoria": "Frenos"
+          },
+          "codigos_correctos": [
+            "BRM-FD204",
+            "BSH-0281"
+          ],
+          "codigos_rankeados": [
+            "BRM-FD204",
+            "BSH-0281",
+            "BSH-0986AB",
+            "FRP-DOT4"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "necesito bujias para kia rio 2017",
+          "entidades_extraidas": {
+            "marca": "Kia",
+            "modelo": "Rio",
+            "anio": 2017,
+            "categoria": "Encendido"
+          },
+          "codigos_correctos": [
+            "NGK-BKR6E"
+          ],
+          "codigos_rankeados": [
+            "NGK-BKR6E"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "hay bateria para chevrolet spark 2019",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Spark",
+            "anio": 2019,
+            "categoria": "Baterías"
+          },
+          "codigos_correctos": [
+            "MAC-48D"
+          ],
+          "codigos_rankeados": [
+            "MAC-48D",
+            "MAC-34HI"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "correa de distribucion para nissan sentra",
+          "entidades_extraidas": {
+            "marca": "Nissan",
+            "modelo": "Sentra",
+            "anio": null,
+            "categoria": "Correas y Bandas"
+          },
+          "codigos_correctos": [
+            "GAT-T295"
+          ],
+          "codigos_rankeados": [
+            "GAT-T295"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "tienen filtro de aceite para toyota fortuner",
+          "entidades_extraidas": {
+            "marca": "Toyota",
+            "modelo": "Fortuner",
+            "anio": null,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "90915-YZZD4",
+            "HP-1002",
+            "M1-102"
+          ],
+          "codigos_rankeados": [
+            "HP-1002",
+            "M1-102",
+            "KN-33-2304"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        }
+      ]
     },
-    {
-      "texto": "tienen pastillas de freno para mazda 3 2020",
-      "entidades_extraidas": {
-        "marca": "Mazda",
-        "modelo": "3",
-        "anio": 2020,
-        "motor": null,
-        "combustible": null,
-        "codigo": null,
-        "categoria": "Frenos"
-      },
-      "codigos_correctos": [
-        "BRM-FD204",
-        "BSH-0281"
-      ],
-      "codigos_rankeados": [
-        "BRM-FD204",
-        "BSH-0281"
-      ],
-      "top1_ok": true,
-      "top3_ok": true
-    },
-    {
-      "texto": "necesito bujias para kia rio 2017",
-      "entidades_extraidas": {
-        "marca": "Kia",
-        "modelo": "Rio",
-        "anio": 2017,
-        "motor": null,
-        "combustible": null,
-        "codigo": null,
-        "categoria": null
-      },
-      "codigos_correctos": [
-        "NGK-BKR6E"
-      ],
-      "codigos_rankeados": [
-        "NGK-BKR6E"
-      ],
-      "top1_ok": true,
-      "top3_ok": true
-    },
-    {
-      "texto": "hay bateria para chevrolet spark 2019",
-      "entidades_extraidas": {
-        "marca": "Chevrolet",
-        "modelo": "Spark",
-        "anio": 2019,
-        "motor": null,
-        "combustible": null,
-        "codigo": null,
-        "categoria": "Baterías"
-      },
-      "codigos_correctos": [
-        "MAC-48D"
-      ],
-      "codigos_rankeados": [
-        "MAC-48D"
-      ],
-      "top1_ok": true,
-      "top3_ok": true
-    },
-    {
-      "texto": "correa de distribucion para nissan sentra",
-      "entidades_extraidas": {
-        "marca": "Nissan",
-        "modelo": "Sentra",
-        "anio": null,
-        "motor": null,
-        "combustible": null,
-        "codigo": null,
-        "categoria": null
-      },
-      "codigos_correctos": [
-        "GAT-T295"
-      ],
-      "codigos_rankeados": [
-        "GAT-T295"
-      ],
-      "top1_ok": true,
-      "top3_ok": true
-    },
-    {
-      "texto": "tienen filtro de aceite para toyota fortuner",
-      "entidades_extraidas": {
-        "marca": "Toyota",
-        "modelo": "Fortuner",
-        "anio": null,
-        "motor": null,
-        "combustible": null,
-        "codigo": null,
-        "categoria": "Filtros"
-      },
-      "codigos_correctos": [
-        "90915-YZZD4",
-        "HP-1002",
-        "M1-102"
-      ],
-      "codigos_rankeados": [
-        "HP-1002",
-        "M1-102"
-      ],
-      "top1_ok": true,
-      "top3_ok": true
+    "dev_recomendador.json (desarrollo, respuestas por regla)": {
+      "n_casos": 36,
+      "precision_top1": 1.0,
+      "precision_top3": 1.0,
+      "casos_sin_marca_o_modelo": 0,
+      "detalle": [
+        {
+          "texto": "no hay filtro de aceite original para la hilux 2021, que recomiendo",
+          "entidades_extraidas": {
+            "marca": "Toyota",
+            "modelo": "Hilux",
+            "anio": 2021,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "HP-1002",
+            "M1-102"
+          ],
+          "codigos_rankeados": [
+            "HP-1002",
+            "M1-102",
+            "KN-33-2304"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "se acabaron las pastillas de freno para toyota corolla 2020",
+          "entidades_extraidas": {
+            "marca": "Toyota",
+            "modelo": "Corolla",
+            "anio": 2020,
+            "categoria": "Frenos"
+          },
+          "codigos_correctos": [
+            "BRM-FD204",
+            "BSH-0281"
+          ],
+          "codigos_rankeados": [
+            "BRM-FD204",
+            "BSH-0281",
+            "BSH-0986AB"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "necesito bateria para el spark 2019",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Spark",
+            "anio": 2019,
+            "categoria": "Baterías"
+          },
+          "codigos_correctos": [
+            "MAC-34HI",
+            "MAC-48D"
+          ],
+          "codigos_rankeados": [
+            "MAC-48D",
+            "MAC-34HI"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "hay bujias para swift 2020",
+          "entidades_extraidas": {
+            "marca": "Suzuki",
+            "modelo": "Swift",
+            "anio": 2020,
+            "categoria": "Encendido"
+          },
+          "codigos_correctos": [
+            "NGK-BKR5E",
+            "NGK-BKR6E"
+          ],
+          "codigos_rankeados": [
+            "NGK-BKR5E",
+            "NGK-BKR6E"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "amortiguador delantero para ford fiesta 2016",
+          "entidades_extraidas": {
+            "marca": "Ford",
+            "modelo": "Fiesta",
+            "anio": 2016,
+            "categoria": "Suspensión"
+          },
+          "codigos_correctos": [
+            "MNR-AM204"
+          ],
+          "codigos_rankeados": [
+            "MNR-AM204"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "correa de distribucion para renault logan 2020",
+          "entidades_extraidas": {
+            "marca": "Renault",
+            "modelo": "Logan",
+            "anio": 2020,
+            "categoria": "Correas y Bandas"
+          },
+          "codigos_correctos": [
+            "GAT-T295"
+          ],
+          "codigos_rankeados": [
+            "GAT-T295",
+            "GAT-KIT-DIS"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "alternador para el duster 2021",
+          "entidades_extraidas": {
+            "marca": "Renault",
+            "modelo": "Duster",
+            "anio": 2021,
+            "categoria": "Sistema Eléctrico"
+          },
+          "codigos_correctos": [
+            "BSH-ALT120"
+          ],
+          "codigos_rankeados": [
+            "BSH-ALT120"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "llantas para hyundai accent 2018",
+          "entidades_extraidas": {
+            "marca": "Hyundai",
+            "modelo": "Accent",
+            "anio": 2018,
+            "categoria": "Neumáticos"
+          },
+          "codigos_correctos": [
+            "MI-P185",
+            "MI-P205"
+          ],
+          "codigos_rankeados": [
+            "MI-P205",
+            "MI-P185"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "discos de freno para mazda 3 2019",
+          "entidades_extraidas": {
+            "marca": "Mazda",
+            "modelo": "3",
+            "anio": 2019,
+            "categoria": "Frenos"
+          },
+          "codigos_correctos": [
+            "BSH-0986AB"
+          ],
+          "codigos_rankeados": [
+            "BSH-0986AB",
+            "BRM-FD204",
+            "BSH-0281",
+            "FRP-DOT4"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "bomba de agua para el yaris 2018",
+          "entidades_extraidas": {
+            "marca": "Toyota",
+            "modelo": "Yaris",
+            "anio": 2018,
+            "categoria": "Motor"
+          },
+          "codigos_correctos": [
+            "BSH-BOM-AGU"
+          ],
+          "codigos_rankeados": [
+            "BSH-BOM-AGU",
+            "MOB-5W30"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "radiador para tucson 2022",
+          "entidades_extraidas": {
+            "marca": "Hyundai",
+            "modelo": "Tucson",
+            "anio": 2022,
+            "categoria": "Motor"
+          },
+          "codigos_correctos": [
+            "BSH-RAD330"
+          ],
+          "codigos_rankeados": [
+            "BSH-RAD330",
+            "MOB-5W30"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "kit de embrague para kia rio 2017",
+          "entidades_extraidas": {
+            "marca": "Kia",
+            "modelo": "Rio",
+            "anio": 2017,
+            "categoria": "Transmisión"
+          },
+          "codigos_correctos": [
+            "FRP-KIT-EMB"
+          ],
+          "codigos_rankeados": [
+            "FRP-KIT-EMB"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "termostato para nissan sentra 2018",
+          "entidades_extraidas": {
+            "marca": "Nissan",
+            "modelo": "Sentra",
+            "anio": 2018,
+            "categoria": "Motor"
+          },
+          "codigos_correctos": [
+            "GAT-TH192"
+          ],
+          "codigos_rankeados": [
+            "GAT-TH192"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "filtro de aire para sandero 2021",
+          "entidades_extraidas": {
+            "marca": "Renault",
+            "modelo": "Sandero",
+            "anio": 2021,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "MANN-C25114"
+          ],
+          "codigos_rankeados": [
+            "MANN-C25114"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "aceite 5w30 para mazda cx-5 2020",
+          "entidades_extraidas": {
+            "marca": "Mazda",
+            "modelo": "CX-5",
+            "anio": 2020,
+            "categoria": "Motor"
+          },
+          "codigos_correctos": [
+            "MOB-5W30"
+          ],
+          "codigos_rankeados": [
+            "MOB-5W30"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "bateria para tractor john deere 5075e",
+          "entidades_extraidas": {
+            "marca": "John Deere",
+            "modelo": "5075E",
+            "anio": null,
+            "categoria": "Baterías"
+          },
+          "codigos_correctos": [
+            "JD-BAT31",
+            "MAC-N120"
+          ],
+          "codigos_rankeados": [
+            "JD-BAT31",
+            "MAC-N120"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "filtro de combustible para tractor case ih puma 165",
+          "entidades_extraidas": {
+            "marca": "Case IH",
+            "modelo": "Puma 165",
+            "anio": null,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "CIH-FF7000"
+          ],
+          "codigos_rankeados": [
+            "CIH-FF7000",
+            "FG-LF3970",
+            "FG-AF25550"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "bomba hidraulica para massey ferguson 4707",
+          "entidades_extraidas": {
+            "marca": "Massey Ferguson",
+            "modelo": "4707",
+            "anio": null,
+            "categoria": "Hidráulica"
+          },
+          "codigos_correctos": [
+            "MF-BOMHID"
+          ],
+          "codigos_rankeados": [
+            "MF-BOMHID",
+            "MFR-SELL-HID"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "llanta agricola para el tractor 6110m",
+          "entidades_extraidas": {
+            "marca": "John Deere",
+            "modelo": "6110M",
+            "anio": null,
+            "categoria": "Neumáticos"
+          },
+          "codigos_correctos": [
+            "MI-AGR1846"
+          ],
+          "codigos_rankeados": [
+            "MI-AGR1846"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "cilindro maestro de freno para la ranger 2018",
+          "entidades_extraidas": {
+            "marca": "Ford",
+            "modelo": "Ranger",
+            "anio": 2018,
+            "categoria": "Frenos"
+          },
+          "codigos_correctos": [
+            "FRP-CIL-MAE"
+          ],
+          "codigos_rankeados": [
+            "FRP-CIL-MAE"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "motor de arranque para nissan frontier 2019",
+          "entidades_extraidas": {
+            "marca": "Nissan",
+            "modelo": "Frontier",
+            "anio": 2019,
+            "categoria": "Sistema Eléctrico"
+          },
+          "codigos_correctos": [
+            "BSH-MOT-ARR"
+          ],
+          "codigos_rankeados": [
+            "BSH-MOT-ARR",
+            "IEC-REL-40"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "bobina de encendido para chevrolet onix 2021",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Onix",
+            "anio": 2021,
+            "categoria": "Encendido"
+          },
+          "codigos_correctos": [
+            "BSH-BOB-ENC"
+          ],
+          "codigos_rankeados": [
+            "BSH-BOB-ENC"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "pastillas para kia sportage 2020",
+          "entidades_extraidas": {
+            "marca": "Kia",
+            "modelo": "Sportage",
+            "anio": 2020,
+            "categoria": "Frenos"
+          },
+          "codigos_correctos": [
+            "BRM-FD204",
+            "BSH-0281"
+          ],
+          "codigos_rankeados": [
+            "BRM-FD204",
+            "BSH-0281"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "bombillo h4 para chevrolet aveo 2016",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Aveo",
+            "anio": 2016,
+            "categoria": "Sistema Eléctrico"
+          },
+          "codigos_correctos": [
+            "IEC-H4-60"
+          ],
+          "codigos_rankeados": [
+            "IEC-H4-60",
+            "BSH-ALT120"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "rotula de suspension para chevrolet sail 2015",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Sail",
+            "anio": 2015,
+            "categoria": "Suspensión"
+          },
+          "codigos_correctos": [
+            "CMT-ROT-INF"
+          ],
+          "codigos_rankeados": [
+            "CMT-ROT-INF",
+            "MNR-AM204",
+            "CMT-RES-DEL"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "resorte delantero para el sail",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Sail",
+            "anio": null,
+            "categoria": "Suspensión"
+          },
+          "codigos_correctos": [
+            "CMT-RES-DEL"
+          ],
+          "codigos_rankeados": [
+            "CMT-RES-DEL",
+            "MNR-AM204",
+            "CMT-ROT-INF"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "terminal de direccion para kia rio 2019",
+          "entidades_extraidas": {
+            "marca": "Kia",
+            "modelo": "Rio",
+            "anio": 2019,
+            "categoria": "Suspensión"
+          },
+          "codigos_correctos": [
+            "CMT-TER-DIR"
+          ],
+          "codigos_rankeados": [
+            "CMT-TER-DIR"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "cables de bujia para ford escape 2015",
+          "entidades_extraidas": {
+            "marca": "Ford",
+            "modelo": "Escape",
+            "anio": 2015,
+            "categoria": "Encendido"
+          },
+          "codigos_correctos": [
+            "NGK-CAB-6"
+          ],
+          "codigos_rankeados": [
+            "NGK-CAB-6"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "filtro de cabina para mazda 3 2022",
+          "entidades_extraidas": {
+            "marca": "Mazda",
+            "modelo": "3",
+            "anio": 2022,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "FRAM-CA10242"
+          ],
+          "codigos_rankeados": [
+            "FRAM-CA10242",
+            "KN-33-2304",
+            "MOB-M1-110A"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "junta homocinetica para toyota corolla 2021",
+          "entidades_extraidas": {
+            "marca": "Toyota",
+            "modelo": "Corolla",
+            "anio": 2021,
+            "categoria": "Transmisión"
+          },
+          "codigos_correctos": [
+            "FRP-HOM-DEL"
+          ],
+          "codigos_rankeados": [
+            "FRP-HOM-DEL",
+            "MOB-ATF-VI"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "aceite de transmision atf para kia sportage",
+          "entidades_extraidas": {
+            "marca": "Kia",
+            "modelo": "Sportage",
+            "anio": null,
+            "categoria": "Transmisión"
+          },
+          "codigos_correctos": [
+            "MOB-ATF-VI"
+          ],
+          "codigos_rankeados": [
+            "MOB-ATF-VI"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "empaque de culata para hyundai accent 2019",
+          "entidades_extraidas": {
+            "marca": "Hyundai",
+            "modelo": "Accent",
+            "anio": 2019,
+            "categoria": "Motor"
+          },
+          "codigos_correctos": [
+            "CMT-JUN-CUL"
+          ],
+          "codigos_rankeados": [
+            "CMT-JUN-CUL",
+            "CMT-TAP-RAD"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "separador de agua para mitsubishi l200",
+          "entidades_extraidas": {
+            "marca": "Mitsubishi",
+            "modelo": "L200",
+            "anio": null,
+            "categoria": "Filtros"
+          },
+          "codigos_correctos": [
+            "FG-FS19532"
+          ],
+          "codigos_rankeados": [
+            "FG-FS19532"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "bateria para picanto 2020",
+          "entidades_extraidas": {
+            "marca": "Kia",
+            "modelo": "Picanto",
+            "anio": 2020,
+            "categoria": "Baterías"
+          },
+          "codigos_correctos": [
+            "MAC-34HI",
+            "MAC-48D"
+          ],
+          "codigos_rankeados": [
+            "MAC-48D",
+            "MAC-34HI"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "pastillas de freno traseras para chevrolet onix 2022",
+          "entidades_extraidas": {
+            "marca": "Chevrolet",
+            "modelo": "Onix",
+            "anio": 2022,
+            "categoria": "Frenos"
+          },
+          "codigos_correctos": [
+            "FRP-PD512"
+          ],
+          "codigos_rankeados": [
+            "FRP-PD512"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        },
+        {
+          "texto": "filtro hidraulico para new holland t6.120",
+          "entidades_extraidas": {
+            "marca": "New Holland",
+            "modelo": "T6.120",
+            "anio": null,
+            "categoria": "Hidráulica"
+          },
+          "codigos_correctos": [
+            "FG-HF6177"
+          ],
+          "codigos_rankeados": [
+            "FG-HF6177"
+          ],
+          "top1_ok": true,
+          "top3_ok": true
+        }
+      ]
     }
-  ]
+  }
 }

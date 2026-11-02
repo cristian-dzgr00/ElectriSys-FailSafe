@@ -1,0 +1,1347 @@
+{
+  "descripcion": "Medición DESPUÉS de las mejoras, con el código y el modelo vigentes, sobre los mismos holdouts v2 congelados.",
+  "entorno": {
+    "python": "3.11.18",
+    "scikit_learn": "1.5.2",
+    "numpy": "2.1.1",
+    "pandas": "2.2.3"
+  },
+  "notas": [
+    "Sin backend: vocabulario del NER y candidatos del recomendador salen de eval/datos_demo/ (emulación aproximada de buscar-compatibles).",
+    "NER: anotación cerrada de 7 campos por caso; null esperado = el campo no debe extraerse (mide falsos positivos).",
+    "Recomendador: solo_ranking aísla el ranking TF-IDF+coseno; pipeline_completo incluye NER y filtro por categoría.",
+    "Empates de similitud se resuelven por el orden de entrada de los candidatos (ID de repuesto ascendente).",
+    "Errores de digitación: cada error se evalúa en dos frases (marcos_de_frase); las exactitudes cuentan evaluaciones, no errores únicos.",
+    "Modo después: el NER recibe además la tabla modelo -> marca del catálogo (inferencia de marca por modelo único)."
+  ],
+  "holdouts_sha256": {
+    "intent": "394883f78242195b6b7294080a7c6cdd3f6e563c694da60b9d74ec90f943c4a9",
+    "ner": "eac94f8734e64d7430ad291f617f3e871607266c12374ffd2c73464b725ef1fe",
+    "recomendador": "deae33e2e0a378b28b50d1672bd57028d33bbbbed29ce1b9d6479cb0a4d12144",
+    "errores": "e90a2476150e08b03dc31ddb33062f3acbdfefc05ecc86a7d27ad4197d472ee6"
+  },
+  "catalogo": {
+    "origen": "eval/datos_demo (repuestos.csv, compatibilidad.csv)",
+    "marcas": 14,
+    "modelos": 35,
+    "categorias": 12,
+    "repuestos": 80
+  },
+  "intencion": {
+    "n": 217,
+    "modelo": {
+      "dataset_entrenamiento": "data/intents_dataset.csv",
+      "dataset_sha256": "41b18fad969ce0226b090d4bf54bd358aa677f61c46419a1f57a4a621b520c9f",
+      "n_entrenamiento": 2551,
+      "origen": "cargado de models/intent_classifier.pkl (igual que el servicio)",
+      "modelo_sha256": "48b083db982cb4f04b78b213f0269d4997371b788769bd9cc581c5b9ef327abd"
+    },
+    "umbral_confianza": 0.4,
+    "accuracy": 0.9124,
+    "accuracy_ic95_bootstrap": [
+      0.871,
+      0.9447
+    ],
+    "f1_macro": 0.9135,
+    "f1_macro_ic95_bootstrap": [
+      0.8714,
+      0.9448
+    ],
+    "bootstrap": {
+      "remuestreos": 1000,
+      "semilla": 20260102,
+      "tipo": "percentil, remuestreo de frases"
+    },
+    "por_clase": {
+      "buscar_repuesto": {
+        "precision": 0.8378,
+        "recall": 0.9688,
+        "f1": 0.8986,
+        "soporte": 32
+      },
+      "consultar_compatibilidad": {
+        "precision": 0.9259,
+        "recall": 0.8333,
+        "f1": 0.8772,
+        "soporte": 30
+      },
+      "consultar_precio": {
+        "precision": 0.931,
+        "recall": 0.9,
+        "f1": 0.9153,
+        "soporte": 30
+      },
+      "consultar_stock": {
+        "precision": 0.9655,
+        "recall": 0.9032,
+        "f1": 0.9333,
+        "soporte": 31
+      },
+      "fuera_de_dominio": {
+        "precision": 0.8529,
+        "recall": 0.8529,
+        "f1": 0.8529,
+        "soporte": 34
+      },
+      "recomendar_sustituto": {
+        "precision": 0.9333,
+        "recall": 0.9333,
+        "f1": 0.9333,
+        "soporte": 30
+      },
+      "saludo_despedida": {
+        "precision": 0.9677,
+        "recall": 1.0,
+        "f1": 0.9836,
+        "soporte": 30
+      }
+    },
+    "matriz_confusion": {
+      "etiquetas": [
+        "buscar_repuesto",
+        "consultar_compatibilidad",
+        "consultar_precio",
+        "consultar_stock",
+        "fuera_de_dominio",
+        "recomendar_sustituto",
+        "saludo_despedida"
+      ],
+      "filas": "esperado",
+      "columnas": "predicho",
+      "matriz": [
+        [
+          31,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          3,
+          25,
+          0,
+          0,
+          1,
+          1,
+          0
+        ],
+        [
+          2,
+          0,
+          27,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          28,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          1,
+          29,
+          1,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          1,
+          28,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          30
+        ]
+      ]
+    },
+    "fuera_de_dominio_por_subgrupo": {
+      "ajeno_al_negocio": {
+        "n": 18,
+        "correctos": 15,
+        "exactitud": 0.8333,
+        "ic95": [
+          0.6078,
+          0.9416
+        ]
+      },
+      "negocio_sin_intencion_soportada": {
+        "n": 16,
+        "correctos": 14,
+        "exactitud": 0.875,
+        "ic95": [
+          0.6398,
+          0.965
+        ]
+      }
+    },
+    "confianza_media": {
+      "aciertos": 0.848,
+      "errores": 0.5704
+    },
+    "errores_por_umbral": 4,
+    "concordancia_pkl_vs_reentrenado_en_memoria": 1.0,
+    "errores": [
+      {
+        "texto": "la correa poly-v Gates ya no está, qué otra me sirve para el Picanto",
+        "esperado": "recomendar_sustituto",
+        "predicho": "consultar_compatibilidad",
+        "confianza": 0.5245,
+        "por_umbral": false,
+        "clase_sin_umbral": "consultar_compatibilidad"
+      },
+      {
+        "texto": "se terminó el aceite Mobil 5W-30, tienes otro que lo sustituya",
+        "esperado": "recomendar_sustituto",
+        "predicho": "fuera_de_dominio",
+        "confianza": 0.3839,
+        "por_umbral": false,
+        "clase_sin_umbral": "fuera_de_dominio"
+      },
+      {
+        "texto": "consigo bujías de iridio para Mazda CX-5",
+        "esperado": "buscar_repuesto",
+        "predicho": "fuera_de_dominio",
+        "confianza": 0.3484,
+        "por_umbral": true,
+        "clase_sin_umbral": "consultar_stock"
+      },
+      {
+        "texto": "cuánto hay de líquido de frenos",
+        "esperado": "consultar_stock",
+        "predicho": "consultar_precio",
+        "confianza": 0.754,
+        "por_umbral": false,
+        "clase_sin_umbral": "consultar_precio"
+      },
+      {
+        "texto": "me confirma la cantidad de relés de 40A que hay",
+        "esperado": "consultar_stock",
+        "predicho": "fuera_de_dominio",
+        "confianza": 0.3667,
+        "por_umbral": true,
+        "clase_sin_umbral": "consultar_stock"
+      },
+      {
+        "texto": "falta mucho para que se agote la batería JD-BAT31",
+        "esperado": "consultar_stock",
+        "predicho": "buscar_repuesto",
+        "confianza": 0.6113,
+        "por_umbral": false,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "a cómo está la batería Mac 27HI",
+        "esperado": "consultar_precio",
+        "predicho": "buscar_repuesto",
+        "confianza": 0.7821,
+        "por_umbral": false,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "cotíceme las llantas 205/55R16 por favor",
+        "esperado": "consultar_precio",
+        "predicho": "fuera_de_dominio",
+        "confianza": 0.3206,
+        "por_umbral": true,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "a cómo tiene los amortiguadores traseros Monroe",
+        "esperado": "consultar_precio",
+        "predicho": "buscar_repuesto",
+        "confianza": 0.7776,
+        "por_umbral": false,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "el amortiguador Monroe AM204 va en un Sandero",
+        "esperado": "consultar_compatibilidad",
+        "predicho": "fuera_de_dominio",
+        "confianza": 0.3483,
+        "por_umbral": true,
+        "clase_sin_umbral": "consultar_compatibilidad"
+      },
+      {
+        "texto": "me confirma si las pastillas Brembo P85020 son para Kia Picanto",
+        "esperado": "consultar_compatibilidad",
+        "predicho": "buscar_repuesto",
+        "confianza": 0.6952,
+        "por_umbral": false,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "este relé de 40A lo puedo usar en una Ranger",
+        "esperado": "consultar_compatibilidad",
+        "predicho": "recomendar_sustituto",
+        "confianza": 0.778,
+        "por_umbral": false,
+        "clase_sin_umbral": "recomendar_sustituto"
+      },
+      {
+        "texto": "las bujías de iridio van en motor 1.2 o solo en 2.0",
+        "esperado": "consultar_compatibilidad",
+        "predicho": "buscar_repuesto",
+        "confianza": 0.4672,
+        "por_umbral": false,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "el cilindro maestro es para una L200 o para la Ranger",
+        "esperado": "consultar_compatibilidad",
+        "predicho": "buscar_repuesto",
+        "confianza": 0.744,
+        "por_umbral": false,
+        "clase_sin_umbral": "buscar_repuesto"
+      },
+      {
+        "texto": "cómo se prepara un buen sancocho",
+        "esperado": "fuera_de_dominio",
+        "predicho": "saludo_despedida",
+        "confianza": 0.5586,
+        "por_umbral": false,
+        "clase_sin_umbral": "saludo_despedida"
+      },
+      {
+        "texto": "cuánto es 17 por 23",
+        "esperado": "fuera_de_dominio",
+        "predicho": "consultar_precio",
+        "confianza": 0.5258,
+        "por_umbral": false,
+        "clase_sin_umbral": "consultar_precio"
+      },
+      {
+        "texto": "dame un consejo para estudiar mejor",
+        "esperado": "fuera_de_dominio",
+        "predicho": "recomendar_sustituto",
+        "confianza": 0.6591,
+        "por_umbral": false,
+        "clase_sin_umbral": "recomendar_sustituto"
+      },
+      {
+        "texto": "aceptan devoluciones si la pieza no sirve",
+        "esperado": "fuera_de_dominio",
+        "predicho": "consultar_compatibilidad",
+        "confianza": 0.7107,
+        "por_umbral": false,
+        "clase_sin_umbral": "consultar_compatibilidad"
+      },
+      {
+        "texto": "pagan por reciclar baterías viejas",
+        "esperado": "fuera_de_dominio",
+        "predicho": "consultar_stock",
+        "confianza": 0.4808,
+        "por_umbral": false,
+        "clase_sin_umbral": "consultar_stock"
+      }
+    ]
+  },
+  "ner": {
+    "n_casos": 125,
+    "vocabulario": {
+      "marcas": 14,
+      "modelos": 35,
+      "categorias": 12
+    },
+    "tabla_errores": "posibles_errores.csv",
+    "exactitud_global_campos": {
+      "n": 875,
+      "correctos": 856,
+      "exactitud": 0.9783,
+      "ic95": [
+        0.9663,
+        0.9861
+      ]
+    },
+    "por_campo": {
+      "marca": {
+        "correctos": 112,
+        "exactitud": 0.896,
+        "ic95": [
+          0.8302,
+          0.9382
+        ],
+        "campo": "marca",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 89,
+          "correctos": 89,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9586,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 36,
+          "correctos": 23,
+          "exactitud": 0.6389,
+          "ic95": [
+            0.4758,
+            0.7752
+          ]
+        }
+      },
+      "modelo": {
+        "correctos": 125,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9702,
+          1.0
+        ],
+        "campo": "modelo",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 99,
+          "correctos": 99,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9626,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 26,
+          "correctos": 26,
+          "exactitud": 1.0,
+          "ic95": [
+            0.8713,
+            1.0
+          ]
+        }
+      },
+      "categoria": {
+        "correctos": 123,
+        "exactitud": 0.984,
+        "ic95": [
+          0.9435,
+          0.9956
+        ],
+        "campo": "categoria",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 96,
+          "correctos": 95,
+          "exactitud": 0.9896,
+          "ic95": [
+            0.9433,
+            0.9982
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 29,
+          "correctos": 28,
+          "exactitud": 0.9655,
+          "ic95": [
+            0.8282,
+            0.9939
+          ]
+        }
+      },
+      "anio": {
+        "correctos": 125,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9702,
+          1.0
+        ],
+        "campo": "anio",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 39,
+          "correctos": 39,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9103,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 86,
+          "correctos": 86,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9572,
+            1.0
+          ]
+        }
+      },
+      "motor": {
+        "correctos": 125,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9702,
+          1.0
+        ],
+        "campo": "motor",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 18,
+          "correctos": 18,
+          "exactitud": 1.0,
+          "ic95": [
+            0.8241,
+            1.0
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 107,
+          "correctos": 107,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9653,
+            1.0
+          ]
+        }
+      },
+      "combustible": {
+        "correctos": 122,
+        "exactitud": 0.976,
+        "ic95": [
+          0.9318,
+          0.9918
+        ],
+        "campo": "combustible",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 13,
+          "correctos": 11,
+          "exactitud": 0.8462,
+          "ic95": [
+            0.5777,
+            0.9567
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 112,
+          "correctos": 111,
+          "exactitud": 0.9911,
+          "ic95": [
+            0.9512,
+            0.9984
+          ]
+        }
+      },
+      "codigo": {
+        "correctos": 124,
+        "exactitud": 0.992,
+        "ic95": [
+          0.9561,
+          0.9986
+        ],
+        "campo": "codigo",
+        "evaluados": 125,
+        "con_valor_esperado": {
+          "n": 14,
+          "correctos": 13,
+          "exactitud": 0.9286,
+          "ic95": [
+            0.6853,
+            0.9873
+          ]
+        },
+        "sin_valor_esperado_(falsos_positivos_=_n-correctos)": {
+          "n": 111,
+          "correctos": 111,
+          "exactitud": 1.0,
+          "ic95": [
+            0.9665,
+            1.0
+          ]
+        }
+      }
+    },
+    "por_grupo": {
+      "codigo": {
+        "campos_ok": 90,
+        "campos_n": 98,
+        "casos_exactos": 6,
+        "casos": 14,
+        "exactitud_campos": 0.9184,
+        "exactitud_caso_completo": 0.4286
+      },
+      "negativo": {
+        "campos_ok": 111,
+        "campos_n": 112,
+        "casos_exactos": 15,
+        "casos": 16,
+        "exactitud_campos": 0.9911,
+        "exactitud_caso_completo": 0.9375
+      },
+      "normal": {
+        "campos_ok": 367,
+        "campos_n": 371,
+        "casos_exactos": 49,
+        "casos": 53,
+        "exactitud_campos": 0.9892,
+        "exactitud_caso_completo": 0.9245
+      },
+      "sinonimo": {
+        "campos_ok": 53,
+        "campos_n": 56,
+        "casos_exactos": 5,
+        "casos": 8,
+        "exactitud_campos": 0.9464,
+        "exactitud_caso_completo": 0.625
+      },
+      "trampa": {
+        "campos_ok": 35,
+        "campos_n": 35,
+        "casos_exactos": 5,
+        "casos": 5,
+        "exactitud_campos": 1.0,
+        "exactitud_caso_completo": 1.0
+      },
+      "typo": {
+        "campos_ok": 200,
+        "campos_n": 203,
+        "casos_exactos": 26,
+        "casos": 29,
+        "exactitud_campos": 0.9852,
+        "exactitud_caso_completo": 0.8966
+      }
+    },
+    "errores": [
+      {
+        "texto": "para la hilux 2022 con motor 2.7L necesito el filtro de aceite",
+        "grupo": "normal",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Toyota"
+      },
+      {
+        "texto": "aceite de motor para la sportage 2.0",
+        "grupo": "normal",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Kia"
+      },
+      {
+        "texto": "ford ranger acpm 2018 llantas",
+        "grupo": "normal",
+        "campo": "combustible",
+        "esperado": "diesel",
+        "obtenido": null
+      },
+      {
+        "texto": "sistema electrico del case ih puma 165 6.7",
+        "grupo": "normal",
+        "campo": "combustible",
+        "esperado": null,
+        "obtenido": "electrico"
+      },
+      {
+        "texto": "pastillas para el spark",
+        "grupo": "sinonimo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Chevrolet"
+      },
+      {
+        "texto": "necesito un amortiguador para la duster",
+        "grupo": "sinonimo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Renault"
+      },
+      {
+        "texto": "kit de embrague para el logan",
+        "grupo": "sinonimo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Renault"
+      },
+      {
+        "texto": "el 90915-YZZD4 sirve para la hilux 2022",
+        "grupo": "codigo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Toyota"
+      },
+      {
+        "texto": "dame el FRAM-PH5796 para spark",
+        "grupo": "codigo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Chevrolet"
+      },
+      {
+        "texto": "cuanto cuesta el KN-33-2304 para hilux",
+        "grupo": "codigo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Toyota"
+      },
+      {
+        "texto": "necesito el GAT-T295 para sentra 2017",
+        "grupo": "codigo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Nissan"
+      },
+      {
+        "texto": "codigo CMT-TER-DIR terminal de direccion",
+        "grupo": "codigo",
+        "campo": "codigo",
+        "esperado": "CMT-TER-DIR",
+        "obtenido": null
+      },
+      {
+        "texto": "el JD-RE504836 es para el 6110M",
+        "grupo": "codigo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "John Deere"
+      },
+      {
+        "texto": "revisen el MOB-5W30 en bodega",
+        "grupo": "codigo",
+        "campo": "categoria",
+        "esperado": null,
+        "obtenido": "Motor"
+      },
+      {
+        "texto": "llanta MI-P205 para accent",
+        "grupo": "codigo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Hyundai"
+      },
+      {
+        "texto": "tienen para la sportage",
+        "grupo": "negativo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Kia"
+      },
+      {
+        "texto": "kit de embriage para renault logann",
+        "grupo": "typo",
+        "campo": "categoria",
+        "esperado": "Transmisión",
+        "obtenido": null
+      },
+      {
+        "texto": "pastillas pa dusterr 2.0",
+        "grupo": "typo",
+        "campo": "marca",
+        "esperado": null,
+        "obtenido": "Renault"
+      },
+      {
+        "texto": "llantas para mitsubishi l200 diezel",
+        "grupo": "typo",
+        "campo": "combustible",
+        "esperado": "diesel",
+        "obtenido": null
+      }
+    ]
+  },
+  "recomendador": {
+    "n_casos": 41,
+    "regla": "R1 (aplicada mecanicamente sobre eval/datos_demo/repuestos.csv y compatibilidad.csv): candidatos(caso) = repuestos con ACTIVO=1 y STOCK>0 que tienen al menos una fila de compatibilidad con MARCA y MODELO iguales a los del caso y ANIO_DESDE <= anio <= ANIO_HASTA. codigos_correctos = candidatos cuya CATEGORIA es igual a la categoria pedida en el caso (el tipo de repuesto agotado). Un caso solo se incluye si tiene mas de 3 candidatos y al menos un correcto y un incorrecto. Los campos marca/modelo/anio/categoria de cada caso son la solicitud estructurada de la que sale el texto; no se eligieron mirando la salida de ningun modelo.",
+    "candidatos_por_caso": {
+      "min": 4,
+      "media": 11.0,
+      "max": 17
+    },
+    "correctos_por_caso_media": 2.32,
+    "definiciones": {
+      "p1": "el primer lugar es un sustituto correcto",
+      "p3": "fracción de los 3 primeros que son correctos",
+      "p3_norm": "correctos en el top-3 / min(3, nº de correctos del caso)",
+      "hit3": "al menos un correcto en el top-3",
+      "mrr": "1/posición del primer correcto en la lista completa (0 si no hay)"
+    },
+    "solo_ranking": {
+      "p1": {
+        "n": 41,
+        "media": 0.9024,
+        "ic95": [
+          0.8049,
+          0.9756
+        ]
+      },
+      "p3": {
+        "n": 41,
+        "media": 0.6667,
+        "ic95": [
+          0.5935,
+          0.7398
+        ]
+      },
+      "p3_norm": {
+        "n": 41,
+        "media": 0.8862,
+        "ic95": [
+          0.7967,
+          0.9593
+        ]
+      },
+      "hit3": {
+        "n": 41,
+        "media": 0.9512,
+        "ic95": [
+          0.878,
+          1.0
+        ]
+      },
+      "mrr": {
+        "n": 41,
+        "media": 0.9307,
+        "ic95": [
+          0.8515,
+          0.9878
+        ]
+      }
+    },
+    "pipeline_completo": {
+      "p1": {
+        "n": 41,
+        "media": 0.9268,
+        "ic95": [
+          0.8293,
+          1.0
+        ]
+      },
+      "p3": {
+        "n": 41,
+        "media": 0.748,
+        "ic95": [
+          0.6748,
+          0.813
+        ]
+      },
+      "p3_norm": {
+        "n": 41,
+        "media": 0.9756,
+        "ic95": [
+          0.9268,
+          1.0
+        ]
+      },
+      "hit3": {
+        "n": 41,
+        "media": 0.9756,
+        "ic95": [
+          0.9268,
+          1.0
+        ]
+      },
+      "mrr": {
+        "n": 41,
+        "media": 0.9533,
+        "ic95": [
+          0.8943,
+          1.0
+        ]
+      }
+    },
+    "pipeline_casos_sin_marca_o_modelo": {
+      "n": 0,
+      "nota": "el pipeline exige marca y modelo para recomendar; sin ellos no devuelve sugerencias"
+    },
+    "pipeline_completo_solo_con_vehiculo_identificado": {
+      "p1": {
+        "n": 41,
+        "media": 0.9268,
+        "ic95": [
+          0.8293,
+          1.0
+        ]
+      },
+      "p3": {
+        "n": 41,
+        "media": 0.748,
+        "ic95": [
+          0.6748,
+          0.813
+        ]
+      },
+      "p3_norm": {
+        "n": 41,
+        "media": 0.9756,
+        "ic95": [
+          0.9268,
+          1.0
+        ]
+      },
+      "hit3": {
+        "n": 41,
+        "media": 0.9756,
+        "ic95": [
+          0.9268,
+          1.0
+        ]
+      },
+      "mrr": {
+        "n": 41,
+        "media": 0.9533,
+        "ic95": [
+          0.8943,
+          1.0
+        ]
+      }
+    },
+    "referencia_azar_solo_ranking": {
+      "p1": 0.2378,
+      "hit3": 0.5885
+    },
+    "fallos_p1_solo_ranking": [
+      {
+        "texto": "se acabó el kit de embrague para la corolla 2020, hay algo parecido",
+        "correctos": [
+          "FRP-HOM-DEL",
+          "MOB-ATF-VI"
+        ],
+        "top3": [
+          "BRM-FD204",
+          "BSH-0281",
+          "BSH-ALT120"
+        ],
+        "n_candidatos": 16
+      },
+      {
+        "texto": "sin partes eléctricas para spark 2020, qué otra opción tengo",
+        "correctos": [
+          "IEC-H4-60",
+          "IEC-REL-40"
+        ],
+        "top3": [
+          "NGK-BKR6E",
+          "MAC-48D",
+          "FRAM-PH5796"
+        ],
+        "n_candidatos": 13
+      },
+      {
+        "texto": "no hay repuestos de motor para kia rio 2018, qué alternativa le ofrezco",
+        "correctos": [
+          "CMT-JUN-CUL",
+          "CMT-TAP-RAD"
+        ],
+        "top3": [
+          "NGK-BKR6E",
+          "CMT-JUN-CUL",
+          "CMT-TAP-RAD"
+        ],
+        "n_candidatos": 13
+      },
+      {
+        "texto": "se agotaron las pastillas de la l200 2020, alguna alternativa",
+        "correctos": [
+          "FRP-CIL-MAE"
+        ],
+        "top3": [
+          "FG-FS19532",
+          "FRP-CIL-MAE",
+          "MAC-27HI"
+        ],
+        "n_candidatos": 5
+      }
+    ],
+    "fallos_p1_pipeline_completo": [
+      {
+        "texto": "no queda nada de sistema eléctrico para hilux 2018, qué alternativa hay",
+        "entidades": {
+          "marca": "Toyota",
+          "modelo": "Hilux",
+          "anio": 2018,
+          "categoria": "Sistema Eléctrico"
+        },
+        "correctos": [
+          "BSH-MOT-ARR",
+          "IEC-REL-40"
+        ],
+        "top3": [
+          "BSH-ALT120",
+          "BSH-MOT-ARR",
+          "IEC-REL-40"
+        ]
+      },
+      {
+        "texto": "sin partes eléctricas para spark 2020, qué otra opción tengo",
+        "entidades": {
+          "marca": "Chevrolet",
+          "modelo": "Spark",
+          "anio": 2020,
+          "categoria": null
+        },
+        "correctos": [
+          "IEC-H4-60",
+          "IEC-REL-40"
+        ],
+        "top3": [
+          "NGK-BKR6E",
+          "MAC-48D",
+          "FRAM-PH5796"
+        ]
+      },
+      {
+        "texto": "no queda nada de sistema eléctrico para nissan frontier 2019, qué hay parecido",
+        "entidades": {
+          "marca": "Nissan",
+          "modelo": "Frontier",
+          "anio": 2019,
+          "categoria": "Sistema Eléctrico"
+        },
+        "correctos": [
+          "BSH-MOT-ARR",
+          "IEC-REL-40"
+        ],
+        "top3": [
+          "BSH-ALT120",
+          "BSH-MOT-ARR",
+          "IEC-REL-40"
+        ]
+      }
+    ]
+  },
+  "errores_digitacion": {
+    "n_errores": 380,
+    "n_evaluaciones": 760,
+    "marcos_de_frase": {
+      "marca": [
+        "tienen repuestos para {x}",
+        "busco algo para el {x} 2019"
+      ],
+      "modelo": [
+        "tienen repuestos para {x}",
+        "busco algo para {marca} {x} 2019"
+      ],
+      "categoria": [
+        "tienen {x}",
+        "necesito {x} para un carro 2019"
+      ]
+    },
+    "pct_en_tabla_0": 0.4289,
+    "exactitud": {
+      "en_tabla=0": {
+        "n": 326,
+        "correctos": 306,
+        "exactitud": 0.9387,
+        "ic95": [
+          0.9071,
+          0.9599
+        ]
+      },
+      "en_tabla=1": {
+        "n": 434,
+        "correctos": 434,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9912,
+          1.0
+        ]
+      },
+      "global": {
+        "n": 760,
+        "correctos": 740,
+        "exactitud": 0.9737,
+        "ic95": [
+          0.9597,
+          0.9829
+        ]
+      },
+      "marco1": {
+        "n": 380,
+        "correctos": 368,
+        "exactitud": 0.9684,
+        "ic95": [
+          0.9456,
+          0.9818
+        ]
+      },
+      "marco2": {
+        "n": 380,
+        "correctos": 372,
+        "exactitud": 0.9789,
+        "ic95": [
+          0.959,
+          0.9893
+        ]
+      },
+      "tipo=categoria": {
+        "n": 216,
+        "correctos": 206,
+        "exactitud": 0.9537,
+        "ic95": [
+          0.9169,
+          0.9747
+        ]
+      },
+      "tipo=categoria|en_tabla=0": {
+        "n": 112,
+        "correctos": 102,
+        "exactitud": 0.9107,
+        "ic95": [
+          0.8434,
+          0.9508
+        ]
+      },
+      "tipo=categoria|en_tabla=1": {
+        "n": 104,
+        "correctos": 104,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9644,
+          1.0
+        ]
+      },
+      "tipo=marca": {
+        "n": 244,
+        "correctos": 240,
+        "exactitud": 0.9836,
+        "ic95": [
+          0.9586,
+          0.9936
+        ]
+      },
+      "tipo=marca|en_tabla=0": {
+        "n": 106,
+        "correctos": 102,
+        "exactitud": 0.9623,
+        "ic95": [
+          0.907,
+          0.9852
+        ]
+      },
+      "tipo=marca|en_tabla=1": {
+        "n": 138,
+        "correctos": 138,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9729,
+          1.0
+        ]
+      },
+      "tipo=modelo": {
+        "n": 300,
+        "correctos": 294,
+        "exactitud": 0.98,
+        "ic95": [
+          0.9571,
+          0.9908
+        ]
+      },
+      "tipo=modelo|en_tabla=0": {
+        "n": 108,
+        "correctos": 102,
+        "exactitud": 0.9444,
+        "ic95": [
+          0.8841,
+          0.9743
+        ]
+      },
+      "tipo=modelo|en_tabla=1": {
+        "n": 192,
+        "correctos": 192,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9804,
+          1.0
+        ]
+      }
+    },
+    "control_nombre_correcto": {
+      "resueltos": 52,
+      "total": 52,
+      "no_resueltos": []
+    },
+    "fallos": [
+      {
+        "tipo": "marca",
+        "error": "kai",
+        "correcto": "Kia",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "marca",
+        "error": "kai",
+        "correcto": "Kia",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "marca",
+        "error": "fort",
+        "correcto": "Ford",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "marca",
+        "error": "fort",
+        "correcto": "Ford",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "modelo",
+        "error": "onx",
+        "correcto": "Onix",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "modelo",
+        "error": "oniz",
+        "correcto": "Onix",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "modelo",
+        "error": "sayll",
+        "correcto": "Sail",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "modelo",
+        "error": "ranjers",
+        "correcto": "Ranger",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "modelo",
+        "error": "ranjers",
+        "correcto": "Ranger",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "modelo",
+        "error": "sx 5",
+        "correcto": "CX-5",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "bujeas",
+        "correcto": "Encendido",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "bujeas",
+        "correcto": "Encendido",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "buhias",
+        "correcto": "Encendido",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "buhias",
+        "correcto": "Encendido",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "bujiaz",
+        "correcto": "Encendido",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "bujiaz",
+        "correcto": "Encendido",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "kauchos",
+        "correcto": "Neumáticos",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "kauchos",
+        "correcto": "Neumáticos",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "cluch",
+        "correcto": "Transmisión",
+        "en_tabla": 0,
+        "marco": 1,
+        "obtenido": null
+      },
+      {
+        "tipo": "categoria",
+        "error": "cluch",
+        "correcto": "Transmisión",
+        "en_tabla": 0,
+        "marco": 2,
+        "obtenido": null
+      }
+    ]
+  },
+  "numero_de_ejecucion": 1,
+  "huellas_del_estado_medido": {
+    "data/intents_dataset.csv": "41b18fad969ce0226b090d4bf54bd358aa677f61c46419a1f57a4a621b520c9f",
+    "data/errores/posibles_errores.csv": "a2338a9d86d547c70e1633885f65b46f37714fef5f7967d93de4fcd47fb44f6a",
+    "app/ner/extractor.py": "6c3daedbb1abc1684b3c83b704660db046be05ba5795292889dc88e5dfb05fd5",
+    "app/preprocessing.py": "d49488bba85259f55e7410087c446e789a5852343c760f2659e0e414f3a00b5a",
+    "app/intent/classifier.py": "c2c98e40d422ce3221678a9bf479a22ed76e1b28868b8c47577f5f85e525ae95",
+    "app/intent/modelos.py": "e1dc7cdb61341e00be38972852c2d3038793aa13b5e905833443752c5dc884da",
+    "app/recommender/tfidf_cosine.py": "5b539d2d2af43dc1fe3fbfe8b9679b618361f18ed271c8c67bed4dd47c5a98f4"
+  },
+  "integridad": {
+    "archivos_verificados": 7,
+    "sin_modificaciones": true
+  }
+}

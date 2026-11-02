@@ -19,7 +19,16 @@ Decisiones de diseño (ver también la sección "notas" del JSON de salida):
     (marca, modelo, año dentro de [ANIO_DESDE, ANIO_HASTA], stock > 0).
 
 Uso (desde nlp-service/):  python eval/medir_baseline.py
+
+Con ``--salida eval/resultados_despues.json`` se mide el estado ACTUAL del código
+sobre los mismos conjuntos y se escribe en otro archivo (la medición "después de
+mejoras"). Esa variante además le pasa al NER la tabla modelo -> marca del
+catálogo (para inferir la marca cuando el texto nombra un modelo único) y numera
+la ejecución, porque los conjuntos congelados no deben usarse más de lo necesario.
+SIN ``--salida`` el comportamiento es el de siempre y reescribe baseline_antes.json:
+no se debe volver a correr así (el "antes" ya está medido y congelado).
 """
+import argparse
 import csv
 import hashlib
 import json
@@ -132,20 +141,27 @@ def cargar_catalogo() -> dict:
     modelos = sorted({c["MODELO"] for c in compat})
     categorias = sorted({r["CATEGORIA"] for r in repuestos})
     marca_de_modelo = {}
+    marcas_de_modelo: dict[str, list[str]] = {}
     for c in compat:
         marca_de_modelo.setdefault(c["MODELO"], c["MARCA"])
+        if c["MARCA"] not in marcas_de_modelo.setdefault(c["MODELO"], []):
+            marcas_de_modelo[c["MODELO"]].append(c["MARCA"])
     return {
         "repuestos": por_id, "compat": compat, "marcas": marcas, "modelos": modelos,
         "categorias": categorias, "marca_de_modelo": marca_de_modelo,
+        "marcas_de_modelo": marcas_de_modelo,
     }
 
 
-def vocab_ner(cat: dict) -> dict:
-    return {
+def vocab_ner(cat: dict, con_marca_de_modelo: bool = False) -> dict:
+    vocab = {
         "marcas_conocidas": cat["marcas"],
         "modelos_conocidos": cat["modelos"],
         "categorias_conocidas": cat["categorias"],
     }
+    if con_marca_de_modelo:
+        vocab["marca_de_modelo"] = cat["marcas_de_modelo"]
+    return vocab
 
 
 def candidatos_compatibles(cat: dict, marca, modelo, anio=None, motor=None, combustible=None, categoria=None):
@@ -184,10 +200,10 @@ def cargar_modelo_intencion() -> tuple[object, dict]:
     return reentrenado, info | {"_reentrenado": reentrenado}
 
 
-def medir_intencion() -> dict:
+def medir_intencion(ruta: Path | None = None) -> dict:
     pipeline, info = cargar_modelo_intencion()
     reentrenado = info.pop("_reentrenado")
-    df = pd.read_csv(HOLDOUTS["intent"])
+    df = pd.read_csv(ruta or HOLDOUTS["intent"])
     etiquetas = sorted(set(pd.read_csv(DATASET_PATH)["intencion"]) | set(df["intencion"]))
 
     y_true = df["intencion"].to_numpy()
@@ -253,9 +269,9 @@ def medir_intencion() -> dict:
 
 
 # ---------------------------------------------------------------- NER
-def medir_ner(cat: dict) -> dict:
-    casos = json.loads(HOLDOUTS["ner"].read_text(encoding="utf-8"))
-    vocab = vocab_ner(cat)
+def medir_ner(cat: dict, ruta: Path | None = None, vocab: dict | None = None) -> dict:
+    casos = json.loads((ruta or HOLDOUTS["ner"]).read_text(encoding="utf-8"))
+    vocab = vocab or vocab_ner(cat)
     contadores = {c: {"ok": 0, "n": 0, "pos_ok": 0, "pos_n": 0, "neg_ok": 0, "neg_n": 0} for c in CAMPOS_NER}
     por_grupo = defaultdict(lambda: {"campos_ok": 0, "campos_n": 0, "casos_exactos": 0, "casos": 0})
     errores = []
@@ -332,10 +348,10 @@ def _azar(n_cand: int, n_rel: int) -> dict:
     return {"p1": n_rel / n_cand, "hit3": hit3}
 
 
-def medir_recomendador(cat: dict) -> dict:
-    casos = json.loads(HOLDOUTS["recomendador"].read_text(encoding="utf-8"))
+def medir_recomendador(cat: dict, ruta: Path | None = None, vocab: dict | None = None) -> dict:
+    casos = json.loads((ruta or HOLDOUTS["recomendador"]).read_text(encoding="utf-8"))
     estrategia = SimilitudTfidfCoseno()
-    vocab = vocab_ner(cat)
+    vocab = vocab or vocab_ner(cat)
     modos = {"solo_ranking": [], "pipeline_completo": []}
     detalle = {"solo_ranking": [], "pipeline_completo": []}
     azar = []
@@ -400,9 +416,9 @@ def medir_recomendador(cat: dict) -> dict:
 
 
 # ---------------------------------------------------------------- errores de digitación
-def medir_errores(cat: dict) -> dict:
-    filas = leer_csv(HOLDOUTS["errores"])
-    vocab = vocab_ner(cat)
+def medir_errores(cat: dict, ruta: Path | None = None, vocab: dict | None = None) -> dict:
+    filas = leer_csv(ruta or HOLDOUTS["errores"])
+    vocab = vocab or vocab_ner(cat)
     marca_de = cat["marca_de_modelo"]
     marcos = {
         "marca": ["tienen repuestos para {x}", "busco algo para el {x} 2019"],
@@ -446,15 +462,31 @@ def medir_errores(cat: dict) -> dict:
 
 
 # ---------------------------------------------------------------- principal
-def main() -> dict:
+def _numero_de_ejecucion(salida: Path) -> int:
+    """Cuántas veces se midieron los congelados "después": 1 + lo registrado en el archivo previo."""
+    try:
+        previo = json.loads(Path(salida).read_text(encoding="utf-8"))
+        return int(previo.get("numero_de_ejecucion", 0)) + 1
+    except (OSError, ValueError):
+        return 1
+
+
+def main(salida: Path | None = None) -> dict:
+    """Mide los cuatro congelados. `salida=None`: modo "antes" (reescribe baseline_antes.json);
+    con ruta: modo "después" (vocabulario con tabla modelo -> marca y ejecución numerada)."""
+    despues = salida is not None
+    salida = Path(salida) if despues else SALIDA
     protegidos = [*HOLDOUTS.values(), DATASET_PATH, Path(TABLA_ERRORES_PATH)]
     if Path(MODEL_PATH).exists():
         protegidos.append(Path(MODEL_PATH))
     antes = {str(p): sha256(p) for p in protegidos}
 
     cat = cargar_catalogo()
+    vocab = vocab_ner(cat, con_marca_de_modelo=despues)
     resultado = {
-        "descripcion": "Línea base ANTES de mejoras, medida con el código y el modelo actuales sobre los holdouts v2 congelados.",
+        "descripcion": ("Medición DESPUÉS de las mejoras, con el código y el modelo vigentes, sobre los mismos holdouts v2 congelados."
+                        if despues else
+                        "Línea base ANTES de mejoras, medida con el código y el modelo actuales sobre los holdouts v2 congelados."),
         "entorno": {"python": platform.python_version(), "scikit_learn": sklearn.__version__,
                     "numpy": np.__version__, "pandas": pd.__version__},
         "notas": [
@@ -463,20 +495,34 @@ def main() -> dict:
             "Recomendador: solo_ranking aísla el ranking TF-IDF+coseno; pipeline_completo incluye NER y filtro por categoría.",
             "Empates de similitud se resuelven por el orden de entrada de los candidatos (ID de repuesto ascendente).",
             "Errores de digitación: cada error se evalúa en dos frases (marcos_de_frase); las exactitudes cuentan evaluaciones, no errores únicos.",
-        ],
+        ] + (["Modo después: el NER recibe además la tabla modelo -> marca del catálogo (inferencia de marca por modelo único)."]
+             if despues else []),
         "holdouts_sha256": {k: sha256(v) for k, v in HOLDOUTS.items()},
         "catalogo": {"origen": "eval/datos_demo (repuestos.csv, compatibilidad.csv)", "marcas": len(cat["marcas"]),
                      "modelos": len(cat["modelos"]), "categorias": len(cat["categorias"]),
                      "repuestos": len(cat["repuestos"])},
         "intencion": medir_intencion(),
-        "ner": medir_ner(cat),
-        "recomendador": medir_recomendador(cat),
-        "errores_digitacion": medir_errores(cat),
+        "ner": medir_ner(cat, vocab=vocab),
+        "recomendador": medir_recomendador(cat, vocab=vocab),
+        "errores_digitacion": medir_errores(cat, vocab=vocab),
     }
-    despues = {str(p): sha256(p) for p in protegidos}
-    resultado["integridad"] = {"archivos_verificados": len(antes), "sin_modificaciones": antes == despues}
-    SALIDA.write_text(json.dumps(resultado, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+    if despues:
+        resultado["numero_de_ejecucion"] = _numero_de_ejecucion(salida)
+        resultado["huellas_del_estado_medido"] = huellas_estado()
+    despues_h = {str(p): sha256(p) for p in protegidos}
+    resultado["integridad"] = {"archivos_verificados": len(antes), "sin_modificaciones": antes == despues_h}
+    salida.write_text(json.dumps(resultado, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return resultado
+
+
+def huellas_estado() -> dict:
+    """SHA-256 de lo que determina el resultado: permite saber si una medición sigue vigente."""
+    # El .pkl no entra: está fuera de git y sale determinista del dataset y el código que sí entran.
+    archivos = [DATASET_PATH, Path(TABLA_ERRORES_PATH),
+                RAIZ / "app" / "ner" / "extractor.py", RAIZ / "app" / "preprocessing.py",
+                RAIZ / "app" / "intent" / "classifier.py", RAIZ / "app" / "intent" / "modelos.py",
+                RAIZ / "app" / "recommender" / "tfidf_cosine.py"]
+    return {str(a.relative_to(RAIZ)).replace("\\", "/"): sha256(a) for a in archivos if a.exists()}
 
 
 def imprimir(r: dict) -> None:
@@ -500,4 +546,8 @@ def imprimir(r: dict) -> None:
 
 
 if __name__ == "__main__":
-    imprimir(main())
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--salida", type=Path, default=None,
+                    help="medición 'después': archivo de salida (p. ej. eval/resultados_despues.json). "
+                         "Sin esta opción se reescribe baseline_antes.json (no usar).")
+    imprimir(main(ap.parse_args().salida))
