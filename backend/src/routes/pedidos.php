@@ -6,6 +6,7 @@ use App\patterns\observer\GestorPedidos;
 use App\patterns\observer\AuditLogObserver;
 use App\patterns\observer\WebSocketObserver;
 use App\middlewares\RoleMiddleware;
+use App\services\ListaIds;
 use App\services\NlpClient;
 
 /**
@@ -24,6 +25,28 @@ function makeGestorPedidos(): GestorPedidos
     $gestor->agregarObserver(new AuditLogObserver());   // audit_log
     $gestor->agregarObserver(new WebSocketObserver());  // notif. tiempo real
     return $gestor;
+}
+
+/**
+ * Unidades ya pedidas y todavía no recibidas, por repuesto:
+ * { "repuesto_id" (string): unidades }. Lo comparten las dos rutas de
+ * sugerencia: sin descontarlas, se sugeriría volver a pedir lo que ya viene
+ * en camino.
+ */
+function pedidosUnidadesEnTransito($db): array
+{
+    $transito = [];
+    $tr = $db->query("
+        SELECT d.repuesto_id, SUM(d.cantidad) AS cantidad
+        FROM pedido_detalle d
+        JOIN pedidos p ON p.id = d.pedido_id
+        WHERE p.estado IN ('solicitado','en_transito')
+        GROUP BY d.repuesto_id
+    ");
+    foreach ($tr->fetchAll() as $fila) {
+        $transito[(string) $fila['repuesto_id']] = (float) $fila['cantidad'];
+    }
+    return $transito;
 }
 
 // GET /api/pedidos
@@ -91,17 +114,7 @@ $group->get('/pedidos/sugerencia', function (Request $req, Response $res) {
     // Unidades ya pedidas y todavía no recibidas. Sin esto, cada vez que se
     // abriera la pantalla se sugeriría volver a pedir lo que ya viene en
     // camino, y el inventario terminaría duplicado.
-    $transito = [];
-    $tr = $db->query("
-        SELECT d.repuesto_id, SUM(d.cantidad) AS cantidad
-        FROM pedido_detalle d
-        JOIN pedidos p ON p.id = d.pedido_id
-        WHERE p.estado IN ('solicitado','en_transito')
-        GROUP BY d.repuesto_id
-    ");
-    foreach ($tr->fetchAll() as $fila) {
-        $transito[(string) $fila['repuesto_id']] = (float) $fila['cantidad'];
-    }
+    $transito = pedidosUnidadesEnTransito($db);
 
     $ids       = array_map(fn($r) => (int) $r['id'], $repuestos);
     $respuesta = NlpClient::post('/sugerencia-pedido', [
@@ -161,6 +174,68 @@ $group->get('/pedidos/sugerencia', function (Request $req, Response $res) {
         'sin_proveedor'  => $sinProveedor,
         'dias_entrega'   => $diasEntrega,
         'dias_cobertura' => $diasCobertura,
+    ]));
+    return $res->withHeader('Content-Type', 'application/json');
+})->add(new RoleMiddleware(['admin', 'dueno']));
+
+/**
+ * GET /api/pedidos/sugerencia/items?ids=1,2,3&dias_entrega=7&dias_cobertura=30
+ *
+ * La señal y la cantidad sugerida de los repuestos pedidos, TENGAN o no
+ * necesidad de reabastecerse. /pedidos/sugerencia solo lista los que sí; el
+ * formulario de "Nuevo pedido" también necesita saber que un producto que el
+ * usuario agregó a mano está bien de stock ("normal") o es de rotación baja,
+ * para no empujarlo a pedir de más.
+ *
+ * Como el resto de las rutas de IA responde 200 con disponible=false si el
+ * microservicio no contesta: el formulario se usa igual, sin sugerencias.
+ * Un id inexistente simplemente no aparece en `data`.
+ */
+$group->get('/pedidos/sugerencia/items', function (Request $req, Response $res) {
+    $p       = $req->getQueryParams();
+    $crudo   = $p['ids'] ?? '';
+    $ids     = ListaIds::desdeTexto(is_string($crudo) ? $crudo : '', 100);
+    $entrega = min(90,  max(1, (int) ($p['dias_entrega']   ?? 7)));
+    $cobert  = min(180, max(7, (int) ($p['dias_cobertura'] ?? 30)));
+
+    if ($ids === []) {
+        $res->getBody()->write(json_encode(['data' => [], 'disponible' => true]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    $respuesta = NlpClient::post('/sugerencia-pedido', [
+        'repuesto_ids'   => $ids,
+        'dias_entrega'   => $entrega,
+        'dias_cobertura' => $cobert,
+        'en_transito'    => (object) pedidosUnidadesEnTransito(\App\models\Database::getConnection()),
+    ]);
+
+    if ($respuesta === null) {
+        $res->getBody()->write(json_encode(['data' => [], 'disponible' => false]));
+        return $res->withHeader('Content-Type', 'application/json');
+    }
+
+    // Solo los campos que usa la pantalla: el resto del cálculo no sale del backend.
+    $items = [];
+    foreach ($respuesta['data'] ?? [] as $s) {
+        $items[] = [
+            'repuesto_id'              => (int) ($s['repuesto_id'] ?? 0),
+            'senal'                    => $s['senal'] ?? 'sin_datos',
+            'necesita_reabastecer'     => !empty($s['necesita_reabastecer']),
+            'cantidad_sugerida'        => (int) ($s['cantidad_sugerida'] ?? 0),
+            'stock_actual'             => $s['stock_actual'] ?? null,
+            'en_transito'              => $s['en_transito'] ?? 0,
+            'punto_reorden'            => $s['punto_reorden'] ?? null,
+            'demanda_semanal_estimada' => $s['demanda_semanal_estimada'] ?? 0,
+            'motivo'                   => $s['motivo'] ?? '',
+        ];
+    }
+
+    $res->getBody()->write(json_encode([
+        'data'           => $items,
+        'disponible'     => true,
+        'dias_entrega'   => $entrega,
+        'dias_cobertura' => $cobert,
     ]));
     return $res->withHeader('Content-Type', 'application/json');
 })->add(new RoleMiddleware(['admin', 'dueno']));

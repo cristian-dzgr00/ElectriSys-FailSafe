@@ -52,6 +52,60 @@ class GestorAsistenteTest extends TestCase
         }
     }
 
+    /** Gestor cuyo "microservicio" devuelve una respuesta fija y recuerda qué texto recibió. */
+    private function gestorConMicroservicioFalso(array $respuesta, ?string &$textoRecibido): GestorAsistente
+    {
+        return new class($respuesta, $textoRecibido) extends GestorAsistente {
+            public function __construct(private array $respuesta, private ?string &$recibido) {}
+            protected function llamarMicroservicio(string $texto, ?array $contextoPrevio = null): array
+            {
+                $this->recibido = $texto;
+                return $this->respuesta;
+            }
+        };
+    }
+
+    public function testElRegistroGuardaElTextoEnmascaradoPeroElMicroservicioRecibeElOriginal(): void
+    {
+        $textoRecibido = null;
+        $gestor = $this->gestorConMicroservicioFalso(
+            ['intencion' => 'consultar_stock', 'entidades' => ['codigo' => '7701234567890'], 'respuesta_texto' => 'ok'],
+            $textoRecibido
+        );
+        $observer = new class implements VentaObserver {
+            public array $contexto = [];
+            public function actualizar(string $accion, array $contexto): void { $this->contexto = $contexto; }
+        };
+        $gestor->agregarObserver($observer);
+
+        $original = 'stock del 7701234567890, avisar a cliente@correo.com o al 3001234567';
+        $devuelta = $gestor->consultar($original, 5, '10.0.0.1');
+
+        // El microservicio recibe el texto tal cual: un código numérico largo debe poder buscarse.
+        $this->assertSame($original, $textoRecibido);
+        // El historial no guarda ningún dato personal.
+        $this->assertSame('stock del ***, avisar a *** o al ***', $observer->contexto['texto_consulta']);
+        $this->assertSame('***', $observer->contexto['respuesta']['entidades']['codigo']);
+        // Y quien consulta recibe la respuesta sin alterar.
+        $this->assertSame('7701234567890', $devuelta['entidades']['codigo']);
+    }
+
+    public function testUnaConsultaSinDatosPersonalesSeRegistraIntacta(): void
+    {
+        $textoRecibido = null;
+        $gestor = $this->gestorConMicroservicioFalso(['intencion' => 'buscar_repuesto'], $textoRecibido);
+        $observer = new class implements VentaObserver {
+            public array $contexto = [];
+            public function actualizar(string $accion, array $contexto): void { $this->contexto = $contexto; }
+        };
+        $gestor->agregarObserver($observer);
+
+        $texto = 'filtro de aceite para Toyota Hilux 2.7 gasolina 2024';
+        $gestor->consultar($texto, 5);
+
+        $this->assertSame($texto, $observer->contexto['texto_consulta']);
+    }
+
     public function testAgregarYRemoverObserverFunciona(): void
     {
         $observer = new class implements VentaObserver {

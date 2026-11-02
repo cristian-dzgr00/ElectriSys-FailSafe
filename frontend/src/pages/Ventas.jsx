@@ -5,6 +5,7 @@ import Pagination from '../components/Pagination';
 import { StatusBadge } from '../components/Tooltip';
 import AsistenteFlotante from '../components/AsistenteFlotante';
 import BuscadorRepuesto from '../components/BuscadorRepuesto';
+import ComplementosPanel from '../components/ComplementosPanel';
 import { useToastContext } from '../context/ToastContext';
 import { ventasService, clientesService } from '../services/ventasService';
 
@@ -239,6 +240,7 @@ export default function Ventas() {
                 <label className="form-label">Agregar producto</label>
                 <BuscadorRepuesto onSeleccionar={addItem} />
               </div>
+              <ComplementosPanel items={items} onAgregar={addItem} />
               {items.length > 0 && (
                 <div className="card" style={{padding:0,overflow:'hidden',marginBottom:16}}>
                   <table style={{width:'100%',borderCollapse:'collapse'}}>

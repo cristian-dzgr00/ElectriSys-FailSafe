@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\patterns\observer;
 
+use App\services\EnmascaradorDatosPersonales;
+
 /**
  * GestorAsistente — Subject Concreto
  *
@@ -58,10 +60,14 @@ class GestorAsistente implements VentaSubject
     {
         $respuesta = $this->llamarMicroservicio($texto, $contextoPrevio);
 
+        // Al microservicio viaja el texto original (un código de producto de
+        // 7+ dígitos se parece a un teléfono y enmascararlo rompería la
+        // búsqueda), pero lo que se REGISTRA pasa antes por el enmascarador:
+        // el historial no debe guardar correos, teléfonos ni cédulas.
         $this->notificarObservers('consulta_asistente', [
             'usuario_id'     => $usuarioId,
-            'texto_consulta' => $texto,
-            'respuesta'      => $respuesta,
+            'texto_consulta' => EnmascaradorDatosPersonales::enmascarar($texto),
+            'respuesta'      => EnmascaradorDatosPersonales::enmascararEstructura($respuesta),
             'ip'             => $ip,
         ]);
 
@@ -80,7 +86,8 @@ class GestorAsistente implements VentaSubject
         return $respuesta;
     }
 
-    private function llamarMicroservicio(string $texto, ?array $contextoPrevio = null): array
+    /** protected (no private) para poder sustituirlo en las pruebas sin red. */
+    protected function llamarMicroservicio(string $texto, ?array $contextoPrevio = null): array
     {
         $url = rtrim($_ENV['NLP_SERVICE_URL'] ?? '', '/') . '/nlp/consultar';
 

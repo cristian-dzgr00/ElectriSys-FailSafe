@@ -18,4 +18,12 @@ export const pedidosService = {
   // DELETE cancela (cambio de estado), no borra la fila — igual que anular
   // una venta. El historial de compras nunca se pierde.
   cancelar:      (id)          => api.delete(`/pedidos/${id}`),
+  // Qué conviene pedirle a cada proveedor, agrupado por proveedor (solo los
+  // productos que necesitan reabastecerse). Responde 200 con
+  // disponible:false si el microservicio de IA no contesta.
+  sugerencias:   ()            => api.get('/pedidos/sugerencia'),
+  // Señal y cantidad sugerida de productos puntuales, necesiten o no
+  // reabastecerse: lo usa el formulario de nuevo pedido para los ítems que el
+  // usuario ya agregó.
+  sugerenciaItems: (ids)       => api.get('/pedidos/sugerencia/items', { params: { ids: ids.join(',') } }),
 };

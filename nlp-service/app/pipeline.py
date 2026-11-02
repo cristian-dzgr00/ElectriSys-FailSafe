@@ -57,9 +57,69 @@ def _buscar_candidatos_por_vehiculo(entidades: dict) -> tuple[list[dict], bool]:
     return [], True
 
 
+def _marcar_compatibilidad(candidatos: list[dict], confirmada: bool) -> list[dict]:
+    """Copia cada candidato con la bandera `compatibilidad_confirmada`.
+
+    La bandera viaja con cada sugerencia (y no solo en la respuesta) para que
+    la interfaz pueda rotular una por una sin adivinar de dónde salió.
+    """
+    return [{**c, "compatibilidad_confirmada": confirmada} for c in candidatos]
+
+
+def _respaldo_por_categoria(texto: str, entidades: dict) -> list[dict]:
+    """Hasta TOP_K repuestos CON stock de la categoría detectada, marcados como
+    compatibilidad NO confirmada. Lista vacía si no hay categoría o si el
+    catálogo no responde: es un extra, nunca debe romper la respuesta."""
+    categoria = entidades.get("categoria")
+    if not categoria:
+        return []
+    try:
+        candidatos = buscar_en_catalogo(categoria)
+    except BackendNoDisponibleError:
+        return []
+    disponibles = [c for c in candidatos if c.get("stock", 0) > 0]
+    top = _estrategia_similitud.rankear(texto, disponibles)[:TOP_K]
+    return _marcar_compatibilidad(top, False)
+
+
+AVISO_NO_CONFIRMADA = "Compatibilidad no confirmada: verifica con el vehículo antes de vender."
+
+
+def _opciones_de_categoria(opciones: list[dict]) -> str:
+    return " o ".join(
+        f"\"{c.get('codigo', '?')}\" de {c.get('proveedor') or 'catálogo'}" for c in opciones
+    )
+
+
+def _pregunta_aclaracion(entidades: dict) -> tuple[str, list[str]]:
+    """Pregunta corta según lo que falta, y la lista de campos faltantes."""
+    marca, modelo = entidades.get("marca"), entidades.get("modelo")
+    categoria = entidades.get("categoria")
+    if marca and not modelo:
+        return f"¿Qué modelo de {marca}?", ["modelo"]
+    if modelo and not marca:
+        return f"¿De qué marca es el {modelo}?", ["marca"]
+    if categoria:
+        return f"Para buscar en {categoria}, ¿para qué marca y modelo de vehículo?", ["marca", "modelo"]
+    return "¿Para qué marca y modelo de vehículo?", ["marca", "modelo"]
+
+
+def _responder_sin_vehiculo(texto: str, entidades: dict) -> tuple[list[dict], str]:
+    """Falta marca y/o modelo: se pregunta, y si ya se sabe la categoría se
+    muestran hasta 3 opciones en stock rotuladas como NO confirmadas."""
+    pregunta, _ = _pregunta_aclaracion(entidades)
+    respaldo = _respaldo_por_categoria(texto, entidades)
+    if not respaldo:
+        return [], pregunta
+    return respaldo, (
+        f"{pregunta} Mientras tanto, en {entidades['categoria']} hay con stock "
+        f"{_opciones_de_categoria(respaldo)}. {AVISO_NO_CONFIRMADA}"
+    )
+
+
 def _procesar_recomendar_sustituto(texto: str, entidades: dict) -> tuple[list[dict], str]:
     if not entidades.get("marca") or not entidades.get("modelo"):
-        return [], templates.sin_vehiculo_identificado()
+        return _responder_sin_vehiculo(texto, entidades)
 
     try:
         candidatos, compatibilidad_exacta = _buscar_candidatos_por_vehiculo(entidades)
@@ -67,21 +127,37 @@ def _procesar_recomendar_sustituto(texto: str, entidades: dict) -> tuple[list[di
         return [], templates.backend_no_disponible()
 
     disponibles = [c for c in candidatos if c.get("stock", 0) > 0]
-    top = _estrategia_similitud.rankear(texto, disponibles)[:TOP_K]
+    top = _marcar_compatibilidad(
+        _estrategia_similitud.rankear(texto, disponibles)[:TOP_K], compatibilidad_exacta
+    )
     return top, templates.recomendar_sustituto(top, entidades, compatibilidad_exacta)
 
 
 def _procesar_buscar_repuesto(texto: str, entidades: dict) -> tuple[list[dict], str]:
     if not entidades.get("marca") or not entidades.get("modelo"):
-        return [], templates.sin_vehiculo_identificado()
+        return _responder_sin_vehiculo(texto, entidades)
 
     try:
-        candidatos, _ = _buscar_candidatos_por_vehiculo(entidades)
+        candidatos, compatibilidad_exacta = _buscar_candidatos_por_vehiculo(entidades)
     except BackendNoDisponibleError:
         return [], templates.backend_no_disponible()
 
+    if not compatibilidad_exacta:
+        # Lo que llegó es la categoría completa, no repuestos registrados
+        # para el vehículo: decir "sí, hay disponible … para <vehículo>" sería
+        # afirmar una compatibilidad que nadie verificó.
+        disponibles = [c for c in candidatos if c.get("stock", 0) > 0]
+        top = _marcar_compatibilidad(_estrategia_similitud.rankear(texto, disponibles)[:TOP_K], False)
+        vehiculo = templates._describir_vehiculo(entidades)
+        if not top:
+            return [], f"No encontré ese repuesto registrado para {vehiculo}."
+        return top, (
+            f"No encontré ese repuesto registrado para {vehiculo}, pero en la misma categoría hay con stock "
+            f"{_opciones_de_categoria(top)}. {AVISO_NO_CONFIRMADA}"
+        )
+
     rankeados = _estrategia_similitud.rankear(texto, candidatos)
-    return rankeados[:TOP_K], templates.buscar_repuesto(rankeados, entidades)
+    return _marcar_compatibilidad(rankeados[:TOP_K], True), templates.buscar_repuesto(rankeados, entidades)
 
 
 def _procesar_consulta_producto(intencion: str, texto: str, entidades: dict) -> tuple[list[dict], str]:
@@ -142,9 +218,43 @@ def _falta_vehiculo(intencion: str, entidades: dict) -> bool:
     )
 
 
+# Con confianza por debajo de esto, un texto que solo aporta marca/modelo se
+# considera la respuesta a la pregunta pendiente y no un tema nuevo.
+CONFIANZA_CAMBIO_DE_TEMA = 0.5
+
+
+def _compatibilidad_de(sugerencias: list[dict]) -> bool | None:
+    """True si todo lo sugerido tiene compatibilidad confirmada, False si hay
+    algo sin confirmar, None si no se sugirió nada (o no aplica)."""
+    banderas = [s["compatibilidad_confirmada"] for s in sugerencias if "compatibilidad_confirmada" in s]
+    if not banderas:
+        return None
+    return all(banderas)
+
+
+def _intencion_con_pendiente(intencion: str, confianza: float, entidades_nuevas: dict,
+                             contexto_previo: dict | None) -> str:
+    """Si el turno anterior quedó esperando marca/modelo y el texto nuevo solo
+    los aporta ("toyota hilux"), el clasificador puede verlo como fuera de
+    dominio porque ya no menciona el repuesto. La intención pendiente viaja en
+    el contexto (`_intencion_pendiente`) y se retoma solo en ese caso."""
+    pendiente = (contexto_previo or {}).get("_intencion_pendiente")
+    if pendiente not in ("recomendar_sustituto", "buscar_repuesto"):
+        return intencion
+    if intencion in ("recomendar_sustituto", "buscar_repuesto"):
+        return intencion
+    if intencion != "fuera_de_dominio" and confianza >= CONFIANZA_CAMBIO_DE_TEMA:
+        return intencion
+    if entidades_nuevas.get("marca") or entidades_nuevas.get("modelo"):
+        return pendiente
+    return intencion
+
+
 def procesar_consulta(texto: str, contexto_previo: dict | None = None) -> dict:
     intencion, confianza = predecir_intencion(texto)
-    entidades = _fusionar_entidades(_entidades_del_texto(texto), contexto_previo)
+    entidades_nuevas = _entidades_del_texto(texto)
+    intencion = _intencion_con_pendiente(intencion, confianza, entidades_nuevas, contexto_previo)
+    entidades = _fusionar_entidades(entidades_nuevas, contexto_previo)
 
     if intencion in ("saludo_despedida", "fuera_de_dominio"):
         sugerencias, respuesta = [], templates.responder_fijo(intencion)
@@ -157,11 +267,18 @@ def procesar_consulta(texto: str, contexto_previo: dict | None = None) -> dict:
     else:  # pragma: no cover - no debería ocurrir, las 7 intenciones están cubiertas arriba
         sugerencias, respuesta = [], templates.responder_fijo("fuera_de_dominio")
 
+    esperando = _falta_vehiculo(intencion, entidades)
+    faltan = _pregunta_aclaracion(entidades)[1] if esperando else []
     return {
         "intencion": intencion,
         "confianza": round(confianza, 4),
         "entidades": entidades,
         "sugerencias": sugerencias,
         "respuesta_texto": respuesta,
-        "esperando_datos": _falta_vehiculo(intencion, entidades),
+        "esperando_datos": esperando,
+        # Campos nuevos (aditivos): permiten a la interfaz resaltar la pregunta
+        # de aclaración y retomar la intención en el turno siguiente.
+        "faltan_datos": faltan,
+        "intencion_pendiente": intencion if esperando else None,
+        "compatibilidad_confirmada": _compatibilidad_de(sugerencias),
     }
