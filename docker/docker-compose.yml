@@ -22,6 +22,7 @@ services:
   oracle-db:
     image: gvenzl/oracle-free:23-slim
     container_name: es_oracle_db
+    profiles: ["local"]   # no arranca por defecto: la BD real esta en Oracle Cloud
     restart: unless-stopped
     environment:
       ORACLE_PASSWORD: "${ORACLE_PASSWORD:?falta en docker/.env}"
@@ -54,9 +55,10 @@ services:
     restart: unless-stopped
     env_file: ../backend/.env
     environment:
-      DB_HOST: oracle-db
-      DB_PORT: "1521"
-      DB_SERVICE_NAME: FREEPDB1
+      # Oracle Cloud (Autonomous AI Database, mTLS con wallet). DB_HOST/PORT/
+      # SERVICE_NAME ya no se usan: Database.php conecta por el alias del wallet.
+      DB_WALLET_DIR: /opt/oracle/wallet
+      DB_TNS_ALIAS: electrisys_tp
       DB_USER: electrisys
       DB_PASS: "${DB_PASS:?falta en docker/.env}"
       # Estas tres pisan lo que traiga backend/.env: docker/.env es el
@@ -67,9 +69,7 @@ services:
       NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
     volumes:
       - ../backend:/var/www/html
-    depends_on:
-      oracle-db:
-        condition: service_healthy
+      - ./wallet:/opt/oracle/wallet:ro
     networks:
       - electrisys_net
 
@@ -82,9 +82,10 @@ services:
     restart: unless-stopped
     env_file: ../backend/.env
     environment:
-      DB_HOST: oracle-db
-      DB_PORT: "1521"
-      DB_SERVICE_NAME: FREEPDB1
+      # Oracle Cloud (Autonomous AI Database, mTLS con wallet). DB_HOST/PORT/
+      # SERVICE_NAME ya no se usan: Database.php conecta por el alias del wallet.
+      DB_WALLET_DIR: /opt/oracle/wallet
+      DB_TNS_ALIAS: electrisys_tp
       DB_USER: electrisys
       DB_PASS: "${DB_PASS:?falta en docker/.env}"
       # Estas tres pisan lo que traiga backend/.env: docker/.env es el
@@ -95,9 +96,7 @@ services:
       NLP_INTERNAL_KEY: "${NLP_INTERNAL_KEY:?falta en docker/.env — copiá docker/.env.example}"
     volumes:
       - ../backend:/var/www/html
-    depends_on:
-      oracle-db:
-        condition: service_healthy
+      - ./wallet:/opt/oracle/wallet:ro
     networks:
       - electrisys_net
 

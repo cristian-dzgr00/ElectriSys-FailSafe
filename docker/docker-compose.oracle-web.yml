@@ -1,0 +1,40 @@
+# ============================================================
+# ElectriSys POS — override para la VM "web" de Oracle Cloud (E2.1.Micro)
+#
+# Uso en la VM (junto con el compose base y el de produccion):
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+#                  -f docker-compose.oracle-web.yml \
+#                  up -d --no-build backend-a backend-b websocket-server frontend
+#
+# Que hace:
+#   1. Usa imagenes ya construidas (se construyen en el equipo de desarrollo y
+#      se suben con `docker save | docker load`): una VM de 1 GB no alcanza
+#      para compilar el frontend.
+#   2. Apunta el backend al NLP, que corre en OTRA VM (docker-compose.nlp.yml).
+#   3. Publica el 8081 interno de nginx SOLO en la IP privada de la VM, para
+#      que el NLP pueda llamar al backend. El firewall de la VM y la security
+#      list de la VCN lo limitan a la red privada.
+#
+# Variables (docker/.env): NLP_HOST (IP privada de la VM del NLP) y
+# WEB_PRIVATE_IP (IP privada de esta VM).
+# ============================================================
+
+services:
+
+  backend-a:
+    image: electrisys/backend:oracle
+    environment:
+      NLP_SERVICE_URL: "http://${NLP_HOST:?falta NLP_HOST en docker/.env}:8000"
+
+  backend-b:
+    image: electrisys/backend:oracle
+    environment:
+      NLP_SERVICE_URL: "http://${NLP_HOST:?falta NLP_HOST en docker/.env}:8000"
+
+  websocket-server:
+    image: electrisys/websocket:oracle
+
+  frontend:
+    image: electrisys/frontend:oracle
+    ports:
+      - "${WEB_PRIVATE_IP:?falta WEB_PRIVATE_IP en docker/.env}:8081:8081"
