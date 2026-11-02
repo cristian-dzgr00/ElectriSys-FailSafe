@@ -29,12 +29,28 @@ class Database
         $tns = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={$host})(PORT={$port}))" .
                "(CONNECT_DATA=(SERVICE_NAME={$service})))";
 
+        // Oracle Cloud (Autonomous AI Database, mTLS): si hay wallet y alias,
+        // se conecta por el alias de tnsnames.ora del wallet (ej. electrisys_tp).
+        // TNS_ADMIN debe apuntar a la carpeta del wallet y su sqlnet.ora debe
+        // tener DIRECTORY="<esa misma carpeta>".
+        $walletDir = $_ENV['DB_WALLET_DIR'] ?? '';
+        $tnsAlias  = $_ENV['DB_TNS_ALIAS']  ?? '';
+        if ($walletDir !== '' && $tnsAlias !== '') {
+            putenv('TNS_ADMIN=' . $walletDir);
+            $tns = $tnsAlias;
+        }
+
         // TLS: diferido (ver oracle/docs/migracion-oracle.md) — Oracle usa
         // Wallets, un mecanismo distinto a los certificados PEM sueltos que
         // usaba MySQL; no se aborda en esta migración, igual que el mTLS de
         // MySQL tampoco llegó a validarse de punta a punta en producción
         // real (ver docs/asistente-nlp.md).
-        $raw = @oci_connect($user, $pass, $tns, 'AL32UTF8');
+        // Conexión PERSISTENTE (oci_pconnect): con oci_connect cada petición abría
+        // una conexión nueva (TCP + TLS mutuo + login) hacia Oracle Cloud, lo que
+        // tardaba varios segundos por petición. Con pconnect cada worker de
+        // PHP-FPM reutiliza la suya; oci8 la revalida si estuvo inactiva
+        // (oci8.ping_interval) y reconecta si Oracle la cerró.
+        $raw = @oci_pconnect($user, $pass, $tns, 'AL32UTF8');
         if ($raw === false) {
             $e = oci_error();
             throw new RuntimeException('[ElectriSys] No se pudo conectar a Oracle: ' . ($e['message'] ?? 'desconocido'));
