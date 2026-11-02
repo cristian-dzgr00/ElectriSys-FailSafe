@@ -1,0 +1,440 @@
+{
+  "metadatos": {
+    "descripcion": "Backtest de reglas de asociación con partición temporal 70/30 sobre datos sintéticos de demostración",
+    "parametros": {
+      "proporcion_entrenamiento": 0.7,
+      "k": 3,
+      "semilla": 20260101,
+      "remuestreos_bootstrap": 1000,
+      "sorteos_aleatorio_por_caso": 200,
+      "soporte_minimo": 2,
+      "confianza_minima": 0.15,
+      "lift_minimo": 1.0
+    },
+    "definiciones": {
+      "hit_at3": "fracción de casos (venta de prueba, producto-carrito) donde algún recomendado aparece en la misma venta; sin recomendación = fallo",
+      "precision_at3": "aciertos / 3 promediado sobre todos los casos",
+      "cobertura": "fracción de casos con al menos una recomendación",
+      "precision_servidos": "aciertos / recomendaciones entregadas, solo casos servidos",
+      "lift_medio_servido": "lift promedio de las reglas efectivamente entregadas"
+    },
+    "metodos": {
+      "reglas_repo": "app.asociacion.reglas.recomendar_complementos con canastas de entrenamiento",
+      "populares_top3": "3 más vendidos en entrenamiento, sin el producto del carrito",
+      "misma_categoria_top3": "3 más vendidos de la misma categoría, sin el del carrito",
+      "aleatorio_semilla_fija": "3 productos del catálogo al azar (semilla fija, 200 sorteos promediados)"
+    },
+    "ventas_completadas": 325
+  },
+  "particion": {
+    "entrenamiento": {
+      "ventas": 227,
+      "ventas_multi_producto": 141,
+      "ventas_un_solo_producto": 86,
+      "fecha_primera": "2026-07-14T12:07:16",
+      "fecha_ultima": "2026-10-03T10:25:24"
+    },
+    "prueba": {
+      "ventas": 98,
+      "ventas_multi_producto": 69,
+      "ventas_un_solo_producto": 29,
+      "fecha_primera": "2026-10-03T11:20:08",
+      "fecha_ultima": "2026-11-01T12:09:31"
+    },
+    "casos_de_prueba": 196,
+    "reglas_aprendidas": {
+      "soporte_minimo": 2,
+      "productos_con_reglas": 45,
+      "reglas_dirigidas": 101
+    },
+    "pares": {
+      "pares_distintos_en_prueba": 176,
+      "pares_de_prueba_vistos_en_entrenamiento": 73,
+      "pares_de_entrenamiento_con_soporte_ge_2": 60
+    }
+  },
+  "resultados": {
+    "n_ventas_evaluadas": 69,
+    "n_casos": 196,
+    "metodos": {
+      "reglas_repo": {
+        "hit_at3": {
+          "valor": 0.1531,
+          "ic95": [
+            0.0879,
+            0.2266
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0561,
+          "ic95": [
+            0.0311,
+            0.0858
+          ]
+        },
+        "cobertura": {
+          "valor": 0.7551,
+          "ic95": [
+            0.7056,
+            0.8042
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.2027,
+          "ic95": [
+            0.1184,
+            0.2958
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.1014,
+          "ic95": [
+            0.0552,
+            0.1517
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": 7.8166,
+          "ic95": [
+            6.8174,
+            8.8849
+          ]
+        }
+      },
+      "populares_top3": {
+        "hit_at3": {
+          "valor": 0.1735,
+          "ic95": [
+            0.0928,
+            0.2637
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0714,
+          "ic95": [
+            0.0347,
+            0.1134
+          ]
+        },
+        "cobertura": {
+          "valor": 1.0,
+          "ic95": [
+            1.0,
+            1.0
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.1735,
+          "ic95": [
+            0.0928,
+            0.2637
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.0714,
+          "ic95": [
+            0.0347,
+            0.1134
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": null,
+          "ic95": null
+        }
+      },
+      "misma_categoria_top3": {
+        "hit_at3": {
+          "valor": 0.1633,
+          "ic95": [
+            0.1029,
+            0.23
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0544,
+          "ic95": [
+            0.0343,
+            0.0767
+          ]
+        },
+        "cobertura": {
+          "valor": 1.0,
+          "ic95": [
+            1.0,
+            1.0
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.1633,
+          "ic95": [
+            0.1029,
+            0.23
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.0544,
+          "ic95": [
+            0.0343,
+            0.0767
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": null,
+          "ic95": null
+        }
+      },
+      "aleatorio_semilla_fija": {
+        "hit_at3": {
+          "valor": 0.0782,
+          "ic95": [
+            0.0688,
+            0.0866
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0267,
+          "ic95": [
+            0.0234,
+            0.0296
+          ]
+        },
+        "cobertura": {
+          "valor": 1.0,
+          "ic95": [
+            1.0,
+            1.0
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.0782,
+          "ic95": [
+            0.0688,
+            0.0866
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.0267,
+          "ic95": [
+            0.0234,
+            0.0296
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": null,
+          "ic95": null
+        }
+      }
+    },
+    "comparacion_pareada": {
+      "reglas_repo_vs_populares_top3": {
+        "diferencia_hit_at3": {
+          "valor": -0.0204,
+          "ic95": [
+            -0.1444,
+            0.1038
+          ]
+        },
+        "diferencia_precision_at3": {
+          "valor": -0.0153,
+          "ic95": [
+            -0.069,
+            0.0378
+          ]
+        },
+        "veredicto_hit_at3": "sin_diferencia_concluyente"
+      },
+      "reglas_repo_vs_misma_categoria_top3": {
+        "diferencia_hit_at3": {
+          "valor": -0.0102,
+          "ic95": [
+            -0.0934,
+            0.0695
+          ]
+        },
+        "diferencia_precision_at3": {
+          "valor": 0.0017,
+          "ic95": [
+            -0.0298,
+            0.036
+          ]
+        },
+        "veredicto_hit_at3": "sin_diferencia_concluyente"
+      },
+      "reglas_repo_vs_aleatorio_semilla_fija": {
+        "diferencia_hit_at3": {
+          "valor": 0.0749,
+          "ic95": [
+            0.0124,
+            0.1447
+          ]
+        },
+        "diferencia_precision_at3": {
+          "valor": 0.0295,
+          "ic95": [
+            0.0052,
+            0.058
+          ]
+        },
+        "veredicto_hit_at3": "reglas_mejor"
+      }
+    }
+  },
+  "sensibilidad_soporte_minimo": {
+    "soporte_minimo_1": {
+      "reglas_dirigidas": 286,
+      "productos_con_reglas": 67,
+      "reglas_repo": {
+        "hit_at3": {
+          "valor": 0.1888,
+          "ic95": [
+            0.117,
+            0.269
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0731,
+          "ic95": [
+            0.043,
+            0.1064
+          ]
+        },
+        "cobertura": {
+          "valor": 0.9133,
+          "ic95": [
+            0.8736,
+            0.9541
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.2067,
+          "ic95": [
+            0.1294,
+            0.2935
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.0922,
+          "ic95": [
+            0.0559,
+            0.1318
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": 11.6834,
+          "ic95": [
+            9.8082,
+            13.7466
+          ]
+        }
+      }
+    },
+    "soporte_minimo_2": {
+      "reglas_dirigidas": 101,
+      "productos_con_reglas": 45,
+      "reglas_repo": {
+        "hit_at3": {
+          "valor": 0.1531,
+          "ic95": [
+            0.0859,
+            0.2222
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0561,
+          "ic95": [
+            0.0295,
+            0.0859
+          ]
+        },
+        "cobertura": {
+          "valor": 0.7551,
+          "ic95": [
+            0.7053,
+            0.8063
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.2027,
+          "ic95": [
+            0.1164,
+            0.2903
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.1014,
+          "ic95": [
+            0.0548,
+            0.154
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": 7.8166,
+          "ic95": [
+            6.7621,
+            8.8618
+          ]
+        }
+      }
+    },
+    "soporte_minimo_3": {
+      "reglas_dirigidas": 27,
+      "productos_con_reglas": 17,
+      "reglas_repo": {
+        "hit_at3": {
+          "valor": 0.0561,
+          "ic95": [
+            0.0164,
+            0.1063
+          ]
+        },
+        "precision_at3": {
+          "valor": 0.0187,
+          "ic95": [
+            0.0055,
+            0.0354
+          ]
+        },
+        "cobertura": {
+          "valor": 0.3367,
+          "ic95": [
+            0.2762,
+            0.394
+          ]
+        },
+        "hit_at3_servidos": {
+          "valor": 0.1667,
+          "ic95": [
+            0.0533,
+            0.3014
+          ]
+        },
+        "precision_servidos": {
+          "valor": 0.1187,
+          "ic95": [
+            0.0363,
+            0.2139
+          ]
+        },
+        "lift_medio_servido": {
+          "valor": 6.7198,
+          "ic95": [
+            5.6497,
+            7.9785
+          ]
+        }
+      }
+    }
+  },
+  "limitaciones": [
+    "Datos SINTÉTICOS: demo exportada del esquema real, no compras de clientes reales; las asociaciones entre productos son las que el generador de datos introdujo.",
+    "Muestra pequeña: ~340 ventas completadas en 3.5 meses; la prueba (30 %) tiene pocas ventas multi-producto, así que los intervalos de confianza son anchos y las diferencias pequeñas no son concluyentes.",
+    "Con SOPORTE_MINIMO=2 un par debe repetirse al menos dos veces en entrenamiento; en un historial corto muchos pares de prueba nunca se vieron, lo que limita el hit@3 y la cobertura de las reglas por construcción.",
+    "Cada producto de una venta de prueba se evalúa como carrito de un solo ítem (verdad = los demás productos de esa venta). Un carrito real con varios productos recibe más señal; este protocolo subestima ese caso.",
+    "Los casos de una misma venta no son independientes: el bootstrap remuestrea ventas completas, no casos sueltos.",
+    "La línea base al azar promedia 200 sorteos por caso con semilla fija; no es un único sorteo, así que no hay ruido de muestreo propio en esa línea.",
+    "La partición temporal corta por marca de tiempo (ventas con la misma marca van a prueba); la proporción real de entrenamiento puede ser ligeramente inferior al 70 %.",
+    "Se mide coincidencia con lo que el cliente compró en la misma venta, no aceptación de la sugerencia ni margen: una recomendación útil que el cliente no compró cuenta como fallo.",
+    "Las ventas anuladas se excluyen antes de dividir y de aprender reglas.",
+    "La sensibilidad a SOPORTE_MINIMO cambia temporalmente la constante del módulo durante el backtest; el valor del repositorio no se modifica."
+  ]
+}
