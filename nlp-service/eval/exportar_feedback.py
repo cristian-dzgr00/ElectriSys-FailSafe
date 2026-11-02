@@ -53,12 +53,24 @@ def _obtener_consultas_no_utiles() -> list[dict]:
         return resp.json()["data"]
 
 
+def _confianza_de(fila: dict) -> float:
+    """Confianza de la intención de una fila del listado.
+
+    Desde la normalización 3FN (fase 2) la confianza es la columna `confianza`
+    de consultas_asistente y el backend la devuelve directa; `respuesta_json`
+    (reconstruido por el backend) queda solo como respaldo para respuestas viejas.
+    """
+    if fila.get("confianza") is not None:
+        return float(fila["confianza"])
+    respuesta = json.loads(fila.get("respuesta_json") or "{}")
+    return float(respuesta.get("confianza") or 0)
+
+
 def exportar(umbral_confianza: float = 0.6, salida: Path = SALIDA_DEFAULT) -> int:
     filas = _obtener_consultas_no_utiles()
     seleccionadas = []
     for fila in filas:
-        respuesta = json.loads(fila.get("respuesta_json") or "{}")
-        confianza = respuesta.get("confianza", 0)
+        confianza = _confianza_de(fila)
         if confianza >= umbral_confianza:
             seleccionadas.append((
                 fila["texto_consulta"], fila.get("intencion_detectada") or "",

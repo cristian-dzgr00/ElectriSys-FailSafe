@@ -4,6 +4,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\Database;
 use App\patterns\observer\GestorAsistente;
 use App\patterns\observer\AsistenteLogObserver;
+use App\services\ConsultasAsistenteListado;
 
 const ASISTENTE_MAX_CONSULTAS_POR_MINUTO = 20;
 
@@ -131,20 +132,24 @@ $group->get('/asistente/consultas', function (Request $req, Response $res) {
     $where  = ['1=1'];
     $bind   = [];
     if (isset($params['util']) && in_array($params['util'], ['0', '1'], true)) {
-        $where[] = 'util = ?';
+        $where[] = 'c.util = ?';
         $bind[]  = (int) $params['util'];
     }
     $limit = min(500, max(1, (int)($params['limit'] ?? 100)));
 
     $whereStr = implode(' AND ', $where);
-    $stmt = Database::getConnection()->prepare("
-        SELECT id, texto_consulta, intencion_detectada, entidades_json, respuesta_json, util, creado_en
-        FROM consultas_asistente
+    $db = Database::getConnection();
+    $stmt = $db->prepare("
+        SELECT c.id, c.texto_consulta, i.nombre AS intencion_detectada, c.confianza, c.util, c.creado_en
+        FROM consultas_asistente c
+        LEFT JOIN nlp_intenciones i ON i.id = c.intencion_id
         WHERE $whereStr
-        ORDER BY creado_en DESC
+        ORDER BY c.creado_en DESC
         FETCH FIRST ? ROWS ONLY
     ");
     $stmt->execute([...$bind, $limit]);
-    $res->getBody()->write(json_encode(['data' => $stmt->fetchAll()]));
+    $filas = $stmt->fetchAll();
+
+    $res->getBody()->write(json_encode(['data' => ConsultasAsistenteListado::armar($db, $filas)]));
     return $res->withHeader('Content-Type', 'application/json');
 });
