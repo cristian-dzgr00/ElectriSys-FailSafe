@@ -21,8 +21,9 @@ export function SenalBadge({ sugerencia }) {
 
 /**
  * Bajo el nombre de un producto del pedido: señal, el porqué en una línea
- * y el botón de un clic para usar la cantidad sugerida. No renderiza nada si
- * no hay sugerencia para ese producto.
+ * y el botón de un clic para usar la cantidad sugerida (deshabilitado si no
+ * hay reposición pendiente). No renderiza nada si no hay sugerencia para ese
+ * producto (servicio de IA caído).
  */
 export function SugeridoDeItem({ sugerencia, cantidadActual, onUsar }) {
   if (!sugerencia) return null;
@@ -35,18 +36,22 @@ export function SugeridoDeItem({ sugerencia, cantidadActual, onUsar }) {
       <span style={{ fontSize: 11, color: 'var(--text-muted)' }} title={sugerencia.motivo || undefined}>
         {resumenSugerencia(sugerencia)}
       </span>
-      {sugerida != null && (
-        <button
-          type="button"
-          className="btn btn-ghost"
-          style={{ padding: '2px 8px', fontSize: 11 }}
-          disabled={yaAplicada}
-          onClick={() => onUsar(sugerida)}
-          title={sugerencia.motivo || 'Cantidad calculada con la demanda reciente'}
-        >
-          {yaAplicada ? <><Check size={11} /> Sugerida aplicada</> : <><Lightbulb size={11} /> Usar cantidad sugerida ({sugerida})</>}
-        </button>
-      )}
+      {/* Siempre visible: sin reposición pendiente queda deshabilitado y explica
+          por qué (antes desaparecía y parecía que la función no existía). */}
+      <button
+        type="button"
+        className="btn btn-ghost"
+        style={{ padding: '2px 8px', fontSize: 11 }}
+        disabled={sugerida == null || yaAplicada}
+        onClick={() => sugerida != null && onUsar(sugerida)}
+        title={sugerencia.motivo || 'Cantidad calculada con la demanda reciente'}
+      >
+        {sugerida == null
+          ? <><Lightbulb size={11} /> Sin cantidad sugerida</>
+          : yaAplicada
+            ? <><Check size={11} /> Sugerida aplicada</>
+            : <><Lightbulb size={11} /> Usar cantidad sugerida ({sugerida})</>}
+      </button>
     </div>
   );
 }

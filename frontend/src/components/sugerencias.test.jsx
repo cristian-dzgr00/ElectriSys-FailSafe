@@ -64,11 +64,18 @@ describe('SenalBadge / SugeridoDeItem', () => {
     expect(html).toContain('disabled');
   });
 
-  it('un producto con stock normal muestra la señal pero ningún botón', () => {
-    const normal = { ...sugerencia, senal: 'normal', necesita_reabastecer: false, cantidad_sugerida: 0 };
+  it('un producto con stock normal muestra la señal y el botón deshabilitado con el motivo', () => {
+    const normal = {
+      ...sugerencia, senal: 'normal', necesita_reabastecer: false, cantidad_sugerida: 0,
+      motivo: 'Stock suficiente para el período de cobertura.',
+    };
     const html = renderToStaticMarkup(<SugeridoDeItem sugerencia={normal} cantidadActual={1} onUsar={() => {}} />);
     expect(html).toContain('badge-success');
-    expect(html).not.toContain('<button');
+    expect(html).toContain('<button');
+    expect(html).toContain('disabled');
+    expect(html).toContain('Sin cantidad sugerida');
+    expect(html).toContain('Stock suficiente para el período de cobertura.');
+    expect(html).not.toContain('Usar cantidad sugerida');
   });
 
   it('sin sugerencia (servicio caído) no dibuja nada', () => {
