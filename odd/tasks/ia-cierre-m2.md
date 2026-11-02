@@ -48,6 +48,16 @@ Incluye: puntos 1, 2 y 3 del análisis previo.
 - Pendiente: criterio C3 (recall `recomendar_sustituto` 0,75 frente a 0,90) no se cumple; C4 cumple sin margen en CV agrupada; informe y presentaciones (fuera de alcance de esta etapa); prueba de uso con vendedores reales; frases reales para el conjunto de prueba; `vitest` en el CI.
 - 2026-11-02 (inicio): plan creado, rama creada.
 
+## Cierre posterior (2026-11-02, rama `fix/busquedas-sin-mayusculas`)
+Pedido del usuario: arreglar búsquedas sin mayúsculas/tildes, sincronizar Oracle, decidir umbral y C3, vitest en el CI y limpieza menor.
+- [x] Búsquedas: `App\services\BusquedaTexto` (columna + término normalizados, `%` y `_` escapados) aplicada a clientes, proveedores, pedidos, vehículos, repuestos (incluido el filtro por categoría y los filtros exactos de marca/modelo). 5 pruebas nuevas (RED observado antes del código); suite PHP 82/82. Verificado en producción: «carlos»/«CARLOS», «bosch», «bujia», «toyota»/«hilux» y nombres con tilde buscados sin tilde devuelven lo mismo. Commit `5624f53`.
+- [x] Oracle sincronizado: `18_nlp_frases_ampliadas.sql` (+2.177 frases) y `19_posibles_errores_ampliados.sql` (+50.444 errores, +119 avisos; generador `oracle/generar_19_posibles_errores_ampliados.py`). Ejecutados en Oracle el 2026-11-02: `nlp_frases` 402 → 2.579, `posibles_errores` 58.833 → 109.277 (660 manuales), `posibles_errores_avisos` 112 → 231; coinciden con los CSV. El script 19 se adaptó al esquema 3FN fase 2 (destino por `marca_id`/`modelo_id`/`categoria_id`) y reinicia el contador de ids (la primera corrida falló con ORA-00904 y luego ORA-00001; no dejó filas a medias).
+- [x] Vitest en el CI: `vitest@2.1.9` + script `test`; el workflow ya llamaba `npm run test --if-present`. 71 pruebas pasan. Commit `04ad39b`.
+- [x] Limpieza: worktree de agente y 5 ramas locales ya fusionadas eliminadas (queda `feature/oracle-nlp-bd`, sin fusionar); temporales de despliegue borrados.
+- **Decisión umbral: se mantiene 0,40.** La regla («menor umbral que cumple C4 en CV normal y agrupada») se fijó antes de medir y 0,40 la cumple (0,1500 ≤ 0,15). Subir a 0,45 daría margen (0,1451) pero costaría ~0,007 de F1 y obligaría a medir otra vez los conjuntos congelados. Se declara que C4 cumple sin margen.
+- **Decisión C3: se reporta tal cual, no se cumple** (recall de `recomendar_sustituto` 0,75 frente a 0,90). No se reetiquetan datos ni se baja el criterio después de medir.
+- **Decisión inferencia de marca: se mantiene** (recomendador P@1 0,54 → 0,93 a cambio de NER `marca` 1,000 → 0,896).
+
 ## Dudas abiertas para el usuario
 - Frases de vendedores reales para el conjunto de prueba (si no hay, las redacto yo y se declara en el informe que no son reales).
 - Prueba de uso con vendedores (tiempo de búsqueda con y sin asistente): ¿se prepara la medición?
