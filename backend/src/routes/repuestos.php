@@ -15,7 +15,13 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     $page  = max(1, (int)($p['page']  ?? 1));
     $limit = min(100, max(1, (int)($p['limit'] ?? 15)));
     $off   = ($page - 1) * $limit;
-    $q     = '%' . trim($p['q'] ?? '') . '%';
+    // Oracle compara LIKE distinguiendo mayúsculas y tildes ("bujia" no encontraba
+    // "Bujía"). Se normalizan el término y las columnas (ver TRANSLATE en el SQL).
+    $normalizar = fn(string $s): string => strtoupper(strtr(trim($s), [
+        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
+        'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U', 'Ñ' => 'N',
+    ]));
+    $q     = '%' . $normalizar($p['q'] ?? '') . '%';
 
     $db = repuestosDB();
 
@@ -27,7 +33,11 @@ $group->get('/repuestos', function (Request $req, Response $res) {
         FROM repuestos r
         LEFT JOIN categorias c ON r.categoria_id = c.id
         LEFT JOIN proveedores p ON r.proveedor_id = p.id
-        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ? OR p.nombre LIKE ?)
+        WHERE r.activo = 1 AND (
+              UPPER(TRANSLATE(r.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
+           OR UPPER(TRANSLATE(r.codigo, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
+           OR UPPER(TRANSLATE(c.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
+           OR UPPER(TRANSLATE(p.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?)
         ORDER BY r.nombre
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
@@ -62,7 +72,7 @@ $group->get('/repuestos', function (Request $req, Response $res) {
         $corregida = SugerenciaBusqueda::corregir($terminoBuscado);
 
         if ($corregida) {
-            $q2 = '%' . $corregida . '%';
+            $q2 = '%' . $normalizar($corregida) . '%';
             $stmt->execute([$q2, $q2, $q2, $q2, $off, $limit]);
             $filas2 = $stmt->fetchAll();
 
