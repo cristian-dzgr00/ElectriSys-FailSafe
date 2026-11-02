@@ -3,6 +3,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\VentaModel;
 use App\models\Database;
+use App\services\ListaIds;
 use App\services\NlpClient;
 use App\patterns\observer\GestorVentas;
 use App\patterns\observer\AuditLogObserver;
@@ -162,20 +163,17 @@ $group->get('/ventas/canastas', function (Request $req, Response $res) {
 // Como el resto de las rutas de IA, responde 200 con disponible=false si el
 // microservicio no contesta — la venta no puede depender de una sugerencia.
 $group->get('/ventas/complementos', function (Request $req, Response $res) {
-    $crudo = trim($req->getQueryParams()['ids'] ?? '');
-    $ids   = [];
-    foreach (explode(',', $crudo) as $v) {
-        $v = trim($v);
-        if (ctype_digit($v)) $ids[] = (int) $v;
-    }
-    $ids = array_slice(array_values(array_unique($ids)), 0, 50);
+    $crudo = $req->getQueryParams()['ids'] ?? '';
+    $ids   = ListaIds::desdeTexto(is_string($crudo) ? $crudo : '', 50);
 
     if ($ids === []) {
         $res->getBody()->write(json_encode(['data' => [], 'disponible' => true]));
         return $res->withHeader('Content-Type', 'application/json');
     }
 
-    $r = NlpClient::get('/complementos?ids=' . implode(',', $ids));
+    // limite=10 y no el 5 por defecto: abajo se descartan los agotados, y la
+    // pantalla muestra 3; pidiendo de más se evita quedarse corto por eso.
+    $r = NlpClient::get('/complementos?limite=10&ids=' . implode(',', $ids));
     $sugerencias = $r['data'] ?? [];
 
     // El microservicio solo devuelve ids y métricas: hay que darles nombre y

@@ -242,7 +242,9 @@ def test_csv_sin_duplicados_ni_errores_iguales_al_correcto():
 
 
 def test_todo_correcto_pertenece_al_catalogo():
-    catalogo = {(t, n) for t, nombres in agente_errores.CATALOGO_SEMILLA.items() for n in nombres}
+    # La tabla cubre el catálogo completo (14 marcas, 35 modelos, 12 categorías); la semilla es un subconjunto.
+    catalogo = {(t, n) for t, nombres in agente_errores.CATALOGO_COMPLETO.items() for n in nombres}
+    assert {(t, n) for t, nombres in agente_errores.CATALOGO_SEMILLA.items() for n in nombres} <= catalogo
     for f in _leer(RUTA_TABLA):
         assert (f["tipo"], f["correcto"]) in catalogo, f
 

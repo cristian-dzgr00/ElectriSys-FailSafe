@@ -1,0 +1,3816 @@
+{
+  "esquema": 1,
+  "descripcion": "Única fuente de cifras del asistente NLP. Se genera con `python eval/generar_cifras.py`.",
+  "entorno": {
+    "python": "3.11.18",
+    "scikit_learn": "1.5.2",
+    "numpy": "2.1.1",
+    "pandas": "2.2.3"
+  },
+  "dataset": {
+    "archivo": "data/intents_dataset.csv",
+    "sha256": "41b18fad969ce0226b090d4bf54bd358aa677f61c46419a1f57a4a621b520c9f",
+    "n": 2551,
+    "n_originales": 374,
+    "n_ampliacion": 2177,
+    "por_intencion": {
+      "buscar_repuesto": 331,
+      "consultar_compatibilidad": 347,
+      "consultar_precio": 347,
+      "consultar_stock": 367,
+      "fuera_de_dominio": 450,
+      "recomendar_sustituto": 319,
+      "saludo_despedida": 390
+    },
+    "por_intencion_originales": {
+      "buscar_repuesto": 56,
+      "consultar_compatibilidad": 50,
+      "consultar_precio": 56,
+      "consultar_stock": 56,
+      "fuera_de_dominio": 50,
+      "recomendar_sustituto": 56,
+      "saludo_despedida": 50
+    },
+    "grupos_casi_duplicados": {
+      "n_grupos": 1474,
+      "grupo_mas_grande": 32,
+      "definicion": "componentes conexas de frases con el mismo esqueleto (primeras 2 palabras normalizadas) o el mismo multiconjunto de palabras"
+    }
+  },
+  "tabla_errores": {
+    "archivo": "data/errores/posibles_errores.csv",
+    "sha256": "a2338a9d86d547c70e1633885f65b46f37714fef5f7967d93de4fcd47fb44f6a",
+    "filas": 109277,
+    "por_tipo": {
+      "categoria": 45057,
+      "marca": 28697,
+      "modelo": 35523
+    },
+    "nombres_distintos": 58,
+    "variantes_por_nombre": {
+      "min": 5,
+      "mediana": 1355,
+      "max": 8299
+    },
+    "por_nivel": {
+      "1": 36772,
+      "2": 456,
+      "3": 71810,
+      "4": 239
+    },
+    "nota": "Una forma escrita así que NO esté en la tabla se resuelve con los respaldos del extractor (fuzzy, fonético, similitud, nombres cortos y palabra distintiva): su exactitud se mide por separado (en_tabla=0) en los congelados y en dev_errores.csv."
+  },
+  "validacion_cruzada": {
+    "repeticiones": 10,
+    "partes": 5,
+    "semilla_base": 20260102,
+    "pliegues_por_validacion": 50,
+    "frases_de_prueba_por_pliegue": 510,
+    "frases_de_entrenamiento_por_pliegue": 2040,
+    "nota": "sd = desviación estándar entre los 50 pliegues. Diferencias pareadas sobre los MISMOS pliegues; p_corregido usa la corrección de Nadeau-Bengio (guía aproximada)."
+  },
+  "linea_base_clase_mayoritaria": {
+    "clase": "fuera_de_dominio",
+    "accuracy": 0.1764,
+    "f1_macro": 0.0428
+  },
+  "comparacion_modelos": {
+    "referencia": "lr_c15",
+    "filas": [
+      {
+        "modelo": "lr_c15",
+        "descripcion": "Regresión logística C=15, unigramas (configuración previa)",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8387,
+              "sd": 0.0149,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8371,
+              "sd": 0.015,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0,
+            "diferencia_sd": 0.0,
+            "gana_en": 0,
+            "empata_en": 50,
+            "pierde_en": 0,
+            "n_pliegues": 50,
+            "t_corregido": 0.0,
+            "p_corregido": 1.0
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.0,
+            "diferencia_sd": 0.0,
+            "gana_en": 0,
+            "empata_en": 50,
+            "pierde_en": 0,
+            "n_pliegues": 50,
+            "t_corregido": 0.0,
+            "p_corregido": 1.0
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8177,
+              "sd": 0.0208,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8144,
+              "sd": 0.0219,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0,
+            "diferencia_sd": 0.0,
+            "gana_en": 0,
+            "empata_en": 50,
+            "pierde_en": 0,
+            "n_pliegues": 50,
+            "t_corregido": 0.0,
+            "p_corregido": 1.0
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.0,
+            "diferencia_sd": 0.0,
+            "gana_en": 0,
+            "empata_en": 50,
+            "pierde_en": 0,
+            "n_pliegues": 50,
+            "t_corregido": 0.0,
+            "p_corregido": 1.0
+          }
+        },
+        "entrenamiento_s": 0.066,
+        "prediccion_ms_p95": 0.917
+      },
+      {
+        "modelo": "lr_c15_vehiculo",
+        "descripcion": "Regresión logística C=15, unigramas, con marcador <vehiculo>",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8481,
+              "sd": 0.0144,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8468,
+              "sd": 0.0142,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0097,
+            "diferencia_sd": 0.0076,
+            "gana_en": 48,
+            "empata_en": 0,
+            "pierde_en": 2,
+            "n_pliegues": 50,
+            "t_corregido": 2.465,
+            "p_corregido": 0.0172
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.0094,
+            "diferencia_sd": 0.0073,
+            "gana_en": 45,
+            "empata_en": 3,
+            "pierde_en": 2,
+            "n_pliegues": 50,
+            "t_corregido": 2.486,
+            "p_corregido": 0.0164
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8269,
+              "sd": 0.0194,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8243,
+              "sd": 0.0201,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0099,
+            "diferencia_sd": 0.0079,
+            "gana_en": 43,
+            "empata_en": 0,
+            "pierde_en": 7,
+            "n_pliegues": 50,
+            "t_corregido": 2.402,
+            "p_corregido": 0.0201
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.0092,
+            "diferencia_sd": 0.0074,
+            "gana_en": 42,
+            "empata_en": 5,
+            "pierde_en": 3,
+            "n_pliegues": 50,
+            "t_corregido": 2.408,
+            "p_corregido": 0.0198
+          }
+        },
+        "entrenamiento_s": 0.078,
+        "prediccion_ms_p95": 0.779
+      },
+      {
+        "modelo": "lr_c1",
+        "descripcion": "Regresión logística C=1",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8092,
+              "sd": 0.0112,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8092,
+              "sd": 0.0109,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0279,
+            "diferencia_sd": 0.0118,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -4.545,
+            "p_corregido": 0.0
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0296,
+            "diferencia_sd": 0.0113,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -5.036,
+            "p_corregido": 0.0
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.789,
+              "sd": 0.0208,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.7875,
+              "sd": 0.0211,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0269,
+            "diferencia_sd": 0.0131,
+            "gana_en": 1,
+            "empata_en": 0,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -3.959,
+            "p_corregido": 0.0002
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0287,
+            "diferencia_sd": 0.0132,
+            "gana_en": 1,
+            "empata_en": 0,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -4.187,
+            "p_corregido": 0.0001
+          }
+        },
+        "entrenamiento_s": 0.056,
+        "prediccion_ms_p95": 0.958
+      },
+      {
+        "modelo": "lr_c5",
+        "descripcion": "Regresión logística C=5",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8362,
+              "sd": 0.0138,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8349,
+              "sd": 0.0136,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0022,
+            "diferencia_sd": 0.0073,
+            "gana_en": 21,
+            "empata_en": 0,
+            "pierde_en": 29,
+            "n_pliegues": 50,
+            "t_corregido": -0.579,
+            "p_corregido": 0.5654
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0025,
+            "diferencia_sd": 0.0073,
+            "gana_en": 16,
+            "empata_en": 5,
+            "pierde_en": 29,
+            "n_pliegues": 50,
+            "t_corregido": -0.659,
+            "p_corregido": 0.513
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8148,
+              "sd": 0.0204,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.812,
+              "sd": 0.0213,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0024,
+            "diferencia_sd": 0.0088,
+            "gana_en": 22,
+            "empata_en": 0,
+            "pierde_en": 28,
+            "n_pliegues": 50,
+            "t_corregido": -0.527,
+            "p_corregido": 0.6003
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.003,
+            "diferencia_sd": 0.0086,
+            "gana_en": 21,
+            "empata_en": 1,
+            "pierde_en": 28,
+            "n_pliegues": 50,
+            "t_corregido": -0.66,
+            "p_corregido": 0.5121
+          }
+        },
+        "entrenamiento_s": 0.069,
+        "prediccion_ms_p95": 0.789
+      },
+      {
+        "modelo": "lr_c50",
+        "descripcion": "Regresión logística C=50",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8348,
+              "sd": 0.0157,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8324,
+              "sd": 0.0157,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0047,
+            "diferencia_sd": 0.0061,
+            "gana_en": 11,
+            "empata_en": 0,
+            "pierde_en": 39,
+            "n_pliegues": 50,
+            "t_corregido": -1.494,
+            "p_corregido": 0.1415
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.004,
+            "diferencia_sd": 0.0059,
+            "gana_en": 10,
+            "empata_en": 8,
+            "pierde_en": 32,
+            "n_pliegues": 50,
+            "t_corregido": -1.287,
+            "p_corregido": 0.2041
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8115,
+              "sd": 0.0213,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8075,
+              "sd": 0.0224,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0069,
+            "diferencia_sd": 0.0069,
+            "gana_en": 6,
+            "empata_en": 0,
+            "pierde_en": 44,
+            "n_pliegues": 50,
+            "t_corregido": -1.907,
+            "p_corregido": 0.0624
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0062,
+            "diferencia_sd": 0.0067,
+            "gana_en": 6,
+            "empata_en": 2,
+            "pierde_en": 42,
+            "n_pliegues": 50,
+            "t_corregido": -1.773,
+            "p_corregido": 0.0825
+          }
+        },
+        "entrenamiento_s": 0.073,
+        "prediccion_ms_p95": 1.029
+      },
+      {
+        "modelo": "lr_c100",
+        "descripcion": "Regresión logística C=100",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8309,
+              "sd": 0.0157,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8281,
+              "sd": 0.0157,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0089,
+            "diferencia_sd": 0.0077,
+            "gana_en": 4,
+            "empata_en": 0,
+            "pierde_en": 46,
+            "n_pliegues": 50,
+            "t_corregido": -2.244,
+            "p_corregido": 0.0294
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0078,
+            "diferencia_sd": 0.0075,
+            "gana_en": 4,
+            "empata_en": 4,
+            "pierde_en": 42,
+            "n_pliegues": 50,
+            "t_corregido": -2.025,
+            "p_corregido": 0.0483
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8087,
+              "sd": 0.021,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8044,
+              "sd": 0.0218,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.01,
+            "diferencia_sd": 0.0077,
+            "gana_en": 5,
+            "empata_en": 0,
+            "pierde_en": 45,
+            "n_pliegues": 50,
+            "t_corregido": -2.499,
+            "p_corregido": 0.0159
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.009,
+            "diferencia_sd": 0.0076,
+            "gana_en": 5,
+            "empata_en": 4,
+            "pierde_en": 41,
+            "n_pliegues": 50,
+            "t_corregido": -2.293,
+            "p_corregido": 0.0262
+          }
+        },
+        "entrenamiento_s": 0.073,
+        "prediccion_ms_p95": 0.66
+      },
+      {
+        "modelo": "lr_c15_bigramas",
+        "descripcion": "Regresión logística C=15, unigramas + bigramas",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8215,
+              "sd": 0.0139,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8189,
+              "sd": 0.0138,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0182,
+            "diferencia_sd": 0.0101,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -3.476,
+            "p_corregido": 0.0011
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0172,
+            "diferencia_sd": 0.0096,
+            "gana_en": 0,
+            "empata_en": 1,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -3.454,
+            "p_corregido": 0.0011
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.7937,
+              "sd": 0.0225,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.7892,
+              "sd": 0.0241,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0252,
+            "diferencia_sd": 0.0131,
+            "gana_en": 1,
+            "empata_en": 0,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -3.693,
+            "p_corregido": 0.0006
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.024,
+            "diferencia_sd": 0.0122,
+            "gana_en": 0,
+            "empata_en": 1,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -3.801,
+            "p_corregido": 0.0004
+          }
+        },
+        "entrenamiento_s": 0.095,
+        "prediccion_ms_p95": 0.896
+      },
+      {
+        "modelo": "lr_c15_balanceado",
+        "descripcion": "Regresión logística C=15, class_weight=balanced",
+        "familia": "lineal",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8388,
+              "sd": 0.015,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8372,
+              "sd": 0.015,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0001,
+            "diferencia_sd": 0.0026,
+            "gana_en": 22,
+            "empata_en": 3,
+            "pierde_en": 25,
+            "n_pliegues": 50,
+            "t_corregido": 0.055,
+            "p_corregido": 0.9566
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.0001,
+            "diferencia_sd": 0.0026,
+            "gana_en": 20,
+            "empata_en": 16,
+            "pierde_en": 14,
+            "n_pliegues": 50,
+            "t_corregido": 0.086,
+            "p_corregido": 0.9315
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8172,
+              "sd": 0.0217,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.814,
+              "sd": 0.0226,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0004,
+            "diferencia_sd": 0.0032,
+            "gana_en": 21,
+            "empata_en": 7,
+            "pierde_en": 22,
+            "n_pliegues": 50,
+            "t_corregido": -0.241,
+            "p_corregido": 0.8106
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0005,
+            "diferencia_sd": 0.0032,
+            "gana_en": 16,
+            "empata_en": 15,
+            "pierde_en": 19,
+            "n_pliegues": 50,
+            "t_corregido": -0.302,
+            "p_corregido": 0.764
+          }
+        },
+        "entrenamiento_s": 0.082,
+        "prediccion_ms_p95": 0.904
+      },
+      {
+        "modelo": "nb_complemento",
+        "descripcion": "Naive Bayes complementario (alpha=0.3)",
+        "familia": "bayes",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.7871,
+              "sd": 0.0148,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.7818,
+              "sd": 0.0153,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0553,
+            "diferencia_sd": 0.0146,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -7.308,
+            "p_corregido": 0.0
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0516,
+            "diferencia_sd": 0.0145,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -6.868,
+            "p_corregido": 0.0
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.7595,
+              "sd": 0.0235,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.7533,
+              "sd": 0.0237,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0611,
+            "diferencia_sd": 0.017,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -6.907,
+            "p_corregido": 0.0
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0582,
+            "diferencia_sd": 0.0178,
+            "gana_en": 0,
+            "empata_en": 0,
+            "pierde_en": 50,
+            "n_pliegues": 50,
+            "t_corregido": -6.29,
+            "p_corregido": 0.0
+          }
+        },
+        "entrenamiento_s": 0.044,
+        "prediccion_ms_p95": 1.098
+      },
+      {
+        "modelo": "svm_lineal",
+        "descripcion": "LinearSVC C=1 (sin probabilidades)",
+        "familia": "lineal",
+        "tiene_probabilidades": false,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8437,
+              "sd": 0.0154,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8419,
+              "sd": 0.0153,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0048,
+            "diferencia_sd": 0.006,
+            "gana_en": 40,
+            "empata_en": 0,
+            "pierde_en": 10,
+            "n_pliegues": 50,
+            "t_corregido": 1.534,
+            "p_corregido": 0.1316
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.005,
+            "diferencia_sd": 0.006,
+            "gana_en": 39,
+            "empata_en": 4,
+            "pierde_en": 7,
+            "n_pliegues": 50,
+            "t_corregido": 1.609,
+            "p_corregido": 0.1141
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8215,
+              "sd": 0.0219,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8184,
+              "sd": 0.0229,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": 0.0041,
+            "diferencia_sd": 0.0076,
+            "gana_en": 35,
+            "empata_en": 0,
+            "pierde_en": 15,
+            "n_pliegues": 50,
+            "t_corregido": 1.037,
+            "p_corregido": 0.3048
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": 0.0038,
+            "diferencia_sd": 0.0076,
+            "gana_en": 32,
+            "empata_en": 6,
+            "pierde_en": 12,
+            "n_pliegues": 50,
+            "t_corregido": 0.96,
+            "p_corregido": 0.3417
+          }
+        },
+        "entrenamiento_s": 0.052,
+        "prediccion_ms_p95": 0.809
+      },
+      {
+        "modelo": "mlp_64",
+        "descripcion": "MLP 1 capa oculta de 64",
+        "familia": "red",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8181,
+              "sd": 0.0165,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8147,
+              "sd": 0.0167,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0224,
+            "diferencia_sd": 0.0139,
+            "gana_en": 1,
+            "empata_en": 0,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -3.091,
+            "p_corregido": 0.0033
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0206,
+            "diferencia_sd": 0.0134,
+            "gana_en": 1,
+            "empata_en": 0,
+            "pierde_en": 49,
+            "n_pliegues": 50,
+            "t_corregido": -2.951,
+            "p_corregido": 0.0049
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.7941,
+              "sd": 0.0232,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.789,
+              "sd": 0.0244,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0254,
+            "diferencia_sd": 0.0172,
+            "gana_en": 3,
+            "empata_en": 0,
+            "pierde_en": 47,
+            "n_pliegues": 50,
+            "t_corregido": -2.839,
+            "p_corregido": 0.0066
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0236,
+            "diferencia_sd": 0.0169,
+            "gana_en": 2,
+            "empata_en": 2,
+            "pierde_en": 46,
+            "n_pliegues": 50,
+            "t_corregido": -2.685,
+            "p_corregido": 0.0099
+          }
+        },
+        "entrenamiento_s": 2.005,
+        "prediccion_ms_p95": 0.82
+      },
+      {
+        "modelo": "mlp_128",
+        "descripcion": "MLP 1 capa oculta de 128",
+        "familia": "red",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.8235,
+              "sd": 0.0173,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8201,
+              "sd": 0.0174,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.017,
+            "diferencia_sd": 0.0134,
+            "gana_en": 5,
+            "empata_en": 0,
+            "pierde_en": 45,
+            "n_pliegues": 50,
+            "t_corregido": -2.433,
+            "p_corregido": 0.0187
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0152,
+            "diferencia_sd": 0.0129,
+            "gana_en": 6,
+            "empata_en": 1,
+            "pierde_en": 43,
+            "n_pliegues": 50,
+            "t_corregido": -2.283,
+            "p_corregido": 0.0268
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.7978,
+              "sd": 0.0216,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.7933,
+              "sd": 0.0217,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0211,
+            "diferencia_sd": 0.0139,
+            "gana_en": 4,
+            "empata_en": 0,
+            "pierde_en": 46,
+            "n_pliegues": 50,
+            "t_corregido": -2.914,
+            "p_corregido": 0.0054
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0199,
+            "diferencia_sd": 0.0142,
+            "gana_en": 4,
+            "empata_en": 1,
+            "pierde_en": 45,
+            "n_pliegues": 50,
+            "t_corregido": -2.707,
+            "p_corregido": 0.0093
+          }
+        },
+        "entrenamiento_s": 2.825,
+        "prediccion_ms_p95": 0.94
+      },
+      {
+        "modelo": "mlp_256",
+        "descripcion": "MLP 1 capa oculta de 256",
+        "familia": "red",
+        "tiene_probabilidades": true,
+        "normal": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.821,
+              "sd": 0.0167,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.8178,
+              "sd": 0.0172,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0193,
+            "diferencia_sd": 0.0148,
+            "gana_en": 3,
+            "empata_en": 0,
+            "pierde_en": 47,
+            "n_pliegues": 50,
+            "t_corregido": -2.513,
+            "p_corregido": 0.0153
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.0177,
+            "diferencia_sd": 0.014,
+            "gana_en": 4,
+            "empata_en": 0,
+            "pierde_en": 46,
+            "n_pliegues": 50,
+            "t_corregido": -2.432,
+            "p_corregido": 0.0187
+          }
+        },
+        "agrupada": {
+          "por_pliegue": {
+            "accuracy": {
+              "media": 0.7987,
+              "sd": 0.0189,
+              "n_pliegues": 50
+            },
+            "f1_macro": {
+              "media": 0.7937,
+              "sd": 0.0199,
+              "n_pliegues": 50
+            }
+          },
+          "vs_referencia_f1_macro": {
+            "metrica": "f1_macro",
+            "diferencia_media": -0.0206,
+            "diferencia_sd": 0.0137,
+            "gana_en": 3,
+            "empata_en": 0,
+            "pierde_en": 47,
+            "n_pliegues": 50,
+            "t_corregido": -2.899,
+            "p_corregido": 0.0056
+          },
+          "vs_referencia_accuracy": {
+            "metrica": "accuracy",
+            "diferencia_media": -0.019,
+            "diferencia_sd": 0.0132,
+            "gana_en": 2,
+            "empata_en": 1,
+            "pierde_en": 47,
+            "n_pliegues": 50,
+            "t_corregido": -2.781,
+            "p_corregido": 0.0077
+          }
+        },
+        "entrenamiento_s": 8.251,
+        "prediccion_ms_p95": 0.718
+      }
+    ],
+    "decision_modelo": {
+      "elegido": "lr_c15",
+      "regla_aplicada": "ninguno supera a la referencia en ambas validaciones: se conserva el más simple",
+      "no_elegidos": {
+        "lr_c1": "normal: dif=-0.0279, gana 0/50, p=0.000 (no es clara y consistentemente mejor)",
+        "lr_c5": "normal: dif=-0.0022, gana 21/50, p=0.565 (no es clara y consistentemente mejor)",
+        "lr_c50": "normal: dif=-0.0047, gana 11/50, p=0.141 (no es clara y consistentemente mejor)",
+        "lr_c100": "normal: dif=-0.0089, gana 4/50, p=0.029 (no es clara y consistentemente mejor)",
+        "lr_c15_bigramas": "normal: dif=-0.0182, gana 0/50, p=0.001 (no es clara y consistentemente mejor)",
+        "lr_c15_balanceado": "normal: dif=+0.0001, gana 22/50, p=0.957 (no es clara y consistentemente mejor)",
+        "nb_complemento": "normal: dif=-0.0553, gana 0/50, p=0.000 (no es clara y consistentemente mejor)",
+        "svm_lineal": "no entrega probabilidades (el umbral de confianza las necesita)",
+        "mlp_64": "normal: dif=-0.0224, gana 1/50, p=0.003 (no es clara y consistentemente mejor)",
+        "mlp_128": "normal: dif=-0.0170, gana 5/50, p=0.019 (no es clara y consistentemente mejor)",
+        "mlp_256": "normal: dif=-0.0193, gana 3/50, p=0.015 (no es clara y consistentemente mejor)"
+      },
+      "criterio": "un candidato reemplaza a 'lr_c15' solo si en la validación normal Y en la agrupada mejora el F1 macro en >= 0.01, gana en >= 70 % de los pliegues y la prueba t corregida da p < 0.05; además debe entregar probabilidades"
+    },
+    "decision_marcador_vehiculo": {
+      "regla": "se adopta si la diferencia media de F1 macro (con - sin marcador) es >= -0.005 en la validación normal y en la agrupada",
+      "adoptado": true,
+      "comparaciones": {
+        "normal": {
+          "metrica": "f1_macro",
+          "diferencia_media": 0.0097,
+          "diferencia_sd": 0.0076,
+          "gana_en": 48,
+          "empata_en": 0,
+          "pierde_en": 2,
+          "n_pliegues": 50,
+          "t_corregido": 2.465,
+          "p_corregido": 0.0172
+        },
+        "agrupada": {
+          "metrica": "f1_macro",
+          "diferencia_media": 0.0099,
+          "diferencia_sd": 0.0079,
+          "gana_en": 43,
+          "empata_en": 0,
+          "pierde_en": 7,
+          "n_pliegues": 50,
+          "t_corregido": 2.402,
+          "p_corregido": 0.0201
+        }
+      },
+      "lectura": "mejora en ambas validaciones"
+    }
+  },
+  "modelo_produccion": {
+    "nombre": "lr_c15_vehiculo",
+    "descripcion": "Regresión logística C=15, unigramas, con marcador <vehiculo>",
+    "nombre_en_el_codigo": "lr_c15_vehiculo",
+    "coincide_con_el_codigo": true,
+    "umbral_elegido": 0.4,
+    "umbral_en_el_codigo": 0.4,
+    "umbral_coincide_con_el_codigo": true,
+    "normal": {
+      "sin_umbral": {
+        "accuracy": {
+          "media": 0.8481,
+          "sd": 0.0026
+        },
+        "f1_macro": {
+          "media": 0.8469,
+          "sd": 0.0026
+        },
+        "recall_recomendar_sustituto": {
+          "media": 0.7674,
+          "sd": 0.0085
+        },
+        "fuera_tratado_como_no_fuera": {
+          "media": 0.1842,
+          "sd": 0.0096
+        },
+        "fuera_tratado_como_negocio": {
+          "media": 0.1364,
+          "sd": 0.0069
+        }
+      },
+      "con_umbral": {
+        "accuracy": {
+          "media": 0.8414,
+          "sd": 0.003
+        },
+        "f1_macro": {
+          "media": 0.8421,
+          "sd": 0.003
+        },
+        "recall_recomendar_sustituto": {
+          "media": 0.758,
+          "sd": 0.0083
+        },
+        "fuera_tratado_como_no_fuera": {
+          "media": 0.1787,
+          "sd": 0.0108
+        },
+        "fuera_tratado_como_negocio": {
+          "media": 0.1329,
+          "sd": 0.0073
+        }
+      },
+      "recall_por_clase_con_umbral": {
+        "buscar_repuesto": 0.7819,
+        "consultar_compatibilidad": 0.8983,
+        "consultar_precio": 0.8761,
+        "consultar_stock": 0.8703,
+        "fuera_de_dominio": 0.8213,
+        "recomendar_sustituto": 0.758,
+        "saludo_despedida": 0.8749
+      },
+      "con_umbral_actual_del_codigo": {
+        "accuracy": {
+          "media": 0.8414,
+          "sd": 0.003
+        },
+        "f1_macro": {
+          "media": 0.8421,
+          "sd": 0.003
+        },
+        "recall_recomendar_sustituto": {
+          "media": 0.758,
+          "sd": 0.0083
+        },
+        "fuera_tratado_como_no_fuera": {
+          "media": 0.1787,
+          "sd": 0.0108
+        },
+        "fuera_tratado_como_negocio": {
+          "media": 0.1329,
+          "sd": 0.0073
+        }
+      }
+    },
+    "agrupada": {
+      "sin_umbral": {
+        "accuracy": {
+          "media": 0.827,
+          "sd": 0.0039
+        },
+        "f1_macro": {
+          "media": 0.8263,
+          "sd": 0.0038
+        },
+        "recall_recomendar_sustituto": {
+          "media": 0.7586,
+          "sd": 0.0096
+        },
+        "fuera_tratado_como_no_fuera": {
+          "media": 0.2109,
+          "sd": 0.0086
+        },
+        "fuera_tratado_como_negocio": {
+          "media": 0.1551,
+          "sd": 0.0077
+        }
+      },
+      "con_umbral": {
+        "accuracy": {
+          "media": 0.8192,
+          "sd": 0.0041
+        },
+        "f1_macro": {
+          "media": 0.8209,
+          "sd": 0.0039
+        },
+        "recall_recomendar_sustituto": {
+          "media": 0.7473,
+          "sd": 0.009
+        },
+        "fuera_tratado_como_no_fuera": {
+          "media": 0.2022,
+          "sd": 0.0073
+        },
+        "fuera_tratado_como_negocio": {
+          "media": 0.15,
+          "sd": 0.0068
+        }
+      },
+      "recall_por_clase_con_umbral": {
+        "buscar_repuesto": 0.7737,
+        "consultar_compatibilidad": 0.8801,
+        "consultar_precio": 0.8329,
+        "consultar_stock": 0.8439,
+        "fuera_de_dominio": 0.7978,
+        "recomendar_sustituto": 0.7473,
+        "saludo_despedida": 0.8521
+      },
+      "con_umbral_actual_del_codigo": {
+        "accuracy": {
+          "media": 0.8192,
+          "sd": 0.0041
+        },
+        "f1_macro": {
+          "media": 0.8209,
+          "sd": 0.0039
+        },
+        "recall_recomendar_sustituto": {
+          "media": 0.7473,
+          "sd": 0.009
+        },
+        "fuera_tratado_como_no_fuera": {
+          "media": 0.2022,
+          "sd": 0.0073
+        },
+        "fuera_tratado_como_negocio": {
+          "media": 0.15,
+          "sd": 0.0068
+        }
+      }
+    }
+  },
+  "umbral_de_confianza": {
+    "rejilla": [
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7
+    ],
+    "regla": "menor umbral que cumple C4 en la validación normal y en la agrupada",
+    "elegido": 0.4,
+    "barrido": {
+      "normal": [
+        {
+          "umbral": 0.2,
+          "accuracy": 0.8481,
+          "f1_macro": 0.8469,
+          "recall_recomendar_sustituto": 0.7674,
+          "fuera_tratado_como_no_fuera": 0.1842,
+          "fuera_tratado_como_negocio": 0.1364
+        },
+        {
+          "umbral": 0.25,
+          "accuracy": 0.848,
+          "f1_macro": 0.8469,
+          "recall_recomendar_sustituto": 0.7674,
+          "fuera_tratado_como_no_fuera": 0.1842,
+          "fuera_tratado_como_negocio": 0.1364
+        },
+        {
+          "umbral": 0.3,
+          "accuracy": 0.8471,
+          "f1_macro": 0.8462,
+          "recall_recomendar_sustituto": 0.7661,
+          "fuera_tratado_como_no_fuera": 0.1838,
+          "fuera_tratado_como_negocio": 0.136
+        },
+        {
+          "umbral": 0.35,
+          "accuracy": 0.8454,
+          "f1_macro": 0.8451,
+          "recall_recomendar_sustituto": 0.7624,
+          "fuera_tratado_como_no_fuera": 0.1827,
+          "fuera_tratado_como_negocio": 0.1349
+        },
+        {
+          "umbral": 0.4,
+          "accuracy": 0.8414,
+          "f1_macro": 0.8421,
+          "recall_recomendar_sustituto": 0.758,
+          "fuera_tratado_como_no_fuera": 0.1787,
+          "fuera_tratado_como_negocio": 0.1329
+        },
+        {
+          "umbral": 0.45,
+          "accuracy": 0.8325,
+          "f1_macro": 0.8351,
+          "recall_recomendar_sustituto": 0.7448,
+          "fuera_tratado_como_no_fuera": 0.1731,
+          "fuera_tratado_como_negocio": 0.1296
+        },
+        {
+          "umbral": 0.5,
+          "accuracy": 0.8208,
+          "f1_macro": 0.8267,
+          "recall_recomendar_sustituto": 0.7229,
+          "fuera_tratado_como_no_fuera": 0.1573,
+          "fuera_tratado_como_negocio": 0.1209
+        },
+        {
+          "umbral": 0.55,
+          "accuracy": 0.8058,
+          "f1_macro": 0.8157,
+          "recall_recomendar_sustituto": 0.6984,
+          "fuera_tratado_como_no_fuera": 0.1353,
+          "fuera_tratado_como_negocio": 0.1044
+        },
+        {
+          "umbral": 0.6,
+          "accuracy": 0.786,
+          "f1_macro": 0.8009,
+          "recall_recomendar_sustituto": 0.6602,
+          "fuera_tratado_como_no_fuera": 0.1164,
+          "fuera_tratado_como_negocio": 0.0922
+        },
+        {
+          "umbral": 0.65,
+          "accuracy": 0.7601,
+          "f1_macro": 0.7804,
+          "recall_recomendar_sustituto": 0.6154,
+          "fuera_tratado_como_no_fuera": 0.1027,
+          "fuera_tratado_como_negocio": 0.0816
+        },
+        {
+          "umbral": 0.7,
+          "accuracy": 0.7291,
+          "f1_macro": 0.7551,
+          "recall_recomendar_sustituto": 0.5633,
+          "fuera_tratado_como_no_fuera": 0.0902,
+          "fuera_tratado_como_negocio": 0.0722
+        }
+      ],
+      "agrupada": [
+        {
+          "umbral": 0.2,
+          "accuracy": 0.827,
+          "f1_macro": 0.8263,
+          "recall_recomendar_sustituto": 0.7586,
+          "fuera_tratado_como_no_fuera": 0.2109,
+          "fuera_tratado_como_negocio": 0.1551
+        },
+        {
+          "umbral": 0.25,
+          "accuracy": 0.8268,
+          "f1_macro": 0.8263,
+          "recall_recomendar_sustituto": 0.758,
+          "fuera_tratado_como_no_fuera": 0.2109,
+          "fuera_tratado_como_negocio": 0.1551
+        },
+        {
+          "umbral": 0.3,
+          "accuracy": 0.8258,
+          "f1_macro": 0.8255,
+          "recall_recomendar_sustituto": 0.7552,
+          "fuera_tratado_como_no_fuera": 0.2107,
+          "fuera_tratado_como_negocio": 0.1549
+        },
+        {
+          "umbral": 0.35,
+          "accuracy": 0.8236,
+          "f1_macro": 0.824,
+          "recall_recomendar_sustituto": 0.7514,
+          "fuera_tratado_como_no_fuera": 0.2084,
+          "fuera_tratado_como_negocio": 0.1529
+        },
+        {
+          "umbral": 0.4,
+          "accuracy": 0.8192,
+          "f1_macro": 0.8209,
+          "recall_recomendar_sustituto": 0.7473,
+          "fuera_tratado_como_no_fuera": 0.2022,
+          "fuera_tratado_como_negocio": 0.15
+        },
+        {
+          "umbral": 0.45,
+          "accuracy": 0.8099,
+          "f1_macro": 0.814,
+          "recall_recomendar_sustituto": 0.7357,
+          "fuera_tratado_como_no_fuera": 0.1938,
+          "fuera_tratado_como_negocio": 0.1451
+        },
+        {
+          "umbral": 0.5,
+          "accuracy": 0.7966,
+          "f1_macro": 0.8046,
+          "recall_recomendar_sustituto": 0.7144,
+          "fuera_tratado_como_no_fuera": 0.1713,
+          "fuera_tratado_como_negocio": 0.1307
+        },
+        {
+          "umbral": 0.55,
+          "accuracy": 0.7817,
+          "f1_macro": 0.7941,
+          "recall_recomendar_sustituto": 0.6806,
+          "fuera_tratado_como_no_fuera": 0.1453,
+          "fuera_tratado_como_negocio": 0.1107
+        },
+        {
+          "umbral": 0.6,
+          "accuracy": 0.7621,
+          "f1_macro": 0.7791,
+          "recall_recomendar_sustituto": 0.6392,
+          "fuera_tratado_como_no_fuera": 0.1262,
+          "fuera_tratado_como_negocio": 0.0982
+        },
+        {
+          "umbral": 0.65,
+          "accuracy": 0.7377,
+          "f1_macro": 0.7599,
+          "recall_recomendar_sustituto": 0.5934,
+          "fuera_tratado_como_no_fuera": 0.1104,
+          "fuera_tratado_como_negocio": 0.0873
+        },
+        {
+          "umbral": 0.7,
+          "accuracy": 0.7083,
+          "f1_macro": 0.736,
+          "recall_recomendar_sustituto": 0.5464,
+          "fuera_tratado_como_no_fuera": 0.0958,
+          "fuera_tratado_como_negocio": 0.0764
+        }
+      ]
+    }
+  },
+  "sesgo_por_nombres_de_vehiculo": {
+    "sin_marcador": {
+      "modelo": "lr_c15",
+      "top15_por_intencion": {
+        "buscar_repuesto": [
+          {
+            "token": "sirve",
+            "peso": -12.1532
+          },
+          {
+            "token": "busco",
+            "peso": 9.6738
+          },
+          {
+            "token": "precio",
+            "peso": -9.5336
+          },
+          {
+            "token": "manejan",
+            "peso": 8.8042
+          },
+          {
+            "token": "cuanto",
+            "peso": -8.0508
+          },
+          {
+            "token": "aplica",
+            "peso": -7.58
+          },
+          {
+            "token": "tiene",
+            "peso": 7.0167
+          },
+          {
+            "token": "valor",
+            "peso": -6.469
+          },
+          {
+            "token": "pa",
+            "peso": 6.3307
+          },
+          {
+            "token": "no",
+            "peso": -6.0311
+          },
+          {
+            "token": "buscando",
+            "peso": 5.8189
+          },
+          {
+            "token": "necesito",
+            "peso": 5.7008
+          },
+          {
+            "token": "cuantos",
+            "peso": -5.2687
+          },
+          {
+            "token": "quedan",
+            "peso": -5.2389
+          },
+          {
+            "token": "compatible",
+            "peso": -5.1667
+          }
+        ],
+        "consultar_compatibilidad": [
+          {
+            "token": "sirve",
+            "peso": 14.1748
+          },
+          {
+            "token": "aplica",
+            "peso": 13.0017
+          },
+          {
+            "token": "funciona",
+            "peso": 9.7463
+          },
+          {
+            "token": "compatible",
+            "peso": 9.7307
+          },
+          {
+            "token": "sirven",
+            "peso": 8.1567
+          },
+          {
+            "token": "entra",
+            "peso": 7.7126
+          },
+          {
+            "token": "misma",
+            "peso": 6.6412
+          },
+          {
+            "token": "encaja",
+            "peso": 6.4871
+          },
+          {
+            "token": "compatibilidad",
+            "peso": 6.3843
+          },
+          {
+            "token": "aplican",
+            "peso": 6.1261
+          },
+          {
+            "token": "carros",
+            "peso": 5.7019
+          },
+          {
+            "token": "agoto",
+            "peso": -5.6839
+          },
+          {
+            "token": "pieza",
+            "peso": 5.2427
+          },
+          {
+            "token": "seguro",
+            "peso": 5.1646
+          },
+          {
+            "token": "confirmar",
+            "peso": 5.0924
+          }
+        ],
+        "consultar_precio": [
+          {
+            "token": "precio",
+            "peso": 17.3665
+          },
+          {
+            "token": "valor",
+            "peso": 11.8177
+          },
+          {
+            "token": "cuanto",
+            "peso": 8.9687
+          },
+          {
+            "token": "cotizacion",
+            "peso": 8.4167
+          },
+          {
+            "token": "cotizar",
+            "peso": 7.8201
+          },
+          {
+            "token": "descuento",
+            "peso": 7.2475
+          },
+          {
+            "token": "oferta",
+            "peso": 7.2283
+          },
+          {
+            "token": "cotiza",
+            "peso": 7.0735
+          },
+          {
+            "token": "precios",
+            "peso": 6.8716
+          },
+          {
+            "token": "sirve",
+            "peso": -6.2727
+          },
+          {
+            "token": "barato",
+            "peso": 6.2365
+          },
+          {
+            "token": "ofertas",
+            "peso": 5.9051
+          },
+          {
+            "token": "cotizeme",
+            "peso": 5.5339
+          },
+          {
+            "token": "deja",
+            "peso": 5.4738
+          },
+          {
+            "token": "promocion",
+            "peso": 5.0017
+          }
+        ],
+        "consultar_stock": [
+          {
+            "token": "cuantas",
+            "peso": 10.8371
+          },
+          {
+            "token": "stock",
+            "peso": 10.0305
+          },
+          {
+            "token": "cuantos",
+            "peso": 10.0085
+          },
+          {
+            "token": "inventario",
+            "peso": 9.7478
+          },
+          {
+            "token": "quedan",
+            "peso": 9.5278
+          },
+          {
+            "token": "existencias",
+            "peso": 8.8999
+          },
+          {
+            "token": "queda",
+            "peso": 7.6588
+          },
+          {
+            "token": "disponibilidad",
+            "peso": 6.9714
+          },
+          {
+            "token": "bodega",
+            "peso": 6.9709
+          },
+          {
+            "token": "todavia",
+            "peso": 6.7707
+          },
+          {
+            "token": "llego",
+            "peso": 6.4786
+          },
+          {
+            "token": "existencia",
+            "peso": 6.4672
+          },
+          {
+            "token": "sistema",
+            "peso": 6.439
+          },
+          {
+            "token": "agotando",
+            "peso": 6.3964
+          },
+          {
+            "token": "unidades",
+            "peso": 6.3211
+          }
+        ],
+        "fuera_de_dominio": [
+          {
+            "token": "filtro",
+            "peso": -6.8958
+          },
+          {
+            "token": "hacen",
+            "peso": 6.6115
+          },
+          {
+            "token": "gracias",
+            "peso": -6.4642
+          },
+          {
+            "token": "bateria",
+            "peso": -5.7324
+          },
+          {
+            "token": "pa",
+            "peso": -5.6931
+          },
+          {
+            "token": "precio",
+            "peso": -5.5311
+          },
+          {
+            "token": "venden",
+            "peso": 5.2998
+          },
+          {
+            "token": "buenas",
+            "peso": -5.2298
+          },
+          {
+            "token": "bujias",
+            "peso": -5.1128
+          },
+          {
+            "token": "sirve",
+            "peso": -5.1125
+          },
+          {
+            "token": "pal",
+            "peso": -4.9604
+          },
+          {
+            "token": "pastillas",
+            "peso": -4.8135
+          },
+          {
+            "token": "reparan",
+            "peso": 4.6576
+          },
+          {
+            "token": "cambia",
+            "peso": 4.6095
+          },
+          {
+            "token": "wifi",
+            "peso": 4.5481
+          }
+        ],
+        "recomendar_sustituto": [
+          {
+            "token": "alternativa",
+            "peso": 8.9085
+          },
+          {
+            "token": "parecido",
+            "peso": 8.2393
+          },
+          {
+            "token": "sustituto",
+            "peso": 8.1791
+          },
+          {
+            "token": "no",
+            "peso": 8.1233
+          },
+          {
+            "token": "agoto",
+            "peso": 7.8825
+          },
+          {
+            "token": "opcion",
+            "peso": 7.5988
+          },
+          {
+            "token": "lugar",
+            "peso": 7.259
+          },
+          {
+            "token": "equivalente",
+            "peso": 7.0984
+          },
+          {
+            "token": "similar",
+            "peso": 7.0141
+          },
+          {
+            "token": "reemplaza",
+            "peso": 6.7846
+          },
+          {
+            "token": "reemplazo",
+            "peso": 6.7316
+          },
+          {
+            "token": "parecida",
+            "peso": 6.3881
+          },
+          {
+            "token": "marca",
+            "peso": 6.1702
+          },
+          {
+            "token": "ofrezco",
+            "peso": 5.9536
+          },
+          {
+            "token": "sirva",
+            "peso": 5.806
+          }
+        ],
+        "saludo_despedida": [
+          {
+            "token": "gracias",
+            "peso": 9.7258
+          },
+          {
+            "token": "buenas",
+            "peso": 7.7717
+          },
+          {
+            "token": "hola",
+            "peso": 7.1165
+          },
+          {
+            "token": "luego",
+            "peso": 5.2958
+          },
+          {
+            "token": "cuanto",
+            "peso": -5.1519
+          },
+          {
+            "token": "saludos",
+            "peso": 5.0688
+          },
+          {
+            "token": "buen",
+            "peso": 5.0405
+          },
+          {
+            "token": "gusto",
+            "peso": 5.0252
+          },
+          {
+            "token": "chao",
+            "peso": 4.992
+          },
+          {
+            "token": "filtro",
+            "peso": -4.8808
+          },
+          {
+            "token": "agradezco",
+            "peso": 4.8548
+          },
+          {
+            "token": "sirve",
+            "peso": -4.6023
+          },
+          {
+            "token": "pues",
+            "peso": 4.525
+          },
+          {
+            "token": "abrazo",
+            "peso": 4.4471
+          },
+          {
+            "token": "hablamos",
+            "peso": 4.3371
+          }
+        ]
+      },
+      "resumen_por_intencion": {
+        "buscar_repuesto": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 3.3739
+        },
+        "consultar_compatibilidad": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 3.7298
+        },
+        "consultar_precio": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 3.0088
+        },
+        "consultar_stock": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 2.5298
+        },
+        "fuera_de_dominio": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 3.8047
+        },
+        "recomendar_sustituto": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 3.728
+        },
+        "saludo_despedida": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 2.3382
+        }
+      },
+      "mayor_peso_de_un_nombre_de_vehiculo": {
+        "token": "spark",
+        "intencion": "fuera_de_dominio",
+        "abs_peso": 3.8047
+      },
+      "nombres_de_vehiculo_en_el_vocabulario": 42,
+      "n_terminos": 1546,
+      "peso_de_hilux_por_intencion": {
+        "buscar_repuesto": 1.7161,
+        "consultar_compatibilidad": 1.7422,
+        "consultar_precio": 1.6973,
+        "consultar_stock": -1.2378,
+        "fuera_de_dominio": -3.1415,
+        "recomendar_sustituto": 1.5815,
+        "saludo_despedida": -2.3382
+      }
+    },
+    "con_marcador": {
+      "modelo": "lr_c15_vehiculo",
+      "top15_por_intencion": {
+        "buscar_repuesto": [
+          {
+            "token": "sirve",
+            "peso": -11.8945
+          },
+          {
+            "token": "precio",
+            "peso": -9.1189
+          },
+          {
+            "token": "busco",
+            "peso": 8.9935
+          },
+          {
+            "token": "manejan",
+            "peso": 8.6137
+          },
+          {
+            "token": "cuanto",
+            "peso": -7.6078
+          },
+          {
+            "token": "aplica",
+            "peso": -7.52
+          },
+          {
+            "token": "tiene",
+            "peso": 6.6264
+          },
+          {
+            "token": "valor",
+            "peso": -6.0252
+          },
+          {
+            "token": "no",
+            "peso": -5.881
+          },
+          {
+            "token": "pa",
+            "peso": 5.8538
+          },
+          {
+            "token": "buscando",
+            "peso": 5.6368
+          },
+          {
+            "token": "necesito",
+            "peso": 5.3417
+          },
+          {
+            "token": "tienen",
+            "peso": 5.2191
+          },
+          {
+            "token": "quedan",
+            "peso": -5.1953
+          },
+          {
+            "token": "cotizar",
+            "peso": -5.0252
+          }
+        ],
+        "consultar_compatibilidad": [
+          {
+            "token": "sirve",
+            "peso": 12.6817
+          },
+          {
+            "token": "aplica",
+            "peso": 12.1559
+          },
+          {
+            "token": "compatible",
+            "peso": 9.4686
+          },
+          {
+            "token": "funciona",
+            "peso": 9.1963
+          },
+          {
+            "token": "sirven",
+            "peso": 7.5971
+          },
+          {
+            "token": "entra",
+            "peso": 7.4583
+          },
+          {
+            "token": "compatibilidad",
+            "peso": 6.506
+          },
+          {
+            "token": "misma",
+            "peso": 6.4464
+          },
+          {
+            "token": "carros",
+            "peso": 6.2752
+          },
+          {
+            "token": "aplican",
+            "peso": 5.8498
+          },
+          {
+            "token": "encaja",
+            "peso": 5.6371
+          },
+          {
+            "token": "agoto",
+            "peso": -5.5911
+          },
+          {
+            "token": "seguro",
+            "peso": 5.2571
+          },
+          {
+            "token": "carro",
+            "peso": 5.2447
+          },
+          {
+            "token": "confirmar",
+            "peso": 5.0914
+          }
+        ],
+        "consultar_precio": [
+          {
+            "token": "precio",
+            "peso": 16.8246
+          },
+          {
+            "token": "valor",
+            "peso": 11.4477
+          },
+          {
+            "token": "cuanto",
+            "peso": 8.772
+          },
+          {
+            "token": "cotizacion",
+            "peso": 8.0309
+          },
+          {
+            "token": "cotizar",
+            "peso": 7.7101
+          },
+          {
+            "token": "descuento",
+            "peso": 7.3757
+          },
+          {
+            "token": "oferta",
+            "peso": 7.1615
+          },
+          {
+            "token": "precios",
+            "peso": 6.8766
+          },
+          {
+            "token": "cotiza",
+            "peso": 6.6895
+          },
+          {
+            "token": "barato",
+            "peso": 6.2177
+          },
+          {
+            "token": "ofertas",
+            "peso": 5.7693
+          },
+          {
+            "token": "sirve",
+            "peso": -5.5253
+          },
+          {
+            "token": "deja",
+            "peso": 5.5003
+          },
+          {
+            "token": "cotizeme",
+            "peso": 5.3712
+          },
+          {
+            "token": "promocion",
+            "peso": 5.13
+          }
+        ],
+        "consultar_stock": [
+          {
+            "token": "cuantas",
+            "peso": 10.8355
+          },
+          {
+            "token": "cuantos",
+            "peso": 9.8392
+          },
+          {
+            "token": "stock",
+            "peso": 9.7632
+          },
+          {
+            "token": "inventario",
+            "peso": 9.6198
+          },
+          {
+            "token": "quedan",
+            "peso": 9.2388
+          },
+          {
+            "token": "existencias",
+            "peso": 8.5645
+          },
+          {
+            "token": "queda",
+            "peso": 7.1832
+          },
+          {
+            "token": "disponibilidad",
+            "peso": 7.0814
+          },
+          {
+            "token": "todavia",
+            "peso": 6.5533
+          },
+          {
+            "token": "existencia",
+            "peso": 6.5391
+          },
+          {
+            "token": "llego",
+            "peso": 6.5097
+          },
+          {
+            "token": "bodega",
+            "peso": 6.4673
+          },
+          {
+            "token": "sistema",
+            "peso": 6.4109
+          },
+          {
+            "token": "agotando",
+            "peso": 6.2439
+          },
+          {
+            "token": "unidades",
+            "peso": 6.158
+          }
+        ],
+        "fuera_de_dominio": [
+          {
+            "token": "<vehiculo>",
+            "peso": -11.2844
+          },
+          {
+            "token": "gracias",
+            "peso": -6.6339
+          },
+          {
+            "token": "hacen",
+            "peso": 6.4892
+          },
+          {
+            "token": "filtro",
+            "peso": -6.3061
+          },
+          {
+            "token": "precio",
+            "peso": -5.6932
+          },
+          {
+            "token": "bateria",
+            "peso": -5.6878
+          },
+          {
+            "token": "buenas",
+            "peso": -5.4198
+          },
+          {
+            "token": "pa",
+            "peso": -5.3667
+          },
+          {
+            "token": "venden",
+            "peso": 5.2135
+          },
+          {
+            "token": "bujias",
+            "peso": -5.0777
+          },
+          {
+            "token": "listo",
+            "peso": -4.5492
+          },
+          {
+            "token": "reparan",
+            "peso": 4.5244
+          },
+          {
+            "token": "pastillas",
+            "peso": -4.4969
+          },
+          {
+            "token": "wifi",
+            "peso": 4.4646
+          },
+          {
+            "token": "cambia",
+            "peso": 4.4582
+          }
+        ],
+        "recomendar_sustituto": [
+          {
+            "token": "alternativa",
+            "peso": 8.631
+          },
+          {
+            "token": "parecido",
+            "peso": 8.1749
+          },
+          {
+            "token": "agoto",
+            "peso": 7.9143
+          },
+          {
+            "token": "sustituto",
+            "peso": 7.457
+          },
+          {
+            "token": "opcion",
+            "peso": 7.3155
+          },
+          {
+            "token": "reemplaza",
+            "peso": 6.9785
+          },
+          {
+            "token": "no",
+            "peso": 6.8846
+          },
+          {
+            "token": "similar",
+            "peso": 6.878
+          },
+          {
+            "token": "lugar",
+            "peso": 6.745
+          },
+          {
+            "token": "equivalente",
+            "peso": 6.6731
+          },
+          {
+            "token": "parecida",
+            "peso": 6.4308
+          },
+          {
+            "token": "reemplazo",
+            "peso": 6.2734
+          },
+          {
+            "token": "ofrezco",
+            "peso": 5.6949
+          },
+          {
+            "token": "sirva",
+            "peso": 5.6651
+          },
+          {
+            "token": "reemplace",
+            "peso": 5.5463
+          }
+        ],
+        "saludo_despedida": [
+          {
+            "token": "gracias",
+            "peso": 9.5802
+          },
+          {
+            "token": "<vehiculo>",
+            "peso": -7.9849
+          },
+          {
+            "token": "buenas",
+            "peso": 7.6551
+          },
+          {
+            "token": "hola",
+            "peso": 6.9856
+          },
+          {
+            "token": "cuanto",
+            "peso": -5.2391
+          },
+          {
+            "token": "luego",
+            "peso": 5.2174
+          },
+          {
+            "token": "saludos",
+            "peso": 4.9835
+          },
+          {
+            "token": "buen",
+            "peso": 4.9662
+          },
+          {
+            "token": "gusto",
+            "peso": 4.9264
+          },
+          {
+            "token": "chao",
+            "peso": 4.9098
+          },
+          {
+            "token": "agradezco",
+            "peso": 4.7558
+          },
+          {
+            "token": "filtro",
+            "peso": -4.5881
+          },
+          {
+            "token": "pues",
+            "peso": 4.4424
+          },
+          {
+            "token": "abrazo",
+            "peso": 4.3496
+          },
+          {
+            "token": "hablamos",
+            "peso": 4.2602
+          }
+        ]
+      },
+      "resumen_por_intencion": {
+        "buscar_repuesto": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        },
+        "consultar_compatibilidad": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        },
+        "consultar_precio": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        },
+        "consultar_stock": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        },
+        "fuera_de_dominio": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": true,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        },
+        "recomendar_sustituto": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": false,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        },
+        "saludo_despedida": {
+          "nombres_de_vehiculo_en_el_top": 0,
+          "marcador_en_el_top": true,
+          "mayor_peso_abs_de_un_nombre_de_vehiculo": 0.0
+        }
+      },
+      "mayor_peso_de_un_nombre_de_vehiculo": {
+        "token": "",
+        "intencion": "",
+        "abs_peso": 0.0
+      },
+      "nombres_de_vehiculo_en_el_vocabulario": 0,
+      "n_terminos": 1496,
+      "peso_de_hilux_por_intencion": null,
+      "peso_del_marcador_por_intencion": {
+        "buscar_repuesto": 4.4616,
+        "consultar_compatibilidad": 3.5246,
+        "consultar_precio": 1.2652,
+        "consultar_stock": -1.7812,
+        "fuera_de_dominio": -11.2844,
+        "recomendar_sustituto": 1.1099,
+        "saludo_despedida": -7.9849
+      }
+    }
+  },
+  "dev": {
+    "aviso": "Conjuntos de desarrollo: se usaron para iterar y las cifras de dev_* están saturadas; la evidencia honesta son los congelados (seccion 'congelados').",
+    "intencion_holdout_intent_csv": {
+      "n": 28,
+      "accuracy": 0.8929,
+      "f1_macro": 0.8844,
+      "recall_recomendar_sustituto": {
+        "n": 4,
+        "valor": 1.0
+      },
+      "fuera_de_dominio_tratado_como_negocio": {
+        "n": 4,
+        "valor": 0.0
+      }
+    },
+    "intencion_holdout_intent_csv_limpio_de_entrenamiento": {
+      "n": 26,
+      "accuracy": 0.8846,
+      "f1_macro": 0.8717,
+      "recall_recomendar_sustituto": {
+        "n": 4,
+        "valor": 1.0
+      },
+      "fuera_de_dominio_tratado_como_negocio": {
+        "n": 2,
+        "valor": 0.0
+      }
+    },
+    "ner_holdout_ner_json": {
+      "n_casos": 12,
+      "exactitud_global_campos": {
+        "n": 84,
+        "correctos": 84,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9563,
+          1.0
+        ]
+      },
+      "por_campo": {
+        "marca": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        },
+        "modelo": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        },
+        "categoria": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        },
+        "anio": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        },
+        "motor": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        },
+        "combustible": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        },
+        "codigo": {
+          "correctos": 12,
+          "evaluados": 12,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.7575,
+            1.0
+          ]
+        }
+      }
+    },
+    "ner_dev_ner_json": {
+      "n_casos": 122,
+      "exactitud_global_campos": {
+        "n": 854,
+        "correctos": 854,
+        "exactitud": 1.0,
+        "ic95": [
+          0.9955,
+          1.0
+        ]
+      },
+      "por_campo": {
+        "marca": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        },
+        "modelo": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        },
+        "categoria": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        },
+        "anio": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        },
+        "motor": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        },
+        "combustible": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        },
+        "codigo": {
+          "correctos": 122,
+          "evaluados": 122,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9695,
+            1.0
+          ]
+        }
+      },
+      "por_grupo": {
+        "codigo": 1.0,
+        "combustible": 1.0,
+        "completo": 1.0,
+        "marca_inferida": 1.0,
+        "motor_litros": 1.0,
+        "negativo": 1.0,
+        "numero_suelto": 1.0,
+        "sin_vehiculo": 1.0,
+        "sinonimo_categoria": 1.0,
+        "typo": 1.0,
+        "viscosidad": 1.0
+      }
+    },
+    "recomendador_dev_recomendador_json": {
+      "n_casos": 36,
+      "pipeline_casos_sin_marca_o_modelo": 0,
+      "solo_ranking": {
+        "p1": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "p3": {
+          "media": 0.4074,
+          "ic95_bootstrap": [
+            0.3611,
+            0.4537
+          ]
+        },
+        "p3_norm": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "hit3": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "mrr": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "pipeline_completo": {
+        "p1": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "p3": {
+          "media": 0.4074,
+          "ic95_bootstrap": [
+            0.3611,
+            0.4537
+          ]
+        },
+        "p3_norm": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "hit3": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "mrr": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "pipeline_completo_solo_con_vehiculo_identificado": {
+        "p1": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "p3": {
+          "media": 0.4074,
+          "ic95_bootstrap": [
+            0.3611,
+            0.4537
+          ]
+        },
+        "p3_norm": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "hit3": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        },
+        "mrr": {
+          "media": 1.0,
+          "ic95_bootstrap": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    "errores_dev_errores_csv": {
+      "n_errores": 267,
+      "n_evaluaciones": 534,
+      "pct_en_tabla_0": 0.2472,
+      "exactitud": {
+        "en_tabla=0": {
+          "correctos": 132,
+          "n": 132,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9717,
+            1.0
+          ]
+        },
+        "en_tabla=1": {
+          "correctos": 402,
+          "n": 402,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9905,
+            1.0
+          ]
+        },
+        "global": {
+          "correctos": 534,
+          "n": 534,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9929,
+            1.0
+          ]
+        },
+        "tipo=categoria": {
+          "correctos": 114,
+          "n": 114,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9674,
+            1.0
+          ]
+        },
+        "tipo=categoria|en_tabla=0": {
+          "correctos": 26,
+          "n": 26,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.8713,
+            1.0
+          ]
+        },
+        "tipo=marca": {
+          "correctos": 164,
+          "n": 164,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9771,
+            1.0
+          ]
+        },
+        "tipo=marca|en_tabla=0": {
+          "correctos": 54,
+          "n": 54,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9336,
+            1.0
+          ]
+        },
+        "tipo=modelo": {
+          "correctos": 256,
+          "n": 256,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9852,
+            1.0
+          ]
+        },
+        "tipo=modelo|en_tabla=0": {
+          "correctos": 52,
+          "n": 52,
+          "exactitud": 1.0,
+          "ic95_wilson": [
+            0.9312,
+            1.0
+          ]
+        }
+      }
+    }
+  },
+  "congelados": {
+    "estado": "vigente",
+    "archivos_cambiados_desde_la_medicion": [],
+    "numero_de_ejecucion": 1,
+    "integridad_de_los_congelados": {
+      "archivos_verificados": 7,
+      "sin_modificaciones": true
+    },
+    "holdouts_sha256": {
+      "intent": "394883f78242195b6b7294080a7c6cdd3f6e563c694da60b9d74ec90f943c4a9",
+      "ner": "eac94f8734e64d7430ad291f617f3e871607266c12374ffd2c73464b725ef1fe",
+      "recomendador": "deae33e2e0a378b28b50d1672bd57028d33bbbbed29ce1b9d6479cb0a4d12144",
+      "errores": "e90a2476150e08b03dc31ddb33062f3acbdfefc05ecc86a7d27ad4197d472ee6"
+    },
+    "despues": {
+      "intencion": {
+        "n": 217,
+        "accuracy": 0.9124,
+        "accuracy_ic95": [
+          0.871,
+          0.9447
+        ],
+        "f1_macro": 0.9135,
+        "f1_macro_ic95": [
+          0.8714,
+          0.9448
+        ],
+        "fuera_de_dominio_por_subgrupo": {
+          "ajeno_al_negocio": {
+            "n": 18,
+            "correctos": 15,
+            "exactitud": 0.8333,
+            "ic95": [
+              0.6078,
+              0.9416
+            ]
+          },
+          "negocio_sin_intencion_soportada": {
+            "n": 16,
+            "correctos": 14,
+            "exactitud": 0.875,
+            "ic95": [
+              0.6398,
+              0.965
+            ]
+          }
+        },
+        "recall_recomendar_sustituto": 0.9333
+      },
+      "ner": {
+        "n_casos": 125,
+        "exactitud_global_campos": {
+          "n": 875,
+          "correctos": 856,
+          "exactitud": 0.9783,
+          "ic95": [
+            0.9663,
+            0.9861
+          ]
+        },
+        "por_campo": {
+          "marca": {
+            "correctos": 112,
+            "evaluados": 125,
+            "exactitud": 0.896,
+            "ic95_wilson": [
+              0.8302,
+              0.9382
+            ]
+          },
+          "modelo": {
+            "correctos": 125,
+            "evaluados": 125,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9702,
+              1.0
+            ]
+          },
+          "categoria": {
+            "correctos": 123,
+            "evaluados": 125,
+            "exactitud": 0.984,
+            "ic95_wilson": [
+              0.9435,
+              0.9956
+            ]
+          },
+          "anio": {
+            "correctos": 125,
+            "evaluados": 125,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9702,
+              1.0
+            ]
+          },
+          "motor": {
+            "correctos": 125,
+            "evaluados": 125,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9702,
+              1.0
+            ]
+          },
+          "combustible": {
+            "correctos": 122,
+            "evaluados": 125,
+            "exactitud": 0.976,
+            "ic95_wilson": [
+              0.9318,
+              0.9918
+            ]
+          },
+          "codigo": {
+            "correctos": 124,
+            "evaluados": 125,
+            "exactitud": 0.992,
+            "ic95_wilson": [
+              0.9561,
+              0.9986
+            ]
+          }
+        }
+      },
+      "recomendador": {
+        "n_casos": 41,
+        "pipeline_casos_sin_marca_o_modelo": 0,
+        "solo_ranking": {
+          "p1": {
+            "media": 0.9024,
+            "ic95_bootstrap": [
+              0.8049,
+              0.9756
+            ]
+          },
+          "p3": {
+            "media": 0.6667,
+            "ic95_bootstrap": [
+              0.5935,
+              0.7398
+            ]
+          },
+          "p3_norm": {
+            "media": 0.8862,
+            "ic95_bootstrap": [
+              0.7967,
+              0.9593
+            ]
+          },
+          "hit3": {
+            "media": 0.9512,
+            "ic95_bootstrap": [
+              0.878,
+              1.0
+            ]
+          },
+          "mrr": {
+            "media": 0.9307,
+            "ic95_bootstrap": [
+              0.8515,
+              0.9878
+            ]
+          }
+        },
+        "pipeline_completo": {
+          "p1": {
+            "media": 0.9268,
+            "ic95_bootstrap": [
+              0.8293,
+              1.0
+            ]
+          },
+          "p3": {
+            "media": 0.748,
+            "ic95_bootstrap": [
+              0.6748,
+              0.813
+            ]
+          },
+          "p3_norm": {
+            "media": 0.9756,
+            "ic95_bootstrap": [
+              0.9268,
+              1.0
+            ]
+          },
+          "hit3": {
+            "media": 0.9756,
+            "ic95_bootstrap": [
+              0.9268,
+              1.0
+            ]
+          },
+          "mrr": {
+            "media": 0.9533,
+            "ic95_bootstrap": [
+              0.8943,
+              1.0
+            ]
+          }
+        },
+        "pipeline_completo_solo_con_vehiculo_identificado": {
+          "p1": {
+            "media": 0.9268,
+            "ic95_bootstrap": [
+              0.8293,
+              1.0
+            ]
+          },
+          "p3": {
+            "media": 0.748,
+            "ic95_bootstrap": [
+              0.6748,
+              0.813
+            ]
+          },
+          "p3_norm": {
+            "media": 0.9756,
+            "ic95_bootstrap": [
+              0.9268,
+              1.0
+            ]
+          },
+          "hit3": {
+            "media": 0.9756,
+            "ic95_bootstrap": [
+              0.9268,
+              1.0
+            ]
+          },
+          "mrr": {
+            "media": 0.9533,
+            "ic95_bootstrap": [
+              0.8943,
+              1.0
+            ]
+          }
+        }
+      },
+      "errores_digitacion": {
+        "n_errores": 380,
+        "n_evaluaciones": 760,
+        "pct_en_tabla_0": 0.4289,
+        "exactitud": {
+          "en_tabla=0": {
+            "correctos": 306,
+            "n": 326,
+            "exactitud": 0.9387,
+            "ic95_wilson": [
+              0.9071,
+              0.9599
+            ]
+          },
+          "en_tabla=1": {
+            "correctos": 434,
+            "n": 434,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9912,
+              1.0
+            ]
+          },
+          "global": {
+            "correctos": 740,
+            "n": 760,
+            "exactitud": 0.9737,
+            "ic95_wilson": [
+              0.9597,
+              0.9829
+            ]
+          },
+          "tipo=categoria": {
+            "correctos": 206,
+            "n": 216,
+            "exactitud": 0.9537,
+            "ic95_wilson": [
+              0.9169,
+              0.9747
+            ]
+          },
+          "tipo=categoria|en_tabla=0": {
+            "correctos": 102,
+            "n": 112,
+            "exactitud": 0.9107,
+            "ic95_wilson": [
+              0.8434,
+              0.9508
+            ]
+          },
+          "tipo=marca": {
+            "correctos": 240,
+            "n": 244,
+            "exactitud": 0.9836,
+            "ic95_wilson": [
+              0.9586,
+              0.9936
+            ]
+          },
+          "tipo=marca|en_tabla=0": {
+            "correctos": 102,
+            "n": 106,
+            "exactitud": 0.9623,
+            "ic95_wilson": [
+              0.907,
+              0.9852
+            ]
+          },
+          "tipo=modelo": {
+            "correctos": 294,
+            "n": 300,
+            "exactitud": 0.98,
+            "ic95_wilson": [
+              0.9571,
+              0.9908
+            ]
+          },
+          "tipo=modelo|en_tabla=0": {
+            "correctos": 102,
+            "n": 108,
+            "exactitud": 0.9444,
+            "ic95_wilson": [
+              0.8841,
+              0.9743
+            ]
+          }
+        }
+      }
+    },
+    "antes": {
+      "intencion": {
+        "n": 217,
+        "accuracy": 0.8018,
+        "accuracy_ic95": [
+          0.7419,
+          0.8525
+        ],
+        "f1_macro": 0.8072,
+        "f1_macro_ic95": [
+          0.7492,
+          0.8543
+        ],
+        "fuera_de_dominio_por_subgrupo": {
+          "ajeno_al_negocio": {
+            "n": 18,
+            "correctos": 14,
+            "exactitud": 0.7778,
+            "ic95": [
+              0.5479,
+              0.91
+            ]
+          },
+          "negocio_sin_intencion_soportada": {
+            "n": 16,
+            "correctos": 9,
+            "exactitud": 0.5625,
+            "ic95": [
+              0.3318,
+              0.769
+            ]
+          }
+        },
+        "recall_recomendar_sustituto": 0.8667
+      },
+      "ner": {
+        "n_casos": 125,
+        "exactitud_global_campos": {
+          "n": 875,
+          "correctos": 814,
+          "exactitud": 0.9303,
+          "ic95": [
+            0.9115,
+            0.9453
+          ]
+        },
+        "por_campo": {
+          "marca": {
+            "correctos": 125,
+            "evaluados": 125,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9702,
+              1.0
+            ]
+          },
+          "modelo": {
+            "correctos": 123,
+            "evaluados": 125,
+            "exactitud": 0.984,
+            "ic95_wilson": [
+              0.9435,
+              0.9956
+            ]
+          },
+          "categoria": {
+            "correctos": 76,
+            "evaluados": 125,
+            "exactitud": 0.608,
+            "ic95_wilson": [
+              0.5204,
+              0.6891
+            ]
+          },
+          "anio": {
+            "correctos": 125,
+            "evaluados": 125,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9702,
+              1.0
+            ]
+          },
+          "motor": {
+            "correctos": 124,
+            "evaluados": 125,
+            "exactitud": 0.992,
+            "ic95_wilson": [
+              0.9561,
+              0.9986
+            ]
+          },
+          "combustible": {
+            "correctos": 122,
+            "evaluados": 125,
+            "exactitud": 0.976,
+            "ic95_wilson": [
+              0.9318,
+              0.9918
+            ]
+          },
+          "codigo": {
+            "correctos": 119,
+            "evaluados": 125,
+            "exactitud": 0.952,
+            "ic95_wilson": [
+              0.8992,
+              0.9778
+            ]
+          }
+        }
+      },
+      "recomendador": {
+        "n_casos": 41,
+        "pipeline_casos_sin_marca_o_modelo": 16,
+        "solo_ranking": {
+          "p1": {
+            "media": 0.8293,
+            "ic95_bootstrap": [
+              0.7073,
+              0.9268
+            ]
+          },
+          "p3": {
+            "media": 0.5772,
+            "ic95_bootstrap": [
+              0.4878,
+              0.6585
+            ]
+          },
+          "p3_norm": {
+            "media": 0.752,
+            "ic95_bootstrap": [
+              0.6381,
+              0.8537
+            ]
+          },
+          "hit3": {
+            "media": 0.9024,
+            "ic95_bootstrap": [
+              0.8049,
+              0.9756
+            ]
+          },
+          "mrr": {
+            "media": 0.8799,
+            "ic95_bootstrap": [
+              0.7863,
+              0.9573
+            ]
+          }
+        },
+        "pipeline_completo": {
+          "p1": {
+            "media": 0.5366,
+            "ic95_bootstrap": [
+              0.3902,
+              0.6829
+            ]
+          },
+          "p3": {
+            "media": 0.4228,
+            "ic95_bootstrap": [
+              0.3008,
+              0.5368
+            ]
+          },
+          "p3_norm": {
+            "media": 0.5325,
+            "ic95_bootstrap": [
+              0.3821,
+              0.6789
+            ]
+          },
+          "hit3": {
+            "media": 0.5854,
+            "ic95_bootstrap": [
+              0.439,
+              0.7317
+            ]
+          },
+          "mrr": {
+            "media": 0.565,
+            "ic95_bootstrap": [
+              0.4146,
+              0.7114
+            ]
+          }
+        },
+        "pipeline_completo_solo_con_vehiculo_identificado": {
+          "p1": {
+            "media": 0.88,
+            "ic95_bootstrap": [
+              0.72,
+              1.0
+            ]
+          },
+          "p3": {
+            "media": 0.6933,
+            "ic95_bootstrap": [
+              0.5867,
+              0.7867
+            ]
+          },
+          "p3_norm": {
+            "media": 0.8733,
+            "ic95_bootstrap": [
+              0.7533,
+              0.9733
+            ]
+          },
+          "hit3": {
+            "media": 0.96,
+            "ic95_bootstrap": [
+              0.88,
+              1.0
+            ]
+          },
+          "mrr": {
+            "media": 0.9267,
+            "ic95_bootstrap": [
+              0.8333,
+              1.0
+            ]
+          }
+        }
+      },
+      "errores_digitacion": {
+        "n_errores": 380,
+        "n_evaluaciones": 760,
+        "pct_en_tabla_0": 0.4289,
+        "exactitud": {
+          "en_tabla=0": {
+            "correctos": 241,
+            "n": 326,
+            "exactitud": 0.7393,
+            "ic95_wilson": [
+              0.689,
+              0.7839
+            ]
+          },
+          "en_tabla=1": {
+            "correctos": 434,
+            "n": 434,
+            "exactitud": 1.0,
+            "ic95_wilson": [
+              0.9912,
+              1.0
+            ]
+          },
+          "global": {
+            "correctos": 675,
+            "n": 760,
+            "exactitud": 0.8882,
+            "ic95_wilson": [
+              0.8638,
+              0.9086
+            ]
+          },
+          "tipo=categoria": {
+            "correctos": 164,
+            "n": 216,
+            "exactitud": 0.7593,
+            "ic95_wilson": [
+              0.698,
+              0.8114
+            ]
+          },
+          "tipo=categoria|en_tabla=0": {
+            "correctos": 60,
+            "n": 112,
+            "exactitud": 0.5357,
+            "ic95_wilson": [
+              0.4437,
+              0.6254
+            ]
+          },
+          "tipo=marca": {
+            "correctos": 230,
+            "n": 244,
+            "exactitud": 0.9426,
+            "ic95_wilson": [
+              0.906,
+              0.9655
+            ]
+          },
+          "tipo=marca|en_tabla=0": {
+            "correctos": 92,
+            "n": 106,
+            "exactitud": 0.8679,
+            "ic95_wilson": [
+              0.7904,
+              0.9197
+            ]
+          },
+          "tipo=modelo": {
+            "correctos": 281,
+            "n": 300,
+            "exactitud": 0.9367,
+            "ic95_wilson": [
+              0.9032,
+              0.9591
+            ]
+          },
+          "tipo=modelo|en_tabla=0": {
+            "correctos": 89,
+            "n": 108,
+            "exactitud": 0.8241,
+            "ic95_wilson": [
+              0.7415,
+              0.8844
+            ]
+          }
+        }
+      }
+    },
+    "antes_vs_despues": {
+      "intencion": {
+        "accuracy": 0.1106,
+        "f1_macro": 0.1063
+      },
+      "ner": {
+        "marca": -0.104,
+        "modelo": 0.016,
+        "categoria": 0.376,
+        "anio": 0.0,
+        "motor": 0.008,
+        "combustible": 0.0,
+        "codigo": 0.04,
+        "global": 0.048
+      },
+      "recomendador": {
+        "solo_ranking": {
+          "p1": 0.0731,
+          "p3": 0.0895,
+          "mrr": 0.0508
+        },
+        "pipeline_completo": {
+          "p1": 0.3902,
+          "p3": 0.3252,
+          "mrr": 0.3883
+        }
+      },
+      "errores_digitacion": {
+        "global": 0.0855,
+        "en_tabla=0": 0.1994,
+        "en_tabla=1": 0.0
+      }
+    },
+    "holdouts_iguales_antes_y_despues": true
+  },
+  "tiempos": {
+    "aviso": "Depende de la máquina; se mide con --medir-tiempos. Entrenamiento: mediana de 3 ajustes con todo el dataset. Predicción: una frase a la vez.",
+    "entorno": {
+      "python": "3.11.18",
+      "scikit_learn": "1.5.2",
+      "sistema": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41",
+      "cpus": 12
+    },
+    "por_modelo": {
+      "lr_c15": {
+        "entrenamiento_s_mediana": 0.066,
+        "prediccion_ms_p50": 0.417,
+        "prediccion_ms_p95": 0.917,
+        "prediccion_ms_p99": 4.992,
+        "n_predicciones": 512
+      },
+      "lr_c15_vehiculo": {
+        "entrenamiento_s_mediana": 0.078,
+        "prediccion_ms_p50": 0.395,
+        "prediccion_ms_p95": 0.779,
+        "prediccion_ms_p99": 1.764,
+        "n_predicciones": 512
+      },
+      "lr_c1": {
+        "entrenamiento_s_mediana": 0.056,
+        "prediccion_ms_p50": 0.401,
+        "prediccion_ms_p95": 0.958,
+        "prediccion_ms_p99": 1.615,
+        "n_predicciones": 512
+      },
+      "lr_c5": {
+        "entrenamiento_s_mediana": 0.069,
+        "prediccion_ms_p50": 0.416,
+        "prediccion_ms_p95": 0.789,
+        "prediccion_ms_p99": 2.166,
+        "n_predicciones": 512
+      },
+      "lr_c50": {
+        "entrenamiento_s_mediana": 0.073,
+        "prediccion_ms_p50": 0.392,
+        "prediccion_ms_p95": 1.029,
+        "prediccion_ms_p99": 2.096,
+        "n_predicciones": 512
+      },
+      "lr_c100": {
+        "entrenamiento_s_mediana": 0.073,
+        "prediccion_ms_p50": 0.367,
+        "prediccion_ms_p95": 0.66,
+        "prediccion_ms_p99": 0.897,
+        "n_predicciones": 512
+      },
+      "lr_c15_bigramas": {
+        "entrenamiento_s_mediana": 0.095,
+        "prediccion_ms_p50": 0.425,
+        "prediccion_ms_p95": 0.896,
+        "prediccion_ms_p99": 1.424,
+        "n_predicciones": 512
+      },
+      "lr_c15_balanceado": {
+        "entrenamiento_s_mediana": 0.082,
+        "prediccion_ms_p50": 0.431,
+        "prediccion_ms_p95": 0.904,
+        "prediccion_ms_p99": 1.279,
+        "n_predicciones": 512
+      },
+      "nb_complemento": {
+        "entrenamiento_s_mediana": 0.044,
+        "prediccion_ms_p50": 0.605,
+        "prediccion_ms_p95": 1.098,
+        "prediccion_ms_p99": 1.854,
+        "n_predicciones": 512
+      },
+      "svm_lineal": {
+        "entrenamiento_s_mediana": 0.052,
+        "prediccion_ms_p50": 0.409,
+        "prediccion_ms_p95": 0.809,
+        "prediccion_ms_p99": 2.19,
+        "n_predicciones": 512
+      },
+      "mlp_64": {
+        "entrenamiento_s_mediana": 2.005,
+        "prediccion_ms_p50": 0.443,
+        "prediccion_ms_p95": 0.82,
+        "prediccion_ms_p99": 1.361,
+        "n_predicciones": 512
+      },
+      "mlp_128": {
+        "entrenamiento_s_mediana": 2.825,
+        "prediccion_ms_p50": 0.463,
+        "prediccion_ms_p95": 0.94,
+        "prediccion_ms_p99": 1.239,
+        "n_predicciones": 512
+      },
+      "mlp_256": {
+        "entrenamiento_s_mediana": 8.251,
+        "prediccion_ms_p50": 0.382,
+        "prediccion_ms_p95": 0.718,
+        "prediccion_ms_p99": 1.108,
+        "n_predicciones": 512
+      }
+    },
+    "intencion_mas_ner_por_consulta_ms": {
+      "p50": 3.1016,
+      "p95": 5.6978,
+      "p99": 13.695,
+      "n": 756,
+      "incluye": "predecir_intencion + extraer_entidades con la tabla de errores completa; sin backend"
+    }
+  },
+  "criterios": {
+    "C1": {
+      "definicion": "F1 macro en validación cruzada >= 0.80",
+      "meta": 0.8,
+      "medido": {
+        "normal_sin_umbral": 0.8469,
+        "normal_con_umbral": 0.8421,
+        "agrupada_con_umbral": 0.8209
+      },
+      "estado": "cumple"
+    },
+    "C2": {
+      "definicion": "Accuracy en holdout limpio >= 0.80 (el dev tiene pocas frases; el congelado v2 es la evidencia fuerte)",
+      "meta": 0.8,
+      "medido": {
+        "dev_holdout_intent_csv_limpio": 0.8846,
+        "congelado_v2": 0.9124,
+        "congelado_v2_ic95": [
+          0.871,
+          0.9447
+        ]
+      },
+      "estado": "cumple"
+    },
+    "C3": {
+      "definicion": "Recall de recomendar_sustituto (validación cruzada, con el umbral de producción) >= 0.90",
+      "meta": 0.9,
+      "umbral_usado": 0.4,
+      "medido": {
+        "normal": 0.758,
+        "agrupada": 0.7473,
+        "dev_holdout_intent_csv": 1.0
+      },
+      "estado": "NO cumple"
+    },
+    "C4": {
+      "definicion": "Frases fuera de dominio tratadas como una de las 5 intenciones de negocio (validación cruzada) <= 15 %",
+      "meta": 0.15,
+      "umbral_usado": 0.4,
+      "medido": {
+        "normal": 0.1329,
+        "agrupada": 0.15,
+        "normal_no_reconocida_como_fuera": 0.1787,
+        "agrupada_no_reconocida_como_fuera": 0.2022,
+        "dev_holdout_intent_csv": 0.0
+      },
+      "nota": "'no_reconocida_como_fuera' cuenta además las enviadas a saludo_despedida: es la lectura más estricta.",
+      "estado": "cumple"
+    },
+    "C5": {
+      "definicion": "Exactitud global del NER (campo por campo) >= 0.90",
+      "meta": 0.9,
+      "medido": {
+        "dev_holdout_ner_json_12_casos": 1.0,
+        "dev_ner_json_122_casos": 1.0,
+        "congelado_v2": 0.9783,
+        "congelado_v2_ic95": [
+          0.9663,
+          0.9861
+        ]
+      },
+      "estado": "cumple"
+    },
+    "C6": {
+      "definicion": "Precisión@3 del recomendador >= 0.80 (p3_norm = correctos en el top-3 / min(3, nº de correctos))",
+      "meta": 0.8,
+      "medido": {
+        "dev_recomendador_json_pipeline_p3_norm": 1.0,
+        "dev_recomendador_json_pipeline_hit3": 1.0,
+        "dev_recomendador_json_pipeline_p1": 1.0,
+        "congelado_v2_pipeline_p3_norm": 0.9756,
+        "congelado_v2_pipeline_p3_norm_ic95": [
+          0.9268,
+          1.0
+        ],
+        "congelado_v2_pipeline_hit3": 0.9756,
+        "congelado_v2_pipeline_p1": 0.9268
+      },
+      "estado": "cumple"
+    },
+    "C7": {
+      "definicion": "Latencia p95 de intención + NER < 100 ms (sin contar el backend)",
+      "meta_ms": 100,
+      "medido": {
+        "p95_ms": 5.6978
+      },
+      "estado": "cumple"
+    },
+    "C8": {
+      "definicion": "Ventaja de F1 macro sobre la línea base de la clase mayoritaria >= 0.50",
+      "meta": 0.5,
+      "medido": {
+        "f1_modelo": 0.8469,
+        "f1_linea_base": 0.0428,
+        "ventaja": 0.8041
+      },
+      "estado": "cumple"
+    }
+  },
+  "resumen_criterios": {
+    "C1": "cumple",
+    "C2": "cumple",
+    "C3": "NO cumple",
+    "C4": "cumple",
+    "C5": "cumple",
+    "C6": "cumple",
+    "C7": "cumple",
+    "C8": "cumple"
+  }
+}

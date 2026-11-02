@@ -58,7 +58,7 @@ def test_recomendar_sustituto_sin_vehiculo_identificado(monkeypatch):
 
     resultado = pipeline.procesar_consulta("no hay filtro de aceite, que recomiendo")
     assert resultado["sugerencias"] == []
-    assert "identificar" in resultado["respuesta_texto"].lower()
+    assert "marca y modelo" in resultado["respuesta_texto"].lower()
     assert resultado["esperando_datos"] is True
 
 
@@ -69,6 +69,7 @@ def test_recomendar_sustituto_usa_contexto_previo_del_turno_anterior(monkeypatch
     ]
     monkeypatch.setattr(pipeline, "predecir_intencion", lambda texto: ("recomendar_sustituto", 0.9))
     monkeypatch.setattr(pipeline, "buscar_compatibles", lambda **kw: candidatos_fake)
+    monkeypatch.setattr(pipeline, "buscar_en_catalogo", lambda termino, **kw: [])  # sin respaldo de categoría
     _sin_diccionarios(monkeypatch, marcas=["Toyota"], modelos=["Hilux"], categorias=["Filtros"])
 
     # Turno 1: sin vehículo -> pide datos (esperando_datos=True).

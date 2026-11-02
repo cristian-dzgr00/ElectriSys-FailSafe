@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Plus, Search, Edit2, Trash2, X, Tag, AlertTriangle, Car, Wifi, WifiOff, Sparkles, ArrowRight } from 'lucide-react';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
+import SugerenciaBusqueda from '../components/SugerenciaBusqueda';
 import { useToastContext } from '../context/ToastContext';
 import { repuestosService } from '../services/ventasService';
 import { vehiculosService } from '../services/vehiculosService';
@@ -47,7 +48,9 @@ export default function Repuestos() {
   const [categorias,  setCategorias]  = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [loading,     setLoading]     = useState(true);
-  const [q,           setQ]           = useState('');
+  const [q,           setQ]           = useState('');          // lo que hay en la caja
+  const [qBuscado,    setQBuscado]    = useState('');          // lo que se consultó (con debounce)
+  const [sugBusqueda, setSugBusqueda] = useState(null);        // "¿Quisiste decir…?"
   const [modal,       setModal]       = useState(false);
   const [modalCat,    setModalCat]    = useState(false);
   const [form,        setForm]        = useState(EMPTY);
@@ -85,19 +88,23 @@ export default function Repuestos() {
     setCategorias(r.data.data || []);
   };
 
-  const load = useCallback(async (p = page, search = q) => {
+  const load = useCallback(async (p = page, search = qBuscado) => {
     setLoading(true);
     try {
-      const r = await repuestosService.listar(search ? { q: search, page: p, limit: PAGE_SIZE } : { page: p, limit: PAGE_SIZE });
+      // sugerir=1: si la búsqueda no da nada, el backend devuelve la lista
+      // vacía y la corrección aparte (`sugerencia_busqueda`) en vez de
+      // reemplazar lo escrito; así se ofrece el "¿Quisiste decir…?".
+      const r = await repuestosService.listar(search ? { q: search, page: p, limit: PAGE_SIZE, sugerir: 1 } : { page: p, limit: PAGE_SIZE });
       const filas = r.data.data ?? [];
       setData(filas);
       setTotal(r.data.total ?? 0);
+      setSugBusqueda(r.data.sugerencia_busqueda ?? null);
       // Sin await: la tabla se pinta ya, y los badges aparecen cuando el
       // microservicio conteste. Si nunca contesta, la tabla queda igual.
       cargarSenales(filas.map(f => f.id));
     } catch { toast('Error cargando repuestos', { type: 'error' }); }
     finally { setLoading(false); }
-  }, [page, q]);
+  }, [page, qBuscado]);
 
   // Una sola llamada para toda la página, no una por fila: el backend
   // agrupa las N series en una consulta y el microservicio hace la
@@ -120,8 +127,17 @@ export default function Repuestos() {
     api.get('/proveedores').then(r=>setProveedores(r.data.data||[])).catch(()=>{});
     vehiculosService.marcas().then(r=>setMarcas(r.data.data||[])).catch(()=>{});
   }, []);
-  useEffect(() => { load(1, q); setPage(1); }, [q]);
-  useEffect(() => { load(page, q); }, [page]);
+  // Debounce de la búsqueda: sin esto cada tecla dispara una consulta a
+  // Oracle (y, si no hay resultados, otra al corrector de NLP).
+  useEffect(() => {
+    const t = setTimeout(() => setQBuscado(q.trim()), q.trim() === '' ? 0 : 300);
+    return () => clearTimeout(t);
+  }, [q]);
+  useEffect(() => { load(1, qBuscado); setPage(1); }, [qBuscado]);
+  useEffect(() => { load(page, qBuscado); }, [page]);
+
+  // Clic en "¿Quisiste decir…?": se busca ya, sin esperar al debounce.
+  const aplicarSugerenciaBusqueda = (texto) => { setQ(texto); setQBuscado(texto); };
 
   useEffect(() => { dataRef.current = data; }, [data]);
   useEffect(() => () => {
@@ -272,7 +288,7 @@ export default function Repuestos() {
         await repuestosService.crear(form);
         toast(`Repuesto "${form.nombre}" creado exitosamente`, { type: 'success' });
       }
-      closeModal(); load(page, q);
+      closeModal(); load(page, qBuscado);
     } catch(e) { setError(e.response?.data?.error || 'Error al guardar el repuesto'); }
     finally { setSaving(false); }
   };
@@ -291,7 +307,7 @@ export default function Repuestos() {
     if (!ok) return;
     try {
       await repuestosService.eliminar(id);
-      load(page, q);
+      load(page, qBuscado);
       toast(`Repuesto "${nombre}" eliminado`, { type: 'warning' });
     } catch { toast('No se pudo eliminar el repuesto', { type: 'error' }); }
   };
@@ -395,6 +411,14 @@ export default function Repuestos() {
           <input className="form-control" placeholder="Buscar por nombre o código…" value={q} onChange={e=>setQ(e.target.value)}/>
         </div>
       </div>
+      {!loading && data.length === 0 && (
+        <SugerenciaBusqueda
+          sugerencia={sugBusqueda}
+          textoActual={q}
+          onAplicar={aplicarSugerenciaBusqueda}
+          style={{ marginBottom: 12 }}
+        />
+      )}
 
       <div className="card" style={{padding:0,overflow:'hidden'}}>
         <Table columns={columns} data={data} loading={loading} emptyText="No se encontraron repuestos"/>

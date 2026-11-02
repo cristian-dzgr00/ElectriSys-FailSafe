@@ -1,0 +1,10 @@
+CONJUNTOS DE PRUEBA CONGELADOS (holdouts v2) - ElectriSys NLP
+Fecha de congelado: 2026-11-02
+
+SHA-256 de cada archivo:
+394883f78242195b6b7294080a7c6cdd3f6e563c694da60b9d74ec90f943c4a9  holdout_intent_v2.csv
+eac94f8734e64d7430ad291f617f3e871607266c12374ffd2c73464b725ef1fe  holdout_ner_v2.json
+deae33e2e0a378b28b50d1672bd57028d33bbbbed29ce1b9d6479cb0a4d12144  holdout_recomendador_v2.json
+e90a2476150e08b03dc31ddb33062f3acbdfefc05ecc86a7d27ad4197d472ee6  holdout_errores_v2.csv
+
+Estos cuatro conjuntos se escribieron a mano antes de ejecutar cualquier modelo o script de evaluacion sobre ellos y no deben editarse ni usarse para entrenar, ajustar umbrales, ampliar diccionarios ni generar tablas de errores.

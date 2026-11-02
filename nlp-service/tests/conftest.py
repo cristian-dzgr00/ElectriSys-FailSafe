@@ -1,8 +1,30 @@
 import shutil
+from pathlib import Path
 
 import pytest
 
 from app.ner import agente_errores
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _modelo_de_intencion_disponible(tmp_path_factory):
+    """Garantiza que exista el modelo entrenado, como hace el servicio al arrancar.
+
+    `models/intent_classifier.pkl` está en .gitignore, así que en un checkout limpio
+    (GitHub Actions) no existe. Antes los tests lo creaban por casualidad porque
+    test_intent.py entrenaba y sobrescribía el modelo real; ahora ese test entrena en
+    una carpeta temporal y esta fixture cubre a los que usan el modelo real (test_main).
+    Las métricas se escriben en una carpeta temporal para no tocar models/metrics_intent.json.
+    """
+    from app.intent import train
+
+    ruta_modelo = Path(train.MODEL_PATH)
+    lo_creamos = not ruta_modelo.exists()
+    if lo_creamos:
+        train.entrenar(metrics_path=tmp_path_factory.mktemp("metricas") / "metrics_intent.json")
+    yield
+    if lo_creamos and ruta_modelo.exists():
+        ruta_modelo.unlink()
 
 
 @pytest.fixture(autouse=True, scope="session")

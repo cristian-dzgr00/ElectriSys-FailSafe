@@ -7,6 +7,12 @@ sí misma (reglas + fuzzy matching), no la integración con el backend — eso
 ya lo cubren los tests de app/ner/dictionary.py. Así el resultado es
 reproducible sin necesitar el backend levantado.
 
+Además mide el conjunto de desarrollo ampliado dev_ner.json (122 casos escritos a
+mano ANTES de mejorar el extractor, anotación cerrada de los 7 campos) contra el
+catálogo de eval/datos_demo, con la inferencia de marca por modelo único. Ese
+conjunto es de DESARROLLO: se usó para iterar y no es evidencia de generalización;
+las cifras honestas son las de los congelados (eval/resultados_despues.json).
+
 Uso: python -m eval.eval_ner
 """
 import json
@@ -16,6 +22,7 @@ from app.ner.extractor import extraer_entidades
 
 BASE_DIR = Path(__file__).resolve().parent
 HOLDOUT_PATH = BASE_DIR / "holdout_ner.json"
+DEV_PATH = BASE_DIR / "dev_ner.json"
 RESULTADOS_PATH = BASE_DIR / "resultados_ner.json"
 
 # Foto fija del catálogo semilla (ver database/seed_vehiculos.sql)
@@ -37,6 +44,14 @@ def _coincide(esperado, obtenido) -> bool:
     if isinstance(esperado, str) and isinstance(obtenido, str):
         return esperado.strip().lower() == obtenido.strip().lower()
     return esperado == obtenido
+
+
+def evaluar_dev() -> dict:
+    """dev_ner.json con el catálogo de datos_demo (mismo criterio que el 'antes'/'después' de los congelados)."""
+    from eval import medir_baseline as mb
+
+    cat = mb.cargar_catalogo()
+    return mb.medir_ner(cat, DEV_PATH, mb.vocab_ner(cat, con_marca_de_modelo=True))
 
 
 def evaluar() -> dict:
@@ -74,6 +89,7 @@ def evaluar() -> dict:
         "precision_por_campo": precision_por_campo,
         "total_por_campo": total_por_campo,
         "errores": errores,
+        "dev_ner": evaluar_dev(),
     }
     RESULTADOS_PATH.write_text(json.dumps(resultado, indent=2, ensure_ascii=False), encoding="utf-8")
     return resultado
@@ -84,6 +100,10 @@ if __name__ == "__main__":
     print(f"Precisión global: {r['precision_global']:.3f} ({r['n_casos']} casos)")
     for campo, p in sorted(r["precision_por_campo"].items()):
         print(f"  {campo:12} {p:.3f}  ({r['total_por_campo'][campo]} evaluados)")
+    d = r["dev_ner"]
+    print(f"\nDEV ampliado (dev_ner.json, {d['n_casos']} casos): global={d['exactitud_global_campos']['exactitud']}")
+    for campo, m in d["por_campo"].items():
+        print(f"  {campo:12} {m['correctos']}/{m['evaluados']} = {m['exactitud']}")
     if r["errores"]:
         print(f"\nErrores ({len(r['errores'])}):")
         for e in r["errores"]:

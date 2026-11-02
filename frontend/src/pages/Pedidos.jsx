@@ -17,10 +17,13 @@ import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import { StatusBadge } from '../components/Tooltip';
 import BuscadorRepuesto from '../components/BuscadorRepuesto';
+import { PanelSugerenciasProveedor, SugeridoDeItem } from '../components/SugerenciasPedido';
 import { useToastContext } from '../context/ToastContext';
 import { pedidosService } from '../services/pedidosService';
 import { proveedoresService } from '../services/ventasService';
+import { aplicarCantidad } from '../services/sugerenciasIa';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { useSugerenciasDeItems, useSugerenciasPorProveedor } from '../hooks/useSugerenciasPedido';
 
 const fmt = n => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n ?? 0);
 const fmtFecha = v => (v ? new Date(v).toLocaleDateString('es-CO', { dateStyle: 'short' }) : '—');
@@ -66,6 +69,16 @@ export default function Pedidos() {
   const [items,    setItems]    = useState([]);
   const [saving,   setSaving]   = useState(false);
   const [error,    setError]    = useState('');
+
+  // ── Cantidad sugerida (IA) ──
+  // Opcional por diseño: si el microservicio no responde, los hooks devuelven
+  // vacío y el formulario se comporta exactamente como antes.
+  const modalNuevoAbierto = modal === 'new';
+  const { porId: sugeridosPorId } = useSugerenciasDeItems(
+    items.map(i => i.repuesto_id),
+    { activo: modalNuevoAbierto },
+  );
+  const sugPorProveedor = useSugerenciasPorProveedor(modalNuevoAbierto);
 
   // Refs para leer los filtros vigentes desde callbacks que no deben
   // recrearse (el del WebSocket) — mismo motivo que en Ventas.jsx.
@@ -179,6 +192,10 @@ export default function Pedidos() {
       }];
     });
   };
+
+  // Fija (no suma) la cantidad de un producto: agrega la línea si no existía.
+  const fijarCantidad = (producto, cantidad) =>
+    setItems(prev => aplicarCantidad(prev, producto, cantidad));
 
   const removeItem = idx => setItems(p => p.filter((_, i) => i !== idx));
 
@@ -359,6 +376,18 @@ export default function Pedidos() {
                 </div>
               </div>
 
+              <PanelSugerenciasProveedor
+                proveedorId={provId}
+                respuesta={sugPorProveedor.respuesta}
+                cargando={sugPorProveedor.cargando}
+                disponible={sugPorProveedor.disponible}
+                itemsEnPedido={items}
+                onAplicar={s => fijarCantidad(
+                  { repuesto_id: s.repuesto_id, nombre: s.nombre, precio_unit: s.precio_unit },
+                  s.cantidad,
+                )}
+              />
+
               <div className="form-group">
                 <label className="form-label">Agregar producto</label>
                 {/* precio de compra: es una orden hacia el proveedor, no una venta */}
@@ -382,7 +411,14 @@ export default function Pedidos() {
                     <tbody>
                       {items.map((it, i) => (
                         <tr key={it.repuesto_id} style={{ borderTop: '1px solid var(--border)' }}>
-                          <td style={{ padding: '8px 12px' }}>{it.nombre}</td>
+                          <td style={{ padding: '8px 12px' }}>
+                            {it.nombre}
+                            <SugeridoDeItem
+                              sugerencia={sugeridosPorId[it.repuesto_id]}
+                              cantidadActual={it.cantidad}
+                              onUsar={n => fijarCantidad(it, n)}
+                            />
+                          </td>
                           <td style={{ padding: '8px 12px', textAlign: 'center' }}>
                             <input type="number" min={1}
                               style={{ width: 60, background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-primary)', textAlign: 'center', padding: '4px 6px' }}

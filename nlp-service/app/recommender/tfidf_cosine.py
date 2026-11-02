@@ -12,7 +12,7 @@ import logging
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from app.preprocessing import preprocesar
+from app.preprocessing import preprocesar_busqueda
 from app.recommender.base import EstrategiaSimilitud
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class SimilitudTfidfCoseno(EstrategiaSimilitud):
         corpus = [consulta] + textos_candidatos
 
         try:
-            vectorizador = TfidfVectorizer(tokenizer=preprocesar, token_pattern=None)
+            vectorizador = TfidfVectorizer(tokenizer=preprocesar_busqueda, token_pattern=None)
             matriz = vectorizador.fit_transform(corpus)
             similitudes = cosine_similarity(matriz[0], matriz[1:])[0]
         except ValueError:

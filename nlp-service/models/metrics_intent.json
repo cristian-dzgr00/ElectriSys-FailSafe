@@ -1,64 +1,70 @@
 {
   "n_splits": 5,
-  "accuracy": 0.3384615384615385,
-  "f1_macro": 0.2802721088435374,
+  "accuracy": 0.8459427675421404,
+  "f1_macro": 0.8443212129071613,
+  "umbral_confianza": 0.4,
+  "accuracy_con_umbral": 0.8381027048216386,
+  "f1_macro_con_umbral": 0.8390675088232028,
   "reporte_por_clase": {
     "buscar_repuesto": {
-      "precision": 0.25,
-      "recall": 0.3333333333333333,
-      "f1-score": 0.2857142857142857,
-      "support": 12.0
+      "precision": 0.764367816091954,
+      "recall": 0.8036253776435045,
+      "f1-score": 0.7835051546391752,
+      "support": 331.0
     },
     "consultar_compatibilidad": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 7.0
+      "precision": 0.8571428571428571,
+      "recall": 0.899135446685879,
+      "f1-score": 0.8776371308016878,
+      "support": 347.0
     },
     "consultar_precio": {
-      "precision": 0.25,
-      "recall": 0.2857142857142857,
-      "f1-score": 0.26666666666666666,
-      "support": 7.0
+      "precision": 0.8519553072625698,
+      "recall": 0.8789625360230547,
+      "f1-score": 0.8652482269503546,
+      "support": 347.0
     },
     "consultar_stock": {
-      "precision": 0.3333333333333333,
-      "recall": 0.25,
-      "f1-score": 0.2857142857142857,
-      "support": 8.0
+      "precision": 0.8726287262872628,
+      "recall": 0.8773841961852861,
+      "f1-score": 0.875,
+      "support": 367.0
     },
     "fuera_de_dominio": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1-score": 0.0,
-      "support": 7.0
+      "precision": 0.8344519015659956,
+      "recall": 0.8288888888888889,
+      "f1-score": 0.8316610925306578,
+      "support": 450.0
     },
     "recomendar_sustituto": {
-      "precision": 0.38095238095238093,
-      "recall": 0.5714285714285714,
-      "f1-score": 0.45714285714285713,
-      "support": 14.0
+      "precision": 0.8039867109634552,
+      "recall": 0.7586206896551724,
+      "f1-score": 0.7806451612903226,
+      "support": 319.0
     },
     "saludo_despedida": {
-      "precision": 0.75,
-      "recall": 0.6,
-      "f1-score": 0.6666666666666666,
-      "support": 10.0
+      "precision": 0.9285714285714286,
+      "recall": 0.8666666666666667,
+      "f1-score": 0.896551724137931,
+      "support": 390.0
     },
-    "accuracy": 0.3384615384615385,
+    "accuracy": 0.8459427675421404,
     "macro avg": {
-      "precision": 0.28061224489795916,
-      "recall": 0.29149659863945576,
-      "f1-score": 0.2802721088435374,
-      "support": 65.0
+      "precision": 0.844729249697932,
+      "recall": 0.8447548288212074,
+      "f1-score": 0.8443212129071613,
+      "support": 2551.0
     },
     "weighted avg": {
-      "precision": 0.31153846153846154,
-      "recall": 0.3384615384615385,
-      "f1-score": 0.3176556776556776,
-      "support": 65.0
+      "precision": 0.8468975015160497,
+      "recall": 0.8459427675421404,
+      "f1-score": 0.8460113272558712,
+      "support": 2551.0
     }
   },
-  "n_ejemplos": 65,
-  "nota": "Métricas de validación cruzada (5-fold) sobre un dataset de 65 ejemplos. Se espera que mejoren y se estabilicen al ampliar el dataset (ver data/intents_dataset.csv)."
+  "n_ejemplos": 2551,
+  "modelo": "lr_c15_vehiculo",
+  "semilla_cv": 42,
+  "dataset_sha256": "41b18fad969ce0226b090d4bf54bd358aa677f61c46419a1f57a4a621b520c9f",
+  "nota": "Métricas de una corrida de validación cruzada estratificada (5 partes, semilla 42) sobre 2551 ejemplos. Las cifras de referencia (10 repeticiones, validación agrupada, comparación de modelos) están en eval/cifras_vigentes.json."
 }

@@ -1,0 +1,1777 @@
+{
+  "metadatos": {
+    "descripcion": "Backtest de pronóstico de demanda y señal de reabastecimiento sobre datos sintéticos de demostración",
+    "parametros": {
+      "min_historia_semanas": 4,
+      "semilla": 20260101,
+      "remuestreos_bootstrap": 1000,
+      "top_n": 20,
+      "horizontes_semanas": [
+        1,
+        2
+      ],
+      "semanas_historial_modelo": 12
+    },
+    "unidades": {
+      "mae": "unidades/semana",
+      "rmse": "unidades/semana",
+      "wape": "fracción (sum|error| / sum reales)",
+      "smape": "porcentaje 0-200; real=0 y pronóstico=0 cuenta como error 0"
+    },
+    "modelos": {
+      "modelo_repo": "forecast._calcular tal cual (promedio móvil ponderado de 12 semanas; las semanas previas al inicio de los datos cuentan como 0)",
+      "modelo_repo_sin_relleno": "forecast._promedio_movil_ponderado sobre las semanas realmente observadas (sin rellenar con ceros hacia atrás)",
+      "naive_ultima_semana": "demanda de la última semana observada",
+      "media_4_semanas": "media de las últimas 4 semanas observadas",
+      "media_historia": "media de toda la historia observada",
+      "mediana_historia": "mediana de toda la historia observada (sin estacionalidad)"
+    },
+    "datos": {
+      "ventas_lineas_completadas": 699,
+      "ventas_lineas_anuladas_excluidas": 24,
+      "sha256": {
+        "ventas_lineas.csv": "4f60ffb55deb9632551eaa1501acd9e4d2ee82960930ccf635e4d925dbde714a",
+        "pedidos_lineas.csv": "fa8133d2433b018e10a6d3b2b302503c08772ad882324cd3ce01f769cb86dd0c",
+        "repuestos.csv": "6dc4ffdf831cb08a7421b47fda2c0af4ad8cd95cd9bf0965834a599eb1f2d4cf"
+      }
+    }
+  },
+  "demanda": {
+    "semanas": {
+      "n": 16,
+      "primera_semana_lunes": "2026-07-13",
+      "ultima_semana_lunes": "2026-10-26"
+    },
+    "n_productos_con_ventas": 72,
+    "horizonte_1": {
+      "n_casos": 864,
+      "n_productos": 72,
+      "n_origenes": 12,
+      "ceros_reales_pct": 56.83,
+      "global": {
+        "modelo_repo": {
+          "mae": {
+            "valor": 1.2679,
+            "ic95": [
+              1.0204,
+              1.5584
+            ]
+          },
+          "rmse": {
+            "valor": 2.1912,
+            "ic95": [
+              1.6536,
+              2.7038
+            ]
+          },
+          "wape": {
+            "valor": 1.0032,
+            "ic95": [
+              0.9446,
+              1.0745
+            ]
+          },
+          "smape": {
+            "valor": 141.3141,
+            "ic95": [
+              133.4136,
+              149.2854
+            ]
+          }
+        },
+        "modelo_repo_sin_relleno": {
+          "mae": {
+            "valor": 1.3076,
+            "ic95": [
+              1.0478,
+              1.6005
+            ]
+          },
+          "rmse": {
+            "valor": 2.204,
+            "ic95": [
+              1.6649,
+              2.7297
+            ]
+          },
+          "wape": {
+            "valor": 1.0346,
+            "ic95": [
+              0.9649,
+              1.1194
+            ]
+          },
+          "smape": {
+            "valor": 139.6429,
+            "ic95": [
+              131.7259,
+              147.8517
+            ]
+          }
+        },
+        "naive_ultima_semana": {
+          "mae": {
+            "valor": 1.5532,
+            "ic95": [
+              1.2095,
+              1.941
+            ]
+          },
+          "rmse": {
+            "valor": 2.861,
+            "ic95": [
+              2.1741,
+              3.5495
+            ]
+          },
+          "wape": {
+            "valor": 1.2289,
+            "ic95": [
+              1.131,
+              1.3365
+            ]
+          },
+          "smape": {
+            "valor": 96.1594,
+            "ic95": [
+              87.2934,
+              103.7842
+            ]
+          }
+        },
+        "media_4_semanas": {
+          "mae": {
+            "valor": 1.3362,
+            "ic95": [
+              1.0686,
+              1.6476
+            ]
+          },
+          "rmse": {
+            "valor": 2.2552,
+            "ic95": [
+              1.7039,
+              2.7686
+            ]
+          },
+          "wape": {
+            "valor": 1.0572,
+            "ic95": [
+              0.9886,
+              1.1414
+            ]
+          },
+          "smape": {
+            "valor": 125.5101,
+            "ic95": [
+              117.8889,
+              132.5488
+            ]
+          }
+        },
+        "media_historia": {
+          "mae": {
+            "valor": 1.27,
+            "ic95": [
+              1.0264,
+              1.5392
+            ]
+          },
+          "rmse": {
+            "valor": 2.1596,
+            "ic95": [
+              1.6393,
+              2.661
+            ]
+          },
+          "wape": {
+            "valor": 1.0048,
+            "ic95": [
+              0.9361,
+              1.0901
+            ]
+          },
+          "smape": {
+            "valor": 139.3457,
+            "ic95": [
+              131.283,
+              147.4394
+            ]
+          }
+        },
+        "mediana_historia": {
+          "mae": {
+            "valor": 1.2216,
+            "ic95": [
+              0.9664,
+              1.4989
+            ]
+          },
+          "rmse": {
+            "valor": 2.3039,
+            "ic95": [
+              1.7629,
+              2.8349
+            ]
+          },
+          "wape": {
+            "valor": 0.9666,
+            "ic95": [
+              0.9108,
+              1.0349
+            ]
+          },
+          "smape": {
+            "valor": 94.1006,
+            "ic95": [
+              83.135,
+              104.2964
+            ]
+          }
+        }
+      },
+      "top20": {
+        "productos": [
+          1535,
+          1548,
+          1570,
+          1562,
+          3,
+          6,
+          1577,
+          4,
+          1579,
+          2,
+          1569,
+          1560,
+          5,
+          1536,
+          1546,
+          1545,
+          13,
+          14,
+          1573,
+          1578
+        ],
+        "n_casos": 240,
+        "metricas": {
+          "modelo_repo": {
+            "mae": {
+              "valor": 2.6055,
+              "ic95": [
+                2.0702,
+                3.2836
+              ]
+            },
+            "rmse": {
+              "valor": 3.7471,
+              "ic95": [
+                2.8783,
+                4.6606
+              ]
+            },
+            "wape": {
+              "valor": 0.9063,
+              "ic95": [
+                0.8389,
+                0.9849
+              ]
+            },
+            "smape": {
+              "valor": 116.2936,
+              "ic95": [
+                106.2694,
+                125.339
+              ]
+            }
+          },
+          "modelo_repo_sin_relleno": {
+            "mae": {
+              "valor": 2.6681,
+              "ic95": [
+                2.1158,
+                3.3729
+              ]
+            },
+            "rmse": {
+              "valor": 3.762,
+              "ic95": [
+                2.8804,
+                4.6858
+              ]
+            },
+            "wape": {
+              "valor": 0.928,
+              "ic95": [
+                0.842,
+                1.0259
+              ]
+            },
+            "smape": {
+              "valor": 114.3355,
+              "ic95": [
+                103.3857,
+                124.364
+              ]
+            }
+          },
+          "naive_ultima_semana": {
+            "mae": {
+              "valor": 3.2417,
+              "ic95": [
+                2.5332,
+                4.1542
+              ]
+            },
+            "rmse": {
+              "valor": 4.8777,
+              "ic95": [
+                3.7248,
+                6.0395
+              ]
+            },
+            "wape": {
+              "valor": 1.1275,
+              "ic95": [
+                1.0065,
+                1.2701
+              ]
+            },
+            "smape": {
+              "valor": 113.3995,
+              "ic95": [
+                105.696,
+                121.1711
+              ]
+            }
+          },
+          "media_4_semanas": {
+            "mae": {
+              "valor": 2.7292,
+              "ic95": [
+                2.1333,
+                3.4699
+              ]
+            },
+            "rmse": {
+              "valor": 3.8419,
+              "ic95": [
+                2.9489,
+                4.7702
+              ]
+            },
+            "wape": {
+              "valor": 0.9493,
+              "ic95": [
+                0.8598,
+                1.057
+              ]
+            },
+            "smape": {
+              "valor": 113.3015,
+              "ic95": [
+                103.7211,
+                123.1268
+              ]
+            }
+          },
+          "media_historia": {
+            "mae": {
+              "valor": 2.5895,
+              "ic95": [
+                2.0805,
+                3.2346
+              ]
+            },
+            "rmse": {
+              "valor": 3.6799,
+              "ic95": [
+                2.8292,
+                4.5877
+              ]
+            },
+            "wape": {
+              "valor": 0.9007,
+              "ic95": [
+                0.8152,
+                0.9966
+              ]
+            },
+            "smape": {
+              "valor": 113.0273,
+              "ic95": [
+                101.9904,
+                123.1423
+              ]
+            }
+          },
+          "mediana_historia": {
+            "mae": {
+              "valor": 2.5896,
+              "ic95": [
+                2.0935,
+                3.2272
+              ]
+            },
+            "rmse": {
+              "valor": 3.8753,
+              "ic95": [
+                2.9483,
+                4.851
+              ]
+            },
+            "wape": {
+              "valor": 0.9007,
+              "ic95": [
+                0.8223,
+                0.9844
+              ]
+            },
+            "smape": {
+              "valor": 117.5506,
+              "ic95": [
+                105.2389,
+                128.5954
+              ]
+            }
+          }
+        }
+      },
+      "comparacion_pareada": {
+        "modelo_repo_vs_modelo_repo_sin_relleno": {
+          "diferencia_mae": {
+            "valor": -0.0397,
+            "ic95": [
+              -0.0634,
+              -0.0188
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0314,
+            "ic95": [
+              -0.0513,
+              -0.0145
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 54,
+          "productos_modelo_peor": 18,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_naive_ultima_semana": {
+          "diferencia_mae": {
+            "valor": -0.2854,
+            "ic95": [
+              -0.4008,
+              -0.179
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.2258,
+            "ic95": [
+              -0.2914,
+              -0.1551
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 55,
+          "productos_modelo_peor": 17,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_4_semanas": {
+          "diferencia_mae": {
+            "valor": -0.0683,
+            "ic95": [
+              -0.1033,
+              -0.0375
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0541,
+            "ic95": [
+              -0.0796,
+              -0.031
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 51,
+          "productos_modelo_peor": 21,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_historia": {
+          "diferencia_mae": {
+            "valor": -0.0021,
+            "ic95": [
+              -0.0376,
+              0.0328
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0017,
+            "ic95": [
+              -0.033,
+              0.0244
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.573,
+          "productos_modelo_mejor": 36,
+          "productos_modelo_peor": 36,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        },
+        "modelo_repo_vs_mediana_historia": {
+          "diferencia_mae": {
+            "valor": 0.0462,
+            "ic95": [
+              0.0052,
+              0.0888
+            ]
+          },
+          "diferencia_wape": {
+            "valor": 0.0366,
+            "ic95": [
+              0.0036,
+              0.0746
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.017,
+          "productos_modelo_mejor": 26,
+          "productos_modelo_peor": 46,
+          "productos_empate": 0,
+          "veredicto": "modelo_peor"
+        }
+      },
+      "comparacion_pareada_top20": {
+        "modelo_repo_vs_modelo_repo_sin_relleno": {
+          "diferencia_mae": {
+            "valor": -0.0626,
+            "ic95": [
+              -0.1435,
+              0.013
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0218,
+            "ic95": [
+              -0.051,
+              0.0042
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.957,
+          "productos_modelo_mejor": 12,
+          "productos_modelo_peor": 8,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        },
+        "modelo_repo_vs_naive_ultima_semana": {
+          "diferencia_mae": {
+            "valor": -0.6362,
+            "ic95": [
+              -0.9642,
+              -0.3365
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.2213,
+            "ic95": [
+              -0.3169,
+              -0.1232
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 17,
+          "productos_modelo_peor": 3,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_4_semanas": {
+          "diferencia_mae": {
+            "valor": -0.1237,
+            "ic95": [
+              -0.2314,
+              -0.0364
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.043,
+            "ic95": [
+              -0.0789,
+              -0.0128
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.998,
+          "productos_modelo_mejor": 13,
+          "productos_modelo_peor": 7,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_historia": {
+          "diferencia_mae": {
+            "valor": 0.016,
+            "ic95": [
+              -0.1042,
+              0.1322
+            ]
+          },
+          "diferencia_wape": {
+            "valor": 0.0056,
+            "ic95": [
+              -0.0388,
+              0.0416
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.376,
+          "productos_modelo_mejor": 10,
+          "productos_modelo_peor": 10,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        },
+        "modelo_repo_vs_mediana_historia": {
+          "diferencia_mae": {
+            "valor": 0.0159,
+            "ic95": [
+              -0.0938,
+              0.147
+            ]
+          },
+          "diferencia_wape": {
+            "valor": 0.0055,
+            "ic95": [
+              -0.0356,
+              0.0458
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.39,
+          "productos_modelo_mejor": 11,
+          "productos_modelo_peor": 9,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        }
+      }
+    },
+    "horizonte_2": {
+      "n_casos": 792,
+      "n_productos": 72,
+      "n_origenes": 11,
+      "ceros_reales_pct": 56.69,
+      "global": {
+        "modelo_repo": {
+          "mae": {
+            "valor": 1.2749,
+            "ic95": [
+              1.011,
+              1.5517
+            ]
+          },
+          "rmse": {
+            "valor": 2.2235,
+            "ic95": [
+              1.6256,
+              2.7235
+            ]
+          },
+          "wape": {
+            "valor": 0.9958,
+            "ic95": [
+              0.9419,
+              1.0632
+            ]
+          },
+          "smape": {
+            "valor": 140.8774,
+            "ic95": [
+              132.1798,
+              149.3884
+            ]
+          }
+        },
+        "modelo_repo_sin_relleno": {
+          "mae": {
+            "valor": 1.313,
+            "ic95": [
+              1.0401,
+              1.6006
+            ]
+          },
+          "rmse": {
+            "valor": 2.2327,
+            "ic95": [
+              1.6452,
+              2.718
+            ]
+          },
+          "wape": {
+            "valor": 1.0255,
+            "ic95": [
+              0.958,
+              1.11
+            ]
+          },
+          "smape": {
+            "valor": 138.7451,
+            "ic95": [
+              129.8872,
+              147.289
+            ]
+          }
+        },
+        "naive_ultima_semana": {
+          "mae": {
+            "valor": 1.553,
+            "ic95": [
+              1.2121,
+              1.9003
+            ]
+          },
+          "rmse": {
+            "valor": 2.8387,
+            "ic95": [
+              2.0975,
+              3.4587
+            ]
+          },
+          "wape": {
+            "valor": 1.213,
+            "ic95": [
+              1.1369,
+              1.3074
+            ]
+          },
+          "smape": {
+            "valor": 103.1158,
+            "ic95": [
+              94.3752,
+              112.175
+            ]
+          }
+        },
+        "media_4_semanas": {
+          "mae": {
+            "valor": 1.3662,
+            "ic95": [
+              1.0694,
+              1.6777
+            ]
+          },
+          "rmse": {
+            "valor": 2.3268,
+            "ic95": [
+              1.6969,
+              2.852
+            ]
+          },
+          "wape": {
+            "valor": 1.0671,
+            "ic95": [
+              0.9974,
+              1.1574
+            ]
+          },
+          "smape": {
+            "valor": 128.0057,
+            "ic95": [
+              119.6541,
+              136.3873
+            ]
+          }
+        },
+        "media_historia": {
+          "mae": {
+            "valor": 1.2837,
+            "ic95": [
+              1.0264,
+              1.5556
+            ]
+          },
+          "rmse": {
+            "valor": 2.1971,
+            "ic95": [
+              1.6217,
+              2.6687
+            ]
+          },
+          "wape": {
+            "valor": 1.0027,
+            "ic95": [
+              0.9341,
+              1.0897
+            ]
+          },
+          "smape": {
+            "valor": 138.2983,
+            "ic95": [
+              129.6354,
+              146.8432
+            ]
+          }
+        },
+        "mediana_historia": {
+          "mae": {
+            "valor": 1.2279,
+            "ic95": [
+              0.9627,
+              1.5082
+            ]
+          },
+          "rmse": {
+            "valor": 2.3261,
+            "ic95": [
+              1.7164,
+              2.8306
+            ]
+          },
+          "wape": {
+            "valor": 0.9591,
+            "ic95": [
+              0.9035,
+              1.0285
+            ]
+          },
+          "smape": {
+            "valor": 92.9494,
+            "ic95": [
+              82.843,
+              103.2862
+            ]
+          }
+        }
+      },
+      "top20": {
+        "productos": [
+          1535,
+          1548,
+          1570,
+          1562,
+          3,
+          6,
+          1577,
+          4,
+          1579,
+          2,
+          1569,
+          1560,
+          5,
+          1536,
+          1546,
+          1545,
+          13,
+          14,
+          1573,
+          1578
+        ],
+        "n_casos": 220,
+        "metricas": {
+          "modelo_repo": {
+            "mae": {
+              "valor": 2.6273,
+              "ic95": [
+                2.0613,
+                3.2206
+              ]
+            },
+            "rmse": {
+              "valor": 3.8011,
+              "ic95": [
+                2.8101,
+                4.6638
+              ]
+            },
+            "wape": {
+              "valor": 0.9074,
+              "ic95": [
+                0.8374,
+                0.9866
+              ]
+            },
+            "smape": {
+              "valor": 118.6729,
+              "ic95": [
+                109.053,
+                128.8249
+              ]
+            }
+          },
+          "modelo_repo_sin_relleno": {
+            "mae": {
+              "valor": 2.6939,
+              "ic95": [
+                2.1206,
+                3.3139
+              ]
+            },
+            "rmse": {
+              "valor": 3.811,
+              "ic95": [
+                2.8079,
+                4.6801
+              ]
+            },
+            "wape": {
+              "valor": 0.9304,
+              "ic95": [
+                0.843,
+                1.0356
+              ]
+            },
+            "smape": {
+              "valor": 116.2492,
+              "ic95": [
+                105.913,
+                127.3954
+              ]
+            }
+          },
+          "naive_ultima_semana": {
+            "mae": {
+              "valor": 3.1318,
+              "ic95": [
+                2.409,
+                3.8957
+              ]
+            },
+            "rmse": {
+              "valor": 4.801,
+              "ic95": [
+                3.5573,
+                5.9026
+              ]
+            },
+            "wape": {
+              "valor": 1.0816,
+              "ic95": [
+                0.9953,
+                1.1662
+              ]
+            },
+            "smape": {
+              "valor": 117.6411,
+              "ic95": [
+                108.6396,
+                127.0455
+              ]
+            }
+          },
+          "media_4_semanas": {
+            "mae": {
+              "valor": 2.8318,
+              "ic95": [
+                2.1886,
+                3.5082
+              ]
+            },
+            "rmse": {
+              "valor": 3.9821,
+              "ic95": [
+                2.8979,
+                4.9201
+              ]
+            },
+            "wape": {
+              "valor": 0.978,
+              "ic95": [
+                0.8787,
+                1.093
+              ]
+            },
+            "smape": {
+              "valor": 120.3896,
+              "ic95": [
+                108.43,
+                133.1384
+              ]
+            }
+          },
+          "media_historia": {
+            "mae": {
+              "valor": 2.6276,
+              "ic95": [
+                2.1059,
+                3.19
+              ]
+            },
+            "rmse": {
+              "valor": 3.7437,
+              "ic95": [
+                2.7877,
+                4.5892
+              ]
+            },
+            "wape": {
+              "valor": 0.9075,
+              "ic95": [
+                0.8248,
+                1.0137
+              ]
+            },
+            "smape": {
+              "valor": 115.1988,
+              "ic95": [
+                104.4832,
+                126.0113
+              ]
+            }
+          },
+          "mediana_historia": {
+            "mae": {
+              "valor": 2.6205,
+              "ic95": [
+                2.1248,
+                3.1502
+              ]
+            },
+            "rmse": {
+              "valor": 3.9204,
+              "ic95": [
+                2.913,
+                4.8073
+              ]
+            },
+            "wape": {
+              "valor": 0.905,
+              "ic95": [
+                0.8319,
+                1.0
+              ]
+            },
+            "smape": {
+              "valor": 118.1083,
+              "ic95": [
+                106.0841,
+                131.0704
+              ]
+            }
+          }
+        }
+      },
+      "comparacion_pareada": {
+        "modelo_repo_vs_modelo_repo_sin_relleno": {
+          "diferencia_mae": {
+            "valor": -0.0381,
+            "ic95": [
+              -0.0618,
+              -0.0159
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0298,
+            "ic95": [
+              -0.0517,
+              -0.0117
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.999,
+          "productos_modelo_mejor": 52,
+          "productos_modelo_peor": 20,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_naive_ultima_semana": {
+          "diferencia_mae": {
+            "valor": -0.2782,
+            "ic95": [
+              -0.3691,
+              -0.1891
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.2173,
+            "ic95": [
+              -0.269,
+              -0.1644
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 61,
+          "productos_modelo_peor": 11,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_4_semanas": {
+          "diferencia_mae": {
+            "valor": -0.0913,
+            "ic95": [
+              -0.1363,
+              -0.0506
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0713,
+            "ic95": [
+              -0.1018,
+              -0.0434
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 53,
+          "productos_modelo_peor": 19,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_historia": {
+          "diferencia_mae": {
+            "valor": -0.0089,
+            "ic95": [
+              -0.041,
+              0.0215
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0069,
+            "ic95": [
+              -0.0359,
+              0.0157
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.726,
+          "productos_modelo_mejor": 36,
+          "productos_modelo_peor": 36,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        },
+        "modelo_repo_vs_mediana_historia": {
+          "diferencia_mae": {
+            "valor": 0.047,
+            "ic95": [
+              -0.0023,
+              0.096
+            ]
+          },
+          "diferencia_wape": {
+            "valor": 0.0367,
+            "ic95": [
+              -0.0018,
+              0.0765
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.032,
+          "productos_modelo_mejor": 26,
+          "productos_modelo_peor": 46,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        }
+      },
+      "comparacion_pareada_top20": {
+        "modelo_repo_vs_modelo_repo_sin_relleno": {
+          "diferencia_mae": {
+            "valor": -0.0666,
+            "ic95": [
+              -0.1517,
+              0.0058
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.023,
+            "ic95": [
+              -0.0556,
+              0.0017
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.959,
+          "productos_modelo_mejor": 12,
+          "productos_modelo_peor": 8,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        },
+        "modelo_repo_vs_naive_ultima_semana": {
+          "diferencia_mae": {
+            "valor": -0.5045,
+            "ic95": [
+              -0.7218,
+              -0.2871
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.1742,
+            "ic95": [
+              -0.2245,
+              -0.1116
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 17,
+          "productos_modelo_peor": 3,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_4_semanas": {
+          "diferencia_mae": {
+            "valor": -0.2045,
+            "ic95": [
+              -0.3552,
+              -0.0791
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0706,
+            "ic95": [
+              -0.1181,
+              -0.0298
+            ]
+          },
+          "prob_modelo_mejor_mae": 1.0,
+          "productos_modelo_mejor": 13,
+          "productos_modelo_peor": 7,
+          "productos_empate": 0,
+          "veredicto": "modelo_mejor"
+        },
+        "modelo_repo_vs_media_historia": {
+          "diferencia_mae": {
+            "valor": -0.0003,
+            "ic95": [
+              -0.1133,
+              0.1101
+            ]
+          },
+          "diferencia_wape": {
+            "valor": -0.0001,
+            "ic95": [
+              -0.0457,
+              0.0336
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.506,
+          "productos_modelo_mejor": 9,
+          "productos_modelo_peor": 11,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        },
+        "modelo_repo_vs_mediana_historia": {
+          "diferencia_mae": {
+            "valor": 0.0069,
+            "ic95": [
+              -0.1473,
+              0.1673
+            ]
+          },
+          "diferencia_wape": {
+            "valor": 0.0024,
+            "ic95": [
+              -0.0567,
+              0.0528
+            ]
+          },
+          "prob_modelo_mejor_mae": 0.49,
+          "productos_modelo_mejor": 10,
+          "productos_modelo_peor": 10,
+          "productos_empate": 0,
+          "veredicto": "sin_diferencia_concluyente"
+        }
+      }
+    }
+  },
+  "reabastecimiento": {
+    "parametros": {
+      "dias_entrega": 7,
+      "dias_cobertura": 30,
+      "factor_seguridad": 0.5,
+      "ventana_etiqueta_dias": 14
+    },
+    "reconstruccion_stock": {
+      "supuesto": "STOCK de repuestos.csv = stock al cierre del último día; inicial = actual + vendido (completadas) - recibido (estado recibido).",
+      "productos": 80,
+      "stock_inicial_negativo": 0,
+      "dias_con_stock_negativo": 0,
+      "pedidos_en_transito_o_solicitados": 8
+    },
+    "n_casos": 880,
+    "n_origenes": 11,
+    "clasificacion": {
+      "bajo_minimo_14d": {
+        "senal_reabastecer": {
+          "todos_los_casos": {
+            "precision": 0.6818,
+            "recall": 0.25,
+            "f1": 0.3659,
+            "tp": 15,
+            "fp": 7,
+            "fn": 45,
+            "tn": 813,
+            "n_casos": 880,
+            "tasa_base": 0.0682,
+            "precision_ic95": [
+              0.4762,
+              0.8825
+            ],
+            "recall_ic95": [
+              0.1166,
+              0.4583
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.6364,
+            "recall": 0.2333,
+            "f1": 0.3415,
+            "tp": 7,
+            "fp": 4,
+            "fn": 23,
+            "tn": 813,
+            "n_casos": 847,
+            "tasa_base": 0.0354,
+            "precision_ic95": [
+              0.2857,
+              1.0
+            ],
+            "recall_ic95": [
+              0.0937,
+              0.3889
+            ]
+          }
+        },
+        "sugerencia_necesita": {
+          "todos_los_casos": {
+            "precision": 0.9688,
+            "recall": 0.5167,
+            "f1": 0.6739,
+            "tp": 31,
+            "fp": 1,
+            "fn": 29,
+            "tn": 819,
+            "n_casos": 880,
+            "tasa_base": 0.0682,
+            "precision_ic95": [
+              0.7778,
+              1.0
+            ],
+            "recall_ic95": [
+              0.1633,
+              0.7416
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.6667,
+            "recall": 0.0667,
+            "f1": 0.1212,
+            "tp": 2,
+            "fp": 1,
+            "fn": 28,
+            "tn": 816,
+            "n_casos": 847,
+            "tasa_base": 0.0354,
+            "precision_ic95": [
+              0.0,
+              1.0
+            ],
+            "recall_ic95": [
+              0.0,
+              0.1668
+            ]
+          }
+        },
+        "linea_base_stock_le_minimo": {
+          "todos_los_casos": {
+            "precision": 0.8409,
+            "recall": 0.6167,
+            "f1": 0.7115,
+            "tp": 37,
+            "fp": 7,
+            "fn": 23,
+            "tn": 813,
+            "n_casos": 880,
+            "tasa_base": 0.0682,
+            "precision_ic95": [
+              0.5556,
+              0.9524
+            ],
+            "recall_ic95": [
+              0.3332,
+              0.7966
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.6364,
+            "recall": 0.2333,
+            "f1": 0.3415,
+            "tp": 7,
+            "fp": 4,
+            "fn": 23,
+            "tn": 813,
+            "n_casos": 847,
+            "tasa_base": 0.0354,
+            "precision_ic95": [
+              0.2857,
+              1.0
+            ],
+            "recall_ic95": [
+              0.0937,
+              0.3889
+            ]
+          }
+        }
+      },
+      "agotado_14d": {
+        "senal_reabastecer": {
+          "todos_los_casos": {
+            "precision": 0.1818,
+            "recall": 0.1379,
+            "f1": 0.1569,
+            "tp": 4,
+            "fp": 18,
+            "fn": 25,
+            "tn": 833,
+            "n_casos": 880,
+            "tasa_base": 0.033,
+            "precision_ic95": [
+              0.0,
+              0.4
+            ],
+            "recall_ic95": [
+              0.0,
+              0.6154
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.2727,
+            "recall": 0.5,
+            "f1": 0.3529,
+            "tp": 3,
+            "fp": 8,
+            "fn": 3,
+            "tn": 833,
+            "n_casos": 847,
+            "tasa_base": 0.0071,
+            "precision_ic95": [
+              0.0,
+              0.625
+            ],
+            "recall_ic95": [
+              0.5,
+              0.5
+            ]
+          }
+        },
+        "sugerencia_necesita": {
+          "todos_los_casos": {
+            "precision": 0.7188,
+            "recall": 0.7931,
+            "f1": 0.7541,
+            "tp": 23,
+            "fp": 9,
+            "fn": 6,
+            "tn": 842,
+            "n_casos": 880,
+            "tasa_base": 0.033,
+            "precision_ic95": [
+              0.0,
+              0.918
+            ],
+            "recall_ic95": [
+              0.0,
+              1.0
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.3333,
+            "recall": 0.1667,
+            "f1": 0.2222,
+            "tp": 1,
+            "fp": 2,
+            "fn": 5,
+            "tn": 839,
+            "n_casos": 847,
+            "tasa_base": 0.0071,
+            "precision_ic95": [
+              0.0,
+              1.0
+            ],
+            "recall_ic95": [
+              0.0,
+              0.5
+            ]
+          }
+        },
+        "linea_base_stock_le_minimo": {
+          "todos_los_casos": {
+            "precision": 0.5909,
+            "recall": 0.8966,
+            "f1": 0.7123,
+            "tp": 26,
+            "fp": 18,
+            "fn": 3,
+            "tn": 833,
+            "n_casos": 880,
+            "tasa_base": 0.033,
+            "precision_ic95": [
+              0.0833,
+              0.8223
+            ],
+            "recall_ic95": [
+              0.5,
+              1.0
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.2727,
+            "recall": 0.5,
+            "f1": 0.3529,
+            "tp": 3,
+            "fp": 8,
+            "fn": 3,
+            "tn": 833,
+            "n_casos": 847,
+            "tasa_base": 0.0071,
+            "precision_ic95": [
+              0.0,
+              0.625
+            ],
+            "recall_ic95": [
+              0.5,
+              0.5
+            ]
+          }
+        }
+      },
+      "agotado_en_entrega": {
+        "senal_reabastecer": {
+          "todos_los_casos": {
+            "precision": 0.1818,
+            "recall": 0.1538,
+            "f1": 0.1667,
+            "tp": 4,
+            "fp": 18,
+            "fn": 22,
+            "tn": 836,
+            "n_casos": 880,
+            "tasa_base": 0.0295,
+            "precision_ic95": [
+              0.0,
+              0.4091
+            ],
+            "recall_ic95": [
+              0.0,
+              1.0
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.2727,
+            "recall": 1.0,
+            "f1": 0.4286,
+            "tp": 3,
+            "fp": 8,
+            "fn": 0,
+            "tn": 836,
+            "n_casos": 847,
+            "tasa_base": 0.0035,
+            "precision_ic95": [
+              0.0,
+              0.6667
+            ],
+            "recall_ic95": [
+              1.0,
+              1.0
+            ]
+          }
+        },
+        "sugerencia_necesita": {
+          "todos_los_casos": {
+            "precision": 0.7188,
+            "recall": 0.8846,
+            "f1": 0.7931,
+            "tp": 23,
+            "fp": 9,
+            "fn": 3,
+            "tn": 845,
+            "n_casos": 880,
+            "tasa_base": 0.0295,
+            "precision_ic95": [
+              0.0,
+              0.9231
+            ],
+            "recall_ic95": [
+              0.0,
+              1.0
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.3333,
+            "recall": 0.3333,
+            "f1": 0.3333,
+            "tp": 1,
+            "fp": 2,
+            "fn": 2,
+            "tn": 842,
+            "n_casos": 847,
+            "tasa_base": 0.0035,
+            "precision_ic95": [
+              0.0,
+              1.0
+            ],
+            "recall_ic95": [
+              0.0,
+              1.0
+            ]
+          }
+        },
+        "linea_base_stock_le_minimo": {
+          "todos_los_casos": {
+            "precision": 0.5909,
+            "recall": 1.0,
+            "f1": 0.7429,
+            "tp": 26,
+            "fp": 18,
+            "fn": 0,
+            "tn": 836,
+            "n_casos": 880,
+            "tasa_base": 0.0295,
+            "precision_ic95": [
+              0.0908,
+              0.8358
+            ],
+            "recall_ic95": [
+              1.0,
+              1.0
+            ]
+          },
+          "solo_caidas_nuevas": {
+            "precision": 0.2727,
+            "recall": 1.0,
+            "f1": 0.4286,
+            "tp": 3,
+            "fp": 8,
+            "fn": 0,
+            "tn": 836,
+            "n_casos": 847,
+            "tasa_base": 0.0035,
+            "precision_ic95": [
+              0.0,
+              0.6667
+            ],
+            "recall_ic95": [
+              1.0,
+              1.0
+            ]
+          }
+        }
+      }
+    },
+    "margen_de_anticipacion": {
+      "evento_dentro_de_entrega": {
+        "n": 43,
+        "alertados_senal_reabastecer": 14,
+        "alertados_sugerencia": 31
+      },
+      "evento_con_margen_mayor_a_entrega": {
+        "n": 17,
+        "alertados_senal_reabastecer": 1,
+        "alertados_sugerencia": 0
+      }
+    },
+    "adecuacion_de_cantidad": {
+      "horizonte_dias": 37,
+      "n_semanas_con_sugerencia_evaluables": 19,
+      "cubren_demanda_observada": 17,
+      "cubren_pct": 89.5,
+      "stock_actual_cubria_la_entrega": 18,
+      "razon_objetivo_sobre_demanda_mediana": 1.1429,
+      "sin_demanda_observada": 14
+    },
+    "por_semana": [
+      {
+        "semana_origen": "2026-08-09",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 4,
+        "alertas_senal_reabastecer": 0,
+        "aciertos_senal_reabastecer": 0,
+        "alertas_sugerencia": 2
+      },
+      {
+        "semana_origen": "2026-08-16",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 5,
+        "alertas_senal_reabastecer": 2,
+        "aciertos_senal_reabastecer": 2,
+        "alertas_sugerencia": 2
+      },
+      {
+        "semana_origen": "2026-08-23",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 4,
+        "alertas_senal_reabastecer": 4,
+        "aciertos_senal_reabastecer": 1,
+        "alertas_sugerencia": 3
+      },
+      {
+        "semana_origen": "2026-08-30",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 6,
+        "alertas_senal_reabastecer": 1,
+        "aciertos_senal_reabastecer": 1,
+        "alertas_sugerencia": 2
+      },
+      {
+        "semana_origen": "2026-09-06",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 6,
+        "alertas_senal_reabastecer": 1,
+        "aciertos_senal_reabastecer": 1,
+        "alertas_sugerencia": 2
+      },
+      {
+        "semana_origen": "2026-09-13",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 6,
+        "alertas_senal_reabastecer": 4,
+        "aciertos_senal_reabastecer": 3,
+        "alertas_sugerencia": 5
+      },
+      {
+        "semana_origen": "2026-09-20",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 5,
+        "alertas_senal_reabastecer": 1,
+        "aciertos_senal_reabastecer": 1,
+        "alertas_sugerencia": 3
+      },
+      {
+        "semana_origen": "2026-09-27",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 5,
+        "alertas_senal_reabastecer": 4,
+        "aciertos_senal_reabastecer": 2,
+        "alertas_sugerencia": 4
+      },
+      {
+        "semana_origen": "2026-10-04",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 5,
+        "alertas_senal_reabastecer": 4,
+        "aciertos_senal_reabastecer": 3,
+        "alertas_sugerencia": 4
+      },
+      {
+        "semana_origen": "2026-10-11",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 5,
+        "alertas_senal_reabastecer": 0,
+        "aciertos_senal_reabastecer": 0,
+        "alertas_sugerencia": 2
+      },
+      {
+        "semana_origen": "2026-10-18",
+        "n_productos": 80,
+        "positivos_bajo_minimo_14d": 9,
+        "alertas_senal_reabastecer": 1,
+        "aciertos_senal_reabastecer": 1,
+        "alertas_sugerencia": 3
+      }
+    ]
+  },
+  "limitaciones": [
+    "Datos SINTÉTICOS: demo exportada del esquema real, no ventas de clientes reales; el comportamiento de compra fue generado, no observado.",
+    "Historia muy corta (~16 semanas ISO, del 2026-07-14 al 2026-11-01): con min_historia=4 hay pocos orígenes por producto y los intervalos de confianza son anchos.",
+    "Series intermitentes: la mayoría de los productos vende 0-2 unidades por semana, con muchas semanas en cero; en ese régimen una mediana/naive de ceros es difícil de superar en MAE y el sMAPE penaliza duro los falsos positivos de demanda.",
+    "El modelo del repositorio promedia 12 semanas hacia atrás y trata las semanas anteriores al inicio de los datos como demanda 0: en un backtest con historia corta eso lo subestima. 'modelo_repo_sin_relleno' separa ese efecto del de la fórmula en sí.",
+    "El modelo usa buckets de 7 días contados hacia atrás desde 'hoy'; aquí 'hoy' es el domingo de la semana de origen, de modo que los buckets coinciden con semanas ISO.",
+    "Horizonte 2 usa el mismo pronóstico plano que horizonte 1 (el modelo y las líneas base no tienen tendencia ni estacionalidad), por lo que el error crece solo por deriva real.",
+    "La selección del top-20 usa el volumen total del período (incluye semanas posteriores al origen): solo define el subconjunto reportado, no entra en ningún pronóstico.",
+    "Reconstrucción de stock: se asume que STOCK de repuestos.csv es la foto al cierre del último día y que no hubo ajustes de inventario, mermas ni devoluciones fuera de ventas y pedidos recibidos; las anulaciones no mueven stock.",
+    "Pedidos 'en_transito'/'solicitado' se tratan como pendientes hasta el final del período (no tienen fecha de recepción); los 'cancelado' se ignoran.",
+    "Las etiquetas de reabastecimiento ('bajo mínimo o agotado en 14 días') incluyen recepciones reales de pedidos que el sistema no habría podido evitar ni provocar: es una validación retrospectiva, no un experimento causal.",
+    "La adecuación de la cantidad sugerida solo puede evaluarse en orígenes con 37 días de futuro observado (lead time + cobertura), es decir, en las primeras semanas; la muestra es pequeña y la demanda observada está censurada por el stock disponible.",
+    "Pocos eventos positivos (unas decenas de semanas-producto con stock bajo el mínimo en 14 días, y menos aún agotamientos): precisión y recall tienen intervalos muy anchos o degenerados (0 o 1) y no permiten concluir diferencias entre la señal y la regla estática.",
+    "Gran parte de los positivos son productos que ya estaban bajo el mínimo en el origen (siguen así); por eso se reporta aparte 'solo_caidas_nuevas', que es la parte que el modelo debería anticipar.",
+    "No se validó contra la rotación 'rotacion_baja'; solo la señal 'reabastecer'."
+  ]
+}

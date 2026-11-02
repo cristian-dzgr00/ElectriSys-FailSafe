@@ -6,6 +6,11 @@ export const ventasService = {
   crear:      (data)        => api.post('/ventas',            data),
   anular:     (id)          => api.put(`/ventas/${id}/anular`),
   resumenHoy: ()            => api.get('/ventas/resumen/hoy'),
+  // "También suelen llevar": productos que se venden junto a los del carrito
+  // (reglas de asociación del microservicio de NLP). Responde 200 con
+  // disponible:false si el microservicio no contesta. Sirve igual para
+  // cotizaciones, que arman el mismo tipo de carrito.
+  complementos: (ids)       => api.get('/ventas/complementos', { params: { ids: ids.join(',') } }),
 };
 
 export const repuestosService = {

@@ -1,0 +1,406 @@
+[
+  {
+    "texto": "no hay filtro de aceite original para la hilux 2021, que recomiendo",
+    "marca": "Toyota",
+    "modelo": "Hilux",
+    "anio": 2021,
+    "codigos_correctos": [
+      "HP-1002",
+      "M1-102"
+    ],
+    "n_candidatos": 10,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "se acabaron las pastillas de freno para toyota corolla 2020",
+    "marca": "Toyota",
+    "modelo": "Corolla",
+    "anio": 2020,
+    "codigos_correctos": [
+      "BRM-FD204",
+      "BSH-0281"
+    ],
+    "n_candidatos": 16,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "necesito bateria para el spark 2019",
+    "marca": "Chevrolet",
+    "modelo": "Spark",
+    "anio": 2019,
+    "codigos_correctos": [
+      "MAC-34HI",
+      "MAC-48D"
+    ],
+    "n_candidatos": 13,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "hay bujias para swift 2020",
+    "marca": "Suzuki",
+    "modelo": "Swift",
+    "anio": 2020,
+    "codigos_correctos": [
+      "NGK-BKR5E",
+      "NGK-BKR6E"
+    ],
+    "n_candidatos": 5,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "amortiguador delantero para ford fiesta 2016",
+    "marca": "Ford",
+    "modelo": "Fiesta",
+    "anio": 2016,
+    "codigos_correctos": [
+      "MNR-AM204"
+    ],
+    "n_candidatos": 3,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "correa de distribucion para renault logan 2020",
+    "marca": "Renault",
+    "modelo": "Logan",
+    "anio": 2020,
+    "codigos_correctos": [
+      "GAT-T295"
+    ],
+    "n_candidatos": 17,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "alternador para el duster 2021",
+    "marca": "Renault",
+    "modelo": "Duster",
+    "anio": 2021,
+    "codigos_correctos": [
+      "BSH-ALT120"
+    ],
+    "n_candidatos": 4,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "llantas para hyundai accent 2018",
+    "marca": "Hyundai",
+    "modelo": "Accent",
+    "anio": 2018,
+    "codigos_correctos": [
+      "MI-P185",
+      "MI-P205"
+    ],
+    "n_candidatos": 13,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "discos de freno para mazda 3 2019",
+    "marca": "Mazda",
+    "modelo": "3",
+    "anio": 2019,
+    "codigos_correctos": [
+      "BSH-0986AB"
+    ],
+    "n_candidatos": 17,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "bomba de agua para el yaris 2018",
+    "marca": "Toyota",
+    "modelo": "Yaris",
+    "anio": 2018,
+    "codigos_correctos": [
+      "BSH-BOM-AGU"
+    ],
+    "n_candidatos": 6,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "radiador para tucson 2022",
+    "marca": "Hyundai",
+    "modelo": "Tucson",
+    "anio": 2022,
+    "codigos_correctos": [
+      "BSH-RAD330"
+    ],
+    "n_candidatos": 10,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "kit de embrague para kia rio 2017",
+    "marca": "Kia",
+    "modelo": "Rio",
+    "anio": 2017,
+    "codigos_correctos": [
+      "FRP-KIT-EMB"
+    ],
+    "n_candidatos": 13,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "termostato para nissan sentra 2018",
+    "marca": "Nissan",
+    "modelo": "Sentra",
+    "anio": 2018,
+    "codigos_correctos": [
+      "GAT-TH192"
+    ],
+    "n_candidatos": 5,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "filtro de aire para sandero 2021",
+    "marca": "Renault",
+    "modelo": "Sandero",
+    "anio": 2021,
+    "codigos_correctos": [
+      "MANN-C25114"
+    ],
+    "n_candidatos": 6,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "aceite 5w30 para mazda cx-5 2020",
+    "marca": "Mazda",
+    "modelo": "CX-5",
+    "anio": 2020,
+    "codigos_correctos": [
+      "MOB-5W30"
+    ],
+    "n_candidatos": 8,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "bateria para tractor john deere 5075e",
+    "marca": "John Deere",
+    "modelo": "5075E",
+    "anio": null,
+    "codigos_correctos": [
+      "JD-BAT31",
+      "MAC-N120"
+    ],
+    "n_candidatos": 13,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "filtro de combustible para tractor case ih puma 165",
+    "marca": "Case IH",
+    "modelo": "Puma 165",
+    "anio": null,
+    "codigos_correctos": [
+      "CIH-FF7000"
+    ],
+    "n_candidatos": 10,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "bomba hidraulica para massey ferguson 4707",
+    "marca": "Massey Ferguson",
+    "modelo": "4707",
+    "anio": null,
+    "codigos_correctos": [
+      "MF-BOMHID"
+    ],
+    "n_candidatos": 11,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "llanta agricola para el tractor 6110m",
+    "marca": "John Deere",
+    "modelo": "6110M",
+    "anio": null,
+    "codigos_correctos": [
+      "MI-AGR1846"
+    ],
+    "n_candidatos": 9,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "cilindro maestro de freno para la ranger 2018",
+    "marca": "Ford",
+    "modelo": "Ranger",
+    "anio": 2018,
+    "codigos_correctos": [
+      "FRP-CIL-MAE"
+    ],
+    "n_candidatos": 6,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "motor de arranque para nissan frontier 2019",
+    "marca": "Nissan",
+    "modelo": "Frontier",
+    "anio": 2019,
+    "codigos_correctos": [
+      "BSH-MOT-ARR"
+    ],
+    "n_candidatos": 7,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "bobina de encendido para chevrolet onix 2021",
+    "marca": "Chevrolet",
+    "modelo": "Onix",
+    "anio": 2021,
+    "codigos_correctos": [
+      "BSH-BOB-ENC"
+    ],
+    "n_candidatos": 7,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "pastillas para kia sportage 2020",
+    "marca": "Kia",
+    "modelo": "Sportage",
+    "anio": 2020,
+    "codigos_correctos": [
+      "BRM-FD204",
+      "BSH-0281"
+    ],
+    "n_candidatos": 9,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "bombillo h4 para chevrolet aveo 2016",
+    "marca": "Chevrolet",
+    "modelo": "Aveo",
+    "anio": 2016,
+    "codigos_correctos": [
+      "IEC-H4-60"
+    ],
+    "n_candidatos": 16,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "rotula de suspension para chevrolet sail 2015",
+    "marca": "Chevrolet",
+    "modelo": "Sail",
+    "anio": 2015,
+    "codigos_correctos": [
+      "CMT-ROT-INF"
+    ],
+    "n_candidatos": 9,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "resorte delantero para el sail",
+    "marca": "Chevrolet",
+    "modelo": "Sail",
+    "anio": null,
+    "codigos_correctos": [
+      "CMT-RES-DEL"
+    ],
+    "n_candidatos": 9,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "terminal de direccion para kia rio 2019",
+    "marca": "Kia",
+    "modelo": "Rio",
+    "anio": 2019,
+    "codigos_correctos": [
+      "CMT-TER-DIR"
+    ],
+    "n_candidatos": 13,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "cables de bujia para ford escape 2015",
+    "marca": "Ford",
+    "modelo": "Escape",
+    "anio": 2015,
+    "codigos_correctos": [
+      "NGK-CAB-6"
+    ],
+    "n_candidatos": 2,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "filtro de cabina para mazda 3 2022",
+    "marca": "Mazda",
+    "modelo": "3",
+    "anio": 2022,
+    "codigos_correctos": [
+      "FRAM-CA10242"
+    ],
+    "n_candidatos": 17,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "junta homocinetica para toyota corolla 2021",
+    "marca": "Toyota",
+    "modelo": "Corolla",
+    "anio": 2021,
+    "codigos_correctos": [
+      "FRP-HOM-DEL"
+    ],
+    "n_candidatos": 16,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "aceite de transmision atf para kia sportage",
+    "marca": "Kia",
+    "modelo": "Sportage",
+    "anio": null,
+    "codigos_correctos": [
+      "MOB-ATF-VI"
+    ],
+    "n_candidatos": 9,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "empaque de culata para hyundai accent 2019",
+    "marca": "Hyundai",
+    "modelo": "Accent",
+    "anio": 2019,
+    "codigos_correctos": [
+      "CMT-JUN-CUL"
+    ],
+    "n_candidatos": 13,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "separador de agua para mitsubishi l200",
+    "marca": "Mitsubishi",
+    "modelo": "L200",
+    "anio": null,
+    "codigos_correctos": [
+      "FG-FS19532"
+    ],
+    "n_candidatos": 5,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "bateria para picanto 2020",
+    "marca": "Kia",
+    "modelo": "Picanto",
+    "anio": 2020,
+    "codigos_correctos": [
+      "MAC-34HI",
+      "MAC-48D"
+    ],
+    "n_candidatos": 3,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "pastillas de freno traseras para chevrolet onix 2022",
+    "marca": "Chevrolet",
+    "modelo": "Onix",
+    "anio": 2022,
+    "codigos_correctos": [
+      "FRP-PD512"
+    ],
+    "n_candidatos": 7,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  },
+  {
+    "texto": "filtro hidraulico para new holland t6.120",
+    "marca": "New Holland",
+    "modelo": "T6.120",
+    "anio": null,
+    "codigos_correctos": [
+      "FG-HF6177"
+    ],
+    "n_candidatos": 4,
+    "regla": "correcto = compatible con la marca/modelo (y anio), activo, stock>0 y nombre que contiene la palabra clave del tipo de repuesto pedido"
+  }
+]

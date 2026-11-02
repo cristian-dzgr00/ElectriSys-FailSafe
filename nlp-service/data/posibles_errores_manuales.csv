@@ -15,3 +15,647 @@ modelo,cx5,CX-5,1,manual,espacio
 modelo,jilux,Hilux,2,manual,fonético
 modelo,jilus,Hilux,2,manual,fonético
 categoria,trasmision,Transmisión,1,manual,fonético
+categoria,vaterial,Baterías,3,manual,dos errores de tipeo
+categoria,pilas,Baterías,4,manual,escritura libre
+categoria,correas y banda s,Correas y Bandas,1,manual,tipeo
+categoria,correas ybandas,Correas y Bandas,1,manual,tipeo
+categoria,correasy bandas,Correas y Bandas,1,manual,tipeo
+categoria,coreas i bandas,Correas y Bandas,2,manual,fonético
+categoria,correaz y vandaz,Correas y Bandas,2,manual,fonético
+categoria,bandas y correas,Correas y Bandas,4,manual,escritura libre
+categoria,corea y banda,Correas y Bandas,4,manual,escritura libre
+categoria,correa y vanda,Correas y Bandas,4,manual,escritura libre
+categoria,correas bandas y,Correas y Bandas,4,manual,escritura libre
+categoria,kreas y bandas,Correas y Bandas,4,manual,escritura libre
+categoria,encendid o,Encendido,1,manual,tipeo
+categoria,encendira,Encendido,3,manual,dos errores de tipeo
+categoria,encenndo,Encendido,3,manual,dos errores de tipeo
+categoria,engaches y acoples,Enganches y Acoples,1,manual,falta una letra
+categoria,engances y acoples,Enganches y Acoples,1,manual,falta una letra
+categoria,enganche y acoples,Enganches y Acoples,1,manual,falta una letra
+categoria,enganches y acople,Enganches y Acoples,1,manual,falta una letra
+categoria,enganches y acoplees,Enganches y Acoples,1,manual,letra repetida
+categoria,enganches y acopples,Enganches y Acoples,1,manual,letra repetida
+categoria,enganches y akoples,Enganches y Acoples,1,manual,letra cambiada
+categoria,enganchess y acoples,Enganches y Acoples,1,manual,letra repetida
+categoria,ennganches y acoples,Enganches y Acoples,1,manual,letra repetida
+categoria,ensanches y acoples,Enganches y Acoples,1,manual,letra cambiada
+categoria,enganches i acoples,Enganches y Acoples,2,manual,fonético
+categoria,enganches y acoples s,Enganches y Acoples,2,manual,fonético
+categoria,engachesy acoples,Enganches y Acoples,3,manual,dos errores de tipeo
+categoria,filtro s,Filtros,1,manual,tipeo
+categoria,fililtros,Filtros,3,manual,dos errores de tipeo
+categoria,hidaulica,Hidráulica,1,manual,falta una letra
+categoria,hidraulia,Hidráulica,1,manual,falta una letra
+categoria,hidraulic,Hidráulica,1,manual,falta una letra
+categoria,hidraulic a,Hidráulica,1,manual,tipeo
+categoria,hidrauliqa,Hidráulica,1,manual,letra cambiada
+categoria,hidrauloca,Hidráulica,1,manual,letra cambiada
+categoria,hidrulica,Hidráulica,1,manual,falta una letra
+categoria,jidraulica,Hidráulica,1,manual,letra cambiada
+categoria,yidraulica,Hidráulica,1,manual,letra cambiada
+categoria,hidrolica,Hidráulica,2,manual,fonético extranjero
+categoria,idraulika,Hidráulica,2,manual,fonético
+categoria,nematicos,Neumáticos,1,manual,falta una letra
+categoria,neomaticos,Neumáticos,1,manual,letra cambiada
+categoria,neumatico,Neumáticos,1,manual,falta una letra
+categoria,neumatics,Neumáticos,1,manual,falta una letra
+categoria,neumaticso,Neumáticos,1,manual,letras intercambiadas
+categoria,neumatiicos,Neumáticos,1,manual,letra repetida
+categoria,neumatiocs,Neumáticos,1,manual,letras intercambiadas
+categoria,neumatiscos,Neumáticos,1,manual,letra de más
+categoria,neumatizos,Neumáticos,1,manual,letra cambiada
+categoria,newmaticos,Neumáticos,1,manual,letra cambiada
+categoria,nuematicos,Neumáticos,1,manual,letras intercambiadas
+categoria,numatico,Neumáticos,3,manual,dos errores de tipeo
+categoria,numatikos,Neumáticos,3,manual,fonético + tipeo
+categoria,caucho,Neumáticos,4,manual,escritura libre
+categoria,sistema elecrico,Sistema Eléctrico,1,manual,falta una letra
+categoria,sistema elestrico,Sistema Eléctrico,1,manual,letra cambiada
+categoria,sisteme electrico,Sistema Eléctrico,1,manual,letra cambiada
+categoria,sistma electrico,Sistema Eléctrico,1,manual,falta una letra
+categoria,cistema eletrico,Sistema Eléctrico,3,manual,dos errores de tipeo
+categoria,sistema electic,Sistema Eléctrico,3,manual,dos errores de tipeo
+categoria,sitema eletrico,Sistema Eléctrico,3,manual,dos errores de tipeo
+categoria,susp,Suspensión,2,manual,apodo
+categoria,sospencion,Suspensión,3,manual,dos errores de tipeo
+categoria,amortiguacion,Suspensión,4,manual,escritura libre
+categoria,suspenciones,Suspensión,4,manual,escritura libre
+categoria,transmisiones,Transmisión,3,manual,dos errores de tipeo
+categoria,trasmiccion,Transmisión,4,manual,escritura libre
+marca,cace ih,Case IH,1,manual,letra cambiada
+marca,case ihh,Case IH,1,manual,letra repetida
+marca,case jh,Case IH,1,manual,tipeo
+marca,caseaih,Case IH,1,manual,letra de más
+marca,caseih,Case IH,1,manual,espacio
+marca,kace ih,Case IH,2,manual,fonético
+marca,kaze ih,Case IH,2,manual,fonético
+marca,case ach,Case IH,3,manual,dos errores de tipeo
+marca,case ai,Case IH,3,manual,dos errores de tipeo
+marca,casse ai,Case IH,4,manual,escritura libre
+marca,ceis ih,Case IH,4,manual,escritura libre
+marca,kase ai,Case IH,4,manual,escritura libre
+marca,keis,Case IH,4,manual,escritura libre
+marca,keis ai,Case IH,4,manual,escritura libre
+marca,keis i ache,Case IH,4,manual,escritura libre
+marca,keiss ih,Case IH,4,manual,escritura libre
+marca,keiz ai,Case IH,4,manual,escritura libre
+marca,kes ih,Case IH,4,manual,escritura libre
+marca,chevrole t,Chevrolet,1,manual,tipeo
+marca,chebroleth,Chevrolet,2,manual,fonético
+marca,chebrelet,Chevrolet,3,manual,dos errores de tipeo
+marca,chevrolette,Chevrolet,3,manual,dos errores de tipeo
+marca,chevrule,Chevrolet,3,manual,dos errores de tipeo
+marca,sheverolet,Chevrolet,3,manual,dos errores de tipeo
+marca,cheb,Chevrolet,4,manual,escritura libre
+marca,chebi,Chevrolet,4,manual,escritura libre
+marca,chebrelot,Chevrolet,4,manual,escritura libre
+marca,chebrol,Chevrolet,4,manual,escritura libre
+marca,chebrolleh,Chevrolet,4,manual,escritura libre
+marca,chevrolet gm,Chevrolet,4,manual,escritura libre
+marca,chevrolet gmc,Chevrolet,4,manual,escritura libre
+marca,chevrolet motors,Chevrolet,4,manual,escritura libre
+marca,chevy motors,Chevrolet,4,manual,escritura libre
+marca,general motors,Chevrolet,4,manual,escritura libre
+marca,gm chevrolet,Chevrolet,4,manual,escritura libre
+marca,sheb,Chevrolet,4,manual,escritura libre
+marca,shebrole,Chevrolet,4,manual,escritura libre
+marca,shevi,Chevrolet,4,manual,escritura libre
+marca,fforrd,Ford,2,manual,fonético
+marca,forrdd,Ford,2,manual,fonético
+marca,foer,Ford,3,manual,dos errores de tipeo
+marca,foorrd,Ford,3,manual,dos errores de tipeo
+marca,fotr,Ford,3,manual,dos errores de tipeo
+marca,frdd,Ford,3,manual,dos errores de tipeo
+marca,fod motor,Ford,4,manual,escritura libre
+marca,foord motor,Ford,4,manual,escritura libre
+marca,ford motor company,Ford,4,manual,escritura libre
+marca,ford motors,Ford,4,manual,escritura libre
+marca,ford norteamericano,Ford,4,manual,escritura libre
+marca,fordd colombia,Ford,4,manual,escritura libre
+marca,fordd motor,Ford,4,manual,escritura libre
+marca,forde motor,Ford,4,manual,escritura libre
+marca,forf motor,Ford,4,manual,escritura libre
+marca,forrd motor,Ford,4,manual,escritura libre
+marca,frod motor,Ford,4,manual,escritura libre
+marca,frod usa,Ford,4,manual,escritura libre
+marca,hundayi,Hyundai,3,manual,dos errores de tipeo
+marca,hyundye,Hyundai,3,manual,dos errores de tipeo
+marca,yundal,Hyundai,3,manual,dos errores de tipeo
+marca,hiundai motors,Hyundai,4,manual,escritura libre
+marca,hundai motors,Hyundai,4,manual,escritura libre
+marca,hundye,Hyundai,4,manual,escritura libre
+marca,hyundai coreano,Hyundai,4,manual,escritura libre
+marca,hyundai korea,Hyundai,4,manual,escritura libre
+marca,hyundai motors,Hyundai,4,manual,escritura libre
+marca,hyunday motor,Hyundai,4,manual,escritura libre
+marca,hyunday motors,Hyundai,4,manual,escritura libre
+marca,jiundai motors,Hyundai,4,manual,escritura libre
+marca,jiunday,Hyundai,4,manual,escritura libre
+marca,jondai,Hyundai,4,manual,escritura libre
+marca,jundai motors,Hyundai,4,manual,escritura libre
+marca,jyundai motor,Hyundai,4,manual,escritura libre
+marca,jyundey,Hyundai,4,manual,escritura libre
+marca,yundai motor,Hyundai,4,manual,escritura libre
+marca,jhn deere,John Deere,1,manual,falta una letra
+marca,johm deere,John Deere,1,manual,letra cambiada
+marca,john deree,John Deere,1,manual,letras intercambiadas
+marca,john derre,John Deere,1,manual,letra cambiada
+marca,johndeer,John Deere,1,manual,falta una letra
+marca,jondeere,John Deere,1,manual,falta una letra
+marca,jonh deere,John Deere,1,manual,letras intercambiadas
+marca,yohn deere,John Deere,1,manual,letra cambiada
+marca,jhon deer,John Deere,3,manual,dos errores de tipeo
+marca,john dear,John Deere,3,manual,dos errores de tipeo
+marca,john dier,John Deere,3,manual,fonético + tipeo
+marca,jon deer,John Deere,3,manual,dos errores de tipeo
+marca,jon dere,John Deere,3,manual,dos errores de tipeo
+marca,jon diere,John Deere,3,manual,dos errores de tipeo
+marca,deere john,John Deere,4,manual,escritura libre
+marca,jhon der,John Deere,4,manual,escritura libre
+marca,jhon diir,John Deere,4,manual,escritura libre
+marca,jhon dir,John Deere,4,manual,escritura libre
+marca,jon der,John Deere,4,manual,escritura libre
+marca,jon dier,John Deere,4,manual,escritura libre
+marca,jon diir,John Deere,4,manual,escritura libre
+marca,jondir,John Deere,4,manual,escritura libre
+marca,juan dir,John Deere,4,manual,escritura libre
+marca,yohn dir,John Deere,4,manual,escritura libre
+marca,yon deer,John Deere,4,manual,escritura libre
+marca,yon der,John Deere,4,manual,escritura libre
+marca,yon dier,John Deere,4,manual,escritura libre
+marca,yon diir,John Deere,4,manual,escritura libre
+marca,yon dir,John Deere,4,manual,escritura libre
+marca,kea,Kia,1,manual,tipeo
+marca,kiae,Kia,1,manual,tipeo
+marca,kiah,Kia,1,manual,tipeo
+marca,kiaq,Kia,1,manual,tipeo
+marca,kiaw,Kia,1,manual,tipeo
+marca,kiaz,Kia,1,manual,tipeo
+marca,kiha,Kia,1,manual,tipeo
+marca,kyia,Kia,1,manual,tipeo
+marca,keea,Kia,2,manual,fonético
+marca,kiaaa,Kia,2,manual,fonético
+marca,kyaa,Kia,2,manual,fonético
+marca,keya,Kia,3,manual,dos errores de tipeo
+marca,qiia,Kia,3,manual,dos errores de tipeo
+marca,kea motors,Kia,4,manual,escritura libre
+marca,keea motors,Kia,4,manual,escritura libre
+marca,kia corea,Kia,4,manual,escritura libre
+marca,kia coreano,Kia,4,manual,escritura libre
+marca,kiaa motors,Kia,4,manual,escritura libre
+marca,kiah motors,Kia,4,manual,escritura libre
+marca,kiaw motors,Kia,4,manual,escritura libre
+marca,kiia motors,Kia,4,manual,escritura libre
+marca,kiya motors,Kia,4,manual,escritura libre
+marca,kya motors,Kia,4,manual,escritura libre
+marca,qia motors,Kia,4,manual,escritura libre
+marca,quia motors,Kia,4,manual,escritura libre
+marca,masseyferguson,Massey Ferguson,1,manual,espacio
+marca,massy ferguson,Massey Ferguson,1,manual,falta una letra
+marca,masei ferguson,Massey Ferguson,2,manual,fonético
+marca,maseyferguzon,Massey Ferguson,2,manual,fonético
+marca,massey fergus,Massey Ferguson,2,manual,apodo
+marca,masy ferguson,Massey Ferguson,2,manual,apodo
+marca,mazei ferguson,Massey Ferguson,2,manual,fonético
+marca,masey fergison,Massey Ferguson,3,manual,dos errores de tipeo
+marca,masey fergunson,Massey Ferguson,3,manual,dos errores de tipeo
+marca,masey fergusson,Massey Ferguson,3,manual,dos errores de tipeo
+marca,masey ferguzon,Massey Ferguson,3,manual,dos errores de tipeo
+marca,ferguson massey,Massey Ferguson,4,manual,escritura libre
+marca,fergusson,Massey Ferguson,4,manual,escritura libre
+marca,ferguzon,Massey Ferguson,4,manual,escritura libre
+marca,maci fergunson,Massey Ferguson,4,manual,escritura libre
+marca,maci ferguson,Massey Ferguson,4,manual,escritura libre
+marca,mase fergusson,Massey Ferguson,4,manual,escritura libre
+marca,masei,Massey Ferguson,4,manual,escritura libre
+marca,masey,Massey Ferguson,4,manual,escritura libre
+marca,masi,Massey Ferguson,4,manual,escritura libre
+marca,masi fergunson,Massey Ferguson,4,manual,escritura libre
+marca,masi fergusson,Massey Ferguson,4,manual,escritura libre
+marca,masi ferguzon,Massey Ferguson,4,manual,escritura libre
+marca,masy fergunson,Massey Ferguson,4,manual,escritura libre
+marca,mazey fergunson,Massey Ferguson,4,manual,escritura libre
+marca,mesi ferguson,Massey Ferguson,4,manual,escritura libre
+marca,mesy fergunson,Massey Ferguson,4,manual,escritura libre
+marca,masdah,Mazda,2,manual,fonético
+marca,massdda,Mazda,2,manual,fonético
+marca,masssda,Mazda,2,manual,fonético
+marca,masdas,Mazda,3,manual,dos errores de tipeo
+marca,masta,Mazda,3,manual,dos errores de tipeo
+marca,mazdada,Mazda,3,manual,dos errores de tipeo
+marca,mazdaxx,Mazda,3,manual,dos errores de tipeo
+marca,maazda motor,Mazda,4,manual,escritura libre
+marca,masda motors,Mazda,4,manual,escritura libre
+marca,mazd motor,Mazda,4,manual,escritura libre
+marca,mazda japon,Mazda,4,manual,escritura libre
+marca,mazda mazda,Mazda,4,manual,escritura libre
+marca,mazda motors,Mazda,4,manual,escritura libre
+marca,mazdaa motor,Mazda,4,manual,escritura libre
+marca,mazdas motor,Mazda,4,manual,escritura libre
+marca,mazdda motor,Mazda,4,manual,escritura libre
+marca,mazdha motor,Mazda,4,manual,escritura libre
+marca,mistubishi,Mitsubishi,1,manual,letras intercambiadas
+marca,mitsu bishi,Mitsubishi,1,manual,espacio
+marca,mitsubbishi,Mitsubishi,1,manual,letra repetida
+marca,mitsubihsi,Mitsubishi,1,manual,letras intercambiadas
+marca,mitsubiishi,Mitsubishi,1,manual,letra repetida
+marca,mitsubishe,Mitsubishi,1,manual,letra cambiada
+marca,mitsubishhi,Mitsubishi,1,manual,letra repetida
+marca,mitsubsihi,Mitsubishi,1,manual,letras intercambiadas
+marca,mitsubuishi,Mitsubishi,1,manual,letra de más
+marca,mitsuvishi,Mitsubishi,1,manual,letra cambiada
+marca,mitsu,Mitsubishi,2,manual,apodo
+marca,mitsubi,Mitsubishi,2,manual,apodo
+marca,mitsubis,Mitsubishi,2,manual,apodo
+marca,mitzubichi,Mitsubishi,2,manual,fonético
+marca,misubichi,Mitsubishi,3,manual,fonético + tipeo
+marca,mitsibushi,Mitsubishi,3,manual,dos errores de tipeo
+marca,mitsubici,Mitsubishi,3,manual,fonético + tipeo
+marca,mitzubisi,Mitsubishi,3,manual,dos errores de tipeo
+marca,new hollnd,New Holland,1,manual,falta una letra
+marca,new olland,New Holland,1,manual,falta una letra
+marca,newholand,New Holland,1,manual,falta una letra
+marca,new holanda,New Holland,3,manual,dos errores de tipeo
+marca,new holannd,New Holland,3,manual,dos errores de tipeo
+marca,niu holland,New Holland,3,manual,dos errores de tipeo
+marca,holland new,New Holland,4,manual,escritura libre
+marca,new jolan,New Holland,4,manual,escritura libre
+marca,new olan,New Holland,4,manual,escritura libre
+marca,nieu holand,New Holland,4,manual,escritura libre
+marca,nieu olan,New Holland,4,manual,escritura libre
+marca,niu holan,New Holland,4,manual,escritura libre
+marca,niu jolan,New Holland,4,manual,escritura libre
+marca,niu jolland,New Holland,4,manual,escritura libre
+marca,niu olan,New Holland,4,manual,escritura libre
+marca,niu olanf,New Holland,4,manual,escritura libre
+marca,niuholand,New Holland,4,manual,escritura libre
+marca,nu holan,New Holland,4,manual,escritura libre
+marca,nu holand,New Holland,4,manual,escritura libre
+marca,nueva holand,New Holland,4,manual,escritura libre
+marca,nuevo holand,New Holland,4,manual,escritura libre
+marca,nyu holand,New Holland,4,manual,escritura libre
+marca,nyu olan,New Holland,4,manual,escritura libre
+marca,nisanh,Nissan,2,manual,fonético
+marca,nizzaan,Nissan,2,manual,fonético
+marca,nisanm,Nissan,3,manual,dos errores de tipeo
+marca,nisaan motor,Nissan,4,manual,escritura libre
+marca,nisan motor,Nissan,4,manual,escritura libre
+marca,nisan motors,Nissan,4,manual,escritura libre
+marca,nisann motor,Nissan,4,manual,escritura libre
+marca,nissa motor,Nissan,4,manual,escritura libre
+marca,nissan japon,Nissan,4,manual,escritura libre
+marca,nissan motors,Nissan,4,manual,escritura libre
+marca,nissn motor,Nissan,4,manual,escritura libre
+marca,nisssan motor,Nissan,4,manual,escritura libre
+marca,nizan motor,Nissan,4,manual,escritura libre
+marca,nizzan motors,Nissan,4,manual,escritura libre
+marca,nyssan motors,Nissan,4,manual,escritura libre
+marca,renaul t,Renault,1,manual,tipeo
+marca,renaold,Renault,3,manual,dos errores de tipeo
+marca,reneaut,Renault,3,manual,dos errores de tipeo
+marca,reynaul,Renault,3,manual,dos errores de tipeo
+marca,renaul colombia,Renault,4,manual,escritura libre
+marca,renaul sofasa,Renault,4,manual,escritura libre
+marca,renault francia,Renault,4,manual,escritura libre
+marca,renault sa,Renault,4,manual,escritura libre
+marca,renault sofasa,Renault,4,manual,escritura libre
+marca,renaut sofasa,Renault,4,manual,escritura libre
+marca,reno colombia,Renault,4,manual,escritura libre
+marca,reno francia,Renault,4,manual,escritura libre
+marca,reno sa,Renault,4,manual,escritura libre
+marca,renoh,Renault,4,manual,escritura libre
+marca,renol sa,Renault,4,manual,escritura libre
+marca,reynol,Renault,4,manual,escritura libre
+marca,sofasa renault,Renault,4,manual,escritura libre
+marca,sosuki,Suzuki,3,manual,dos errores de tipeo
+marca,sozuky,Suzuki,3,manual,dos errores de tipeo
+marca,sukuzi,Suzuki,3,manual,dos errores de tipeo
+marca,sushuki,Suzuki,3,manual,dos errores de tipeo
+marca,susuke,Suzuki,3,manual,dos errores de tipeo
+marca,sozuqui,Suzuki,4,manual,escritura libre
+marca,sukuki motors,Suzuki,4,manual,escritura libre
+marca,susuki colombia,Suzuki,4,manual,escritura libre
+marca,susuki japon,Suzuki,4,manual,escritura libre
+marca,susuki motor,Suzuki,4,manual,escritura libre
+marca,susuki motors,Suzuki,4,manual,escritura libre
+marca,suzuki japon,Suzuki,4,manual,escritura libre
+marca,suzuki motors,Suzuki,4,manual,escritura libre
+marca,suzukii motor,Suzuki,4,manual,escritura libre
+marca,suzuky motor,Suzuki,4,manual,escritura libre
+marca,suzuky motors,Suzuki,4,manual,escritura libre
+marca,suzuque,Suzuki,4,manual,escritura libre
+marca,suzuqui motors,Suzuki,4,manual,escritura libre
+marca,suzzuki motor,Suzuki,4,manual,escritura libre
+marca,zusuki motors,Suzuki,4,manual,escritura libre
+marca,toyot a,Toyota,1,manual,tipeo
+marca,tayata,Toyota,3,manual,dos errores de tipeo
+marca,totyta,Toyota,3,manual,dos errores de tipeo
+marca,toyatta,Toyota,3,manual,dos errores de tipeo
+marca,toyoyota,Toyota,3,manual,dos errores de tipeo
+marca,toytya,Toyota,3,manual,dos errores de tipeo
+marca,tuyuta,Toyota,3,manual,dos errores de tipeo
+marca,tyoyta,Toyota,3,manual,dos errores de tipeo
+marca,tyyta,Toyota,3,manual,dos errores de tipeo
+marca,tayota motor,Toyota,4,manual,escritura libre
+marca,toyoda motor,Toyota,4,manual,escritura libre
+marca,toyota motors,Toyota,4,manual,escritura libre
+marca,toyotta motors,Toyota,4,manual,escritura libre
+marca,toyta motors,Toyota,4,manual,escritura libre
+marca,tyt,Toyota,4,manual,escritura libre
+modelo,masda tres,3,4,manual,escritura libre
+modelo,masda trez,3,4,manual,escritura libre
+modelo,mazda tr3s,3,4,manual,escritura libre
+modelo,mazda trez,3,4,manual,escritura libre
+modelo,mazdatres,3,4,manual,escritura libre
+modelo,5 075e,5075E,1,manual,tipeo
+modelo,50 75e,5075E,1,manual,espacio
+modelo,5057e,5075E,1,manual,letras intercambiadas
+modelo,5075,5075E,1,manual,falta una letra
+modelo,5075 e,5075E,1,manual,tipeo
+modelo,5075ee,5075E,1,manual,letra repetida
+modelo,5075f,5075E,1,manual,letra cambiada
+modelo,5075i,5075E,1,manual,letra cambiada
+modelo,5075r,5075E,1,manual,letra cambiada
+modelo,5075w,5075E,1,manual,letra cambiada
+modelo,507e,5075E,1,manual,falta una letra
+modelo,5705e,5075E,1,manual,letras intercambiadas
+modelo,5775e,5075E,1,manual,letra cambiada
+modelo,5o75e,5075E,1,manual,letra cambiada
+modelo,5075 ee,5075E,3,manual,dos errores de tipeo
+modelo,cinco mil setenta y cinco e,5075E,4,manual,escritura libre
+modelo,6 110m,6110M,1,manual,tipeo
+modelo,61 10m,6110M,1,manual,espacio
+modelo,6101m,6110M,1,manual,letras intercambiadas
+modelo,6110,6110M,1,manual,falta una letra
+modelo,6110 m,6110M,1,manual,tipeo
+modelo,6110k,6110M,1,manual,letra cambiada
+modelo,6110mm,6110M,1,manual,letra repetida
+modelo,6110mn,6110M,1,manual,letra de más
+modelo,6110n,6110M,1,manual,letra cambiada
+modelo,6110nm,6110M,1,manual,letra de más
+modelo,6119m,6110M,1,manual,letra cambiada
+modelo,611m,6110M,1,manual,falta una letra
+modelo,6170m,6110M,1,manual,letra cambiada
+modelo,6110 mm,6110M,2,manual,fonético
+modelo,6011m,6110M,3,manual,dos errores de tipeo
+modelo,abbeo,Aveo,2,manual,fonético
+modelo,abeho,Aveo,2,manual,fonético
+modelo,aavvo,Aveo,3,manual,dos errores de tipeo
+modelo,abeoo,Aveo,3,manual,dos errores de tipeo
+modelo,abeos,Aveo,3,manual,dos errores de tipeo
+modelo,abeyo,Aveo,3,manual,dos errores de tipeo
+modelo,abio,Aveo,3,manual,dos errores de tipeo
+modelo,avvio,Aveo,3,manual,dos errores de tipeo
+modelo,havio,Aveo,3,manual,dos errores de tipeo
+modelo,abeo emotion,Aveo,4,manual,escritura libre
+modelo,abeo gt,Aveo,4,manual,escritura libre
+modelo,aveo emocion,Aveo,4,manual,escritura libre
+modelo,haveo emotion,Aveo,4,manual,escritura libre
+modelo,csx 5,CX-5,1,manual,tipeo
+modelo,cx s,CX-5,1,manual,tipeo
+modelo,cx55,CX-5,1,manual,tipeo
+modelo,cxx5,CX-5,1,manual,tipeo
+modelo,sx5,CX-5,2,manual,fonético
+modelo,ccx5,CX-5,3,manual,dos errores de tipeo
+modelo,cex5,CX-5,3,manual,dos errores de tipeo
+modelo,cxs,CX-5,3,manual,dos errores de tipeo
+modelo,xc5,CX-5,3,manual,dos errores de tipeo
+modelo,ce equis 5,CX-5,4,manual,escritura libre
+modelo,cx5 mazda,CX-5,4,manual,escritura libre
+modelo,cxcinco,CX-5,4,manual,escritura libre
+modelo,carola,Corolla,3,manual,dos errores de tipeo
+modelo,corolas,Corolla,3,manual,dos errores de tipeo
+modelo,corolla l,Corolla,3,manual,dos errores de tipeo
+modelo,kurolla,Corolla,3,manual,dos errores de tipeo
+modelo,colorra,Corolla,4,manual,escritura libre
+modelo,corolla corola,Corolla,4,manual,escritura libre
+modelo,corrolas,Corolla,4,manual,escritura libre
+modelo,dasteer,Duster,3,manual,dos errores de tipeo
+modelo,dasterr,Duster,3,manual,dos errores de tipeo
+modelo,dastir,Duster,3,manual,dos errores de tipeo
+modelo,dastre,Duster,3,manual,dos errores de tipeo
+modelo,dosterh,Duster,3,manual,dos errores de tipeo
+modelo,dosters,Duster,3,manual,dos errores de tipeo
+modelo,dostre,Duster,3,manual,dos errores de tipeo
+modelo,dusta,Duster,3,manual,dos errores de tipeo
+modelo,eskaipe,Escape,3,manual,dos errores de tipeo
+modelo,eskeip,Escape,4,manual,escritura libre
+modelo,farm all 75c,Farmall 75C,1,manual,espacio
+modelo,farmal75c,Farmall 75C,1,manual,falta una letra
+modelo,farmall 57c,Farmall 75C,1,manual,tipeo
+modelo,farmall 7c,Farmall 75C,1,manual,tipeo
+modelo,farmalll 75c,Farmall 75C,1,manual,letra repetida
+modelo,farmal,Farmall 75C,2,manual,apodo
+modelo,farmal 70c,Farmall 75C,3,manual,dos errores de tipeo
+modelo,farmal 75,Farmall 75C,3,manual,dos errores de tipeo
+modelo,farmal 75 c,Farmall 75C,3,manual,dos errores de tipeo
+modelo,farmal 75ce,Farmall 75C,3,manual,dos errores de tipeo
+modelo,farmal 76c,Farmall 75C,3,manual,dos errores de tipeo
+modelo,farmol 75c,Farmall 75C,3,manual,dos errores de tipeo
+modelo,fermal 75c,Farmall 75C,3,manual,dos errores de tipeo
+modelo,farmal sesenta y cinco,Farmall 75C,4,manual,escritura libre
+modelo,farmal setenta y cinco c,Farmall 75C,4,manual,escritura libre
+modelo,farmal75,Farmall 75C,4,manual,escritura libre
+modelo,forchuner,Fortuner,3,manual,dos errores de tipeo
+modelo,fortunners,Fortuner,3,manual,dos errores de tipeo
+modelo,forchuners,Fortuner,4,manual,escritura libre
+modelo,forchunner,Fortuner,4,manual,escritura libre
+modelo,fortuner suv,Fortuner,4,manual,escritura libre
+modelo,fortunner suv,Fortuner,4,manual,escritura libre
+modelo,fronteers,Frontier,3,manual,dos errores de tipeo
+modelo,fronteyer,Frontier,3,manual,dos errores de tipeo
+modelo,frontia,Frontier,3,manual,dos errores de tipeo
+modelo,frontiah,Frontier,3,manual,dos errores de tipeo
+modelo,hi luks,Hilux,2,manual,fonético
+modelo,hilucks,Hilux,2,manual,fonético
+modelo,ailus,Hilux,3,manual,dos errores de tipeo
+modelo,hailus,Hilux,3,manual,dos errores de tipeo
+modelo,heylux,Hilux,3,manual,dos errores de tipeo
+modelo,jailux,Hilux,3,manual,dos errores de tipeo
+modelo,jilox,Hilux,3,manual,dos errores de tipeo
+modelo,ailuks,Hilux,4,manual,escritura libre
+modelo,hailucs,Hilux,4,manual,escritura libre
+modelo,hailuks,Hilux,4,manual,escritura libre
+modelo,jailuks,Hilux,4,manual,escritura libre
+modelo,jailus,Hilux,4,manual,escritura libre
+modelo,jaylus,Hilux,4,manual,escritura libre
+modelo,jaylux,Hilux,4,manual,escritura libre
+modelo,jilucks,Hilux,4,manual,escritura libre
+modelo,e200,L200,1,manual,letra cambiada
+modelo,el200,L200,1,manual,letra de más
+modelo,l 200,L200,1,manual,tipeo
+modelo,l20,L200,1,manual,falta una letra
+modelo,l2000,L200,1,manual,letra repetida
+modelo,l202,L200,1,manual,letra cambiada
+modelo,l210,L200,1,manual,letra cambiada
+modelo,l220,L200,1,manual,letra cambiada
+modelo,l 20,L200,2,manual,apodo
+modelo,ele200,L200,3,manual,dos errores de tipeo
+modelo,l 2000,L200,3,manual,dos errores de tipeo
+modelo,l02,L200,3,manual,dos errores de tipeo
+modelo,l2oo,L200,3,manual,dos errores de tipeo
+modelo,el doscientos,L200,4,manual,escritura libre
+modelo,ele 200,L200,4,manual,escritura libre
+modelo,ele doscientos,L200,4,manual,escritura libre
+modelo,elle 200,L200,4,manual,escritura libre
+modelo,l 2oo,L200,4,manual,escritura libre
+modelo,l doscientos,L200,4,manual,escritura libre
+modelo,l dosientos,L200,4,manual,escritura libre
+modelo,l duscientos,L200,4,manual,escritura libre
+modelo,onicx,Onix,1,manual,letra de más
+modelo,onixe,Onix,1,manual,letra de más
+modelo,onixz,Onix,1,manual,letra de más
+modelo,onnix,Onix,1,manual,letra repetida
+modelo,onxi,Onix,1,manual,letras intercambiadas
+modelo,oonix,Onix,1,manual,letra repetida
+modelo,onicks,Onix,2,manual,fonético
+modelo,onics,Onix,2,manual,fonético
+modelo,onicz,Onix,2,manual,fonético
+modelo,oniks,Onix,2,manual,fonético
+modelo,onyks,Onix,2,manual,fonético
+modelo,bicanto,Picanto,1,manual,letra cambiada
+modelo,picamto,Picanto,1,manual,letra cambiada
+modelo,picanta,Picanto,1,manual,letra cambiada
+modelo,picantho,Picanto,1,manual,letra de más
+modelo,picantos,Picanto,1,manual,letra de más
+modelo,picatno,Picanto,1,manual,letras intercambiadas
+modelo,piccanto,Picanto,1,manual,letra repetida
+modelo,pincanto,Picanto,1,manual,letra de más
+modelo,pycanto,Picanto,1,manual,letra cambiada
+modelo,buma 165,Puma 165,1,manual,letra cambiada
+modelo,puma 1 65,Puma 165,1,manual,tipeo
+modelo,puma 16 5,Puma 165,1,manual,tipeo
+modelo,puma 1650,Puma 165,1,manual,tipeo
+modelo,pumaa 165,Puma 165,1,manual,letra repetida
+modelo,pumah 165,Puma 165,1,manual,letra de más
+modelo,pumma165,Puma 165,1,manual,letra repetida
+modelo,pums 165,Puma 165,1,manual,letra cambiada
+modelo,puna 165,Puma 165,1,manual,letra cambiada
+modelo,punma 165,Puma 165,1,manual,letra de más
+modelo,pyuma 165,Puma 165,1,manual,letra de más
+modelo,puma ciento sesenta y cinco,Puma 165,4,manual,escritura libre
+modelo,ragner,Ranger,1,manual,letras intercambiadas
+modelo,rainger,Ranger,1,manual,letra de más
+modelo,rangar,Ranger,1,manual,letra cambiada
+modelo,rangeer,Ranger,1,manual,letra repetida
+modelo,rangor,Ranger,1,manual,letra cambiada
+modelo,rannger,Ranger,1,manual,letra repetida
+modelo,ranyer,Ranger,1,manual,letra cambiada
+modelo,renger,Ranger,1,manual,letra cambiada
+modelo,rnager,Ranger,1,manual,letras intercambiadas
+modelo,rranger,Ranger,1,manual,letra repetida
+modelo,rainyer,Ranger,3,manual,dos errores de tipeo
+modelo,ranjir,Ranger,3,manual,dos errores de tipeo
+modelo,reinger,Ranger,3,manual,dos errores de tipeo
+modelo,renyer,Ranger,3,manual,dos errores de tipeo
+modelo,rainyir,Ranger,4,manual,escritura libre
+modelo,reinyer,Ranger,4,manual,escritura libre
+modelo,riho,Rio,1,manual,tipeo
+modelo,rioh,Rio,1,manual,tipeo
+modelo,ryoo,Rio,3,manual,dos errores de tipeo
+modelo,sael,Sail,1,manual,letra cambiada
+modelo,saile,Sail,1,manual,letra de más
+modelo,sayil,Sail,1,manual,letra de más
+modelo,sayel,Sail,3,manual,dos errores de tipeo
+modelo,seyl,Sail,3,manual,dos errores de tipeo
+modelo,zeil,Sail,3,manual,dos errores de tipeo
+modelo,seyll,Sail,4,manual,escritura libre
+modelo,sandeiro,Sandero,1,manual,letra de más
+modelo,sandelo,Sandero,1,manual,letra cambiada
+modelo,sandeor,Sandero,1,manual,letras intercambiadas
+modelo,sandera,Sandero,1,manual,letra cambiada
+modelo,sanderu,Sandero,1,manual,letra cambiada
+modelo,sandeto,Sandero,1,manual,letra cambiada
+modelo,sandreo,Sandero,1,manual,letras intercambiadas
+modelo,sandrero,Sandero,1,manual,letra de más
+modelo,sanedro,Sandero,1,manual,letras intercambiadas
+modelo,zanedro,Sandero,3,manual,dos errores de tipeo
+modelo,zentrah,Sentra,2,manual,fonético
+modelo,sentreh,Sentra,3,manual,dos errores de tipeo
+modelo,spar k,Spark,1,manual,tipeo
+modelo,sparcck,Spark,2,manual,fonético
+modelo,ssparck,Spark,2,manual,fonético
+modelo,esparc,Spark,3,manual,dos errores de tipeo
+modelo,esparck,Spark,3,manual,dos errores de tipeo
+modelo,esparki,Spark,3,manual,dos errores de tipeo
+modelo,esparkk,Spark,3,manual,dos errores de tipeo
+modelo,esparks,Spark,3,manual,dos errores de tipeo
+modelo,esparrk,Spark,3,manual,dos errores de tipeo
+modelo,esperk,Spark,3,manual,dos errores de tipeo
+modelo,spare k,Spark,3,manual,dos errores de tipeo
+modelo,sparkes,Spark,3,manual,dos errores de tipeo
+modelo,sparkie,Spark,3,manual,dos errores de tipeo
+modelo,spearck,Spark,3,manual,dos errores de tipeo
+modelo,esparque,Spark,4,manual,escritura libre
+modelo,sparque,Spark,4,manual,escritura libre
+modelo,spark get,Spark GT,1,manual,tipeo
+modelo,spark jt,Spark GT,1,manual,tipeo
+modelo,spark yt,Spark GT,1,manual,tipeo
+modelo,esparck gt,Spark GT,3,manual,dos errores de tipeo
+modelo,sparck jt,Spark GT,3,manual,dos errores de tipeo
+modelo,sparck yt,Spark GT,3,manual,dos errores de tipeo
+modelo,spark ge t,Spark GT,3,manual,dos errores de tipeo
+modelo,spark gete,Spark GT,3,manual,dos errores de tipeo
+modelo,sprak yt,Spark GT,3,manual,dos errores de tipeo
+modelo,espark yi ti,Spark GT,4,manual,escritura libre
+modelo,gt spark,Spark GT,4,manual,escritura libre
+modelo,jt spark,Spark GT,4,manual,escritura libre
+modelo,spark ge te,Spark GT,4,manual,escritura libre
+modelo,spark jete,Spark GT,4,manual,escritura libre
+modelo,spark jeti,Spark GT,4,manual,escritura libre
+modelo,spark yeti,Spark GT,4,manual,escritura libre
+modelo,spark yi ti,Spark GT,4,manual,escritura libre
+modelo,sparkgete,Spark GT,4,manual,escritura libre
+modelo,esportaje,Sportage,3,manual,dos errores de tipeo
+modelo,esportaye,Sportage,3,manual,dos errores de tipeo
+modelo,espotage,Sportage,3,manual,dos errores de tipeo
+modelo,sportach,Sportage,3,manual,dos errores de tipeo
+modelo,sportaji,Sportage,3,manual,dos errores de tipeo
+modelo,sportaz,Sportage,3,manual,dos errores de tipeo
+modelo,esporta,Sportage,4,manual,escritura libre
+modelo,esportach,Sportage,4,manual,escritura libre
+modelo,esportaz,Sportage,4,manual,escritura libre
+modelo,sporteich,Sportage,4,manual,escritura libre
+modelo,suifth,Swift,2,manual,fonético
+modelo,esuift,Swift,3,manual,dos errores de tipeo
+modelo,suifd,Swift,3,manual,dos errores de tipeo
+modelo,swiffe,Swift,3,manual,dos errores de tipeo
+modelo,esuiff,Swift,4,manual,escritura libre
+modelo,zuiff,Swift,4,manual,escritura libre
+modelo,t 6 120,T6.120,1,manual,tipeo
+modelo,t 6120,T6.120,1,manual,tipeo
+modelo,t5 120,T6.120,1,manual,tipeo
+modelo,t6 1200,T6.120,1,manual,tipeo
+modelo,t6120,T6.120,1,manual,espacio
+modelo,t66 120,T6.120,1,manual,tipeo
+modelo,te6 120,T6.120,1,manual,tipeo
+modelo,ty6 120,T6.120,1,manual,tipeo
+modelo,t190,TL90,1,manual,letra cambiada
+modelo,tl 90,TL90,1,manual,espacio
+modelo,tl80,TL90,1,manual,letra cambiada
+modelo,tl9,TL90,1,manual,falta una letra
+modelo,tl900,TL90,1,manual,letra repetida
+modelo,tl99,TL90,1,manual,letra cambiada
+modelo,tl9o,TL90,1,manual,letra cambiada
+modelo,tll90,TL90,1,manual,letra repetida
+modelo,ttl90,TL90,1,manual,letra repetida
+modelo,t l 90,TL90,2,manual,fonético
+modelo,tl 80,TL90,3,manual,dos errores de tipeo
+modelo,tl 900,TL90,3,manual,dos errores de tipeo
+modelo,tl 91,TL90,3,manual,dos errores de tipeo
+modelo,tl 9o,TL90,3,manual,dos errores de tipeo
+modelo,te ele 90,TL90,4,manual,escritura libre
+modelo,tuckzon,Tucson,2,manual,fonético
+modelo,tucson tucson,Tucson,4,manual,escritura libre
+modelo,iaris,Yaris,1,manual,letra cambiada
+modelo,yariss,Yaris,1,manual,letra repetida
+modelo,yarix,Yaris,1,manual,letra cambiada
+modelo,yharis,Yaris,1,manual,letra de más
+modelo,llaris,Yaris,2,manual,fonético
+modelo,yaryz,Yaris,2,manual,fonético
+modelo,jariss,Yaris,3,manual,dos errores de tipeo
+modelo,jariz,Yaris,3,manual,dos errores de tipeo
+modelo,yaarys,Yaris,3,manual,fonético + tipeo
+modelo,yarrys,Yaris,3,manual,fonético + tipeo
+modelo,yaruz,Yaris,3,manual,dos errores de tipeo

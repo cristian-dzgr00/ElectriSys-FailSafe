@@ -3,7 +3,9 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\Database;
 use App\models\VehiculoModel;
+use App\services\ListaIds;
 use App\services\NlpClient;
+use App\services\SugerenciaBusqueda;
 
 function repuestosDB() { return Database::getConnection(); }
 
@@ -13,7 +15,13 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     $page  = max(1, (int)($p['page']  ?? 1));
     $limit = min(100, max(1, (int)($p['limit'] ?? 15)));
     $off   = ($page - 1) * $limit;
-    $q     = '%' . trim($p['q'] ?? '') . '%';
+    // Oracle compara LIKE distinguiendo mayúsculas y tildes ("bujia" no encontraba
+    // "Bujía"). Se normalizan el término y las columnas (ver TRANSLATE en el SQL).
+    $normalizar = fn(string $s): string => strtoupper(strtr(trim($s), [
+        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
+        'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U', 'Ñ' => 'N',
+    ]));
+    $q     = '%' . $normalizar($p['q'] ?? '') . '%';
 
     $db = repuestosDB();
 
@@ -25,7 +33,11 @@ $group->get('/repuestos', function (Request $req, Response $res) {
         FROM repuestos r
         LEFT JOIN categorias c ON r.categoria_id = c.id
         LEFT JOIN proveedores p ON r.proveedor_id = p.id
-        WHERE r.activo = 1 AND (r.nombre LIKE ? OR r.codigo LIKE ? OR c.nombre LIKE ? OR p.nombre LIKE ?)
+        WHERE r.activo = 1 AND (
+              UPPER(TRANSLATE(r.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
+           OR UPPER(TRANSLATE(r.codigo, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
+           OR UPPER(TRANSLATE(c.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
+           OR UPPER(TRANSLATE(p.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?)
         ORDER BY r.nombre
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
@@ -43,27 +55,45 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     // Va acá y no antes de la consulta a propósito: así el costo extra lo
     // paga únicamente quien se equivocó, y una búsqueda normal no depende
     // de que el microservicio esté vivo.
+    //
+    // Dos modos, para no romper a quien ya consume esta ruta:
+    //   - sin parámetros (el de siempre, y el que usa el microservicio): si la
+    //     corrección da resultados se devuelven ESOS resultados, con
+    //     `correccion` indicando qué se mostró;
+    //   - con ?sugerir=1 (las pantallas con "¿Quisiste decir…?"): se devuelve
+    //     la lista vacía tal cual y la corrección viaja aparte en
+    //     `sugerencia_busqueda`, para que el usuario decida con un clic.
     $terminoBuscado = trim($p['q'] ?? '');
+    $soloSugerir    = ($p['sugerir'] ?? '') === '1';
     $correccion     = null;
+    $sugerenciaBusqueda = null;
 
-    if ($rows === [] && mb_strlen($terminoBuscado) >= 3) {
-        $sugerencia = NlpClient::get('/corregir-busqueda?q=' . urlencode($terminoBuscado));
-        $corregida  = $sugerencia['corregida'] ?? null;
+    if ($rows === []) {
+        $corregida = SugerenciaBusqueda::corregir($terminoBuscado);
 
         if ($corregida) {
-            $q2 = '%' . $corregida . '%';
+            $q2 = '%' . $normalizar($corregida) . '%';
             $stmt->execute([$q2, $q2, $q2, $q2, $off, $limit]);
             $filas2 = $stmt->fetchAll();
 
-            // Solo se adopta la corrección si de verdad encontró algo: si
-            // tampoco da resultados, es mejor el "sin resultados" del
+            // Solo se adopta/sugiere la corrección si de verdad encontró algo:
+            // si tampoco da resultados, es mejor el "sin resultados" del
             // término original que confundir con una búsqueda ajena.
             if ($filas2 !== []) {
-                $total = (int) ($filas2[0]['total_filas'] ?? 0);
-                foreach ($filas2 as &$f2) { unset($f2['total_filas']); }
-                unset($f2);
-                $rows       = $filas2;
-                $correccion = ['buscado' => $terminoBuscado, 'mostrando' => $corregida];
+                $total2 = (int) ($filas2[0]['total_filas'] ?? 0);
+                if ($soloSugerir) {
+                    $sugerenciaBusqueda = [
+                        'buscado'   => $terminoBuscado,
+                        'corregida' => $corregida,
+                        'total'     => $total2,
+                    ];
+                } else {
+                    foreach ($filas2 as &$f2) { unset($f2['total_filas']); }
+                    unset($f2);
+                    $rows       = $filas2;
+                    $total      = $total2;
+                    $correccion = ['buscado' => $terminoBuscado, 'mostrando' => $corregida];
+                }
             }
         }
     }
@@ -71,6 +101,9 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     $salida = ['data' => $rows, 'total' => $total, 'page' => $page];
     if ($correccion) {
         $salida['correccion'] = $correccion;
+    }
+    if ($sugerenciaBusqueda) {
+        $salida['sugerencia_busqueda'] = $sugerenciaBusqueda;
     }
 
     $res->getBody()->write(json_encode($salida));
@@ -420,20 +453,10 @@ $group->get('/repuestos/{id}/recomendaciones', function (Request $req, Response 
  */
 function idsDesdeQuery(array $params): array
 {
-    $crudo = trim($params['ids'] ?? '');
-    if ($crudo === '') {
-        return [];
-    }
-    $ids = [];
-    foreach (explode(',', $crudo) as $valor) {
-        $valor = trim($valor);
-        if (ctype_digit($valor)) {
-            $ids[] = (int) $valor;
-        }
-    }
-    // Tope: la tabla pide 15 por página. Sin límite, un ids= gigante arma
-    // un IN (...) enorme en Oracle desde una ruta que no tiene rate limit.
-    return array_slice(array_values(array_unique($ids)), 0, 100);
+    // Tope de 100: la tabla pide 15 por página. Sin límite, un ids= gigante
+    // arma un IN (...) enorme en Oracle desde una ruta sin rate limit.
+    $crudo = $params['ids'] ?? '';
+    return ListaIds::desdeTexto(is_string($crudo) ? $crudo : '', 100);   // ?ids[]=1 llega como array
 }
 
 /**
