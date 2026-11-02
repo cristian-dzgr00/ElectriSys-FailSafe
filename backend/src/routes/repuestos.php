@@ -3,6 +3,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\Database;
 use App\models\VehiculoModel;
+use App\services\BusquedaTexto;
 use App\services\ListaIds;
 use App\services\NlpClient;
 use App\services\SugerenciaBusqueda;
@@ -16,12 +17,8 @@ $group->get('/repuestos', function (Request $req, Response $res) {
     $limit = min(100, max(1, (int)($p['limit'] ?? 15)));
     $off   = ($page - 1) * $limit;
     // Oracle compara LIKE distinguiendo mayúsculas y tildes ("bujia" no encontraba
-    // "Bujía"). Se normalizan el término y las columnas (ver TRANSLATE en el SQL).
-    $normalizar = fn(string $s): string => strtoupper(strtr(trim($s), [
-        'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n',
-        'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U', 'Ñ' => 'N',
-    ]));
-    $q     = '%' . $normalizar($p['q'] ?? '') . '%';
+    // "Bujía"): término y columnas se normalizan con BusquedaTexto.
+    $q     = BusquedaTexto::patron($p['q'] ?? '');
 
     $db = repuestosDB();
 
@@ -34,10 +31,10 @@ $group->get('/repuestos', function (Request $req, Response $res) {
         LEFT JOIN categorias c ON r.categoria_id = c.id
         LEFT JOIN proveedores p ON r.proveedor_id = p.id
         WHERE r.activo = 1 AND (
-              UPPER(TRANSLATE(r.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
-           OR UPPER(TRANSLATE(r.codigo, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
-           OR UPPER(TRANSLATE(c.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?
-           OR UPPER(TRANSLATE(p.nombre, 'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN')) LIKE ?)
+              " . BusquedaTexto::como('r.nombre') . "
+           OR " . BusquedaTexto::como('r.codigo') . "
+           OR " . BusquedaTexto::como('c.nombre') . "
+           OR " . BusquedaTexto::como('p.nombre') . ")
         ORDER BY r.nombre
         OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
@@ -72,7 +69,7 @@ $group->get('/repuestos', function (Request $req, Response $res) {
         $corregida = SugerenciaBusqueda::corregir($terminoBuscado);
 
         if ($corregida) {
-            $q2 = '%' . $normalizar($corregida) . '%';
+            $q2 = BusquedaTexto::patron($corregida);
             $stmt->execute([$q2, $q2, $q2, $q2, $off, $limit]);
             $filas2 = $stmt->fetchAll();
 
@@ -123,8 +120,14 @@ $group->get('/repuestos/buscar-compatibles', function (Request $req, Response $r
         return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
 
-    $where  = ['r.activo = 1', 'v.marca = ?', 'v.modelo = ?'];
-    $params = [$marca, $modelo];
+    // "toyota"/"HILUX" deben coincidir con "Toyota"/"Hilux" (el microservicio y
+    // los selects mandan el texto tal cual lo recibieron).
+    $where  = [
+        'r.activo = 1',
+        BusquedaTexto::columna('v.marca') . ' = ?',
+        BusquedaTexto::columna('v.modelo') . ' = ?',
+    ];
+    $params = [BusquedaTexto::normalizar($marca), BusquedaTexto::normalizar($modelo)];
 
     if (!empty($p['anio']) && ctype_digit((string)$p['anio'])) {
         $where[]  = '? BETWEEN v.anio_desde AND v.anio_hasta';
@@ -139,8 +142,8 @@ $group->get('/repuestos/buscar-compatibles', function (Request $req, Response $r
         $params[] = trim($p['combustible']);
     }
     if (!empty($p['categoria'])) {
-        $where[]  = 'c.nombre LIKE ?';
-        $params[] = '%' . trim($p['categoria']) . '%';
+        $where[]  = BusquedaTexto::como('c.nombre');
+        $params[] = BusquedaTexto::patron($p['categoria']);
     }
 
     $stmt = repuestosDB()->prepare("

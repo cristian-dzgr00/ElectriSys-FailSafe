@@ -3,6 +3,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\models\Database;
 use App\middlewares\RoleMiddleware;
+use App\services\BusquedaTexto;
 
 function proveedoresDB() { return Database::getConnection(); }
 
@@ -22,12 +23,14 @@ $group->get('/proveedores', function (Request $req, Response $res) {
     $page  = max(1, (int)($p['page']  ?? 1));
     $limit = min(100, max(1, (int)($p['limit'] ?? 15)));
     $off   = ($page - 1) * $limit;
-    $q     = '%' . trim($p['q'] ?? '') . '%';
+    $q     = BusquedaTexto::patron($p['q'] ?? '');
 
     $db   = proveedoresDB();
     $stmt = $db->prepare("
         SELECT p.*, COUNT(*) OVER() AS total_filas FROM proveedores p
-        WHERE activo=1 AND (nombre LIKE ? OR contacto LIKE ? OR email LIKE ?)
+        WHERE activo=1 AND (" . BusquedaTexto::como('nombre') . "
+            OR " . BusquedaTexto::como('contacto') . "
+            OR " . BusquedaTexto::como('email') . ")
         ORDER BY nombre OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
     ");
     $stmt->execute([$q, $q, $q, $off, $limit]);

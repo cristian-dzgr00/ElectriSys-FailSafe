@@ -4,6 +4,7 @@ namespace App\models;
 use App\patterns\observer\ErroresNlpObserver;
 use App\patterns\observer\VentaObserver;
 use App\patterns\observer\VentaSubject;
+use App\services\BusquedaTexto;
 
 /**
  * También es Subject (patrón Observer): al insertar un vehículo nuevo
@@ -59,16 +60,16 @@ class VehiculoModel implements VentaSubject
         $params = [];
 
         if (!empty($filtros['marca'])) {
-            $where[]  = 'marca = ?';
-            $params[] = $filtros['marca'];
+            $where[]  = BusquedaTexto::columna('marca') . ' = ?';
+            $params[] = BusquedaTexto::normalizar($filtros['marca']);
         }
         if (!empty($filtros['modelo'])) {
-            $where[]  = 'modelo = ?';
-            $params[] = $filtros['modelo'];
+            $where[]  = BusquedaTexto::columna('modelo') . ' = ?';
+            $params[] = BusquedaTexto::normalizar($filtros['modelo']);
         }
         if (!empty($filtros['q'])) {
-            $where[]  = '(marca LIKE ? OR modelo LIKE ?)';
-            $q = '%' . $filtros['q'] . '%';
+            $where[]  = '(' . BusquedaTexto::como('marca') . ' OR ' . BusquedaTexto::como('modelo') . ')';
+            $q = BusquedaTexto::patron($filtros['q']);
             $params[] = $q;
             $params[] = $q;
         }
