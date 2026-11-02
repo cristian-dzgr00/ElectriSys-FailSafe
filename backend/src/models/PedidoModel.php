@@ -1,6 +1,7 @@
 <?php
 namespace App\models;
 
+use App\services\BusquedaTexto;
 use RuntimeException;
 
 /**
@@ -59,8 +60,8 @@ class PedidoModel
             $params[] = (int) $filtros['proveedor_id'];
         }
         if (!empty($filtros['q'])) {
-            $where[]  = '(p.numero LIKE ? OR pr.nombre LIKE ?)';
-            $q        = '%' . $filtros['q'] . '%';
+            $where[]  = '(' . BusquedaTexto::como('p.numero') . ' OR ' . BusquedaTexto::como('pr.nombre') . ')';
+            $q        = BusquedaTexto::patron($filtros['q']);
             $params[] = $q;
             $params[] = $q;
         }
