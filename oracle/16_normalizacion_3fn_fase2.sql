@@ -358,7 +358,7 @@ DECLARE
             -- Confianza: sale del JSON de la respuesta. Un valor ilegible o fuera de 0..1 queda NULL.
             dml('MERGE INTO consultas_asistente c USING ('
                 || 'SELECT id, CASE WHEN x BETWEEN 0 AND 1 THEN ROUND(x, 4) END AS conf FROM ('
-                ||   'SELECT id, JSON_VALUE(respuesta_json, ''$.confianza'' RETURNING NUMBER DEFAULT NULL ON ERROR) AS x '
+                ||   'SELECT id, JSON_VALUE(respuesta_json, ''$.confianza'' RETURNING NUMBER NULL ON ERROR) AS x '
                 ||   'FROM consultas_asistente)) s ON (c.id = s.id) '
                 || 'WHEN MATCHED THEN UPDATE SET c.confianza = s.conf '
                 || 'WHERE c.confianza IS NULL AND s.conf IS NOT NULL',

@@ -114,7 +114,7 @@ $group->get('/repuestos/buscar-compatibles', function (Request $req, Response $r
         SELECT DISTINCT r.id, r.codigo, r.nombre, r.descripcion, r.stock, r.precio_venta,
                c.nombre AS categoria, pr.nombre AS proveedor
         FROM repuesto_compatibilidad rc
-        JOIN vehiculos  v  ON v.id = rc.vehiculo_id
+        JOIN vw_vehiculos v ON v.id = rc.vehiculo_id
         JOIN repuestos  r  ON r.id = rc.repuesto_id
         LEFT JOIN categorias  c  ON c.id  = r.categoria_id
         LEFT JOIN proveedores pr ON pr.id = r.proveedor_id
@@ -151,7 +151,7 @@ $group->get('/repuestos/{id}/compatibilidad', function (Request $req, Response $
     }
     $stmt = repuestosDB()->prepare("
         SELECT v.* FROM repuesto_compatibilidad rc
-        JOIN vehiculos v ON v.id = rc.vehiculo_id
+        JOIN vw_vehiculos v ON v.id = rc.vehiculo_id
         WHERE rc.repuesto_id = ?
         ORDER BY v.marca, v.modelo, v.anio_desde
     ");

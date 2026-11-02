@@ -54,14 +54,15 @@ $group->get('/ventas/resumen/semana', function (Request $req, Response $res) {
     // siguiente y desaparecía del día que la UI muestra en la lista.
     $stmt = $conn->query("
         SELECT
-            TRUNC(fn_fecha_local(creado_en)) AS fecha,
-            NVL(SUM(total), 0)               AS ingresos,
-            COUNT(*)                         AS ventas
-        FROM ventas
+            TRUNC(fn_fecha_local(v.creado_en)) AS fecha,
+            NVL(SUM(t.total), 0)               AS ingresos,
+            COUNT(*)                           AS ventas
+        FROM ventas v
+        JOIN vw_totales_documento t ON t.tipo = 'venta' AND t.documento_id = v.id
         WHERE
-            fn_fecha_local(creado_en) >= fn_hoy_local() - 6
-            AND estado = 'completada'
-        GROUP BY TRUNC(fn_fecha_local(creado_en))
+            fn_fecha_local(v.creado_en) >= fn_hoy_local() - 6
+            AND v.estado = 'completada'
+        GROUP BY TRUNC(fn_fecha_local(v.creado_en))
         ORDER BY fecha ASC
     ");
     $res->getBody()->write(json_encode(['data' => $stmt->fetchAll()]));
@@ -93,19 +94,20 @@ $group->get('/ventas/resumen/serie', function (Request $req, Response $res) {
     // tamaño no se leen, y lo que interesa en ese rango es la tendencia.
     $porSemana = $dias > 31;
     $truncado  = $porSemana
-        ? "TRUNC(fn_fecha_local(creado_en), 'IW')"   // lunes de la semana ISO
-        : "TRUNC(fn_fecha_local(creado_en))";
+        ? "TRUNC(fn_fecha_local(v.creado_en), 'IW')"   // lunes de la semana ISO
+        : "TRUNC(fn_fecha_local(v.creado_en))";
 
     // fn_fecha_local y no TRUNC(creado_en) a secas: los TIMESTAMP están en
     // UTC, así que una venta nocturna caía en el día siguiente.
     $stmt = Database::getConnection()->prepare("
         SELECT
             TO_CHAR($truncado, 'YYYY-MM-DD') AS fecha,
-            NVL(SUM(total), 0)               AS ingresos,
+            NVL(SUM(t.total), 0)             AS ingresos,
             COUNT(*)                         AS ventas
-        FROM ventas
-        WHERE fn_fecha_local(creado_en) >= fn_hoy_local() - ?
-          AND estado = 'completada'
+        FROM ventas v
+        JOIN vw_totales_documento t ON t.tipo = 'venta' AND t.documento_id = v.id
+        WHERE fn_fecha_local(v.creado_en) >= fn_hoy_local() - ?
+          AND v.estado = 'completada'
         GROUP BY $truncado
         ORDER BY 1 ASC
     ");

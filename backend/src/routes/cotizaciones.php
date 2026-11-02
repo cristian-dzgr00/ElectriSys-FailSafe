@@ -35,8 +35,10 @@ $group->get('/cotizaciones', function (Request $req, Response $res) {
 
     $db   = cotDB();
     $stmt = $db->prepare("
-        SELECT q.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre, COUNT(*) OVER() AS total_filas
+        SELECT q.*, t.subtotal, t.descuento, t.impuesto, t.total,
+               c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre, COUNT(*) OVER() AS total_filas
         FROM cotizaciones q
+        JOIN vw_totales_documento t ON t.tipo = 'cotizacion' AND t.documento_id = q.id
         LEFT JOIN clientes c ON q.cliente_id = c.id
         LEFT JOIN usuarios u ON q.usuario_id = u.id
         ORDER BY q.creado_en DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
@@ -59,8 +61,10 @@ $group->get('/cotizaciones/{id}', function (Request $req, Response $res, array $
     }
     $db   = cotDB();
     $stmt = $db->prepare("
-        SELECT q.*, c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre
+        SELECT q.*, t.subtotal, t.descuento, t.impuesto, t.total,
+               c.nombre AS cliente_nombre, u.nombre AS vendedor_nombre
         FROM cotizaciones q
+        JOIN vw_totales_documento t ON t.tipo = 'cotizacion' AND t.documento_id = q.id
         LEFT JOIN clientes c ON q.cliente_id = c.id
         LEFT JOIN usuarios u ON q.usuario_id = u.id
         WHERE q.id = ?
@@ -72,7 +76,8 @@ $group->get('/cotizaciones/{id}', function (Request $req, Response $res, array $
         return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
     }
     $det = $db->prepare("
-        SELECT dc.*, r.nombre AS producto_nombre, r.codigo
+        SELECT dc.*, dc.cantidad * dc.precio_unit - NVL(dc.descuento, 0) AS subtotal,
+               r.nombre AS producto_nombre, r.codigo
         FROM detalle_cotizaciones dc
         JOIN repuestos r ON dc.repuesto_id = r.id
         WHERE dc.cotizacion_id = ?
@@ -104,11 +109,48 @@ $group->post('/cotizaciones', function (Request $req, Response $res) {
     $db     = cotDB();
     $numero = 'COT-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
 
+    // 3FN (fase 2): la cabecera solo guarda los PORCENTAJES de descuento e IVA;
+    // subtotal/descuento/impuesto/total salen de las líneas (vw_totales_documento).
+    // Se derivan de los montos que manda el cliente, salvo que mande los porcentajes.
+    $subtotalIn  = (float) ($b['subtotal']  ?? 0);
+    $descuentoIn = (float) ($b['descuento'] ?? 0);
+    $impuestoIn  = (float) ($b['impuesto']  ?? 0);
+    $baseIn      = $subtotalIn - $descuentoIn;
+    if (isset($b['descuento_pct'], $b['iva_pct']) && is_numeric($b['descuento_pct']) && is_numeric($b['iva_pct'])) {
+        $descuentoPct = (float) $b['descuento_pct'];
+        $ivaPct       = (float) $b['iva_pct'];
+    } else {
+        $descuentoPct = $subtotalIn > 0 ? round($descuentoIn / $subtotalIn * 100, 2) : 0.0;
+        $ivaPct       = $baseIn > 0     ? round($impuestoIn  / $baseIn      * 100, 2) : 0.0;
+    }
+    $descuentoPct = min(100.0, max(0.0, $descuentoPct));
+    $ivaPct       = min(100.0, max(0.0, $ivaPct));
+
+    // La PK de detalle_cotizaciones es (cotizacion_id, repuesto_id): un repuesto
+    // repetido se junta en una sola línea sumando cantidad y descuento.
+    $lineas = [];
+    foreach ($b['items'] as $item) {
+        $rid = (int) $item['repuesto_id'];
+        if (isset($lineas[$rid])) {
+            $lineas[$rid]['cantidad']  += (int) $item['cantidad'];
+            $lineas[$rid]['descuento'] += (float) ($item['descuento'] ?? 0);
+        } else {
+            $lineas[$rid] = [
+                'repuesto_id' => $rid,
+                'cantidad'    => (int) $item['cantidad'],
+                'precio_unit' => (float) $item['precio_unit'],
+                'descuento'   => (float) ($item['descuento'] ?? 0),
+            ];
+        }
+    }
+
     $db->beginTransaction();
     try {
+        // Sin "estado": el ciclo de vida actual (11_cotizaciones_estados.sql) solo
+        // admite activa/vencida/realizada y el DEFAULT de la columna es 'activa'.
         $stmt = $db->prepare("
-            INSERT INTO cotizaciones (numero, cliente_id, usuario_id, subtotal, descuento, impuesto, total, estado, vence_en, notas)
-            VALUES (?,?,?,?,?,?,?,'borrador',?,?)
+            INSERT INTO cotizaciones (numero, cliente_id, usuario_id, descuento_pct, iva_pct, vence_en, notas)
+            VALUES (?,?,?,?,?,?,?)
             RETURNING id INTO :out_id
         ");
         $cotIdOut = 0;
@@ -117,23 +159,19 @@ $group->post('/cotizaciones', function (Request $req, Response $res) {
             $numero,
             $b['cliente_id'] ?? null,
             (int)$user['sub'],
-            $b['subtotal'] ?? 0,
-            $b['descuento'] ?? 0,
-            $b['impuesto'] ?? 0,
-            $b['total'],
+            $descuentoPct,
+            $ivaPct,
             $b['vence_en'] ?: null,
             $b['notas'] ?? null,
         ]);
         $cotId = (int) $cotIdOut;
 
-        foreach ($b['items'] as $item) {
-            $sub = $item['cantidad'] * $item['precio_unit'];
+        foreach ($lineas as $l) {
             $db->prepare("
-                INSERT INTO detalle_cotizaciones (cotizacion_id, repuesto_id, cantidad, precio_unit, descuento, subtotal)
-                VALUES (?,?,?,?,?,?)
+                INSERT INTO detalle_cotizaciones (cotizacion_id, repuesto_id, cantidad, precio_unit, descuento)
+                VALUES (?,?,?,?,?)
             ")->execute([
-                $cotId, $item['repuesto_id'], $item['cantidad'],
-                $item['precio_unit'], $item['descuento'] ?? 0, $sub,
+                $cotId, $l['repuesto_id'], $l['cantidad'], $l['precio_unit'], $l['descuento'],
             ]);
         }
 
@@ -217,7 +255,12 @@ $group->post('/cotizaciones/{id}/convertir-venta', function (Request $req, Respo
     $body = (array) $req->getParsedBody();
     $db   = cotDB();
 
-    $cab = $db->prepare("SELECT * FROM cotizaciones WHERE id = ?");
+    $cab = $db->prepare("
+        SELECT q.*, t.subtotal, t.descuento, t.impuesto, t.total
+        FROM cotizaciones q
+        JOIN vw_totales_documento t ON t.tipo = 'cotizacion' AND t.documento_id = q.id
+        WHERE q.id = ?
+    ");
     $cab->execute([$id]);
     $cot = $cab->fetch();
     if (!$cot) {
@@ -255,6 +298,10 @@ $group->post('/cotizaciones/{id}/convertir-venta', function (Request $req, Respo
             'descuento'   => (float) $cot['descuento'],
             'impuesto'    => (float) $cot['impuesto'],
             'total'       => (float) $cot['total'],
+            // Porcentajes exactos de la cotización: se pasan tal cual para no
+            // depender de re-derivarlos desde montos redondeados.
+            'descuento_pct' => (float) $cot['descuento_pct'],
+            'iva_pct'       => (float) $cot['iva_pct'],
             'metodo_pago' => $body['metodo_pago'] ?? 'efectivo',
             'notas'       => 'Generada desde la cotización ' . $cot['numero'],
             'items'       => array_map(fn($i) => [

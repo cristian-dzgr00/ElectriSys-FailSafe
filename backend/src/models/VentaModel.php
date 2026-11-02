@@ -123,10 +123,9 @@ class VentaModel
 
             $ventaId = 0;
             $clienteId  = $data['cliente_id'] ?? null;
-            $subtotal   = (float) $data['subtotal'];
-            $descuento  = (float) ($data['descuento'] ?? 0);
-            $impuesto   = (float) ($data['impuesto']  ?? 0);
-            $total      = (float) $data['total'];
+            // 3FN (fase 2): la cabecera solo guarda los PORCENTAJES; los montos
+            // salen de las líneas en vw_totales_documento.
+            [$descuentoPct, $ivaPct] = self::porcentajes($data);
             $metodoPago = $data['metodo_pago'] ?? 'efectivo';
             $notas      = $data['notas'] ?? null;
 
@@ -134,8 +133,7 @@ class VentaModel
                 BEGIN
                     :id := pkg_ventas.registrar_venta(
                         p_cliente_id => :cliente_id, p_usuario_id => :usuario_id,
-                        p_subtotal => :subtotal, p_descuento => :descuento,
-                        p_impuesto => :impuesto, p_total => :total,
+                        p_descuento_pct => :descuento_pct, p_iva_pct => :iva_pct,
                         p_metodo_pago => :metodo_pago, p_notas => :notas
                     );
                 END;
@@ -143,10 +141,8 @@ class VentaModel
             oci_bind_by_name($stmt, ':id', $ventaId, 20);
             oci_bind_by_name($stmt, ':cliente_id', $clienteId);
             oci_bind_by_name($stmt, ':usuario_id', $usuarioId);
-            oci_bind_by_name($stmt, ':subtotal', $subtotal);
-            oci_bind_by_name($stmt, ':descuento', $descuento);
-            oci_bind_by_name($stmt, ':impuesto', $impuesto);
-            oci_bind_by_name($stmt, ':total', $total);
+            oci_bind_by_name($stmt, ':descuento_pct', $descuentoPct);
+            oci_bind_by_name($stmt, ':iva_pct', $ivaPct);
             oci_bind_by_name($stmt, ':metodo_pago', $metodoPago, 20);
             oci_bind_by_name($stmt, ':notas', $notas, 4000);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -258,6 +254,30 @@ class VentaModel
             return ['total_ventas' => 0, 'ingresos' => 0, 'ticket_promedio' => 0];
         }
         return array_change_key_case($fila, CASE_LOWER);
+    }
+
+    /**
+     * Porcentajes de descuento e IVA (0..100, 2 decimales) de una venta.
+     * Si llegan descuento_pct e iva_pct en $data se usan tal cual; si no, se
+     * derivan de los montos que calculó la Strategy (descuento sobre el
+     * subtotal, impuesto sobre el subtotal ya descontado).
+     *
+     * @return array{0: float, 1: float}
+     */
+    private static function porcentajes(array $data): array
+    {
+        if (isset($data['descuento_pct'], $data['iva_pct'])) {
+            $desc = (float) $data['descuento_pct'];
+            $iva  = (float) $data['iva_pct'];
+        } else {
+            $subtotal  = (float) ($data['subtotal']  ?? 0);
+            $descuento = (float) ($data['descuento'] ?? 0);
+            $impuesto  = (float) ($data['impuesto']  ?? 0);
+            $base      = $subtotal - $descuento;
+            $desc = $subtotal > 0 ? round($descuento / $subtotal * 100, 2) : 0.0;
+            $iva  = $base > 0     ? round($impuesto  / $base      * 100, 2) : 0.0;
+        }
+        return [min(100.0, max(0.0, $desc)), min(100.0, max(0.0, $iva))];
     }
 
     private function errorDesdeOci($stmt): \RuntimeException
