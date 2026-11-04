@@ -4,6 +4,7 @@ import {
   AreaChart, Area, PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { ventasService, repuestosService } from '../services/ventasService';
+import { traerTodasLasPaginas } from '../services/paginacion';
 import { useToastContext } from '../context/ToastContext';
 import { SkeletonCard, SkeletonText } from '../components/Skeleton';
 import { Tooltip as TT } from '../components/Tooltip';
@@ -53,9 +54,10 @@ const monthAgo = new Date(Date.now()-30*24*60*60*1000).toISOString().split('T')[
 
 export default function Reportes() {
   const toast = useToastContext();
-  const [ventas,      setVentas]      = useState([]);
   const [repuestos,   setRepuestos]   = useState([]);
   const [loading,     setLoading]     = useState(true);
+  const [cargandoVentas, setCargandoVentas] = useState(false);
+  const pedidoVentas = useRef(0);
   const [desde,       setDesde]       = useState(monthAgo);
   const [hasta,       setHasta]       = useState(today);
   const [filtradas,   setFiltradas]   = useState([]);
@@ -244,26 +246,36 @@ export default function Reportes() {
   };
 
 
+  // El servidor entrega como máximo 100 filas por llamada: se recorren todas las
+  // páginas (ver services/paginacion.js). Antes se pedía `limit: 500`, se recibían
+  // solo las 100 más recientes y cualquier fecha anterior aparecía sin ventas.
+  const cargarVentas = async () => {
+    if (!desde || !hasta || desde > hasta) return;
+    const pedido = ++pedidoVentas.current;
+    setCargandoVentas(true);
+    try {
+      // El filtro de fechas lo aplica el servidor (por fecha local, no UTC).
+      const filas = await traerTodasLasPaginas(p => ventasService.listar(p), {
+        filtros: { desde, hasta, estado: 'completada' },
+      });
+      if (pedido === pedidoVentas.current) setFiltradas(filas); // descarta respuestas viejas
+    } catch {
+      if (pedido === pedidoVentas.current) toast('Error cargando las ventas del período', { type:'error' });
+    } finally {
+      if (pedido === pedidoVentas.current) { setCargandoVentas(false); setLoading(false); }
+    }
+  };
+
+  // Inventario: también se recorre completo (los KPI de valor y stock crítico lo necesitan entero).
   useEffect(() => {
-    Promise.all([ventasService.listar({ limit: 500 }), repuestosService.listar({ limit: 500 })])
-      .then(([v, r]) => {
-        setVentas(v.data.data ?? []);
-        setRepuestos(r.data.data ?? []);
-      })
-      .catch(() => toast('Error cargando datos de reportes', { type:'error' }))
-      .finally(() => setLoading(false));
+    traerTodasLasPaginas(p => repuestosService.listar(p))
+      .then(setRepuestos)
+      .catch(() => toast('Error cargando el inventario', { type:'error' }));
   }, []);
 
-  useEffect(() => { aplicarFiltro(); }, [ventas, desde, hasta]);
+  useEffect(() => { cargarVentas(); }, [desde, hasta]);
 
-  const aplicarFiltro = () => {
-    const d = new Date(desde + 'T00:00:00');
-    const h = new Date(hasta  + 'T23:59:59');
-    setFiltradas(ventas.filter(v => {
-      const f = new Date(v.creado_en);
-      return f >= d && f <= h && v.estado === 'completada';
-    }));
-  };
+  const aplicarFiltro = cargarVentas;
 
   const ingresosPorDia = () => {
     const map = {};
@@ -341,8 +353,8 @@ export default function Reportes() {
           <div style={{fontSize:10,color:'var(--text-muted)',textTransform:'uppercase',letterSpacing:'.05em',marginBottom:4}}>HASTA</div>
           <input type="date" className="form-control" value={hasta} min={desde} max={today} onChange={e=>setHasta(e.target.value)} style={{width:150}}/>
         </div>
-        <button className="btn btn-primary" style={{marginTop:16}} onClick={aplicarFiltro}>
-          <Filter size={14}/> Aplicar filtros
+        <button className="btn btn-primary" style={{marginTop:16}} onClick={aplicarFiltro} disabled={cargandoVentas}>
+          <Filter size={14}/> {cargandoVentas ? 'Cargando ventas…' : 'Aplicar filtros'}
         </button>
         <div style={{marginTop:16,display:'flex',alignItems:'center',gap:6,background:'var(--bg-hover)',borderRadius:8,padding:'7px 12px',fontSize:12,color:'var(--text-secondary)'}}>
           <Calendar size={13} color="var(--accent)"/>{diasLabel}
